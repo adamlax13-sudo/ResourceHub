@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
@@ -10,6 +11,7 @@ import { Info } from "lucide-react";
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
+  const { t } = useTranslation();
 
   const handleSearch = (query: string) => {
     search({ query });
@@ -31,7 +33,7 @@ export default function Home() {
               <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Info className="w-8 h-8 text-destructive" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Unable to complete search</h3>
+              <h3 className="text-xl font-bold text-foreground mb-2">{t('search.error')}</h3>
               <p className="text-muted-foreground">{error.message}</p>
             </motion.div>
           )}
@@ -43,7 +45,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <div className="bg-card p-8 rounded-3xl shadow-xl border border-border mb-12">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-4">Summary</h2>
+                <h2 className="text-2xl font-display font-bold text-foreground mb-4">{t('search.summary')}</h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">{data.summary}</p>
               </div>
 
@@ -60,7 +62,7 @@ export default function Home() {
 
               {data.services.length === 0 && (
                 <div className="text-center py-20 text-muted-foreground">
-                  No services found matching your criteria. Try a different search term.
+                  {t('search.noResults')}
                 </div>
               )}
             </motion.div>
@@ -76,9 +78,9 @@ export default function Home() {
           >
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {[
-                { title: "Search", desc: "Tell us what kind of support you need in plain English." },
-                { title: "Review", desc: "We'll find relevant campus and Alberta services." },
-                { title: "Connect", desc: "Get clear steps, contact info, and track your progress." }
+                { title: t('howItWorks.step1Title'), desc: t('howItWorks.step1Desc') },
+                { title: t('howItWorks.step2Title'), desc: t('howItWorks.step2Desc') },
+                { title: t('howItWorks.step3Title'), desc: t('howItWorks.step3Desc') }
               ].map((step, i) => (
                 <div key={i} className="flex flex-col items-center p-6">
                   <div className="w-12 h-12 rounded-2xl bg-card shadow-lg border border-border flex items-center justify-center text-primary font-bold text-xl mb-4">
@@ -104,7 +106,7 @@ export default function Home() {
       <footer className="bg-card py-12 border-t border-border mt-20">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2025 Recovery on Campus Resource Hub. Information provided for guidance only.
+            {t('app.footer')}
           </p>
         </div>
       </footer>

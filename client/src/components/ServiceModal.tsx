@@ -5,6 +5,7 @@ import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Heart, Loade
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +21,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
   const { data: favorites } = useFavorites();
   const addFavorite = useAddFavorite();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   if (!service) return null;
 
@@ -28,8 +30,8 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
   const handleFavorite = () => {
     if (!user) {
       toast({
-        title: "Sign in required",
-        description: "Please sign in to save resources to your hub.",
+        title: t('auth.signInRequired'),
+        description: t('auth.signInToSave'),
         variant: "destructive",
       });
       setTimeout(() => {
@@ -45,8 +47,8 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
     }, {
       onSuccess: () => {
         toast({
-          title: "Saved!",
-          description: "Resource added to My Resources.",
+          title: t('toast.saved'),
+          description: t('toast.resourceAdded'),
         });
       },
     });
@@ -77,13 +79,13 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     ) : (
                       <Heart className="w-4 h-4" />
                     )}
-                    Save
+                    {t('service.save')}
                   </Button>
                 )}
                 {isFavorited && (
                   <Badge variant="secondary" className="bg-green-100 text-green-700">
                     <CheckCircle className="w-3 h-3 mr-1" />
-                    Saved
+                    {t('service.saved')}
                   </Badge>
                 )}
               </div>
@@ -106,7 +108,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 <section>
                   <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-foreground">
                     <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">1</span>
-                    Access Process
+                    {t('service.accessProcess')}
                   </h3>
                   <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
                     <ProcessTimeline steps={service.process} />
@@ -117,7 +119,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 <section>
                   <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-foreground">
                     <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">2</span>
-                    Required Documents
+                    {t('service.requiredDocs')}
                   </h3>
                   <div className="grid gap-3">
                     {service.requiredDocs.map((doc, idx) => (
@@ -128,7 +130,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     ))}
                     {service.requiredDocs.length === 0 && (
                       <div className="text-sm text-muted-foreground italic p-4 bg-card rounded-xl border border-border">
-                        No specific documents listed. Please contact the provider to confirm.
+                        {t('service.noDocsListed')}
                       </div>
                     )}
                   </div>
@@ -138,7 +140,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
               {/* Right Column: Key Info Card */}
               <div className="md:col-span-5">
                 <div className="bg-card rounded-2xl shadow-lg border border-border p-6 sticky top-0 space-y-6">
-                  <h3 className="font-bold text-lg border-b border-border pb-4">Key Information</h3>
+                  <h3 className="font-bold text-lg border-b border-border pb-4">{t('service.keyInfo')}</h3>
 
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
@@ -146,7 +148,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                         <Clock className="w-4 h-4 text-primary" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Estimated Wait Time</div>
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
                         <div className="font-medium text-foreground mt-0.5">{service.waitTimes}</div>
                       </div>
                     </div>
@@ -156,7 +158,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                         <CheckCircle className="w-4 h-4 text-green-600" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Eligibility</div>
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.eligibility')}</div>
                         <div className="font-medium text-foreground mt-0.5">{service.eligibility}</div>
                       </div>
                     </div>
@@ -166,7 +168,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                         <MapPin className="w-4 h-4 text-orange-600" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Location</div>
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
                         <div className="font-medium text-foreground mt-0.5">{service.location}</div>
                       </div>
                     </div>
@@ -176,7 +178,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                         <Phone className="w-4 h-4 text-primary" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Contact</div>
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.contact')}</div>
                         <div className="font-medium text-foreground mt-0.5 break-words">{service.contact}</div>
                       </div>
                     </div>
@@ -184,11 +186,11 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
 
                   <div className="pt-6 border-t border-border">
                     <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl shadow-lg shadow-primary/20">
-                      Contact Service Provider
+                      {t('service.contactProvider')}
                       <ExternalLink className="ml-2 w-4 h-4" />
                     </Button>
                     <p className="text-center text-xs text-muted-foreground mt-3">
-                      External link opens in a new tab
+                      {t('service.externalLink')}
                     </p>
                   </div>
                 </div>

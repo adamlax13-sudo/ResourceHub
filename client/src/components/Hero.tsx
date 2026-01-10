@@ -2,8 +2,10 @@ import { Search, User, BookMarked } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -13,6 +15,7 @@ interface HeroProps {
 export function Hero({ onSearch, isLoading }: HeroProps) {
   const [query, setQuery] = useState("");
   const { user, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,20 +33,21 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
               <BookMarked className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display font-bold text-white text-lg hidden sm:block">Recovery Hub</span>
+            <span className="font-display font-bold text-white text-lg hidden sm:block">{t('app.name')}</span>
           </div>
           
           <div className="flex items-center gap-3">
+            <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
             {!authLoading && user ? (
               <>
                 <Link href="/my-resources">
                   <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-my-resources">
-                    My Resources
+                    {t('nav.myResources')}
                   </Button>
                 </Link>
                 <a href="/api/logout">
                   <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-logout">
-                    Logout
+                    {t('nav.logout')}
                   </Button>
                 </a>
               </>
@@ -51,7 +55,7 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               <a href="/api/login">
                 <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-login">
                   <User className="w-4 h-4 mr-2" />
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
               </a>
             )}
@@ -72,11 +76,10 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-white tracking-tight leading-tight">
-            Recovery on Campus<br className="hidden md:block" /> Resource Hub
+            {t('app.title')}
           </h1>
           <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-light">
-            Find the support you need. Mental health, financial aid, housing, and more.
-            We'll guide you through the process, step by step.
+            {t('app.subtitle')}
           </p>
         </motion.div>
 
@@ -92,7 +95,7 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="What kind of support do you need today?"
+              placeholder={t('app.searchPlaceholder')}
               className="w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground"
               disabled={isLoading}
               data-testid="input-search"
@@ -111,7 +114,7 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
             </button>
           </div>
           <p className="mt-4 text-sm text-white/70 font-medium">
-            Try "mental health support" or "help with tuition"
+            {t('app.searchHint')}
           </p>
         </motion.form>
       </div>

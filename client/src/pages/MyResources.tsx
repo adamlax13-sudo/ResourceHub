@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useUpdateFavorite, useDeleteFavorite } from "@/hooks/use-favorites";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookMarked, ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import type { Favorite } from "@shared/routes";
 
 export default function MyResources() {
@@ -17,6 +19,7 @@ export default function MyResources() {
   const updateFavorite = useUpdateFavorite();
   const deleteFavorite = useDeleteFavorite();
   const [filter, setFilter] = useState<string>("all");
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -32,7 +35,7 @@ export default function MyResources() {
     );
   }
 
-  const categories = [...new Set(favorites?.map(f => f.category) || [])];
+  const categories = Array.from(new Set(favorites?.map(f => f.category) || []));
   const filteredFavorites = filter === "all" 
     ? favorites 
     : favorites?.filter(f => f.category === filter);
@@ -50,6 +53,13 @@ export default function MyResources() {
     updateFavorite.mutate({ id: fav.id, completedSteps: newSteps });
   };
 
+  const steps = [
+    t('steps.step1'),
+    t('steps.step2'),
+    t('steps.step3'),
+    t('steps.step4')
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -64,14 +74,17 @@ export default function MyResources() {
               </Link>
               <div className="flex items-center gap-3">
                 <BookMarked className="w-6 h-6" />
-                <h1 className="text-2xl font-display font-bold">My Resources</h1>
+                <h1 className="text-2xl font-display font-bold">{t('myResources.title')}</h1>
               </div>
             </div>
-            <a href="/api/logout">
-              <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-logout">
-                Logout
-              </Button>
-            </a>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
+              <a href="/api/logout">
+                <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-logout">
+                  {t('nav.logout')}
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
       </header>
@@ -82,7 +95,7 @@ export default function MyResources() {
           <div className="mb-8">
             <Tabs defaultValue="all" onValueChange={setFilter}>
               <TabsList className="bg-muted">
-                <TabsTrigger value="all" data-testid="tab-all">All</TabsTrigger>
+                <TabsTrigger value="all" data-testid="tab-all">{t('myResources.all')}</TabsTrigger>
                 {categories.map(cat => (
                   <TabsTrigger key={cat} value={cat} data-testid={`tab-${cat}`}>
                     {cat}
@@ -116,7 +129,7 @@ export default function MyResources() {
                             {fav.status === "in_progress" && (
                               <Badge className="bg-orange-100 text-orange-700">
                                 <PlayCircle className="w-3 h-3 mr-1" />
-                                In Progress
+                                {t('myResources.inProgress')}
                               </Badge>
                             )}
                           </div>
@@ -133,12 +146,12 @@ export default function MyResources() {
                             {fav.status === "in_progress" ? (
                               <>
                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                Mark Saved
+                                {t('myResources.markSaved')}
                               </>
                             ) : (
                               <>
                                 <PlayCircle className="w-4 h-4 mr-1" />
-                                Start Process
+                                {t('myResources.startProcess')}
                               </>
                             )}
                           </Button>
@@ -161,16 +174,10 @@ export default function MyResources() {
                       <CardContent className="pt-0">
                         <div className="bg-muted rounded-xl p-4">
                           <h4 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wider">
-                            Track Your Progress
+                            {t('myResources.trackProgress')}
                           </h4>
                           <div className="space-y-3">
-                            {/* We need to show steps - for now we'll show placeholder steps */}
-                            {[
-                              "Gather required documents",
-                              "Submit application",
-                              "Wait for confirmation",
-                              "Attend appointment/intake"
-                            ].map((step, idx) => {
+                            {steps.map((step, idx) => {
                               const isCompleted = Array.isArray(fav.completedSteps) && fav.completedSteps.includes(idx);
                               return (
                                 <div
@@ -203,12 +210,12 @@ export default function MyResources() {
               className="text-center py-20"
             >
               <BookMarked className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-foreground mb-2">No saved resources yet</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-2">{t('myResources.empty')}</h2>
               <p className="text-muted-foreground mb-6">
-                Search for resources and save them here for easy access.
+                {t('myResources.emptyDesc')}
               </p>
               <Link href="/">
-                <Button data-testid="button-find-resources">Find Resources</Button>
+                <Button data-testid="button-find-resources">{t('myResources.findResources')}</Button>
               </Link>
             </motion.div>
           )}
