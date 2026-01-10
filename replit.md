@@ -56,15 +56,17 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts
 - **Tables**: 
   - `sessions` - Authentication session storage
-  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality)
+  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, profileCompleted)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
 
 ### User Profile & Personalization
-- **Optional Demographics**: Age range, gender identity, race/ethnicity, sexual orientation (all optional)
-- **Profile Page**: /profile - Form to manage demographic preferences
+- **Optional Demographics**: 7 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status (all optional)
+- **Profile Page**: /profile - Form to manage demographic preferences with descriptive help text
 - **Recommendations Page**: /recommended - AI-powered personalized service recommendations
 - **Privacy**: Demographics used only for recommendations, never shared with third parties
+- **Onboarding Flow**: WelcomeModal prompts new users to complete profile after first login; uses session-based dismissal and backend profileCompleted flag
+- **Profile Completion Tracking**: profileCompleted timestamp stored in database, set when user saves demographic info
 
 ### Key Design Patterns
 - **Shared Types**: TypeScript types and Zod schemas shared between frontend and backend via @shared/ alias
