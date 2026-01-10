@@ -176,6 +176,9 @@ export async function registerRoutes(
       if (user.gender) demographicContext.push(`Gender: ${user.gender}`);
       if (user.race) demographicContext.push(`Race/Ethnicity: ${user.race}`);
       if (user.sexuality) demographicContext.push(`Sexual Orientation: ${user.sexuality}`);
+      if (user.education) demographicContext.push(`Education Level: ${user.education}`);
+      if (user.religion) demographicContext.push(`Religion/Spirituality: ${user.religion}`);
+      if (user.inAddiction) demographicContext.push(`Recovery Status: ${user.inAddiction}`);
       
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
       const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
@@ -195,6 +198,9 @@ For example:
 - LGBTQ2S+ resources if relevant to sexuality/gender
 - Culturally-specific services if relevant to race/ethnicity  
 - Age-appropriate services
+- Student-specific resources if relevant to education level
+- Faith-based or spiritual support if relevant to religion
+- Addiction recovery and harm reduction services if user indicates recovery status
 - Similar services to their favorites but in different categories they haven't explored
 
 Return JSON matching:
