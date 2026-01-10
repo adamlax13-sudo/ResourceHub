@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "Langue"
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "demographicsTitle": "Informations Optionnelles",
+    "demographicsDesc": "Aidez-nous à vous fournir de meilleures recommandations en partageant un peu sur vous-même. Tous les champs sont optionnels.",
+    "age": "Tranche d'Âge",
+    "ageDesc": "Votre âge nous aide à trouver des services appropriés à votre âge.",
+    "gender": "Identité de Genre",
+    "genderDesc": "Nous aide à suggérer des ressources qui affirment le genre lorsque pertinent.",
+    "race": "Race/Ethnicité",
+    "raceDesc": "Nous aide à trouver des services de soutien spécifiques à la culture.",
+    "sexuality": "Orientation Sexuelle",
+    "sexualityDesc": "Nous aide à recommander des services accueillants pour la communauté LGBTQ2S+.",
+    "selectPlaceholder": "Sélectionnez une option (optionnel)",
+    "saveButton": "Enregistrer le Profil",
+    "clearButton": "Tout Effacer",
+    "saved": "Profil Mis à Jour",
+    "savedDesc": "Vos préférences ont été enregistrées.",
+    "error": "Erreur",
+    "errorDesc": "Impossible d'enregistrer votre profil. Veuillez réessayer.",
+    "privacyTitle": "Votre Confidentialité",
+    "privacyDesc": "Ces informations sont entièrement optionnelles et sont uniquement utilisées pour vous fournir des recommandations plus personnalisées. Nous ne partageons jamais vos informations démographiques avec des tiers."
+  },
+  "recommended": {
+    "title": "Recommandé pour Moi",
+    "loading": "Recherche de recommandations personnalisées...",
+    "error": "Impossible de charger les recommandations. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "emptyTitle": "Pas de Recommandations Encore",
+    "emptyDesc": "Ajoutez des informations à votre profil ou enregistrez certains services pour obtenir des recommandations personnalisées.",
+    "addInfo": "Ajouter les Informations du Profil",
+    "searchServices": "Rechercher des Services",
+    "editProfile": "Modifier le Profil",
+    "saveError": "Impossible d'enregistrer la ressource"
+  },
+  "nav2": {
+    "profile": "Profil",
+    "recommended": "Pour Moi"
   }
 }

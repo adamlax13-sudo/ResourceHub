@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "Idioma"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "demographicsTitle": "Información Opcional",
+    "demographicsDesc": "Ayúdanos a proporcionar mejores recomendaciones compartiendo un poco sobre ti. Todos los campos son opcionales.",
+    "age": "Rango de Edad",
+    "ageDesc": "Tu edad nos ayuda a encontrar servicios apropiados para tu edad.",
+    "gender": "Identidad de Género",
+    "genderDesc": "Nos ayuda a sugerir recursos que afirmen el género cuando sea relevante.",
+    "race": "Raza/Etnia",
+    "raceDesc": "Nos ayuda a encontrar servicios de apoyo específicos para la cultura.",
+    "sexuality": "Orientación Sexual",
+    "sexualityDesc": "Nos ayuda a recomendar servicios amigables con LGBTQ2S+.",
+    "selectPlaceholder": "Selecciona una opción (opcional)",
+    "saveButton": "Guardar Perfil",
+    "clearButton": "Limpiar Todo",
+    "saved": "Perfil Actualizado",
+    "savedDesc": "Tus preferencias han sido guardadas.",
+    "error": "Error",
+    "errorDesc": "No se pudo guardar tu perfil. Por favor intenta de nuevo.",
+    "privacyTitle": "Tu Privacidad",
+    "privacyDesc": "Esta información es completamente opcional y solo se usa para proporcionarte recomendaciones más personalizadas. Nunca compartimos tu información demográfica con terceros."
+  },
+  "recommended": {
+    "title": "Recomendado para Mí",
+    "loading": "Buscando recomendaciones personalizadas...",
+    "error": "No se pudieron cargar las recomendaciones. Por favor intenta de nuevo.",
+    "retry": "Intentar de Nuevo",
+    "emptyTitle": "Sin Recomendaciones Aún",
+    "emptyDesc": "Añade información a tu perfil o guarda algunos servicios para obtener recomendaciones personalizadas.",
+    "addInfo": "Añadir Información de Perfil",
+    "searchServices": "Buscar Servicios",
+    "editProfile": "Editar Perfil",
+    "saveError": "No se pudo guardar el recurso"
+  },
+  "nav2": {
+    "profile": "Perfil",
+    "recommended": "Para Mí"
   }
 }

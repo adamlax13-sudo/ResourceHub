@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "Language"
+  },
+  "profile": {
+    "title": "My Profile",
+    "demographicsTitle": "Optional Information",
+    "demographicsDesc": "Help us provide better recommendations by sharing a bit about yourself. All fields are optional.",
+    "age": "Age Range",
+    "ageDesc": "Your age helps us find age-appropriate services.",
+    "gender": "Gender Identity",
+    "genderDesc": "Helps us suggest gender-affirming resources when relevant.",
+    "race": "Race/Ethnicity",
+    "raceDesc": "Helps us find culturally-specific support services.",
+    "sexuality": "Sexual Orientation",
+    "sexualityDesc": "Helps us recommend LGBTQ2S+ friendly services.",
+    "selectPlaceholder": "Select an option (optional)",
+    "saveButton": "Save Profile",
+    "clearButton": "Clear All",
+    "saved": "Profile Updated",
+    "savedDesc": "Your preferences have been saved.",
+    "error": "Error",
+    "errorDesc": "Failed to save your profile. Please try again.",
+    "privacyTitle": "Your Privacy",
+    "privacyDesc": "This information is completely optional and is only used to provide you with more personalized recommendations. We never share your demographic information with third parties."
+  },
+  "recommended": {
+    "title": "Recommended for Me",
+    "loading": "Finding personalized recommendations...",
+    "error": "Unable to load recommendations. Please try again.",
+    "retry": "Try Again",
+    "emptyTitle": "No Recommendations Yet",
+    "emptyDesc": "Add some information to your profile or save some services to get personalized recommendations.",
+    "addInfo": "Add Profile Info",
+    "searchServices": "Search Services",
+    "editProfile": "Edit Profile",
+    "saveError": "Failed to save resource"
+  },
+  "nav2": {
+    "profile": "Profile",
+    "recommended": "For Me"
   }
 }

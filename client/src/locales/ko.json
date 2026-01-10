@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "언어"
+  },
+  "profile": {
+    "title": "내 프로필",
+    "demographicsTitle": "선택적 정보",
+    "demographicsDesc": "자신에 대해 조금 공유하여 더 나은 추천을 제공하도록 도와주세요. 모든 필드는 선택사항입니다.",
+    "age": "나이 범위",
+    "ageDesc": "당신의 나이는 연령에 적합한 서비스를 찾는 데 도움이 됩니다.",
+    "gender": "성별 정체성",
+    "genderDesc": "관련성이 있을 때 성별을 긍정하는 리소스를 제안하는 데 도움이 됩니다.",
+    "race": "인종/민족",
+    "raceDesc": "문화적으로 특정한 지원 서비스를 찾는 데 도움이 됩니다.",
+    "sexuality": "성적 지향",
+    "sexualityDesc": "LGBTQ2S+ 친화적 서비스를 추천하는 데 도움이 됩니다.",
+    "selectPlaceholder": "옵션을 선택하세요 (선택사항)",
+    "saveButton": "프로필 저장",
+    "clearButton": "모두 지우기",
+    "saved": "프로필이 업데이트됨",
+    "savedDesc": "당신의 선호도가 저장되었습니다.",
+    "error": "오류",
+    "errorDesc": "프로필을 저장하지 못했습니다. 다시 시도하세요.",
+    "privacyTitle": "당신의 개인정보 보호",
+    "privacyDesc": "이 정보는 완전히 선택사항이며 더욱 개인화된 추천을 제공하기 위해서만 사용됩니다. 당신의 인구통계 정보를 제3자와 공유하지 않습니다."
+  },
+  "recommended": {
+    "title": "나를 위한 추천",
+    "loading": "개인화된 추천을 찾는 중...",
+    "error": "추천을 로드할 수 없습니다. 다시 시도하세요.",
+    "retry": "다시 시도",
+    "emptyTitle": "아직 추천이 없습니다",
+    "emptyDesc": "프로필에 정보를 추가하거나 일부 서비스를 저장하여 개인화된 추천을 받으세요.",
+    "addInfo": "프로필 정보 추가",
+    "searchServices": "서비스 검색",
+    "editProfile": "프로필 편집",
+    "saveError": "리소스를 저장하지 못했습니다"
+  },
+  "nav2": {
+    "profile": "프로필",
+    "recommended": "나를 위해"
   }
 }

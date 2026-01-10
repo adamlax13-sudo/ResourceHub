@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "Sprache"
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "demographicsTitle": "Optionale Informationen",
+    "demographicsDesc": "Helfen Sie uns, bessere Empfehlungen zu geben, indem Sie etwas über sich selbst teilen. Alle Felder sind optional.",
+    "age": "Altersgruppe",
+    "ageDesc": "Ihr Alter hilft uns, altersgerechte Dienste zu finden.",
+    "gender": "Geschlechtsidentität",
+    "genderDesc": "Hilft uns, geschlechtsbejahende Ressourcen anzubieten, wenn relevant.",
+    "race": "Rasse/Ethnizität",
+    "raceDesc": "Hilft uns, kulturell spezifische Supportdienste zu finden.",
+    "sexuality": "Sexuelle Orientierung",
+    "sexualityDesc": "Hilft uns, LGBTQ2S+-freundliche Dienste zu empfehlen.",
+    "selectPlaceholder": "Wählen Sie eine Option (optional)",
+    "saveButton": "Profil Speichern",
+    "clearButton": "Alle Löschen",
+    "saved": "Profil Aktualisiert",
+    "savedDesc": "Ihre Einstellungen wurden gespeichert.",
+    "error": "Fehler",
+    "errorDesc": "Fehler beim Speichern Ihres Profils. Bitte versuchen Sie es erneut.",
+    "privacyTitle": "Ihre Datenschutz",
+    "privacyDesc": "Diese Informationen sind völlig optional und werden nur verwendet, um Ihnen persönlichere Empfehlungen zu geben. Wir teilen Ihre demografischen Informationen niemals mit Dritten."
+  },
+  "recommended": {
+    "title": "Empfohlen für Mich",
+    "loading": "Suche personalisierte Empfehlungen...",
+    "error": "Empfehlungen können nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "retry": "Erneut Versuchen",
+    "emptyTitle": "Noch keine Empfehlungen",
+    "emptyDesc": "Fügen Sie Informationen zu Ihrem Profil hinzu oder speichern Sie einige Dienste, um personalisierte Empfehlungen zu erhalten.",
+    "addInfo": "Profilinformationen Hinzufügen",
+    "searchServices": "Dienste Suchen",
+    "editProfile": "Profil Bearbeiten",
+    "saveError": "Fehler beim Speichern der Ressource"
+  },
+  "nav2": {
+    "profile": "Profil",
+    "recommended": "Für Mich"
   }
 }

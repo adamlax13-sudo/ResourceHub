@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, searches, favorites, type User, type Search, type Favorite } from "@shared/schema";
+import { users, searches, favorites, type User, type Search, type Favorite, type UpdateDemographics } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
@@ -7,6 +7,7 @@ export interface IStorage {
   getUserByReplitId(replitId: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   upsertUser(user: Partial<User> & { replitId: string }): Promise<User>;
+  updateUserDemographics(userId: number, demographics: UpdateDemographics): Promise<User>;
 
   createSearch(search: { query: string; results: any }): Promise<Search>;
   getSearchByQuery(query: string): Promise<Search | undefined>;
@@ -67,6 +68,20 @@ export class DatabaseStorage implements IStorage {
     
     const [newUser] = await db.insert(users).values(insertUser as any).returning();
     return newUser;
+  }
+
+  async updateUserDemographics(userId: number, demographics: UpdateDemographics): Promise<User> {
+    const [updated] = await db.update(users)
+      .set({
+        age: demographics.age,
+        gender: demographics.gender,
+        race: demographics.race,
+        sexuality: demographics.sexuality,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
   }
 
   async createSearch(insertSearch: { query: string; results: any }): Promise<Search> {

@@ -130,5 +130,107 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Profile endpoints
+  app.get(api.profile.get.path, async (req: any, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    const user = await storage.getUserByReplitId(req.user.claims.sub);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    res.json(user);
+  });
+
+  app.patch(api.profile.update.path, async (req: any, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    const user = await storage.getUserByReplitId(req.user.claims.sub);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    
+    const input = api.profile.update.input.parse(req.body);
+    const updated = await storage.updateUserDemographics(user.id, input);
+    res.json(updated);
+  });
+
+  // Recommendations endpoint
+  app.get(api.recommendations.get.path, async (req: any, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const user = await storage.getUserByReplitId(req.user.claims.sub);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      const favorites = await storage.getFavorites(user.id);
+      
+      // Build context for recommendations
+      const demographicContext = [];
+      if (user.age) demographicContext.push(`Age: ${user.age}`);
+      if (user.gender) demographicContext.push(`Gender: ${user.gender}`);
+      if (user.race) demographicContext.push(`Race/Ethnicity: ${user.race}`);
+      if (user.sexuality) demographicContext.push(`Sexual Orientation: ${user.sexuality}`);
+      
+      const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
+      const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
+      
+      const prompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta, Canada.
+      
+Based on the user's profile and preferences, recommend 5-7 relevant recovery and support services.
+
+${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
+${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
+
+${favoriteCategories.length > 0 ? `User's favorite service categories: ${favoriteCategories.join(', ')}` : 'No favorites yet.'}
+${favoriteNames.length > 0 ? `Services they've saved: ${favoriteNames.join(', ')}` : ''}
+
+IMPORTANT: Consider services that would be especially relevant or welcoming for this user's identity and needs.
+For example:
+- LGBTQ2S+ resources if relevant to sexuality/gender
+- Culturally-specific services if relevant to race/ethnicity  
+- Age-appropriate services
+- Similar services to their favorites but in different categories they haven't explored
+
+Return JSON matching:
+{
+  "recommendations": [{
+    "id": "string (unique id)",
+    "name": "string (service name)",
+    "category": "string (e.g., Mental Health, Financial Aid, Housing, LGBTQ2S+ Support, Cultural Services)",
+    "description": "string (brief description)",
+    "reasoning": "string (why this is recommended for this user)",
+    "location": "string",
+    "contact": "string", 
+    "eligibility": "string",
+    "process": ["step 1", "step 2"],
+    "waitTimes": "string",
+    "requiredDocs": ["doc 1"]
+  }],
+  "summary": "string (personalized summary explaining these recommendations)"
+}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-5.1",
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: "Please provide personalized service recommendations." }
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      const results = JSON.parse(completion.choices[0].message.content!);
+      res.json(results);
+    } catch (err) {
+      console.error("Recommendations error:", err);
+      res.status(500).json({ message: "Failed to get recommendations" });
+    }
+  });
+
   return httpServer;
 }

@@ -17,6 +17,11 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   replitId: text("replit_id").unique(),
+  // Optional demographic fields for personalized recommendations
+  age: varchar("age"),
+  gender: varchar("gender"),
+  race: varchar("race"),
+  sexuality: varchar("sexuality"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -42,6 +47,16 @@ export const favorites = pgTable("favorites", {
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertFavoriteSchema = createInsertSchema(favorites).omit({ id: true, createdAt: true });
+
+// Schema for updating user demographics (all optional)
+export const updateDemographicsSchema = z.object({
+  age: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
+  race: z.string().optional().nullable(),
+  sexuality: z.string().optional().nullable(),
+});
+
+export type UpdateDemographics = z.infer<typeof updateDemographicsSchema>;
 
 export type User = typeof users.$inferSelect;
 export type UpsertUser = typeof users.$inferInsert;

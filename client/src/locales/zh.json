@@ -69,5 +69,43 @@
   },
   "language": {
     "select": "语言"
+  },
+  "profile": {
+    "title": "我的资料",
+    "demographicsTitle": "可选信息",
+    "demographicsDesc": "通过分享一些关于您的信息，帮助我们提供更好的建议。所有字段都是可选的。",
+    "age": "年龄段",
+    "ageDesc": "您的年龄帮助我们找到适合您年龄的服务。",
+    "gender": "性别身份",
+    "genderDesc": "帮助我们在相关时建议性别肯定的资源。",
+    "race": "种族/民族",
+    "raceDesc": "帮助我们找到特定文化的支持服务。",
+    "sexuality": "性取向",
+    "sexualityDesc": "帮助我们推荐LGBTQ2S+友好的服务。",
+    "selectPlaceholder": "选择一个选项（可选）",
+    "saveButton": "保存资料",
+    "clearButton": "清除所有",
+    "saved": "资料已更新",
+    "savedDesc": "您的偏好已被保存。",
+    "error": "错误",
+    "errorDesc": "未能保存您的资料。请重试。",
+    "privacyTitle": "您的隐私",
+    "privacyDesc": "此信息完全是可选的，仅用于为您提供更个性化的建议。我们从不与第三方共享您的人口统计信息。"
+  },
+  "recommended": {
+    "title": "为我推荐",
+    "loading": "正在查找个性化建议...",
+    "error": "无法加载建议。请重试。",
+    "retry": "重试",
+    "emptyTitle": "尚无建议",
+    "emptyDesc": "向您的资料添加一些信息或保存一些服务以获得个性化建议。",
+    "addInfo": "添加资料信息",
+    "searchServices": "搜索服务",
+    "editProfile": "编辑资料",
+    "saveError": "未能保存资源"
+  },
+  "nav2": {
+    "profile": "资料",
+    "recommended": "为我推荐"
   }
 }

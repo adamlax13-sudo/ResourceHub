@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { updateDemographicsSchema } from './schema';
 
 export const serviceDetailSchema = z.object({
   id: z.string(),
@@ -24,19 +25,72 @@ export const favoriteSchema = z.object({
   createdAt: z.string().nullable(),
 });
 
+export const userProfileSchema = z.object({
+  id: z.number(),
+  replitId: z.string().nullable(),
+  email: z.string().nullable().optional(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  profileImageUrl: z.string().nullable().optional(),
+  age: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  race: z.string().nullable().optional(),
+  sexuality: z.string().nullable().optional(),
+});
+
+export const recommendationSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  category: z.string(),
+  description: z.string(),
+  reasoning: z.string(),
+  location: z.string(),
+  contact: z.string(),
+  eligibility: z.string(),
+  process: z.array(z.string()),
+  waitTimes: z.string(),
+  requiredDocs: z.array(z.string()),
+});
+
 export const api = {
   auth: {
     me: {
       method: 'GET' as const,
       path: '/api/me',
       responses: {
-        200: z.object({ 
-          id: z.number(), 
-          replitId: z.string().nullable(),
-          email: z.string().nullable().optional(),
-          firstName: z.string().nullable().optional(),
-          lastName: z.string().nullable().optional(),
-        }).nullable(),
+        200: userProfileSchema.nullable(),
+      },
+    },
+  },
+  profile: {
+    get: {
+      method: 'GET' as const,
+      path: '/api/profile',
+      responses: {
+        200: userProfileSchema,
+        401: z.object({ message: z.string() }),
+      },
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/profile',
+      input: updateDemographicsSchema,
+      responses: {
+        200: userProfileSchema,
+        401: z.object({ message: z.string() }),
+      },
+    },
+  },
+  recommendations: {
+    get: {
+      method: 'GET' as const,
+      path: '/api/recommendations',
+      responses: {
+        200: z.object({
+          recommendations: z.array(recommendationSchema),
+          summary: z.string(),
+        }),
+        401: z.object({ message: z.string() }),
       },
     },
   },

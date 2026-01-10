@@ -1,4 +1,4 @@
-import { Search, User } from "lucide-react";
+import { Search, User, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
@@ -39,9 +39,21 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
             <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
             {!authLoading && user ? (
               <>
+                <Link href="/recommended">
+                  <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-recommended">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {t('nav2.recommended')}
+                  </Button>
+                </Link>
                 <Link href="/my-resources">
                   <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-my-resources">
                     {t('nav.myResources')}
+                  </Button>
+                </Link>
+                <Link href="/profile">
+                  <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-profile">
+                    <User className="w-4 h-4 mr-2" />
+                    {t('nav2.profile')}
                   </Button>
                 </Link>
                 <a href="/api/logout">
