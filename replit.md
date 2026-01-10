@@ -56,9 +56,15 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts
 - **Tables**: 
   - `sessions` - Authentication session storage
-  - `users` - User profiles with Replit ID
+  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
+
+### User Profile & Personalization
+- **Optional Demographics**: Age range, gender identity, race/ethnicity, sexual orientation (all optional)
+- **Profile Page**: /profile - Form to manage demographic preferences
+- **Recommendations Page**: /recommended - AI-powered personalized service recommendations
+- **Privacy**: Demographics used only for recommendations, never shared with third parties
 
 ### Key Design Patterns
 - **Shared Types**: TypeScript types and Zod schemas shared between frontend and backend via @shared/ alias
