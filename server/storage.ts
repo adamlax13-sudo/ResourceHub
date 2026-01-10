@@ -5,7 +5,8 @@ import { eq } from "drizzle-orm";
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByReplitId(replitId: string): Promise<User | undefined>;
-  createUser(user: Partial<User>): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  upsertUser(user: Partial<User> & { replitId: string }): Promise<User>;
 
   createSearch(search: { query: string; results: any }): Promise<Search>;
   getSearchByQuery(query: string): Promise<Search | undefined>;
@@ -28,9 +29,44 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createUser(insertUser: Partial<User>): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser as any).returning();
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
+  }
+
+  async upsertUser(insertUser: Partial<User> & { replitId: string }): Promise<User> {
+    let user = await this.getUserByReplitId(insertUser.replitId);
+    if (user) {
+      const [updated] = await db.update(users)
+        .set({ 
+          email: insertUser.email,
+          firstName: insertUser.firstName,
+          lastName: insertUser.lastName,
+          profileImageUrl: insertUser.profileImageUrl
+        })
+        .where(eq(users.replitId, insertUser.replitId))
+        .returning();
+      return updated;
+    }
+    
+    if (insertUser.email) {
+      user = await this.getUserByEmail(insertUser.email);
+      if (user) {
+        const [updated] = await db.update(users)
+          .set({ 
+            replitId: insertUser.replitId,
+            firstName: insertUser.firstName,
+            lastName: insertUser.lastName,
+            profileImageUrl: insertUser.profileImageUrl
+          })
+          .where(eq(users.email, insertUser.email))
+          .returning();
+        return updated;
+      }
+    }
+    
+    const [newUser] = await db.insert(users).values(insertUser as any).returning();
+    return newUser;
   }
 
   async createSearch(insertSearch: { query: string; results: any }): Promise<Search> {

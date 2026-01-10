@@ -24,16 +24,13 @@ export async function registerRoutes(
       return res.json(null);
     }
     const replitId = req.user.claims.sub;
-    let user = await storage.getUserByReplitId(replitId);
-    if (!user) {
-      user = await storage.createUser({ 
-        replitId,
-        email: req.user.claims.email,
-        firstName: req.user.claims.first_name,
-        lastName: req.user.claims.last_name,
-        profileImageUrl: req.user.claims.profile_image_url
-      });
-    }
+    const user = await storage.upsertUser({ 
+      replitId,
+      email: req.user.claims.email,
+      firstName: req.user.claims.first_name,
+      lastName: req.user.claims.last_name,
+      profileImageUrl: req.user.claims.profile_image_url
+    });
     res.json(user);
   });
 
