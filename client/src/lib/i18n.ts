@@ -59,7 +59,14 @@ i18n.on('languageChanged', (lng) => {
     localStorage.setItem('i18nextLng', lng);
     const isRtl = languages.find(l => l.code === lng)?.rtl;
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = lng;
   }
 });
+
+if (typeof window !== 'undefined') {
+  const isRtl = languages.find(l => l.code === savedLanguage)?.rtl;
+  document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+  document.documentElement.lang = savedLanguage;
+}
 
 export default i18n;
