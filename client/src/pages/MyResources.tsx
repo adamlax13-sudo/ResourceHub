@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookMarked, ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import type { Favorite } from "@shared/routes";
 
 export default function MyResources() {
@@ -73,7 +74,7 @@ export default function MyResources() {
                 </Button>
               </Link>
               <div className="flex items-center gap-3">
-                <BookMarked className="w-6 h-6" />
+                <img src={rocLogo} alt="ROC Logo" className="h-8 w-auto" />
                 <h1 className="text-2xl font-display font-bold">{t('myResources.title')}</h1>
               </div>
             </div>
@@ -209,7 +210,7 @@ export default function MyResources() {
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <BookMarked className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+              <img src={rocLogo} alt="ROC Logo" className="w-24 h-auto mx-auto mb-4 opacity-30" />
               <h2 className="text-xl font-semibold text-foreground mb-2">{t('myResources.empty')}</h2>
               <p className="text-muted-foreground mb-6">
                 {t('myResources.emptyDesc')}

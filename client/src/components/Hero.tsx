@@ -1,4 +1,4 @@
-import { Search, User, BookMarked } from "lucide-react";
+import { Search, User } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -29,10 +30,8 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       {/* Navigation */}
       <div className="absolute top-0 left-0 right-0 z-20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <BookMarked className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center gap-3">
+            <img src={rocLogo} alt="ROC Logo" className="h-10 w-auto" />
             <span className="font-display font-bold text-white text-lg hidden sm:block">{t('app.name')}</span>
           </div>
           
@@ -63,10 +62,26 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
         </div>
       </div>
 
-      {/* Abstract Background Shapes */}
+      {/* Geometric Background Pattern - Inspired by ROC crystalline triangle */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-white blur-3xl" />
-        <div className="absolute top-1/2 right-0 w-64 h-64 rounded-full bg-white blur-3xl" />
+        <svg className="absolute -top-20 -left-20 w-96 h-96" viewBox="0 0 200 200" fill="none">
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="1" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
+        </svg>
+        <svg className="absolute top-1/4 right-0 w-72 h-72 rotate-45" viewBox="0 0 200 200" fill="none">
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
+        </svg>
+        <svg className="absolute bottom-10 left-1/4 w-48 h-48 -rotate-12" viewBox="0 0 200 200" fill="none">
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
+        </svg>
       </div>
 
       <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center mt-8">

@@ -8,104 +8,105 @@
   --font-sans: 'DM Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  /* Purple & White Theme - Recovery on Campus Resource Hub */
+  /* ROC Purple Theme - Inspired by Recovery on Campus logo */
+  /* Primary color extracted from logo: approximately #8B5A9B (mauve purple) */
   --background: 0 0% 100%;
-  --foreground: 270 30% 15%;
+  --foreground: 285 25% 15%;
 
-  /* Primary Purple - Trustworthy & Calming */
-  --primary: 270 50% 45%;
+  /* Primary Purple - Matching ROC logo color */
+  --primary: 285 35% 48%;
   --primary-foreground: 0 0% 100%;
 
   /* Secondary - Lighter Purple */
-  --secondary: 270 30% 95%;
-  --secondary-foreground: 270 50% 30%;
+  --secondary: 285 25% 95%;
+  --secondary-foreground: 285 35% 35%;
 
   /* Soft Backgrounds */
-  --muted: 270 15% 96%;
-  --muted-foreground: 270 10% 45%;
+  --muted: 285 15% 96%;
+  --muted-foreground: 285 10% 45%;
 
   /* Accent - Soft Purple */
-  --accent: 270 40% 92%;
-  --accent-foreground: 270 50% 25%;
+  --accent: 285 30% 92%;
+  --accent-foreground: 285 35% 30%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 270 20% 90%;
-  --input: 270 20% 90%;
-  --ring: 270 50% 45%;
+  --border: 285 20% 90%;
+  --input: 285 20% 90%;
+  --ring: 285 35% 48%;
 
   --card: 0 0% 100%;
-  --card-foreground: 270 30% 15%;
-  --card-border: 270 20% 92%;
+  --card-foreground: 285 25% 15%;
+  --card-border: 285 20% 92%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 270 30% 15%;
-  --popover-border: 270 20% 90%;
+  --popover-foreground: 285 25% 15%;
+  --popover-border: 285 20% 90%;
 
-  --sidebar: 270 20% 98%;
-  --sidebar-foreground: 270 30% 20%;
-  --sidebar-border: 270 20% 92%;
-  --sidebar-primary: 270 50% 45%;
+  --sidebar: 285 20% 98%;
+  --sidebar-foreground: 285 25% 20%;
+  --sidebar-border: 285 20% 92%;
+  --sidebar-primary: 285 35% 48%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 270 30% 94%;
-  --sidebar-accent-foreground: 270 50% 25%;
-  --sidebar-ring: 270 50% 45%;
+  --sidebar-accent: 285 25% 94%;
+  --sidebar-accent-foreground: 285 35% 30%;
+  --sidebar-ring: 285 35% 48%;
 
-  --chart-1: 270 50% 45%;
-  --chart-2: 280 40% 55%;
-  --chart-3: 260 45% 35%;
-  --chart-4: 270 35% 65%;
-  --chart-5: 290 35% 75%;
+  --chart-1: 285 35% 48%;
+  --chart-2: 295 30% 55%;
+  --chart-3: 275 40% 40%;
+  --chart-4: 285 30% 65%;
+  --chart-5: 305 30% 70%;
 
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 270 15% 10%;
-  --foreground: 270 10% 95%;
+  --background: 285 15% 10%;
+  --foreground: 285 10% 95%;
 
-  --primary: 270 50% 60%;
-  --primary-foreground: 270 30% 10%;
+  --primary: 285 40% 60%;
+  --primary-foreground: 285 25% 10%;
 
-  --secondary: 270 20% 20%;
-  --secondary-foreground: 270 10% 90%;
+  --secondary: 285 20% 20%;
+  --secondary-foreground: 285 10% 90%;
 
-  --muted: 270 15% 18%;
-  --muted-foreground: 270 10% 60%;
+  --muted: 285 15% 18%;
+  --muted-foreground: 285 10% 60%;
 
-  --accent: 270 25% 25%;
-  --accent-foreground: 270 10% 90%;
+  --accent: 285 25% 25%;
+  --accent-foreground: 285 10% 90%;
 
   --destructive: 0 70% 50%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 270 15% 25%;
-  --input: 270 15% 25%;
-  --ring: 270 50% 60%;
+  --border: 285 15% 25%;
+  --input: 285 15% 25%;
+  --ring: 285 40% 60%;
 
-  --card: 270 15% 12%;
-  --card-foreground: 270 10% 95%;
-  --card-border: 270 15% 20%;
+  --card: 285 15% 12%;
+  --card-foreground: 285 10% 95%;
+  --card-border: 285 15% 20%;
 
-  --popover: 270 15% 12%;
-  --popover-foreground: 270 10% 95%;
-  --popover-border: 270 15% 20%;
+  --popover: 285 15% 12%;
+  --popover-foreground: 285 10% 95%;
+  --popover-border: 285 15% 20%;
 
-  --sidebar: 270 15% 8%;
-  --sidebar-foreground: 270 10% 90%;
-  --sidebar-border: 270 15% 18%;
-  --sidebar-primary: 270 50% 60%;
-  --sidebar-primary-foreground: 270 30% 10%;
-  --sidebar-accent: 270 20% 20%;
-  --sidebar-accent-foreground: 270 10% 90%;
-  --sidebar-ring: 270 50% 60%;
+  --sidebar: 285 15% 8%;
+  --sidebar-foreground: 285 10% 90%;
+  --sidebar-border: 285 15% 18%;
+  --sidebar-primary: 285 40% 60%;
+  --sidebar-primary-foreground: 285 25% 10%;
+  --sidebar-accent: 285 20% 20%;
+  --sidebar-accent-foreground: 285 10% 90%;
+  --sidebar-ring: 285 40% 60%;
 
-  --chart-1: 270 50% 60%;
-  --chart-2: 280 40% 65%;
-  --chart-3: 260 45% 50%;
-  --chart-4: 270 35% 70%;
-  --chart-5: 290 35% 80%;
+  --chart-1: 285 40% 60%;
+  --chart-2: 295 35% 65%;
+  --chart-3: 275 40% 50%;
+  --chart-4: 285 30% 70%;
+  --chart-5: 305 30% 75%;
 }
 
 @layer base {
@@ -147,6 +148,11 @@
 /* Hide ugly search cancel button in Chrome */
 input[type="search"]::-webkit-search-cancel-button {
   @apply hidden;
+}
+
+/* Geometric pattern background utility */
+.geometric-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='30,5 5,55 55,55' fill='none' stroke='%238B5A9B' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
 }
 
 /* Elevation utilities */

@@ -19,7 +19,12 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
       className="group cursor-pointer h-full"
     >
       <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity group-hover:opacity-100 opacity-50" />
+        {/* Geometric triangle accent - inspired by ROC logo */}
+        <svg className="absolute top-0 right-0 w-24 h-24 -mr-6 -mt-6 text-primary/10 group-hover:text-primary/20 transition-colors" viewBox="0 0 100 100" fill="none">
+          <polygon points="50,10 10,90 90,90" stroke="currentColor" strokeWidth="1" fill="none" />
+          <polygon points="50,25 25,75 75,75" stroke="currentColor" strokeWidth="0.5" fill="none" />
+          <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" strokeWidth="0.3" />
+        </svg>
 
         <div className="flex justify-between items-start mb-4">
           <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1 text-xs font-semibold uppercase tracking-wider">

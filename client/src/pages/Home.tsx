@@ -7,6 +7,7 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info } from "lucide-react";
+import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
@@ -105,6 +106,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-20">
         <div className="container mx-auto px-4 text-center">
+          <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto mb-4 opacity-60" />
           <p className="text-muted-foreground text-sm">
             {t('app.footer')}
           </p>
