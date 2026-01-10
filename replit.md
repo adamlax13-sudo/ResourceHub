@@ -8,6 +8,23 @@ Recovery Hub is a campus resource discovery platform that helps users find recov
 
 Preferred communication style: Simple, everyday language.
 
+## Branding & Visual Design
+
+### Logo
+- **Asset**: attached_assets/About_Recovery_on_Campus_Alberta_1768060674341.png
+- **Description**: ROC (Recovery on Campus) crystalline triangle logo in mauve purple
+- **Placement**: Hero navigation (top left), MyResources header, Home footer
+
+### Color Scheme
+- **Primary Color**: HSL 285 35% 48% (mauve purple matching ROC logo)
+- **Theme**: Purple/white based with dark mode support
+- **Design Language**: Geometric/crystalline inspired by the triangular logo structure
+
+### Geometric Design Elements
+- Hero background features SVG triangle patterns inspired by the logo
+- ServiceCard components have subtle triangle accents in corners
+- Overall aesthetic emphasizes clean, modern, supportive feel
+
 ## System Architecture
 
 ### Frontend Architecture
