@@ -1,0 +1,56 @@
+import { motion } from "framer-motion";
+import { ArrowRight, MapPin, Phone, Clock } from "lucide-react";
+import { type ServiceDetail } from "@shared/schema";
+import { Badge } from "@/components/ui/badge";
+
+interface ServiceCardProps {
+  service: ServiceDetail;
+  onClick: () => void;
+  index: number;
+}
+
+export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      onClick={onClick}
+      className="group cursor-pointer h-full"
+    >
+      <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity group-hover:opacity-100 opacity-50" />
+
+        <div className="flex justify-between items-start mb-4">
+          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+            {service.category}
+          </Badge>
+        </div>
+
+        <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+          {service.name}
+        </h3>
+        
+        <p className="text-muted-foreground line-clamp-2 mb-6 flex-grow">
+          {service.description}
+        </p>
+
+        <div className="space-y-3 mt-auto">
+          <div className="flex items-center text-sm text-slate-600">
+            <MapPin className="w-4 h-4 mr-2 text-primary/60" />
+            <span className="truncate">{service.location}</span>
+          </div>
+          <div className="flex items-center text-sm text-slate-600">
+            <Clock className="w-4 h-4 mr-2 text-primary/60" />
+            <span className="truncate">{service.waitTimes}</span>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
+          <span>View Details</span>
+          <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
