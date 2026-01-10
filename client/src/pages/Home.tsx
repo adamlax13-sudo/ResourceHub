@@ -3,9 +3,9 @@ import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceModal } from "@/components/ServiceModal";
-import { type ServiceDetail } from "@shared/schema";
+import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
@@ -16,7 +16,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-background font-sans">
       <Hero onSearch={handleSearch} isLoading={isPending} />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
@@ -26,13 +26,13 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white p-8 rounded-3xl shadow-xl text-center max-w-2xl mx-auto border border-red-100"
+              className="bg-card p-8 rounded-3xl shadow-xl text-center max-w-2xl mx-auto border border-destructive/20"
             >
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Info className="w-8 h-8 text-red-500" />
+              <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Info className="w-8 h-8 text-destructive" />
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">Unable to complete search</h3>
-              <p className="text-slate-600">{error.message}</p>
+              <h3 className="text-xl font-bold text-foreground mb-2">Unable to complete search</h3>
+              <p className="text-muted-foreground">{error.message}</p>
             </motion.div>
           )}
 
@@ -42,9 +42,9 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 mb-12">
+              <div className="bg-card p-8 rounded-3xl shadow-xl border border-border mb-12">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-4">Summary</h2>
-                <p className="text-slate-600 leading-relaxed text-lg">{data.summary}</p>
+                <p className="text-muted-foreground leading-relaxed text-lg">{data.summary}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -59,7 +59,7 @@ export default function Home() {
               </div>
 
               {data.services.length === 0 && (
-                <div className="text-center py-20 text-slate-400">
+                <div className="text-center py-20 text-muted-foreground">
                   No services found matching your criteria. Try a different search term.
                 </div>
               )}
@@ -77,15 +77,15 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {[
                 { title: "Search", desc: "Tell us what kind of support you need in plain English." },
-                { title: "Review", desc: "We'll find relevant Alberta services and explain eligibility." },
-                { title: "Connect", desc: "Get clear steps, contact info, and documentation lists." }
+                { title: "Review", desc: "We'll find relevant campus and Alberta services." },
+                { title: "Connect", desc: "Get clear steps, contact info, and track your progress." }
               ].map((step, i) => (
                 <div key={i} className="flex flex-col items-center p-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center text-primary font-bold text-xl mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-card shadow-lg border border-border flex items-center justify-center text-primary font-bold text-xl mb-4">
                     {i + 1}
                   </div>
-                  <h3 className="font-display font-bold text-lg mb-2">{step.title}</h3>
-                  <p className="text-slate-500 text-sm">{step.desc}</p>
+                  <h3 className="font-display font-bold text-lg mb-2 text-foreground">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -101,18 +101,10 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="bg-white py-12 border-t border-slate-100 mt-20">
+      <footer className="bg-card py-12 border-t border-border mt-20">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-500 text-sm">
-            © 2025 Alberta Support Finder. Information provided for guidance only.
-            <br />
-            {/* Scenic Alberta mountain landscape for reassuring atmosphere */}
-            {/* HTML Comment: Unsplash image of scenic Alberta mountains */}
-            <img 
-              src="https://images.unsplash.com/photo-1561134643-6302518001e7?w=1920&q=80" 
-              alt="Alberta Landscape" 
-              className="w-24 h-24 object-cover rounded-2xl mx-auto mt-6 opacity-80 grayscale hover:grayscale-0 transition-all duration-500"
-            />
+          <p className="text-muted-foreground text-sm">
+            © 2025 Recovery on Campus Resource Hub. Information provided for guidance only.
           </p>
         </div>
       </footer>

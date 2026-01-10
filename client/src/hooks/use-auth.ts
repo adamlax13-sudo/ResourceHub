@@ -1,8 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { User } from "@shared/models/auth";
+import { api } from "@shared/routes";
+import { z } from "zod";
 
-async function fetchUser(): Promise<User | null> {
-  const response = await fetch("/api/auth/user", {
+type User = z.infer<typeof api.auth.me.responses[200]>;
+
+async function fetchUser(): Promise<User> {
+  const response = await fetch(api.auth.me.path, {
     credentials: "include",
   });
 
@@ -23,17 +26,17 @@ async function logout(): Promise<void> {
 
 export function useAuth() {
   const queryClient = useQueryClient();
-  const { data: user, isLoading } = useQuery<User | null>({
-    queryKey: ["/api/auth/user"],
+  const { data: user, isLoading } = useQuery<User>({
+    queryKey: ["/api/me"],
     queryFn: fetchUser,
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.setQueryData(["/api/auth/user"], null);
+      queryClient.setQueryData(["/api/me"], null);
     },
   });
 

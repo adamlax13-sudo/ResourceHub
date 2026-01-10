@@ -1,21 +1,18 @@
 import { db } from "./db";
-import { users, searches, favorites, type User, type InsertUser, type Search, type InsertSearch, type Favorite, type InsertFavorite } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { users, searches, favorites, type User, type Search, type Favorite } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByReplitId(replitId: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createUser(user: Partial<User>): Promise<User>;
 
-  // Search operations
-  createSearch(search: InsertSearch): Promise<Search>;
+  createSearch(search: { query: string; results: any }): Promise<Search>;
   getSearchByQuery(query: string): Promise<Search | undefined>;
 
-  // Favorite operations
   getFavorites(userId: number): Promise<Favorite[]>;
   getFavorite(id: number): Promise<Favorite | undefined>;
-  addFavorite(favorite: InsertFavorite): Promise<Favorite>;
+  addFavorite(favorite: Omit<Favorite, 'id' | 'createdAt'>): Promise<Favorite>;
   updateFavorite(id: number, updates: Partial<Favorite>): Promise<Favorite>;
   deleteFavorite(id: number): Promise<void>;
 }
@@ -31,12 +28,12 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+  async createUser(insertUser: Partial<User>): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser as any).returning();
     return user;
   }
 
-  async createSearch(insertSearch: InsertSearch): Promise<Search> {
+  async createSearch(insertSearch: { query: string; results: any }): Promise<Search> {
     const [search] = await db.insert(searches).values(insertSearch).returning();
     return search;
   }
@@ -55,8 +52,8 @@ export class DatabaseStorage implements IStorage {
     return favorite;
   }
 
-  async addFavorite(favorite: InsertFavorite): Promise<Favorite> {
-    const [newFavorite] = await db.insert(favorites).values(favorite).returning();
+  async addFavorite(favorite: Omit<Favorite, 'id' | 'createdAt'>): Promise<Favorite> {
+    const [newFavorite] = await db.insert(favorites).values(favorite as any).returning();
     return newFavorite;
   }
 

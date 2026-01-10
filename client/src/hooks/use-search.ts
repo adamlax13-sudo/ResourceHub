@@ -18,7 +18,7 @@ export function useSearch() {
         throw new Error(error.message || "Failed to fetch search results");
       }
 
-      return api.search.query.responses[200].parse(await res.json());
+      return res.json();
     },
   });
 }

@@ -104,7 +104,15 @@ export async function registerRoutes(
 
   app.patch(api.favorites.update.path, async (req: any, res) => {
     if (!req.isAuthenticated()) return res.status(401).send();
+    const user = await storage.getUserByReplitId(req.user.claims.sub);
+    if (!user) return res.status(401).send();
+    
     const id = parseInt(req.params.id);
+    const favorite = await storage.getFavorite(id);
+    if (!favorite || favorite.userId !== user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    
     const input = api.favorites.update.input.parse(req.body);
     const updated = await storage.updateFavorite(id, input);
     res.json(updated);
@@ -112,7 +120,16 @@ export async function registerRoutes(
 
   app.delete(api.favorites.delete.path, async (req: any, res) => {
     if (!req.isAuthenticated()) return res.status(401).send();
-    await storage.deleteFavorite(parseInt(req.params.id));
+    const user = await storage.getUserByReplitId(req.user.claims.sub);
+    if (!user) return res.status(401).send();
+    
+    const id = parseInt(req.params.id);
+    const favorite = await storage.getFavorite(id);
+    if (!favorite || favorite.userId !== user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    
+    await storage.deleteFavorite(id);
     res.status(204).send();
   });
 

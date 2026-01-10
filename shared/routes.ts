@@ -1,5 +1,28 @@
 import { z } from 'zod';
-import { insertSearchSchema, insertFavoriteSchema } from './schema';
+
+export const serviceDetailSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  category: z.string(),
+  description: z.string(),
+  location: z.string(),
+  contact: z.string(),
+  eligibility: z.string(),
+  process: z.array(z.string()),
+  waitTimes: z.string(),
+  requiredDocs: z.array(z.string()),
+});
+
+export const favoriteSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  serviceId: z.string(),
+  serviceName: z.string(),
+  category: z.string(),
+  status: z.string(),
+  completedSteps: z.array(z.number()),
+  createdAt: z.string().nullable(),
+});
 
 export const api = {
   auth: {
@@ -7,7 +30,13 @@ export const api = {
       method: 'GET' as const,
       path: '/api/me',
       responses: {
-        200: z.object({ id: z.number(), replitId: z.string().nullable() }).nullable(),
+        200: z.object({ 
+          id: z.number(), 
+          replitId: z.string().nullable(),
+          email: z.string().nullable().optional(),
+          firstName: z.string().nullable().optional(),
+          lastName: z.string().nullable().optional(),
+        }).nullable(),
       },
     },
   },
@@ -20,18 +49,7 @@ export const api = {
       }),
       responses: {
         200: z.object({
-          services: z.array(z.object({
-            id: z.string(),
-            name: z.string(),
-            category: z.string(),
-            description: z.string(),
-            location: z.string(),
-            contact: z.string(),
-            eligibility: z.string(),
-            process: z.array(z.string()),
-            waitTimes: z.string(),
-            requiredDocs: z.array(z.string()),
-          })),
+          services: z.array(serviceDetailSchema),
           summary: z.string(),
         }),
         400: z.object({ message: z.string() }),
@@ -43,7 +61,7 @@ export const api = {
       method: 'GET' as const,
       path: '/api/favorites',
       responses: {
-        200: z.array(z.custom<any>()),
+        200: z.array(favoriteSchema),
       },
     },
     add: {
@@ -55,7 +73,7 @@ export const api = {
         category: z.string(),
       }),
       responses: {
-        201: z.custom<any>(),
+        201: favoriteSchema,
       },
     },
     update: {
@@ -66,7 +84,7 @@ export const api = {
         completedSteps: z.array(z.number()).optional(),
       }),
       responses: {
-        200: z.custom<any>(),
+        200: favoriteSchema,
       },
     },
     delete: {
@@ -78,3 +96,17 @@ export const api = {
     },
   },
 };
+
+export function buildUrl(path: string, params?: Record<string, string | number>): string {
+  let url = path;
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      url = url.replace(`:${key}`, String(value));
+    });
+  }
+  return url;
+}
+
+export type SearchResponse = z.infer<typeof api.search.query.responses[200]>;
+export type Favorite = z.infer<typeof favoriteSchema>;
+export type ServiceDetail = z.infer<typeof serviceDetailSchema>;
