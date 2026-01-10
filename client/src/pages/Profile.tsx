@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile, useUpdateProfile } from "@/hooks/use-profile";
@@ -102,6 +102,7 @@ export default function Profile() {
   const updateProfile = useUpdateProfile();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const form = useForm<UpdateDemographics>({
     resolver: zodResolver(updateDemographicsSchema),
@@ -143,6 +144,7 @@ export default function Profile() {
         title: t('profile.saved'),
         description: t('profile.savedDesc'),
       });
+      setLocation("/");
     } catch (error) {
       toast({
         title: t('profile.error'),
