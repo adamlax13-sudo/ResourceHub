@@ -1,21 +1,52 @@
-import { pgTable, text, serial, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, jsonb, timestamp, integer, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { sql } from "drizzle-orm";
+
+// Mandatory for Replit Auth
+export const sessions = pgTable("sessions", {
+  sid: varchar("sid").primaryKey(),
+  sess: jsonb("sess").notNull(),
+  expire: timestamp("expire").notNull(),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  replitId: text("replit_id").unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 export const searches = pgTable("searches", {
   id: serial("id").primaryKey(),
   query: text("query").notNull(),
-  results: jsonb("results").notNull(), // Cache the AI results
+  results: jsonb("results").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertSearchSchema = createInsertSchema(searches).omit({ 
-  id: true, 
-  createdAt: true 
+export const favorites = pgTable("favorites", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  serviceId: text("service_id").notNull(),
+  serviceName: text("service_name").notNull(),
+  category: text("category").notNull(),
+  status: text("status").notNull().default("saved"), // 'saved', 'in_progress', 'completed'
+  completedSteps: jsonb("completed_steps").notNull().default([]),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export type InsertSearch = z.infer<typeof insertSearchSchema>;
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
+export const insertFavoriteSchema = createInsertSchema(favorites).omit({ id: true, createdAt: true });
+
+export type User = typeof users.$inferSelect;
+export type UpsertUser = typeof users.$inferInsert;
 export type Search = typeof searches.$inferSelect;
+export type Favorite = typeof favorites.$inferSelect;
 
 export interface ServiceDetail {
   id: string;
@@ -25,12 +56,7 @@ export interface ServiceDetail {
   location: string;
   contact: string;
   eligibility: string;
-  process: string[]; // Steps for diagram
+  process: string[];
   waitTimes: string;
   requiredDocs: string[];
-}
-
-export interface SearchResponse {
-  services: ServiceDetail[];
-  summary: string;
 }
