@@ -17,6 +17,15 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: Tailwind CSS with shadcn/ui component library (New York style)
 - **Animations**: Framer Motion for page transitions and interactions
 - **Build Tool**: Vite with path aliases (@/, @shared/, @assets/)
+- **Internationalization**: react-i18next with 10 languages (English, Spanish, French, Chinese, Arabic, Hindi, Portuguese, German, Japanese, Korean)
+
+### Internationalization (i18n)
+- **Configuration**: client/src/lib/i18n.ts
+- **Translation Files**: client/src/locales/{lang}.json (en, es, fr, zh, ar, hi, pt, de, ja, ko)
+- **Language Persistence**: Uses localStorage ('i18nextLng' key) to remember user preference
+- **RTL Support**: Automatic document direction (rtl/ltr) for Arabic language
+- **Default Language**: English
+- **Components**: LanguageSwitcher dropdown in Hero and MyResources pages
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express
