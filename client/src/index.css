@@ -8,34 +8,34 @@
   --font-sans: 'DM Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  /* Natural, calming palette inspired by Alberta landscapes (mountains, lakes, forests) */
-  --background: 210 20% 98%;
-  --foreground: 215 25% 27%;
+  /* Deep Purple & Clean White Palette */
+  --background: 0 0% 100%;
+  --foreground: 270 50% 10%;
 
-  /* Primary Blue - Trustworthy & Calm */
-  --primary: 201 96% 32%;
-  --primary-foreground: 210 40% 98%;
+  /* Primary Purple */
+  --primary: 270 50% 40%;
+  --primary-foreground: 0 0% 100%;
 
-  /* Secondary Green - Growth & Support */
-  --secondary: 162 45% 45%;
-  --secondary-foreground: 210 40% 98%;
+  /* Secondary Light Purple */
+  --secondary: 270 20% 96%;
+  --secondary-foreground: 270 50% 20%;
 
-  /* Soft Backgrounds */
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 16% 47%;
+  /* Muted */
+  --muted: 270 10% 96%;
+  --muted-foreground: 270 10% 40%;
 
-  /* Warm Accents */
-  --accent: 35 90% 60%;
-  --accent-foreground: 215 25% 27%;
+  /* Accent */
+  --accent: 270 30% 95%;
+  --accent-foreground: 270 50% 20%;
 
   --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 214 20% 90%;
-  --input: 214 20% 90%;
-  --ring: 201 96% 32%;
+  --border: 270 20% 90%;
+  --input: 270 20% 90%;
+  --ring: 270 50% 40%;
 
-  --radius: 1rem;
+  --radius: 0.75rem;
 }
 
 @layer base {
