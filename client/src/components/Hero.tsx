@@ -1,4 +1,4 @@
-import { Search, User, Sparkles } from "lucide-react";
+import { Search, User, Sparkles, Heart, LogOut } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
@@ -35,29 +35,41 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
             <span className="font-display font-bold text-white text-lg hidden sm:block">{t('app.name')}</span>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
             <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
             {!authLoading && user ? (
               <>
                 <Link href="/recommended">
-                  <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-recommended">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-recommended-mobile">
+                    <Sparkles className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-recommended">
                     <Sparkles className="w-4 h-4 mr-2" />
                     {t('nav2.recommended')}
                   </Button>
                 </Link>
                 <Link href="/my-resources">
-                  <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-my-resources">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-my-resources-mobile">
+                    <Heart className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-my-resources">
                     {t('nav.myResources')}
                   </Button>
                 </Link>
                 <Link href="/profile">
-                  <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-profile">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-profile-mobile">
+                    <User className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-profile">
                     <User className="w-4 h-4 mr-2" />
                     {t('nav2.profile')}
                   </Button>
                 </Link>
                 <a href="/api/logout">
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-logout">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="button-logout-mobile">
+                    <LogOut className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/20 hidden md:flex" data-testid="button-logout">
                     {t('nav.logout')}
                   </Button>
                 </a>
@@ -66,7 +78,8 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               <a href="/api/login">
                 <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-login">
                   <User className="w-4 h-4 mr-2" />
-                  {t('nav.signIn')}
+                  <span className="hidden sm:inline">{t('nav.signIn')}</span>
+                  <span className="sm:hidden">Login</span>
                 </Button>
               </a>
             )}
