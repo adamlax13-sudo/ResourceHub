@@ -64,6 +64,38 @@ const SEXUALITY_OPTIONS = [
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
 
+const EDUCATION_OPTIONS = [
+  { value: "high-school", label: "High School" },
+  { value: "some-college", label: "Some College/University" },
+  { value: "undergraduate", label: "Undergraduate Student" },
+  { value: "graduate", label: "Graduate Student" },
+  { value: "completed-degree", label: "Completed Degree" },
+  { value: "other", label: "Other" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
+const RELIGION_OPTIONS = [
+  { value: "none", label: "No religion" },
+  { value: "christian", label: "Christian" },
+  { value: "catholic", label: "Catholic" },
+  { value: "muslim", label: "Muslim" },
+  { value: "jewish", label: "Jewish" },
+  { value: "hindu", label: "Hindu" },
+  { value: "buddhist", label: "Buddhist" },
+  { value: "sikh", label: "Sikh" },
+  { value: "indigenous-spiritual", label: "Indigenous Spirituality" },
+  { value: "other", label: "Other" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
+const ADDICTION_OPTIONS = [
+  { value: "yes-currently", label: "Yes, currently in recovery" },
+  { value: "yes-past", label: "Yes, in the past" },
+  { value: "no", label: "No" },
+  { value: "supporting-someone", label: "Supporting someone in recovery" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
 export default function Profile() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
@@ -78,6 +110,9 @@ export default function Profile() {
       gender: null,
       race: null,
       sexuality: null,
+      education: null,
+      religion: null,
+      inAddiction: null,
     },
   });
 
@@ -88,6 +123,9 @@ export default function Profile() {
         gender: profile.gender || null,
         race: profile.race || null,
         sexuality: profile.sexuality || null,
+        education: profile.education || null,
+        religion: profile.religion || null,
+        inAddiction: profile.inAddiction || null,
       });
     }
   }, [profile, form]);
@@ -282,6 +320,90 @@ export default function Profile() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="education"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.education')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-education">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {EDUCATION_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.educationDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="religion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.religion')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-religion">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {RELIGION_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.religionDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="inAddiction"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.inAddiction')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-addiction">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {ADDICTION_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.inAddictionDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="flex gap-3 pt-4">
                     <Button 
                       type="submit" 
@@ -298,7 +420,7 @@ export default function Profile() {
                     <Button 
                       type="button" 
                       variant="outline"
-                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null })}
+                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null, education: null, religion: null, inAddiction: null })}
                       data-testid="button-clear-profile"
                     >
                       {t('profile.clearButton')}

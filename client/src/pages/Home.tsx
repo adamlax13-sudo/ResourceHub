@@ -4,6 +4,7 @@ import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceModal } from "@/components/ServiceModal";
+import { WelcomeModal } from "@/components/WelcomeModal";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info } from "lucide-react";
@@ -20,6 +21,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      <WelcomeModal />
       <Hero onSearch={handleSearch} isLoading={isPending} />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">

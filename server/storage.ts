@@ -77,6 +77,10 @@ export class DatabaseStorage implements IStorage {
         gender: demographics.gender,
         race: demographics.race,
         sexuality: demographics.sexuality,
+        education: demographics.education,
+        religion: demographics.religion,
+        inAddiction: demographics.inAddiction,
+        profileCompleted: new Date(),
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
