@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "Meus Recursos",
     "signIn": "Entrar",
+    "signInHint": "Email ou login social",
     "logout": "Sair"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "Login necessário",
-    "signInToSave": "Faça login para salvar recursos no seu centro."
+    "signInToSave": "Faça login para salvar recursos no seu centro.",
+    "stayLoggedIn": "Manter conectado por 30 dias",
+    "easyLogin": "Rápido e fácil - use seu email ou conta social"
   },
   "toast": {
     "saved": "Salvo!",

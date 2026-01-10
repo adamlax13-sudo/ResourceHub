@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "Meine Ressourcen",
     "signIn": "Anmelden",
+    "signInHint": "E-Mail oder soziales Login",
     "logout": "Abmelden"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "Anmeldung erforderlich",
-    "signInToSave": "Bitte melden Sie sich an, um Ressourcen in Ihrem Zentrum zu speichern."
+    "signInToSave": "Bitte melden Sie sich an, um Ressourcen in Ihrem Zentrum zu speichern.",
+    "stayLoggedIn": "30 Tage angemeldet bleiben",
+    "easyLogin": "Schnell und einfach - E-Mail oder soziales Konto verwenden"
   },
   "toast": {
     "saved": "Gespeichert!",

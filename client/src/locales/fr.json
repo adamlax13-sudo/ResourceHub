@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "Mes Ressources",
     "signIn": "Se Connecter",
+    "signInHint": "Email ou connexion sociale",
     "logout": "Déconnexion"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "Connexion requise",
-    "signInToSave": "Veuillez vous connecter pour sauvegarder des ressources dans votre centre."
+    "signInToSave": "Veuillez vous connecter pour sauvegarder des ressources dans votre centre.",
+    "stayLoggedIn": "Rester connecté pendant 30 jours",
+    "easyLogin": "Rapide et facile - utilisez votre email ou un compte social"
   },
   "toast": {
     "saved": "Sauvegardé!",

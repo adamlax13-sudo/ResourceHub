@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "我的资源",
     "signIn": "登录",
+    "signInHint": "使用邮箱或社交账号",
     "logout": "退出"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "需要登录",
-    "signInToSave": "请登录以将资源保存到您的中心。"
+    "signInToSave": "请登录以将资源保存到您的中心。",
+    "stayLoggedIn": "保持登录30天",
+    "easyLogin": "快速简单 - 使用邮箱或社交账号"
   },
   "toast": {
     "saved": "已保存！",

@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "Mis Recursos",
     "signIn": "Iniciar Sesión",
+    "signInHint": "Usa correo o redes sociales",
     "logout": "Cerrar Sesión"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "Se requiere iniciar sesión",
-    "signInToSave": "Por favor inicia sesión para guardar recursos en tu centro."
+    "signInToSave": "Por favor inicia sesión para guardar recursos en tu centro.",
+    "stayLoggedIn": "Mantener sesión por 30 días",
+    "easyLogin": "Rápido y fácil - usa tu correo o una cuenta social"
   },
   "toast": {
     "saved": "¡Guardado!",

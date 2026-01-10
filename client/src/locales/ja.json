@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "マイリソース",
     "signIn": "サインイン",
+    "signInHint": "メールまたはソーシャルログイン",
     "logout": "ログアウト"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "サインインが必要です",
-    "signInToSave": "ハブにリソースを保存するにはサインインしてください。"
+    "signInToSave": "ハブにリソースを保存するにはサインインしてください。",
+    "stayLoggedIn": "30日間ログインを維持",
+    "easyLogin": "簡単・スピーディー - メールまたはソーシャルアカウントで"
   },
   "toast": {
     "saved": "保存しました！",

@@ -10,6 +10,7 @@
   "nav": {
     "myResources": "내 리소스",
     "signIn": "로그인",
+    "signInHint": "이메일 또는 소셜 로그인",
     "logout": "로그아웃"
   },
   "search": {
@@ -58,7 +59,9 @@
   },
   "auth": {
     "signInRequired": "로그인 필요",
-    "signInToSave": "허브에 리소스를 저장하려면 로그인하세요."
+    "signInToSave": "허브에 리소스를 저장하려면 로그인하세요.",
+    "stayLoggedIn": "30일간 로그인 유지",
+    "easyLogin": "빠르고 간편하게 - 이메일 또는 소셜 계정 사용"
   },
   "toast": {
     "saved": "저장됨!",
