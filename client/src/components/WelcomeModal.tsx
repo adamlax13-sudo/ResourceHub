@@ -20,29 +20,24 @@ export function WelcomeModal() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [sessionDismissed, setSessionDismissed] = useState(false);
 
   useEffect(() => {
-    if (authLoading || profileLoading || dismissed) return;
+    if (authLoading || profileLoading || sessionDismissed) return;
     
     if (user && profile && !profile.profileCompleted) {
-      const hasBeenShown = localStorage.getItem('welcomeModalShown');
-      if (!hasBeenShown) {
-        setOpen(true);
-      }
+      setOpen(true);
     }
-  }, [user, profile, authLoading, profileLoading, dismissed]);
+  }, [user, profile, authLoading, profileLoading, sessionDismissed]);
 
   const handleContinue = () => {
-    localStorage.setItem('welcomeModalShown', 'true');
     setOpen(false);
     setLocation("/profile");
   };
 
   const handleSkip = () => {
-    localStorage.setItem('welcomeModalShown', 'true');
     setOpen(false);
-    setDismissed(true);
+    setSessionDismissed(true);
   };
 
   if (!user) return null;
