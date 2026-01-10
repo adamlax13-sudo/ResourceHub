@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "Recovery Hub",
+    "title": "Recovery on Campus Resource Hub",
+    "subtitle": "Find the support you need. Mental health, financial aid, housing, and more. We'll guide you through the process, step by step.",
+    "searchPlaceholder": "What kind of support do you need today?",
+    "searchHint": "Try \"mental health support\" or \"help with tuition\"",
+    "footer": "© 2025 Recovery on Campus Resource Hub. Information provided for guidance only."
+  },
+  "nav": {
+    "myResources": "My Resources",
+    "signIn": "Sign In",
+    "logout": "Logout"
+  },
+  "search": {
+    "summary": "Summary",
+    "noResults": "No services found matching your criteria. Try a different search term.",
+    "error": "Unable to complete search"
+  },
+  "service": {
+    "accessProcess": "Access Process",
+    "requiredDocs": "Required Documents",
+    "noDocsListed": "No specific documents listed. Please contact the provider to confirm.",
+    "keyInfo": "Key Information",
+    "waitTime": "Estimated Wait Time",
+    "eligibility": "Eligibility",
+    "location": "Location",
+    "contact": "Contact",
+    "contactProvider": "Contact Service Provider",
+    "externalLink": "External link opens in a new tab",
+    "save": "Save",
+    "saved": "Saved"
+  },
+  "myResources": {
+    "title": "My Resources",
+    "all": "All",
+    "inProgress": "In Progress",
+    "startProcess": "Start Process",
+    "markSaved": "Mark Saved",
+    "trackProgress": "Track Your Progress",
+    "empty": "No saved resources yet",
+    "emptyDesc": "Search for resources and save them here for easy access.",
+    "findResources": "Find Resources"
+  },
+  "steps": {
+    "step1": "Gather required documents",
+    "step2": "Submit application",
+    "step3": "Wait for confirmation",
+    "step4": "Attend appointment/intake"
+  },
+  "howItWorks": {
+    "step1Title": "Search",
+    "step1Desc": "Tell us what kind of support you need in plain English.",
+    "step2Title": "Review",
+    "step2Desc": "We'll find relevant campus and Alberta services.",
+    "step3Title": "Connect",
+    "step3Desc": "Get clear steps, contact info, and track your progress."
+  },
+  "auth": {
+    "signInRequired": "Sign in required",
+    "signInToSave": "Please sign in to save resources to your hub."
+  },
+  "toast": {
+    "saved": "Saved!",
+    "resourceAdded": "Resource added to My Resources."
+  },
+  "language": {
+    "select": "Language"
+  }
+}

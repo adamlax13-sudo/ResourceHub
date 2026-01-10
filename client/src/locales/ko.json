@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "리커버리 허브",
+    "title": "캠퍼스 회복 리소스 허브",
+    "subtitle": "필요한 지원을 찾으세요. 정신 건강, 재정 지원, 주거 등. 단계별로 안내해 드립니다.",
+    "searchPlaceholder": "오늘 어떤 종류의 지원이 필요하신가요?",
+    "searchHint": "\"정신 건강 지원\" 또는 \"등록금 도움\"을 시도해 보세요",
+    "footer": "© 2025 캠퍼스 회복 리소스 허브. 정보는 안내 목적으로만 제공됩니다."
+  },
+  "nav": {
+    "myResources": "내 리소스",
+    "signIn": "로그인",
+    "logout": "로그아웃"
+  },
+  "search": {
+    "summary": "요약",
+    "noResults": "조건에 맞는 서비스를 찾을 수 없습니다. 다른 검색어를 시도해 보세요.",
+    "error": "검색을 완료할 수 없습니다"
+  },
+  "service": {
+    "accessProcess": "접근 절차",
+    "requiredDocs": "필수 서류",
+    "noDocsListed": "특정 서류가 나열되지 않았습니다. 확인을 위해 제공자에게 문의하세요.",
+    "keyInfo": "주요 정보",
+    "waitTime": "예상 대기 시간",
+    "eligibility": "자격 조건",
+    "location": "위치",
+    "contact": "연락처",
+    "contactProvider": "서비스 제공자에게 연락",
+    "externalLink": "외부 링크가 새 탭에서 열립니다",
+    "save": "저장",
+    "saved": "저장됨"
+  },
+  "myResources": {
+    "title": "내 리소스",
+    "all": "전체",
+    "inProgress": "진행 중",
+    "startProcess": "프로세스 시작",
+    "markSaved": "저장됨으로 표시",
+    "trackProgress": "진행 상황 추적",
+    "empty": "저장된 리소스가 없습니다",
+    "emptyDesc": "리소스를 검색하고 쉽게 접근할 수 있도록 여기에 저장하세요.",
+    "findResources": "리소스 찾기"
+  },
+  "steps": {
+    "step1": "필수 서류 수집",
+    "step2": "신청서 제출",
+    "step3": "확인 대기",
+    "step4": "예약/입회 참석"
+  },
+  "howItWorks": {
+    "step1Title": "검색",
+    "step1Desc": "필요한 지원 유형을 간단한 언어로 알려주세요.",
+    "step2Title": "검토",
+    "step2Desc": "캠퍼스와 앨버타 관련 서비스를 찾아드립니다.",
+    "step3Title": "연결",
+    "step3Desc": "명확한 단계, 연락처 정보를 받고 진행 상황을 추적하세요."
+  },
+  "auth": {
+    "signInRequired": "로그인 필요",
+    "signInToSave": "허브에 리소스를 저장하려면 로그인하세요."
+  },
+  "toast": {
+    "saved": "저장됨!",
+    "resourceAdded": "내 리소스에 추가되었습니다."
+  },
+  "language": {
+    "select": "언어"
+  }
+}

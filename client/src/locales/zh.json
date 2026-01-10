@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "康复中心",
+    "title": "校园康复资源中心",
+    "subtitle": "找到您需要的支持。心理健康、经济援助、住房等。我们将一步步指导您。",
+    "searchPlaceholder": "您今天需要什么类型的支持？",
+    "searchHint": "尝试"心理健康支持"或"学费帮助"",
+    "footer": "© 2025 校园康复资源中心。仅供参考指导。"
+  },
+  "nav": {
+    "myResources": "我的资源",
+    "signIn": "登录",
+    "logout": "退出"
+  },
+  "search": {
+    "summary": "摘要",
+    "noResults": "未找到符合您条件的服务。请尝试其他搜索词。",
+    "error": "无法完成搜索"
+  },
+  "service": {
+    "accessProcess": "访问流程",
+    "requiredDocs": "所需文件",
+    "noDocsListed": "未列出具体文件。请联系提供者确认。",
+    "keyInfo": "关键信息",
+    "waitTime": "预计等待时间",
+    "eligibility": "资格条件",
+    "location": "地点",
+    "contact": "联系方式",
+    "contactProvider": "联系服务提供者",
+    "externalLink": "外部链接将在新标签页中打开",
+    "save": "保存",
+    "saved": "已保存"
+  },
+  "myResources": {
+    "title": "我的资源",
+    "all": "全部",
+    "inProgress": "进行中",
+    "startProcess": "开始流程",
+    "markSaved": "标记为已保存",
+    "trackProgress": "跟踪您的进度",
+    "empty": "暂无保存的资源",
+    "emptyDesc": "搜索资源并保存到这里以便快速访问。",
+    "findResources": "查找资源"
+  },
+  "steps": {
+    "step1": "收集所需文件",
+    "step2": "提交申请",
+    "step3": "等待确认",
+    "step4": "参加预约/入职"
+  },
+  "howItWorks": {
+    "step1Title": "搜索",
+    "step1Desc": "用简单的语言告诉我们您需要什么类型的支持。",
+    "step2Title": "查看",
+    "step2Desc": "我们将为您找到相关的校园和阿尔伯塔省服务。",
+    "step3Title": "连接",
+    "step3Desc": "获取清晰的步骤、联系信息并跟踪您的进度。"
+  },
+  "auth": {
+    "signInRequired": "需要登录",
+    "signInToSave": "请登录以将资源保存到您的中心。"
+  },
+  "toast": {
+    "saved": "已保存！",
+    "resourceAdded": "资源已添加到我的资源。"
+  },
+  "language": {
+    "select": "语言"
+  }
+}

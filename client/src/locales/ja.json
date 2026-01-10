@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "リカバリーハブ",
+    "title": "キャンパスリカバリーリソースハブ",
+    "subtitle": "必要なサポートを見つけましょう。メンタルヘルス、経済支援、住居など。一歩一歩ガイドします。",
+    "searchPlaceholder": "今日はどのようなサポートが必要ですか？",
+    "searchHint": "「メンタルヘルスサポート」や「学費の援助」を試してください",
+    "footer": "© 2025 キャンパスリカバリーリソースハブ。情報はガイダンスのみを目的としています。"
+  },
+  "nav": {
+    "myResources": "マイリソース",
+    "signIn": "サインイン",
+    "logout": "ログアウト"
+  },
+  "search": {
+    "summary": "概要",
+    "noResults": "条件に一致するサービスが見つかりませんでした。別の検索語をお試しください。",
+    "error": "検索を完了できませんでした"
+  },
+  "service": {
+    "accessProcess": "アクセス手順",
+    "requiredDocs": "必要書類",
+    "noDocsListed": "特定の書類は記載されていません。確認のためプロバイダーにお問い合わせください。",
+    "keyInfo": "重要情報",
+    "waitTime": "推定待ち時間",
+    "eligibility": "資格条件",
+    "location": "場所",
+    "contact": "連絡先",
+    "contactProvider": "サービス提供者に連絡",
+    "externalLink": "外部リンクは新しいタブで開きます",
+    "save": "保存",
+    "saved": "保存済み"
+  },
+  "myResources": {
+    "title": "マイリソース",
+    "all": "すべて",
+    "inProgress": "進行中",
+    "startProcess": "プロセス開始",
+    "markSaved": "保存済みにする",
+    "trackProgress": "進捗を追跡",
+    "empty": "保存されたリソースはありません",
+    "emptyDesc": "リソースを検索して、簡単にアクセスできるようにここに保存してください。",
+    "findResources": "リソースを探す"
+  },
+  "steps": {
+    "step1": "必要書類を収集する",
+    "step2": "申請書を提出する",
+    "step3": "確認を待つ",
+    "step4": "面談/入会に参加する"
+  },
+  "howItWorks": {
+    "step1Title": "検索",
+    "step1Desc": "どのようなサポートが必要か、簡単な言葉で教えてください。",
+    "step2Title": "確認",
+    "step2Desc": "キャンパスとアルバータの関連サービスを見つけます。",
+    "step3Title": "接続",
+    "step3Desc": "明確な手順、連絡先情報を取得し、進捗を追跡しましょう。"
+  },
+  "auth": {
+    "signInRequired": "サインインが必要です",
+    "signInToSave": "ハブにリソースを保存するにはサインインしてください。"
+  },
+  "toast": {
+    "saved": "保存しました！",
+    "resourceAdded": "マイリソースに追加しました。"
+  },
+  "language": {
+    "select": "言語"
+  }
+}

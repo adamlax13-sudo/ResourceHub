@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "Centro de Recuperação",
+    "title": "Centro de Recursos de Recuperação no Campus",
+    "subtitle": "Encontre o apoio de que precisa. Saúde mental, ajuda financeira, moradia e mais. Vamos guiá-lo passo a passo.",
+    "searchPlaceholder": "Que tipo de apoio você precisa hoje?",
+    "searchHint": "Tente \"apoio de saúde mental\" ou \"ajuda com mensalidades\"",
+    "footer": "© 2025 Centro de Recursos de Recuperação no Campus. Informações fornecidas apenas para orientação."
+  },
+  "nav": {
+    "myResources": "Meus Recursos",
+    "signIn": "Entrar",
+    "logout": "Sair"
+  },
+  "search": {
+    "summary": "Resumo",
+    "noResults": "Nenhum serviço encontrado com seus critérios. Tente um termo de busca diferente.",
+    "error": "Não foi possível completar a busca"
+  },
+  "service": {
+    "accessProcess": "Processo de Acesso",
+    "requiredDocs": "Documentos Necessários",
+    "noDocsListed": "Nenhum documento específico listado. Entre em contato com o provedor para confirmar.",
+    "keyInfo": "Informações Principais",
+    "waitTime": "Tempo de Espera Estimado",
+    "eligibility": "Elegibilidade",
+    "location": "Localização",
+    "contact": "Contato",
+    "contactProvider": "Contatar Provedor de Serviços",
+    "externalLink": "Link externo abre em nova aba",
+    "save": "Salvar",
+    "saved": "Salvo"
+  },
+  "myResources": {
+    "title": "Meus Recursos",
+    "all": "Todos",
+    "inProgress": "Em Andamento",
+    "startProcess": "Iniciar Processo",
+    "markSaved": "Marcar como Salvo",
+    "trackProgress": "Acompanhe Seu Progresso",
+    "empty": "Nenhum recurso salvo ainda",
+    "emptyDesc": "Pesquise recursos e salve-os aqui para fácil acesso.",
+    "findResources": "Encontrar Recursos"
+  },
+  "steps": {
+    "step1": "Reunir documentos necessários",
+    "step2": "Enviar inscrição",
+    "step3": "Aguardar confirmação",
+    "step4": "Comparecer à consulta/admissão"
+  },
+  "howItWorks": {
+    "step1Title": "Pesquisar",
+    "step1Desc": "Diga-nos que tipo de apoio você precisa em linguagem simples.",
+    "step2Title": "Revisar",
+    "step2Desc": "Encontraremos serviços relevantes do campus e de Alberta.",
+    "step3Title": "Conectar",
+    "step3Desc": "Obtenha passos claros, informações de contato e acompanhe seu progresso."
+  },
+  "auth": {
+    "signInRequired": "Login necessário",
+    "signInToSave": "Faça login para salvar recursos no seu centro."
+  },
+  "toast": {
+    "saved": "Salvo!",
+    "resourceAdded": "Recurso adicionado a Meus Recursos."
+  },
+  "language": {
+    "select": "Idioma"
+  }
+}
