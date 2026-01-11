@@ -145,6 +145,7 @@ export default function Profile() {
         description: t('profile.savedDesc'),
       });
       setLocation("/");
+      window.scrollTo(0, 0);
     } catch (error) {
       toast({
         title: t('profile.error'),
