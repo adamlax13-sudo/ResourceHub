@@ -98,7 +98,7 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       </div>
 
       {/* Geometric Background Pattern - Inspired by ROC crystalline triangle with animation */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-15 pointer-events-none">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-25 pointer-events-none">
         <motion.svg 
           className="absolute -top-20 -left-20 w-96 h-96" 
           viewBox="0 0 200 200" 
