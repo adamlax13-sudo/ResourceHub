@@ -97,11 +97,10 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
         </div>
       </div>
 
-      {/* Geometric Background Pattern - Evenly distributed triangles */}
+      {/* Geometric Background Pattern - Inspired by ROC crystalline triangle with animation */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-25 pointer-events-none">
-        {/* Top-left: Large complex triangle */}
         <motion.svg 
-          className="absolute -top-10 left-[5%] w-48 h-48" 
+          className="absolute -top-20 -left-20 w-96 h-96" 
           viewBox="0 0 200 200" 
           fill="none"
           animate={{ rotate: 360 }}
@@ -111,94 +110,93 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="1" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
-        </motion.svg>
-        
-        {/* Top-right: Medium triangle */}
-        <motion.svg 
-          className="absolute top-8 right-[8%] w-32 h-32 rotate-[20deg]" 
-          viewBox="0 0 200 200" 
-          fill="none"
-          animate={{ y: [0, 8, 0], rotate: [20, 25, 20] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
-          <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.6" fill="none" />
-        </motion.svg>
-        
-        {/* Middle-left: Medium triangle */}
-        <motion.svg 
-          className="absolute top-[45%] left-[3%] w-36 h-36 -rotate-[15deg]" 
-          viewBox="0 0 200 200" 
-          fill="none"
-          animate={{ x: [0, 5, 0], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        
-        {/* Middle-right: Large triangle */}
         <motion.svg 
-          className="absolute top-[35%] right-[5%] w-44 h-44 rotate-[45deg]" 
+          className="absolute top-1/4 right-0 w-72 h-72 rotate-45" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.04, 1] }}
+          animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.05, 1] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        
-        {/* Bottom-left: Medium triangle */}
         <motion.svg 
-          className="absolute bottom-[15%] left-[15%] w-28 h-28 -rotate-[25deg]" 
+          className="absolute bottom-10 left-1/4 w-48 h-48 -rotate-12" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ y: [0, -8, 0] }}
+          animate={{ y: [0, -10, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        
-        {/* Bottom-center: Small triangle */}
+        {/* Additional floating triangles */}
         <motion.svg 
-          className="absolute bottom-[20%] left-[48%] w-20 h-20 rotate-[60deg]" 
+          className="absolute top-16 right-1/4 w-24 h-24 rotate-12" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ y: [0, -10, 0], x: [0, 4, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          animate={{ y: [0, 8, 0], rotate: [12, 18, 12] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
         </motion.svg>
-        
-        {/* Bottom-right: Medium triangle */}
         <motion.svg 
-          className="absolute bottom-[10%] right-[12%] w-32 h-32 rotate-[35deg]" 
+          className="absolute top-1/2 left-10 w-32 h-32 -rotate-30" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ scale: [1, 1.03, 1], opacity: [0.6, 0.9, 0.6] }}
+          animate={{ x: [0, 5, 0], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.5" fill="none" />
+        </motion.svg>
+        <motion.svg 
+          className="absolute bottom-1/3 right-10 w-56 h-56 rotate-[25deg]" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ scale: [1, 1.03, 1], opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.3" />
         </motion.svg>
-        
-        {/* Floating particles spread evenly */}
+        <motion.svg 
+          className="absolute top-3/4 left-1/2 w-16 h-16 rotate-[60deg]" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, -12, 0], x: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
+        </motion.svg>
+        <motion.svg 
+          className="absolute top-20 left-1/2 w-20 h-20 -rotate-[15deg]" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ rotate: [-15, -10, -15], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
+        </motion.svg>
+        {/* Additional floating particles */}
         <motion.div 
-          className="absolute top-[25%] left-[30%] w-2 h-2 bg-white rounded-full"
-          animate={{ y: [0, -15, 0], opacity: [0.3, 0.7, 0.3] }}
+          className="absolute top-1/3 left-1/3 w-2 h-2 bg-white rounded-full"
+          animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute top-[60%] right-[35%] w-1.5 h-1.5 bg-white rounded-full"
-          animate={{ y: [0, -12, 0], opacity: [0.4, 0.8, 0.4] }}
+          className="absolute top-2/3 right-1/3 w-1.5 h-1.5 bg-white rounded-full"
+          animate={{ y: [0, -15, 0], opacity: [0.4, 0.9, 0.4] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div 
-          className="absolute bottom-[35%] left-[55%] w-1 h-1 bg-white rounded-full"
-          animate={{ y: [0, -8, 0], opacity: [0.2, 0.6, 0.2] }}
+          className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-white rounded-full"
+          animate={{ y: [0, -10, 0], opacity: [0.2, 0.7, 0.2] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
