@@ -133,5 +133,13 @@
   "nav2": {
     "profile": "Profile",
     "recommended": "For Me"
+  },
+  "game": {
+    "clickToPlay": "Click to Play",
+    "instructions": "Space/↑ to jump, ↓ to duck (tap to jump on mobile)",
+    "score": "Score",
+    "highScore": "Best",
+    "gameOver": "Game Over!",
+    "playAgain": "Play Again"
   }
 }
