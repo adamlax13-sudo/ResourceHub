@@ -130,9 +130,17 @@ Preferred communication style: Simple, everyday language.
 - **Low priority**: Runs only when browser is idle (after 1.5s fallback)
 - **Hook**: client/src/hooks/use-prefetch-recommendations.ts
 
+### Search Mode Toggle
+- **Quick Mode**: Returns 5-8 top priority services (~10 seconds), temperature 0.2
+- **All Results Mode**: Returns every matching service (~30-60 seconds), temperature 0.3
+- **UI Toggle**: Animated toggle in Hero using framer-motion with CSS grid for responsive sizing
+- **Persistence**: Mode saved in localStorage ('searchMode' key)
+- **Cache Separation**: Cache keys include mode to keep fast/comprehensive results separate
+- **Automatic Cache Invalidation**: DATABASE_HASH (MD5 of ALBERTA_SERVICES_REFERENCE) prepended to cache keys
+
 ### AI Optimizations
 - **Streamlined prompts**: Reduced token count while maintaining quality requirements
-- **Variable temperature**: temperature: 0.3 for search, 0.6 for recommendations (balanced variety with profile relevance)
+- **Variable temperature**: temperature: 0.2 for quick search, 0.3 for all results, 0.6 for recommendations
 - **Service-specific steps**: AI generates organization-specific intake processes with 3-8 steps based on service complexity
 - **Skeleton loading**: Recommended page shows skeleton cards during AI processing for better perceived performance
 - **Comprehensive Reference Database**: 450+ line ALBERTA_SERVICES_REFERENCE in server/routes.ts covering:
