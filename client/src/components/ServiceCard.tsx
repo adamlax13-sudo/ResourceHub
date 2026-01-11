@@ -31,8 +31,8 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
           <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" strokeWidth="0.3" />
         </svg>
 
-        <div className="flex justify-between items-start mb-4">
-          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+        <div className="flex justify-between items-start mb-4 min-w-0">
+          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1 text-xs font-semibold uppercase tracking-wider whitespace-normal text-left max-w-full">
             {service.category}
           </Badge>
         </div>
