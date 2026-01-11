@@ -132,7 +132,7 @@ Preferred communication style: Simple, everyday language.
 
 ### AI Optimizations
 - **Streamlined prompts**: Reduced token count while maintaining quality requirements
-- **Variable temperature**: temperature: 0.3 for search, 0.7 for recommendations (higher for variety)
+- **Variable temperature**: temperature: 0.3 for search, 0.6 for recommendations (balanced variety with profile relevance)
 - **Service-specific steps**: AI generates organization-specific intake processes with 3-8 steps based on service complexity
 - **Skeleton loading**: Recommended page shows skeleton cards during AI processing for better perceived performance
 - **Comprehensive Reference Database**: 250+ line ALBERTA_SERVICES_REFERENCE in server/routes.ts covering:

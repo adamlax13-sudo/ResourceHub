@@ -520,7 +520,17 @@ Return JSON matching:
       // Streamlined prompt for faster response - maintains quality requirements with variety
       const prompt = `Recovery on Campus Resource Hub - Alberta personalized recommendations.
 
-IMPORTANT: Provide FRESH, VARIED recommendations each time. Select DIFFERENT services from the database - avoid repeating the same 5 services. Mix up your selections from various categories that match the user's needs.
+PRIORITY #1 - PROFILE RELEVANCE (MANDATORY):
+All recommendations MUST be directly relevant to the user's profile. Every service you recommend should match at least one of these criteria based on their profile:
+- Location: Services in or accessible from their city/area
+- Identity: LGBTQ2S+ services if indicated, Indigenous services if indicated, age-appropriate services
+- University: Campus-specific resources if they're a student at that institution
+- Recovery status: Addiction/recovery services if in recovery
+- Preferences: Virtual vs in-person, one-on-one vs group as specified
+- Faith/religion: Faith-based services if indicated
+
+PRIORITY #2 - VARIETY WITHIN RELEVANCE:
+While staying relevant to the profile above, select DIFFERENT services each time from the many matching options. Don't repeat the same 5 services - explore the full range of profile-appropriate options.
 
 CRITICAL REQUIREMENTS:
 - Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "CMHA Edmonton", "Distress Centre Calgary", "U of A Counselling")
@@ -528,23 +538,25 @@ CRITICAL REQUIREMENTS:
 - ONLY use URLs, phone numbers, and addresses that are EXACTLY as listed in the reference database below
 - DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
 - Prioritize services from the reference database below - these are verified and current
-- VARY your selections - pick different organizations each time from the many options available
 
 ${ALBERTA_SERVICES_REFERENCE}
 
-USER PROFILE: ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general recommendations'}
-${favCategoriesList.length > 0 ? `Favorite categories: ${favCategoriesList.join(', ')}` : ''}
-${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - prioritize on-campus/nearby services` : ''}
-${user.university === 'in-highschool' ? 'User is a high school student - prioritize youth services and resources appropriate for under-18' : ''}
-${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - prioritize services in or near this city` : ''}
+USER PROFILE (USE THIS TO FILTER RECOMMENDATIONS): ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general Alberta recommendations'}
+${favCategoriesList.length > 0 ? `Favorite categories (suggest similar): ${favCategoriesList.join(', ')}` : ''}
+${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - MUST include at least 1-2 on-campus or nearby services` : ''}
+${user.university === 'in-highschool' ? 'User is a HIGH SCHOOL student - MUST prioritize youth services appropriate for under-18' : ''}
+${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - MUST prioritize services in or accessible from this city` : ''}
 
-PERSONALIZATION:
-- Match services to user identity (LGBTQ2S+, Indigenous, age-appropriate, faith-based if relevant)
-- Respect format preference (virtual/in-person) and support style (one-on-one/group)
-- Include campus services if university specified
+PERSONALIZATION RULES (FOLLOW STRICTLY):
+- If user specified location: At least 3 of 5 services should be in/near that city
+- If user specified university: Include 1-2 campus-specific resources
+- If user is LGBTQ2S+: Include at least 1 LGBTQ2S+-affirming service
+- If user is Indigenous: Include at least 1 Indigenous-specific service
+- If user specified recovery status: Include relevant addiction/recovery support
+- If user specified format preference: Prioritize matching format (virtual/in-person)
+- If user specified support style: Prioritize matching style (one-on-one/group)
 - Consider disability accommodations if indicated
-- Suggest similar services to favorites but in unexplored categories
-- PRIORITIZE services geographically close to user's location when specified
+- Suggest services in categories similar to favorites but in unexplored areas
 
 PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
 - IMPORTANT: Different services have DIFFERENT numbers of steps - vary based on actual complexity
@@ -580,7 +592,7 @@ Recommend exactly 5 services with VARIED step counts reflecting each service's a
           { role: "user", content: "Provide personalized recommendations." }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.7, // Higher temperature for variety in recommendations each time
+        temperature: 0.6, // Balanced: variety while maintaining profile relevance
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
