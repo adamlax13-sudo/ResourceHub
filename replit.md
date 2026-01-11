@@ -121,20 +121,18 @@ Preferred communication style: Simple, everyday language.
 
 ### Caching
 - **Search results**: Cached in database with normalized keys (trim + lowercase) for better hit rates
-- **Recommendations cache**: Server-side caching based on user profile hash (demographics + favorite categories)
-- **Cache invalidation**: Recommendations cache auto-invalidates when profile changes or favorites change
+- **Recommendations**: NOT cached - fresh AI-generated recommendations each page load/refresh for variety
 - **Duplicate prevention**: Favorites API returns 409 if service already saved
-- **React Query**: staleTime: Infinity prevents unnecessary refetches
+- **React Query**: staleTime varies by endpoint (0 for recommendations, Infinity for static data)
 
 ### Background Prefetching
-- **Recommendations**: Prefetched after sign-in using requestIdleCallback
+- **Recommendations**: Prefetched after sign-in using requestIdleCallback (always fresh)
 - **Low priority**: Runs only when browser is idle (after 1.5s fallback)
 - **Hook**: client/src/hooks/use-prefetch-recommendations.ts
-- **Cache**: Data ready before user navigates to Recommended page
 
 ### AI Optimizations
 - **Streamlined prompts**: Reduced token count while maintaining quality requirements
-- **Variable temperature**: temperature: 0.3-0.4 depending on task complexity
+- **Variable temperature**: temperature: 0.3 for search, 0.7 for recommendations (higher for variety)
 - **Service-specific steps**: AI generates organization-specific intake processes with 3-8 steps based on service complexity
 - **Skeleton loading**: Recommended page shows skeleton cards during AI processing for better perceived performance
 - **Comprehensive Reference Database**: 250+ line ALBERTA_SERVICES_REFERENCE in server/routes.ts covering:

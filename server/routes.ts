@@ -480,7 +480,7 @@ Return JSON matching:
     res.json(updated);
   });
 
-  // Recommendations endpoint with caching for speed
+  // Recommendations endpoint - always generate fresh recommendations for variety
   app.get(api.recommendations.get.path, async (req: any, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Not authenticated" });
@@ -494,31 +494,8 @@ Return JSON matching:
       
       const favorites = await storage.getFavorites(user.id);
       
-      // Build profile hash for caching (based on demographics + favorite categories sorted)
+      // Build category list from favorites for context
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category))).sort().join(',');
-      const profileData = [
-        user.age || '',
-        user.gender || '',
-        user.race || '',
-        user.sexuality || '',
-        user.education || '',
-        user.religion || '',
-        user.inAddiction || '',
-        user.university || '',
-        user.location || '',
-        user.customLocation || '',
-        user.disability || '',
-        user.serviceFormat || '',
-        user.supportStyle || '',
-        favoriteCategories // Include sorted categories, not just count
-      ].join('|');
-      const profileHash = Buffer.from(profileData).toString('base64');
-      
-      // Check cache first (cache expires after profile changes or new favorites)
-      const cached = await storage.getCachedRecommendations(profileHash);
-      if (cached) {
-        return res.json(cached.results);
-      }
       
       // Build compact context for faster processing
       const demographics = [];
@@ -540,8 +517,10 @@ Return JSON matching:
       
       const favCategoriesList = favoriteCategories ? favoriteCategories.split(',').slice(0, 3) : [];
       
-      // Streamlined prompt for faster response - maintains quality requirements
+      // Streamlined prompt for faster response - maintains quality requirements with variety
       const prompt = `Recovery on Campus Resource Hub - Alberta personalized recommendations.
+
+IMPORTANT: Provide FRESH, VARIED recommendations each time. Select DIFFERENT services from the database - avoid repeating the same 5 services. Mix up your selections from various categories that match the user's needs.
 
 CRITICAL REQUIREMENTS:
 - Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "CMHA Edmonton", "Distress Centre Calgary", "U of A Counselling")
@@ -549,6 +528,7 @@ CRITICAL REQUIREMENTS:
 - ONLY use URLs, phone numbers, and addresses that are EXACTLY as listed in the reference database below
 - DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
 - Prioritize services from the reference database below - these are verified and current
+- VARY your selections - pick different organizations each time from the many options available
 
 ${ALBERTA_SERVICES_REFERENCE}
 
@@ -600,13 +580,10 @@ Recommend exactly 5 services with VARIED step counts reflecting each service's a
           { role: "user", content: "Provide personalized recommendations." }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.4, // Balanced temperature for consistency with variation in step counts
+        temperature: 0.7, // Higher temperature for variety in recommendations each time
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
-      
-      // Cache the results for this profile
-      await storage.cacheRecommendations(profileHash, results);
       
       res.json(results);
     } catch (err) {

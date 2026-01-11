@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useAuth } from "./use-auth";
 import { queryClient } from "@/lib/queryClient";
 
@@ -16,20 +16,17 @@ async function fetchRecommendations() {
 
 export function usePrefetchRecommendations() {
   const { user, isLoading: authLoading } = useAuth();
-  const hasPrefetched = useRef(false);
 
   useEffect(() => {
-    if (authLoading || !user || hasPrefetched.current) {
+    if (authLoading || !user) {
       return;
     }
 
     const prefetch = () => {
-      hasPrefetched.current = true;
-      
       queryClient.prefetchQuery({
         queryKey: ["/api/recommendations"],
         queryFn: fetchRecommendations,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0, // Always fresh
       });
     };
 

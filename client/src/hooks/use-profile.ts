@@ -52,6 +52,7 @@ export function useRecommendations() {
     queryKey: ["/api/recommendations"],
     enabled: true,
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0, // Always fetch fresh recommendations for variety
+    gcTime: 0, // Don't cache - each page load gets new recommendations
   });
 }
