@@ -101,6 +101,7 @@ export const api = {
       path: '/api/search',
       input: z.object({
         query: z.string().min(1, "Please enter what you're looking for"),
+        mode: z.enum(['fast', 'comprehensive']).optional().default('fast'),
       }),
       responses: {
         200: z.object({

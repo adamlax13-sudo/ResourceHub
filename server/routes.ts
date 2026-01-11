@@ -470,37 +470,44 @@ export async function registerRoutes(
   app.post(api.search.query.path, async (req, res) => {
     try {
       const input = api.search.query.input.parse(req.body);
-      // Include database hash in cache key - automatically invalidates cache when database content changes
-      const normalizedQuery = `${DATABASE_HASH}:${input.query.trim().toLowerCase()}`;
+      const mode = input.mode || 'fast';
+      
+      // Include database hash and mode in cache key
+      const normalizedQuery = `${DATABASE_HASH}:${mode}:${input.query.trim().toLowerCase()}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-5.1",
-        messages: [
-          {
-            role: "system",
-            content: `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
+      // Different prompts for fast vs comprehensive modes
+      const fastModeInstructions = `
+FAST MODE - Return 5-8 most relevant services quickly:
+1. Return ONLY the 5-8 most relevant, high-priority services that best match the query
+2. Prioritize crisis lines, major treatment centers, and well-known organizations
+3. Keep process steps brief (3-4 steps each)
+4. Focus on immediate, actionable resources`;
+
+      const comprehensiveModeInstructions = `
+COMPREHENSIVE MODE - Return ALL relevant services:
+1. RETURN ALL RELEVANT SERVICES - DO NOT limit or cap results. If 15 services match, return all 15. If 30 match, return all 30.
+2. Be COMPREHENSIVE - include crisis lines, shelters, treatment programs, support groups, peer support, counselling, and all related services
+3. Provide detailed process steps (4-8 steps each) with full contact information
+4. Include both major organizations AND smaller community resources`;
+
+      const systemPrompt = `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
+
+${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
 
 CRITICAL REQUIREMENTS:
-1. RETURN ALL RELEVANT SERVICES - DO NOT limit or cap results. If 15 services match the query, return all 15. If 30 match, return all 30. Users need to see EVERY available option.
-2. EXACT NAME MATCH PRIORITY: If the user's query contains an exact organization name from the database (e.g., "Alpha House", "Calgary Drop-In", "Mustard Seed"), you MUST include that specific organization in your results FIRST.
-3. Every service MUST be a REAL, SPECIFIC Alberta organization from the reference database below
-4. ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database
-5. DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
-6. Never return generic categories like "Local Counseling Services" or "Community Support Groups"
-7. PRIORITIZE services from the reference database - these are verified and current
-8. Be COMPREHENSIVE - include crisis lines, shelters, treatment programs, support groups, and all related services that could help
+- EXACT NAME MATCH PRIORITY: If the user's query contains an exact organization name (e.g., "Alpha House", "Calgary Drop-In", "Mustard Seed"), you MUST include that specific organization in your results FIRST.
+- Every service MUST be a REAL, SPECIFIC Alberta organization from the reference database below
+- ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database
+- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
+- Never return generic categories like "Local Counseling Services" or "Community Support Groups"
 
 SEARCH MATCHING RULES:
 - If query mentions "Alpha House" → MUST include Alpha House Society Calgary and Alpha House Detox
 - If query mentions "Calgary Drop-In" → MUST include Calgary Drop-In Centre
 - If query mentions "Mustard Seed" → MUST include Mustard Seed services
 - If query mentions "CMHA" → MUST include relevant CMHA chapter
-- For partial name matches, include the most relevant matching service(s)
-
-Examples of GOOD responses: "Alpha House Society Calgary", "Calgary Drop-In Centre", "Kids Help Phone", "CMHA Edmonton"
-Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center"
 
 ${ALBERTA_SERVICES_REFERENCE}
 
@@ -508,37 +515,6 @@ PROCESS STEPS - USE ONLY VERIFIED INFO:
 - Use ONLY phone numbers, emails, and URLs from the reference database above
 - DO NOT invent URLs - if not in database, use phone number instead
 - If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
-- Each step should use real contact info from the database
-
-PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
-- Provide as many steps as needed (typically 3-8) to accurately reflect how someone actually accesses this service
-- Simple services (crisis lines) may need only 3-4 steps; complex services (intake assessments) may need 6-8
-- Use ONLY verified contact info from the reference database - NEVER invent URLs
-- Include specific details: phone numbers, websites, hours, what to expect at each stage
-
-EXAMPLE for crisis line (simple - 4 steps):
-["Call 403-266-4357 - available 24/7, 365 days a year",
- "A trained crisis counselor will answer and ask how they can help",
- "Share what you're going through - calls are confidential and anonymous",
- "Receive support and referrals to Calgary-area resources if needed"]
-
-EXAMPLE for Recovery College Calgary (moderate - 5 steps):
-["Visit recoverycollegecalgary.ca or call 403-297-1402",
- "Browse free courses - topics include anxiety, stress, recovery skills",
- "No referral or account needed - FREE for anyone 16+",
- "Register online or attend Wednesday drop-in sessions",
- "Attend peer-led session (virtual or in-person)"]
-
-EXAMPLE for clinical assessment service (complex - 7 steps):
-["Call intake line during business hours to request assessment",
- "Complete phone screening to determine eligibility",
- "Receive appointment date (wait times vary)",
- "Bring required documents to first appointment",
- "Meet with clinician for initial assessment",
- "Discuss treatment options and create care plan",
- "Begin recommended services or get referrals"]
-
-If unsure of exact details: "Contact [org] at [phone from database] to confirm current process"
 
 Return JSON matching:
 {
@@ -550,16 +526,21 @@ Return JSON matching:
     "location": "string (real address or service area)",
     "contact": "string (real phone/email/website)",
     "eligibility": "string",
-    "process": ["4-8 steps SPECIFIC to this exact organization. Include their actual phone numbers, websites, locations, operating hours. Each step should describe what happens when accessing THIS service, not a generic category. If uncertain, include 'Contact directly to confirm current process'"],
-    "waitTimes": "string (specific to this service if known, otherwise realistic estimate with note to confirm)",
-    "requiredDocs": ["Specific to this service - e.g., 'Valid U of A OneCard' for campus services, 'Alberta Health Care card' for AHS services, 'Proof of income for sliding scale' for Calgary Counselling Centre"]
+    "process": ["${mode === 'fast' ? '3-4' : '4-8'} steps SPECIFIC to this organization with real contact info"],
+    "waitTimes": "string",
+    "requiredDocs": ["Specific to this service"]
   }],
   "summary": "string"
-}`
-          },
+}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-5.1",
+        messages: [
+          { role: "system", content: systemPrompt },
           { role: "user", content: input.query }
         ],
         response_format: { type: "json_object" },
+        temperature: mode === 'fast' ? 0.2 : 0.3,
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
