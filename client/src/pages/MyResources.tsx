@@ -104,15 +104,15 @@ export default function MyResources() {
       <header className="bg-primary text-primary-foreground py-6">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <Link href="/">
-              <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
-                {t('nav.home')}
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
               <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
-              <h1 className="text-xl sm:text-3xl font-display font-bold">{t('myResources.title')}</h1>
+              <Link href="/">
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
+                  {t('nav.home')}
+                </Button>
+              </Link>
             </div>
+            <h1 className="text-xl sm:text-3xl font-display font-bold">{t('myResources.title')}</h1>
             <div className="flex items-center gap-1 sm:gap-3">
               <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
               <a href="/api/logout">

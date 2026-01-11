@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, User, Loader2, Check, LogOut } from "lucide-react";
+import { User, Loader2, Check, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -208,17 +208,15 @@ export default function Profile() {
       <header className="bg-primary text-primary-foreground py-6">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
               <Link href="/">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-back">
-                  <ArrowLeft className="w-5 h-5" />
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
+                  {t('nav.home')}
                 </Button>
               </Link>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <img src={rocLogo} alt="ROC Logo" className="h-6 sm:h-8 w-auto" />
-                <h1 className="text-lg sm:text-2xl font-display font-bold">{t('profile.title')}</h1>
-              </div>
             </div>
+            <h1 className="text-xl sm:text-3xl font-display font-bold">{t('profile.title')}</h1>
             <div className="flex items-center gap-1 sm:gap-3">
               <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
               <a href="/api/logout">
