@@ -189,56 +189,54 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 </section>
               </div>
 
-              {/* Right Column: Key Info Card - independently scrollable */}
-              <div className="md:col-span-5 md:h-fit">
-                <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden sticky top-0 flex flex-col md:max-h-[calc(85vh-200px)]">
-                  <h3 className="font-bold text-lg border-b border-border px-6 py-4 flex-shrink-0">{t('service.keyInfo')}</h3>
+              {/* Right Column: Key Info Card */}
+              <div className="md:col-span-5">
+                <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+                  <h3 className="font-bold text-lg border-b border-border px-6 py-4">{t('service.keyInfo')}</h3>
 
-                  <ScrollArea className="flex-1 overflow-y-auto">
-                    <div className="p-6 pt-4 space-y-4">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <Clock className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
-                          <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes)}</div>
-                        </div>
+                  <div className="p-6 pt-4 space-y-4">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-4 h-4 text-primary" />
                       </div>
-
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.eligibility')}</div>
-                          <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.eligibility)}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                          <MapPin className="w-4 h-4 text-orange-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
-                          <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.location)}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <Phone className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.contact')}</div>
-                          <div className="font-medium text-foreground mt-0.5 break-all">{linkifyText(service.contact)}</div>
-                        </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes)}</div>
                       </div>
                     </div>
-                  </ScrollArea>
 
-                  <div className="px-6 py-4 border-t border-border flex-shrink-0">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.eligibility')}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.eligibility)}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                        <MapPin className="w-4 h-4 text-orange-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.location)}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Phone className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.contact')}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-all">{linkifyText(service.contact)}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-4 border-t border-border">
                     <Button 
                       className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl shadow-lg shadow-primary/20"
                       aria-label={`Contact ${service.name}`}
