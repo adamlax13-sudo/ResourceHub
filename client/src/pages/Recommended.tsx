@@ -7,7 +7,7 @@ import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2, Heart, ExternalLink, MapPin, Phone, Clock, User, LogOut, ArrowRight, Home } from "lucide-react";
+import { Sparkles, Loader2, Heart, MapPin, Phone, Clock, User, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -167,7 +167,7 @@ export default function Recommended() {
                         </Badge>
                         {isFavorited(rec.id) && (
                           <Badge variant="outline" className="text-green-600 border-green-600">
-                            <Heart className="w-3 h-3 mr-1 fill-current" />
+                            <Heart className="w-3 h-3 mr-1 fill-current" aria-hidden="true" />
                             {t('service.saved')}
                           </Badge>
                         )}
@@ -181,7 +181,7 @@ export default function Recommended() {
                     <CardContent className="flex-1 pb-6 flex flex-col min-w-0">
                       <div className="bg-muted/50 rounded-lg p-3 mb-4">
                         <p className="text-sm text-muted-foreground italic line-clamp-3 break-words">
-                          <Sparkles className="w-3 h-3 inline mr-1 text-primary" />
+                          <Sparkles className="w-3 h-3 inline mr-1 text-primary" aria-hidden="true" />
                           {rec.reasoning}
                         </p>
                       </div>
@@ -189,20 +189,20 @@ export default function Recommended() {
                       <div className="space-y-3 text-sm min-w-0">
                         {rec.location && (
                           <div className="flex items-start gap-2 min-w-0">
-                            <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.location}</span>
+                            <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Location: </span>{rec.location}</span>
                           </div>
                         )}
                         {rec.contact && (
                           <div className="flex items-start gap-2 min-w-0">
-                            <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.contact}</span>
+                            <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Contact: </span>{rec.contact}</span>
                           </div>
                         )}
                         {rec.waitTimes && (
                           <div className="flex items-start gap-2 min-w-0">
-                            <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.waitTimes}</span>
+                            <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Wait time: </span>{rec.waitTimes}</span>
                           </div>
                         )}
                       </div>

@@ -56,12 +56,12 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts
 - **Tables**: 
   - `sessions` - Authentication session storage
-  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, profileCompleted)
+  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, disability, serviceFormat, supportStyle, profileCompleted)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
 
 ### User Profile & Personalization
-- **Optional Demographics**: 9 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college, disability status (all optional)
+- **Optional Demographics**: 11 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college, disability status, service format preference (virtual/in-person), support style preference (one-on-one/group) (all optional)
 - **Profile Page**: /profile - Form to manage demographic preferences with descriptive help text
 - **Recommendations Page**: /recommended - AI-powered personalized service recommendations
 - **Privacy**: Demographics used only for recommendations, never shared with third parties
@@ -118,7 +118,8 @@ Preferred communication style: Simple, everyday language.
 - **Header logos**: Load eagerly for branding visibility
 
 ### Caching
-- **Search results**: Cached in database to avoid repeat AI calls
+- **Search results**: Cached in database with normalized keys (trim + lowercase) for better hit rates
+- **Duplicate prevention**: Favorites API returns 409 if service already saved
 - **React Query**: staleTime: Infinity prevents unnecessary refetches
 
 ### Background Prefetching
@@ -128,6 +129,9 @@ Preferred communication style: Simple, everyday language.
 - **Cache**: Data ready before user navigates to Recommended page
 
 ### Accessibility
+- **WCAG Compliance**: Hero search with proper labels, roles, and aria-describedby
+- **Screen Reader Support**: sr-only labels, aria-hidden on decorative icons, aria-labels on buttons
+- **Keyboard Navigation**: Service cards are keyboard-navigable with tabIndex and Enter key support
 - **Reduced motion**: CSS @media (prefers-reduced-motion: reduce) disables animations
 - **Smooth scrolling**: Only for users who prefer motion
 - **Focus visible**: Clear outline styles for keyboard navigation
