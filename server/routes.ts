@@ -183,6 +183,8 @@ export async function registerRoutes(
       if (user.religion) demographicContext.push(`Religion/Spirituality: ${user.religion}`);
       if (user.inAddiction) demographicContext.push(`Recovery Status: ${user.inAddiction}`);
       if (user.university) demographicContext.push(`University/College: ${user.university}`);
+      if (user.serviceFormat) demographicContext.push(`Service Format Preference: ${user.serviceFormat}`);
+      if (user.supportStyle) demographicContext.push(`Support Style Preference: ${user.supportStyle}`);
       
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
       const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
@@ -220,6 +222,13 @@ For example:
 - Addiction recovery and harm reduction services if user indicates recovery status
 - Campus-specific services and nearby community resources if user indicated their university/college
 - Similar services to their favorites but in different categories they haven't explored
+
+SERVICE DELIVERY PREFERENCES (prioritize but don't exclude based on these):
+- If user prefers virtual/online services, prioritize telehealth, online counseling, virtual support groups, chat/text services
+- If user prefers in-person services, prioritize walk-in clinics, on-campus counseling, in-person support groups
+- If user prefers one-on-one support, prioritize individual counseling, mentorship programs, case management
+- If user prefers group/peer support, prioritize support groups, peer networks, group therapy, community programs
+These are preferences only - still include a mix of options, but rank preferred formats higher in the list.
 
 Return JSON matching:
 {

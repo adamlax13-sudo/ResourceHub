@@ -81,6 +81,8 @@ export class DatabaseStorage implements IStorage {
         religion: demographics.religion,
         inAddiction: demographics.inAddiction,
         university: demographics.university,
+        serviceFormat: demographics.serviceFormat,
+        supportStyle: demographics.supportStyle,
         profileCompleted: new Date(),
         updatedAt: new Date(),
       })

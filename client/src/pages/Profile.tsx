@@ -117,6 +117,18 @@ const UNIVERSITY_OPTIONS = [
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
 
+const SERVICE_FORMAT_OPTIONS = [
+  { value: "virtual", label: "Virtual/Online" },
+  { value: "in-person", label: "In-Person" },
+  { value: "no-preference", label: "No preference" },
+];
+
+const SUPPORT_STYLE_OPTIONS = [
+  { value: "one-on-one", label: "One-on-One" },
+  { value: "group", label: "Peer Support/Group" },
+  { value: "no-preference", label: "No preference" },
+];
+
 export default function Profile() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
@@ -136,6 +148,8 @@ export default function Profile() {
       religion: null,
       inAddiction: null,
       university: null,
+      serviceFormat: null,
+      supportStyle: null,
     },
   });
 
@@ -150,6 +164,8 @@ export default function Profile() {
         religion: profile.religion || null,
         inAddiction: profile.inAddiction || null,
         university: profile.university || null,
+        serviceFormat: profile.serviceFormat || null,
+        supportStyle: profile.supportStyle || null,
       });
     }
   }, [profile, form]);
@@ -461,6 +477,62 @@ export default function Profile() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="serviceFormat"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.serviceFormat')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-service-format">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {SERVICE_FORMAT_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.serviceFormatDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="supportStyle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.supportStyle')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-support-style">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {SUPPORT_STYLE_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.supportStyleDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="flex gap-3 pt-4">
                     <Button 
                       type="submit" 
@@ -477,7 +549,7 @@ export default function Profile() {
                     <Button 
                       type="button" 
                       variant="outline"
-                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null, education: null, religion: null, inAddiction: null, university: null })}
+                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null, education: null, religion: null, inAddiction: null, university: null, serviceFormat: null, supportStyle: null })}
                       data-testid="button-clear-profile"
                     >
                       {t('profile.clearButton')}

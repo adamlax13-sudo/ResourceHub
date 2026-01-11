@@ -26,6 +26,9 @@ export const users = pgTable("users", {
   religion: varchar("religion"),
   inAddiction: varchar("in_addiction"),
   university: varchar("university"),
+  // Service delivery preferences
+  serviceFormat: varchar("service_format"), // virtual, in-person, no-preference
+  supportStyle: varchar("support_style"), // one-on-one, group, no-preference
   profileCompleted: timestamp("profile_completed"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -65,6 +68,8 @@ export const updateDemographicsSchema = z.object({
   religion: z.string().optional().nullable(),
   inAddiction: z.string().optional().nullable(),
   university: z.string().optional().nullable(),
+  serviceFormat: z.string().optional().nullable(),
+  supportStyle: z.string().optional().nullable(),
 });
 
 export type UpdateDemographics = z.infer<typeof updateDemographicsSchema>;
