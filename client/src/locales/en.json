@@ -58,10 +58,14 @@
   "howItWorks": {
     "step1Title": "Search",
     "step1Desc": "Tell us what kind of support you need in plain English.",
+    "step1Back": "Just type naturally - like talking to a friend. Ask about mental health, housing, financial aid, or anything else. Our AI understands context and finds the best matches for you.",
     "step2Title": "Review",
     "step2Desc": "We'll find relevant campus and Alberta services.",
+    "step2Back": "Get personalized results based on your profile preferences. Each service shows eligibility, wait times, required documents, and step-by-step instructions to access help.",
     "step3Title": "Connect",
-    "step3Desc": "Get clear steps, contact info, and track your progress."
+    "step3Desc": "Get clear steps, contact info, and track your progress.",
+    "step3Back": "Save services to your personal hub. Track your progress through each step, mark completed tasks, and access contact info anytime. We're with you on your journey.",
+    "clickToFlip": "Click to learn more"
   },
   "auth": {
     "signInRequired": "Sign in required",

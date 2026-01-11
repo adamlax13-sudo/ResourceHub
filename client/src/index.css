@@ -166,4 +166,15 @@ input[type="search"]::-webkit-search-cancel-button {
   .active-elevate-2:active {
     @apply brightness-90;
   }
+  
+  /* 3D Flip Card utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
 }

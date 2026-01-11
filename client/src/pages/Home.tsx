@@ -7,8 +7,63 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info } from "lucide-react";
+import { Info, Search, ClipboardList, Heart, RotateCcw } from "lucide-react";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+
+function FlipCard({ frontContent, backContent, index }: { 
+  frontContent: React.ReactNode; 
+  backContent: React.ReactNode;
+  index: number;
+}) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const { t } = useTranslation();
+
+  return (
+    <motion.div
+      className="relative h-64 cursor-pointer perspective-1000"
+      onClick={() => setIsFlipped(!isFlipped)}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6 + index * 0.15 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      data-testid={`flip-card-${index}`}
+    >
+      <motion.div
+        className="w-full h-full relative"
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ 
+          duration: 0.6, 
+          type: "spring", 
+          stiffness: 100,
+          damping: 15
+        }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Front */}
+        <div 
+          className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 shadow-lg hover:shadow-xl hover:shadow-primary/5 transition-shadow duration-300 p-6 flex flex-col items-center justify-center"
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          {frontContent}
+          <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1 text-xs text-muted-foreground/60">
+            <RotateCcw className="w-3 h-3" />
+            <span>{t('howItWorks.clickToFlip')}</span>
+          </div>
+        </div>
+        
+        {/* Back */}
+        <div 
+          className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-card border border-primary/20 shadow-xl p-6 flex flex-col items-center justify-center"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+        >
+          {backContent}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
@@ -79,28 +134,50 @@ export default function Home() {
             transition={{ delay: 0.5 }}
             className="text-center mt-32"
           >
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto" style={{ perspective: "1000px" }}>
               {[
-                { title: t('howItWorks.step1Title'), desc: t('howItWorks.step1Desc'), icon: "🔍" },
-                { title: t('howItWorks.step2Title'), desc: t('howItWorks.step2Desc'), icon: "📋" },
-                { title: t('howItWorks.step3Title'), desc: t('howItWorks.step3Desc'), icon: "🤝" }
+                { 
+                  title: t('howItWorks.step1Title'), 
+                  desc: t('howItWorks.step1Desc'), 
+                  back: t('howItWorks.step1Back'),
+                  Icon: Search 
+                },
+                { 
+                  title: t('howItWorks.step2Title'), 
+                  desc: t('howItWorks.step2Desc'), 
+                  back: t('howItWorks.step2Back'),
+                  Icon: ClipboardList 
+                },
+                { 
+                  title: t('howItWorks.step3Title'), 
+                  desc: t('howItWorks.step3Desc'), 
+                  back: t('howItWorks.step3Back'),
+                  Icon: Heart 
+                }
               ].map((step, i) => (
-                <motion.div 
-                  key={i} 
-                  className="flex flex-col items-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.15 }}
-                >
-                  <div className="relative mb-4">
-                    <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-lg border border-primary/20 flex items-center justify-center text-primary font-bold text-xl group-hover:scale-110 transition-transform duration-300">
-                      {i + 1}
-                    </div>
-                  </div>
-                  <h3 className="font-display font-bold text-lg mb-2 text-foreground group-hover:text-primary transition-colors">{step.title}</h3>
-                  <p className="text-muted-foreground text-sm text-center">{step.desc}</p>
-                </motion.div>
+                <FlipCard
+                  key={i}
+                  index={i}
+                  frontContent={
+                    <>
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-50" />
+                        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-lg border border-primary/20 flex items-center justify-center text-primary font-bold text-xl">
+                          {i + 1}
+                        </div>
+                      </div>
+                      <h3 className="font-display font-bold text-lg mb-2 text-foreground">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm text-center">{step.desc}</p>
+                    </>
+                  }
+                  backContent={
+                    <>
+                      <step.Icon className="w-10 h-10 text-primary mb-4" />
+                      <h3 className="font-display font-bold text-lg mb-3 text-foreground">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm text-center leading-relaxed">{step.back}</p>
+                    </>
+                  }
+                />
               ))}
             </div>
           </motion.div>
