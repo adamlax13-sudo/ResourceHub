@@ -158,7 +158,7 @@ export default function Recommended() {
                     onClick={() => setSelectedService(convertToServiceDetail(rec))}
                     data-testid={`card-recommendation-${rec.id}`}
                   >
-                    <CardHeader className="pb-3 min-w-0">
+                    <CardHeader className="pb-4 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
                           {rec.category}
@@ -176,7 +176,7 @@ export default function Recommended() {
                       </CardDescription>
                     </CardHeader>
                     
-                    <CardContent className="flex-1 pb-4 flex flex-col min-w-0">
+                    <CardContent className="flex-1 pb-6 flex flex-col min-w-0">
                       <div className="bg-muted/50 rounded-lg p-3 mb-4">
                         <p className="text-sm text-muted-foreground italic line-clamp-3 break-words">
                           <Sparkles className="w-3 h-3 inline mr-1 text-primary" />
@@ -215,7 +215,7 @@ export default function Recommended() {
                       </div>
                     </CardContent>
                     
-                    <CardFooter className="pt-3 border-t flex gap-2">
+                    <CardFooter className="pt-4 border-t flex gap-2">
                       <Button
                         className="flex-1"
                         variant={isFavorited(rec.id) ? "secondary" : "default"}
