@@ -16,7 +16,12 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
       onClick={onClick}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
       className="group cursor-pointer h-full"
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${service.name} - ${service.category}`}
+      data-testid={`card-service-${service.id}`}
     >
       <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
         {/* Geometric triangle accent - inspired by ROC logo */}
@@ -42,12 +47,12 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
 
         <div className="space-y-3 mt-auto">
           <div className="flex items-center text-sm text-slate-600">
-            <MapPin className="w-4 h-4 mr-2 text-primary/60" />
-            <span className="truncate">{service.location}</span>
+            <MapPin className="w-4 h-4 mr-2 text-primary/60" aria-hidden="true" />
+            <span className="truncate"><span className="sr-only">Location: </span>{service.location}</span>
           </div>
           <div className="flex items-center text-sm text-slate-600">
-            <Clock className="w-4 h-4 mr-2 text-primary/60" />
-            <span className="truncate">{service.waitTimes}</span>
+            <Clock className="w-4 h-4 mr-2 text-primary/60" aria-hidden="true" />
+            <span className="truncate"><span className="sr-only">Wait time: </span>{service.waitTimes}</span>
           </div>
         </div>
 

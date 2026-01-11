@@ -72,19 +72,20 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     onClick={handleFavorite}
                     disabled={addFavorite.isPending}
                     className="gap-2"
+                    aria-label={`Save ${service.name} to my resources`}
                     data-testid="button-save-resource"
                   >
                     {addFavorite.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                     ) : (
-                      <Heart className="w-4 h-4" />
+                      <Heart className="w-4 h-4" aria-hidden="true" />
                     )}
                     {t('service.save')}
                   </Button>
                 )}
                 {isFavorited && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    <CheckCircle className="w-3 h-3 mr-1" />
+                  <Badge variant="secondary" className="bg-green-100 text-green-700" aria-label="Service saved">
+                    <CheckCircle className="w-3 h-3 mr-1" aria-hidden="true" />
                     {t('service.saved')}
                   </Badge>
                 )}
@@ -185,9 +186,13 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </div>
 
                   <div className="pt-6 border-t border-border">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl shadow-lg shadow-primary/20">
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl shadow-lg shadow-primary/20"
+                      aria-label={`Contact ${service.name}`}
+                      data-testid="button-contact-provider"
+                    >
                       {t('service.contactProvider')}
-                      <ExternalLink className="ml-2 w-4 h-4" />
+                      <ExternalLink className="ml-2 w-4 h-4" aria-hidden="true" />
                     </Button>
                     <p className="text-center text-xs text-muted-foreground mt-3">
                       {t('service.externalLink')}
