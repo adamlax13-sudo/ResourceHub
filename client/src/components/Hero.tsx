@@ -34,11 +34,10 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       {/* Navigation */}
       <div className="absolute top-0 left-0 right-0 z-20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          {/* Logo with transparent background effect */}
           <img 
             src={rocLogo} 
             alt="ROC Logo" 
-            className="h-10 w-auto mix-blend-screen brightness-150" 
+            className="h-12 w-auto" 
           />
           
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
