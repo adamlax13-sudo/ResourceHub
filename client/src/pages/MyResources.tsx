@@ -111,7 +111,7 @@ export default function MyResources() {
         {categories.length > 0 && (
           <div className="mb-8">
             <Tabs defaultValue="all" onValueChange={setFilter}>
-              <TabsList className="bg-muted">
+              <TabsList className="bg-muted flex-wrap h-auto gap-1 p-1">
                 <TabsTrigger value="all" data-testid="tab-all">{t('myResources.all')}</TabsTrigger>
                 {categories.map(cat => (
                   <TabsTrigger key={cat} value={cat} data-testid={`tab-${cat}`}>
@@ -137,38 +137,41 @@ export default function MyResources() {
                 >
                   <Card className="overflow-hidden">
                     <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="bg-primary/10 text-primary shrink-0">
                               {fav.category}
                             </Badge>
                             {fav.status === "in_progress" && (
-                              <Badge className="bg-orange-100 text-orange-700">
+                              <Badge className="bg-orange-100 text-orange-700 shrink-0">
                                 <PlayCircle className="w-3 h-3 mr-1" />
                                 {t('myResources.inProgress')}
                               </Badge>
                             )}
                           </div>
-                          <CardTitle className="text-xl">{fav.serviceName}</CardTitle>
+                          <CardTitle className="text-lg sm:text-xl break-words line-clamp-2">{fav.serviceName}</CardTitle>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 shrink-0">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleStatusToggle(fav)}
                             disabled={updateFavorite.isPending}
+                            className="text-xs sm:text-sm"
                             data-testid={`button-toggle-status-${fav.id}`}
                           >
                             {fav.status === "in_progress" ? (
                               <>
                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                {t('myResources.markSaved')}
+                                <span className="hidden sm:inline">{t('myResources.markSaved')}</span>
+                                <span className="sm:hidden">Done</span>
                               </>
                             ) : (
                               <>
                                 <PlayCircle className="w-4 h-4 mr-1" />
-                                {t('myResources.startProcess')}
+                                <span className="hidden sm:inline">{t('myResources.startProcess')}</span>
+                                <span className="sm:hidden">Start</span>
                               </>
                             )}
                           </Button>

@@ -57,10 +57,10 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-2xl md:rounded-3xl">
-        <div className="flex flex-col h-full">
+      <DialogContent className="max-w-4xl w-[95vw] md:w-full h-[85vh] md:h-[90vh] max-h-[85vh] md:max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-xl md:rounded-3xl">
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Header - compact on mobile */}
-          <div className="bg-card px-4 py-4 md:px-8 md:py-6 border-b border-border flex-shrink-0">
+          <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Badge className="w-fit bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none">
@@ -99,8 +99,8 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
             </div>
           </div>
 
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="p-6 md:p-8 grid md:grid-cols-12 gap-8">
+          <ScrollArea className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 140px)' }}>
+            <div className="p-4 md:p-8 grid md:grid-cols-12 gap-6 md:gap-8">
               
               {/* Left Column: Process & Requirements */}
               <div className="md:col-span-7 space-y-8">
