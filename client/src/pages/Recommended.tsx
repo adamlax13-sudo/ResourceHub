@@ -7,7 +7,7 @@ import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Sparkles, Loader2, Heart, ExternalLink, MapPin, Phone, Clock, User, LogOut, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, Heart, ExternalLink, MapPin, Phone, Clock, User, LogOut, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -86,8 +86,8 @@ export default function Recommended() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-back">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
+                {t('nav.home')}
               </Button>
             </Link>
             <div className="flex items-center gap-2 sm:gap-3">

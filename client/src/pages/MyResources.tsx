@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -105,8 +105,8 @@ export default function MyResources() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-back">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
+                {t('nav.home')}
               </Button>
             </Link>
             <div className="flex items-center gap-2 sm:gap-3">

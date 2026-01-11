@@ -8,6 +8,7 @@
     "footer": "© 2025 Recovery on Campus Resource Hub. Information provided for guidance only."
   },
   "nav": {
+    "home": "Home",
     "myResources": "My Resources",
     "signIn": "Sign In",
     "signInHint": "Use email or social login",
