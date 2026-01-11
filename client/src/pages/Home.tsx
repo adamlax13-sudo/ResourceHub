@@ -5,7 +5,6 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceModal } from "@/components/ServiceModal";
 import { WelcomeModal } from "@/components/WelcomeModal";
-import { RocRunnerGame } from "@/components/RocRunnerGame";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw } from "lucide-react";
@@ -79,11 +78,6 @@ export default function Home() {
     <div className="min-h-screen bg-background font-sans">
       <WelcomeModal />
       <Hero onSearch={handleSearch} isLoading={isPending} />
-
-      {/* ROC Runner Mini-Game */}
-      <div className="relative z-10 -mt-6 mb-4">
-        <RocRunnerGame />
-      </div>
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
         <AnimatePresence mode="wait">
