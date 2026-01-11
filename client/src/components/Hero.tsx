@@ -333,18 +333,17 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
                   data-testid="toggle-search-mode"
                   aria-label={`Switch to ${searchMode === 'fast' ? 'comprehensive' : 'fast'} search`}
                 >
-                  {/* Sliding indicator - uses CSS grid for responsive sizing */}
+                  {/* Sliding indicator - uses transform for consistent animation speed */}
                   <motion.div
-                    className="absolute inset-y-1 rounded-full bg-white shadow-lg"
+                    className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-white shadow-lg"
                     initial={false}
                     animate={{
-                      left: searchMode === 'fast' ? '4px' : '50%',
-                      right: searchMode === 'fast' ? '50%' : '4px',
+                      x: searchMode === 'fast' ? 0 : 'calc(100% + 4px)',
                     }}
                     transition={{
                       type: "spring",
-                      stiffness: 500,
-                      damping: 30,
+                      stiffness: 700,
+                      damping: 35,
                     }}
                     style={{
                       boxShadow: '0 0 12px rgba(255,255,255,0.3)',
