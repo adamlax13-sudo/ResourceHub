@@ -37,7 +37,7 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
           </Badge>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors break-words">
+        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors break-words overflow-hidden line-clamp-2">
           {service.name}
         </h3>
         
