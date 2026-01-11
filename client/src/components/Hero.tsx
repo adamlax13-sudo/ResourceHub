@@ -40,7 +40,7 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               alt="ROC Logo" 
               className="h-12 w-auto" 
             />
-            <span className="font-display font-bold text-white text-lg hidden sm:block">Recovery on Campus Alberta</span>
+            <span className="font-display font-bold text-white text-lg hidden sm:block leading-tight">Recovery on<br />Campus Alberta</span>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
