@@ -443,30 +443,31 @@ PERSONALIZATION:
 - PRIORITIZE services geographically close to user's location when specified
 
 PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
-- Provide as many steps as needed (typically 3-8) to accurately reflect how someone actually accesses this service
-- Simple services (crisis lines) may need only 3-4 steps; complex services (intake assessments) may need 6-8
+- IMPORTANT: Different services have DIFFERENT numbers of steps - vary based on actual complexity
+- Simple services (crisis lines, drop-ins) = 3-4 steps
+- Moderate services (counselling intake, peer support) = 4-6 steps  
+- Complex services (residential treatment, formal assessments) = 6-8 steps
 - Use ONLY verified contact info from the reference database - NEVER invent URLs
 - Include specific details: phone numbers, websites, hours, what to expect at each stage
 
-EXAMPLE for crisis line (simple - 4 steps):
-["Call 403-266-4357 - available 24/7",
- "Speak with trained crisis counselor",
- "Receive confidential support",
- "Get referrals if needed"]
+EXAMPLE crisis line (3 steps):
+["Call 403-266-4357 - available 24/7", "Speak with trained counselor", "Get referrals if needed"]
 
-EXAMPLE for Recovery College (moderate - 5 steps):
-["Visit recoverycollegecalgary.ca or call 403-297-1402",
- "Browse free courses on mental health and recovery",
- "No referral or account needed - FREE for 16+",
- "Register online or attend Wednesday drop-ins",
- "Attend peer-led session (virtual or in-person)"]
+EXAMPLE peer support drop-in (4 steps):
+["Visit recoverycollegecalgary.ca or call 403-297-1402", "Browse free courses", "No referral needed - FREE for 16+", "Attend peer-led session"]
 
-If unsure of exact details: "Contact [org] at [phone from database] to confirm current process"
+EXAMPLE university counselling (6 steps):
+["Visit campus counselling website", "Complete online intake form", "Wait for email confirmation (1-3 days)", "Book initial phone screening", "Attend assessment appointment", "Begin regular counselling sessions"]
 
-Return JSON:
-{"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended for this user","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step with real contact info","Step 2","Step 3","Step 4"],"waitTimes":"Realistic estimate","requiredDocs":["Required doc"]}],"summary":"Personalized summary"}
+EXAMPLE residential treatment (8 steps):
+["Call 1-866-332-2322 Addiction Helpline for referral", "Complete phone screening assessment", "Gather required documents (ID, health card)", "Attend in-person intake interview", "Wait for bed availability (may be 1-4 weeks)", "Complete medical assessment on arrival", "Participate in orientation program", "Begin structured treatment program"]
 
-Recommend exactly 5 services.`;
+If unsure: "Contact [org] at [phone from database] to confirm current process"
+
+Return JSON (note: process array length varies by service complexity):
+{"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step 1...","Step 2...","...as many as needed for this specific service"],"waitTimes":"Estimate","requiredDocs":["Doc if any"]}],"summary":"Summary"}
+
+Recommend exactly 5 services with VARIED step counts reflecting each service's actual process.`;
 
       const completion = await openai.chat.completions.create({
         model: "gpt-5.1",
@@ -475,7 +476,7 @@ Recommend exactly 5 services.`;
           { role: "user", content: "Provide personalized recommendations." }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.3, // Lower temperature for faster, more consistent responses
+        temperature: 0.4, // Balanced temperature for consistency with variation in step counts
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
