@@ -71,7 +71,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     size="sm"
                     onClick={handleFavorite}
                     disabled={addFavorite.isPending}
-                    className="gap-2"
+                    className="gap-2 mr-8"
                     aria-label={`Save ${service.name} to my resources`}
                     data-testid="button-save-resource"
                   >
@@ -84,7 +84,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </Button>
                 )}
                 {isFavorited && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700" aria-label="Service saved">
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 mr-8" aria-label="Service saved">
                     <CheckCircle className="w-3 h-3 mr-1" aria-hidden="true" />
                     {t('service.saved')}
                   </Badge>
