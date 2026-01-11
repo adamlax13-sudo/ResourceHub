@@ -44,6 +44,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
       serviceId: service.id,
       serviceName: service.name,
       category: service.category,
+      serviceDetails: service,
     }, {
       onSuccess: () => {
         toast({

@@ -43,7 +43,11 @@
     "trackProgress": "Track Your Progress",
     "empty": "No saved resources yet",
     "emptyDesc": "Search for resources and save them here for easy access.",
-    "findResources": "Find Resources"
+    "findResources": "Find Resources",
+    "stepLabel": "Step {{num}}",
+    "visitLink": "Visit Website",
+    "serviceInfo": "Service Information",
+    "requiredDocs": "Required Documents"
   },
   "steps": {
     "step1": "Gather required documents",

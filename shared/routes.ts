@@ -22,6 +22,7 @@ export const favoriteSchema = z.object({
   category: z.string(),
   status: z.string(),
   completedSteps: z.array(z.number()),
+  serviceDetails: serviceDetailSchema.nullable().optional(),
   createdAt: z.string().nullable(),
 });
 
@@ -125,6 +126,7 @@ export const api = {
         serviceId: z.string(),
         serviceName: z.string(),
         category: z.string(),
+        serviceDetails: serviceDetailSchema.optional(),
       }),
       responses: {
         201: favoriteSchema,

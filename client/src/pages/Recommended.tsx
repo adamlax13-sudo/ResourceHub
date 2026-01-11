@@ -55,6 +55,7 @@ export default function Recommended() {
         serviceId: rec.id,
         serviceName: rec.name,
         category: rec.category,
+        serviceDetails: convertToServiceDetail(rec),
       });
       toast({
         title: t('toast.saved'),

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, buildUrl, type Favorite } from "@shared/routes";
+import { api, buildUrl, type Favorite, type ServiceDetail } from "@shared/routes";
 
 export function useFavorites() {
   return useQuery<Favorite[], Error>({
@@ -16,7 +16,7 @@ export function useFavorites() {
 export function useAddFavorite() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { serviceId: string; serviceName: string; category: string }) => {
+    mutationFn: async (data: { serviceId: string; serviceName: string; category: string; serviceDetails?: ServiceDetail }) => {
       const res = await fetch(api.favorites.add.path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

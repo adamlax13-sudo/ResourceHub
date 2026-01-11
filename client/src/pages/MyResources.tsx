@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2, LogOut } from "lucide-react";
+import { ArrowLeft, Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
-import type { Favorite } from "@shared/routes";
+import type { Favorite, ServiceDetail } from "@shared/routes";
 
 export default function MyResources() {
   const { user, isLoading: authLoading } = useAuth();
@@ -54,12 +54,25 @@ export default function MyResources() {
     updateFavorite.mutate({ id: fav.id, completedSteps: newSteps });
   };
 
-  const steps = [
-    t('steps.step1'),
-    t('steps.step2'),
-    t('steps.step3'),
-    t('steps.step4')
-  ];
+  const getServiceSteps = (fav: Favorite): string[] => {
+    const details = fav.serviceDetails as ServiceDetail | null;
+    if (details?.process && details.process.length > 0) {
+      return details.process;
+    }
+    return [
+      t('steps.step1'),
+      t('steps.step2'),
+      t('steps.step3'),
+      t('steps.step4')
+    ];
+  };
+
+  const extractContactInfo = (text: string) => {
+    const phoneMatch = text.match(/(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/);
+    const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    const urlMatch = text.match(/(https?:\/\/[^\s]+)/);
+    return { phone: phoneMatch?.[1], email: emailMatch?.[1], url: urlMatch?.[1] };
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -181,25 +194,125 @@ export default function MyResources() {
                             {t('myResources.trackProgress')}
                           </h4>
                           <div className="space-y-3">
-                            {steps.map((step, idx) => {
+                            {getServiceSteps(fav).map((step, idx) => {
                               const isCompleted = Array.isArray(fav.completedSteps) && fav.completedSteps.includes(idx);
+                              const contactInfo = extractContactInfo(step);
                               return (
                                 <div
                                   key={idx}
-                                  className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border"
+                                  className={`p-3 bg-card rounded-lg border border-border transition-colors ${isCompleted ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' : ''}`}
                                 >
-                                  <Checkbox
-                                    checked={isCompleted}
-                                    onCheckedChange={() => handleStepToggle(fav, idx)}
-                                    data-testid={`checkbox-step-${fav.id}-${idx}`}
-                                  />
-                                  <span className={`text-sm ${isCompleted ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                                    {step}
-                                  </span>
+                                  <div className="flex items-start gap-3">
+                                    <Checkbox
+                                      checked={isCompleted}
+                                      onCheckedChange={() => handleStepToggle(fav, idx)}
+                                      className="mt-0.5"
+                                      data-testid={`checkbox-step-${fav.id}-${idx}`}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <Badge variant="outline" className="text-xs shrink-0">
+                                          {t('myResources.stepLabel', { num: idx + 1 })}
+                                        </Badge>
+                                      </div>
+                                      <p className={`text-sm ${isCompleted ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                                        {step}
+                                      </p>
+                                      {(contactInfo.phone || contactInfo.email || contactInfo.url) && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                          {contactInfo.phone && (
+                                            <a 
+                                              href={`tel:${contactInfo.phone}`} 
+                                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                                              onClick={(e) => e.stopPropagation()}
+                                            >
+                                              <Phone className="w-3 h-3" />
+                                              {contactInfo.phone}
+                                            </a>
+                                          )}
+                                          {contactInfo.email && (
+                                            <a 
+                                              href={`mailto:${contactInfo.email}`} 
+                                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                                              onClick={(e) => e.stopPropagation()}
+                                            >
+                                              <Mail className="w-3 h-3" />
+                                              {contactInfo.email}
+                                            </a>
+                                          )}
+                                          {contactInfo.url && (
+                                            <a 
+                                              href={contactInfo.url} 
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                                              onClick={(e) => e.stopPropagation()}
+                                            >
+                                              <ExternalLink className="w-3 h-3" />
+                                              {t('myResources.visitLink')}
+                                            </a>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
                               );
                             })}
                           </div>
+                          
+                          {/* Service Contact Info Section */}
+                          {fav.serviceDetails && (
+                            <div className="mt-4 pt-4 border-t border-border">
+                              <h5 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wider">
+                                {t('myResources.serviceInfo')}
+                              </h5>
+                              <div className="grid gap-2 sm:grid-cols-2">
+                                {(fav.serviceDetails as ServiceDetail).location && (
+                                  <div className="flex items-start gap-2 text-sm">
+                                    <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                    <span className="text-muted-foreground">{(fav.serviceDetails as ServiceDetail).location}</span>
+                                  </div>
+                                )}
+                                {(fav.serviceDetails as ServiceDetail).contact && (
+                                  <div className="flex items-start gap-2 text-sm">
+                                    <Phone className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                    <span className="text-muted-foreground">{(fav.serviceDetails as ServiceDetail).contact}</span>
+                                  </div>
+                                )}
+                                {(fav.serviceDetails as ServiceDetail).waitTimes && (
+                                  <div className="flex items-start gap-2 text-sm">
+                                    <Clock className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                    <span className="text-muted-foreground">{(fav.serviceDetails as ServiceDetail).waitTimes}</span>
+                                  </div>
+                                )}
+                                {(fav.serviceDetails as ServiceDetail).eligibility && (
+                                  <div className="flex items-start gap-2 text-sm">
+                                    <CheckCircle className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                    <span className="text-muted-foreground">{(fav.serviceDetails as ServiceDetail).eligibility}</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Required Documents */}
+                              {(fav.serviceDetails as ServiceDetail).requiredDocs && (fav.serviceDetails as ServiceDetail).requiredDocs.length > 0 && (
+                                <div className="mt-3 pt-3 border-t border-border">
+                                  <h6 className="font-semibold text-xs mb-2 text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                    <FileText className="w-3 h-3" />
+                                    {t('myResources.requiredDocs')}
+                                  </h6>
+                                  <ul className="space-y-1">
+                                    {(fav.serviceDetails as ServiceDetail).requiredDocs.map((doc, idx) => (
+                                      <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                        <span className="text-primary">•</span>
+                                        {doc}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     )}

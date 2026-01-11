@@ -92,7 +92,10 @@ export async function registerRoutes(
     
     const fav = await storage.addFavorite({
       userId: user.id,
-      ...input,
+      serviceId: input.serviceId,
+      serviceName: input.serviceName,
+      category: input.category,
+      serviceDetails: input.serviceDetails || null,
       status: 'saved',
       completedSteps: []
     });

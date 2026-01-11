@@ -46,6 +46,8 @@ export const favorites = pgTable("favorites", {
   category: text("category").notNull(),
   status: text("status").notNull().default("saved"), // 'saved', 'in_progress', 'completed'
   completedSteps: jsonb("completed_steps").notNull().default([]),
+  // Store full service details for comprehensive process tracking
+  serviceDetails: jsonb("service_details"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
