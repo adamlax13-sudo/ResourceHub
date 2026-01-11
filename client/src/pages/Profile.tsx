@@ -118,6 +118,18 @@ const UNIVERSITY_OPTIONS = [
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
 
+const DISABILITY_OPTIONS = [
+  { value: "none", label: "No disability" },
+  { value: "physical", label: "Physical/Mobility disability" },
+  { value: "sensory", label: "Sensory disability (vision, hearing)" },
+  { value: "cognitive", label: "Cognitive/Learning disability" },
+  { value: "mental-health", label: "Mental health condition" },
+  { value: "chronic", label: "Chronic illness/Invisible disability" },
+  { value: "multiple", label: "Multiple disabilities" },
+  { value: "other", label: "Other" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
 const SERVICE_FORMAT_OPTIONS = [
   { value: "virtual", label: "Virtual/Online" },
   { value: "in-person", label: "In-Person" },
@@ -149,6 +161,7 @@ export default function Profile() {
       religion: null,
       inAddiction: null,
       university: null,
+      disability: null,
       serviceFormat: null,
       supportStyle: null,
     },
@@ -165,6 +178,7 @@ export default function Profile() {
         religion: profile.religion || null,
         inAddiction: profile.inAddiction || null,
         university: profile.university || null,
+        disability: profile.disability || null,
         serviceFormat: profile.serviceFormat || null,
         supportStyle: profile.supportStyle || null,
       });
@@ -491,6 +505,34 @@ export default function Profile() {
                           </SelectContent>
                         </Select>
                         <FormDescription>{t('profile.universityDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="disability"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.disability')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-disability">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {DISABILITY_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.disabilityDesc')}</FormDescription>
                       </FormItem>
                     )}
                   />

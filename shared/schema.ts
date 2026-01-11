@@ -26,6 +26,8 @@ export const users = pgTable("users", {
   religion: varchar("religion"),
   inAddiction: varchar("in_addiction"),
   university: varchar("university"),
+  // Accessibility
+  disability: varchar("disability"), // none, physical, sensory, cognitive, mental-health, chronic, multiple, other, prefer-not-to-say
   // Service delivery preferences
   serviceFormat: varchar("service_format"), // virtual, in-person, no-preference
   supportStyle: varchar("support_style"), // one-on-one, group, no-preference
@@ -68,6 +70,7 @@ export const updateDemographicsSchema = z.object({
   religion: z.string().optional().nullable(),
   inAddiction: z.string().optional().nullable(),
   university: z.string().optional().nullable(),
+  disability: z.string().optional().nullable(),
   serviceFormat: z.string().optional().nullable(),
   supportStyle: z.string().optional().nullable(),
 });
