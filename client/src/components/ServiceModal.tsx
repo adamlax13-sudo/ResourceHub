@@ -189,9 +189,9 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 </section>
               </div>
 
-              {/* Right Column: Key Info Card */}
+              {/* Right Column: Key Info Card - sticky on desktop */}
               <div className="md:col-span-5">
-                <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+                <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden md:sticky md:top-0 z-10">
                   <h3 className="font-bold text-lg border-b border-border px-6 py-4">{t('service.keyInfo')}</h3>
 
                   <div className="p-6 pt-4 space-y-4">
