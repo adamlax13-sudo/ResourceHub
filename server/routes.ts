@@ -381,6 +381,8 @@ Return JSON matching:
         user.religion || '',
         user.inAddiction || '',
         user.university || '',
+        user.location || '',
+        user.customLocation || '',
         user.disability || '',
         user.serviceFormat || '',
         user.supportStyle || '',
@@ -404,6 +406,10 @@ Return JSON matching:
       if (user.religion) demographics.push(`faith:${user.religion}`);
       if (user.inAddiction) demographics.push(`recovery:${user.inAddiction}`);
       if (user.university) demographics.push(`school:${user.university}`);
+      const userLocation = user.location === 'other' && user.customLocation 
+        ? user.customLocation 
+        : user.location?.replace(/-/g, ' ');
+      if (userLocation) demographics.push(`location:${userLocation}`);
       if (user.disability) demographics.push(`disability:${user.disability}`);
       if (user.serviceFormat) demographics.push(`format:${user.serviceFormat}`);
       if (user.supportStyle) demographics.push(`style:${user.supportStyle}`);
@@ -424,7 +430,9 @@ ${ALBERTA_SERVICES_REFERENCE}
 
 USER PROFILE: ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general recommendations'}
 ${favCategoriesList.length > 0 ? `Favorite categories: ${favCategoriesList.join(', ')}` : ''}
-${user.university ? `Campus: ${user.university.replace(/-/g, ' ')} - prioritize on-campus/nearby services` : ''}
+${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - prioritize on-campus/nearby services` : ''}
+${user.university === 'in-highschool' ? 'User is a high school student - prioritize youth services and resources appropriate for under-18' : ''}
+${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - prioritize services in or near this city` : ''}
 
 PERSONALIZATION:
 - Match services to user identity (LGBTQ2S+, Indigenous, age-appropriate, faith-based if relevant)
@@ -432,6 +440,7 @@ PERSONALIZATION:
 - Include campus services if university specified
 - Consider disability accommodations if indicated
 - Suggest similar services to favorites but in unexplored categories
+- PRIORITIZE services geographically close to user's location when specified
 
 PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
 - Provide as many steps as needed (typically 3-8) to accurately reflect how someone actually accesses this service

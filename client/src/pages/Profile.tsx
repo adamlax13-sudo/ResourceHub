@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Loader2, Check, LogOut, Sparkles, Heart } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { User, Loader2, Check, LogOut, Sparkles, Heart, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -97,6 +98,8 @@ const ADDICTION_OPTIONS = [
 ];
 
 const UNIVERSITY_OPTIONS = [
+  { value: "not-in-university", label: "Not currently in post-secondary" },
+  { value: "in-highschool", label: "In High School" },
   { value: "university-of-alberta", label: "University of Alberta" },
   { value: "university-of-calgary", label: "University of Calgary" },
   { value: "university-of-lethbridge", label: "University of Lethbridge" },
@@ -115,6 +118,33 @@ const UNIVERSITY_OPTIONS = [
   { value: "medicine-hat-college", label: "Medicine Hat College" },
   { value: "olds-college", label: "Olds College" },
   { value: "other", label: "Other Alberta Institution" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
+const LOCATION_OPTIONS = [
+  { value: "calgary", label: "Calgary" },
+  { value: "edmonton", label: "Edmonton" },
+  { value: "red-deer", label: "Red Deer" },
+  { value: "lethbridge", label: "Lethbridge" },
+  { value: "st-albert", label: "St. Albert" },
+  { value: "medicine-hat", label: "Medicine Hat" },
+  { value: "grande-prairie", label: "Grande Prairie" },
+  { value: "airdrie", label: "Airdrie" },
+  { value: "spruce-grove", label: "Spruce Grove" },
+  { value: "leduc", label: "Leduc" },
+  { value: "fort-mcmurray", label: "Fort McMurray" },
+  { value: "lloydminster", label: "Lloydminster" },
+  { value: "camrose", label: "Camrose" },
+  { value: "brooks", label: "Brooks" },
+  { value: "cold-lake", label: "Cold Lake" },
+  { value: "wetaskiwin", label: "Wetaskiwin" },
+  { value: "banff", label: "Banff" },
+  { value: "canmore", label: "Canmore" },
+  { value: "okotoks", label: "Okotoks" },
+  { value: "cochrane", label: "Cochrane" },
+  { value: "sherwood-park", label: "Sherwood Park" },
+  { value: "fort-saskatchewan", label: "Fort Saskatchewan" },
+  { value: "other", label: "Other (specify below)" },
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
 
@@ -161,11 +191,15 @@ export default function Profile() {
       religion: null,
       inAddiction: null,
       university: null,
+      location: null,
+      customLocation: null,
       disability: null,
       serviceFormat: null,
       supportStyle: null,
     },
   });
+
+  const watchLocation = form.watch("location");
 
   useEffect(() => {
     if (profile) {
@@ -178,6 +212,8 @@ export default function Profile() {
         religion: profile.religion || null,
         inAddiction: profile.inAddiction || null,
         university: profile.university || null,
+        location: profile.location || null,
+        customLocation: profile.customLocation || null,
         disability: profile.disability || null,
         serviceFormat: profile.serviceFormat || null,
         supportStyle: profile.supportStyle || null,
@@ -508,6 +544,58 @@ export default function Profile() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          {t('profile.location')}
+                        </FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-location">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {LOCATION_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.locationDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  {watchLocation === "other" && (
+                    <FormField
+                      control={form.control}
+                      name="customLocation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('profile.customLocation')}</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder={t('profile.customLocationPlaceholder')}
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              data-testid="input-custom-location"
+                            />
+                          </FormControl>
+                          <FormDescription>{t('profile.customLocationDesc')}</FormDescription>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={form.control}

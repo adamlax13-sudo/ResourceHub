@@ -26,6 +26,9 @@ export const users = pgTable("users", {
   religion: varchar("religion"),
   inAddiction: varchar("in_addiction"),
   university: varchar("university"),
+  // Location
+  location: varchar("location"), // Major Alberta cities or "other"
+  customLocation: varchar("custom_location"), // Custom text when location is "other"
   // Accessibility
   disability: varchar("disability"), // none, physical, sensory, cognitive, mental-health, chronic, multiple, other, prefer-not-to-say
   // Service delivery preferences
@@ -78,6 +81,8 @@ export const updateDemographicsSchema = z.object({
   religion: z.string().optional().nullable(),
   inAddiction: z.string().optional().nullable(),
   university: z.string().optional().nullable(),
+  location: z.string().optional().nullable(),
+  customLocation: z.string().optional().nullable(),
   disability: z.string().optional().nullable(),
   serviceFormat: z.string().optional().nullable(),
   supportStyle: z.string().optional().nullable(),

@@ -56,13 +56,14 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts
 - **Tables**: 
   - `sessions` - Authentication session storage
-  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, disability, serviceFormat, supportStyle, profileCompleted)
+  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, location, customLocation, disability, serviceFormat, supportStyle, profileCompleted)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
   - `recommendations_cache` - Cached AI recommendations based on profile hash
 
 ### User Profile & Personalization
-- **Optional Demographics**: 11 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college, disability status, service format preference (virtual/in-person), support style preference (one-on-one/group) (all optional)
+- **Optional Demographics**: 13 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college (includes "Not in university" and "In High School" options), location (major Alberta cities dropdown), custom location (text input when "Other" selected), disability status, service format preference (virtual/in-person), support style preference (one-on-one/group) (all optional)
+- **Location-Based Recommendations**: User's location is used to prioritize geographically relevant services in AI recommendations
 - **Profile Page**: /profile - Form to manage demographic preferences with descriptive help text
 - **Recommendations Page**: /recommended - AI-powered personalized service recommendations
 - **Privacy**: Demographics used only for recommendations, never shared with third parties
