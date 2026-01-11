@@ -32,11 +32,10 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
       toast({
         title: t('auth.signInRequired'),
         description: t('auth.signInToSave'),
-        variant: "destructive",
       });
       setTimeout(() => {
         window.location.href = "/api/login";
-      }, 1000);
+      }, 2000);
       return;
     }
 

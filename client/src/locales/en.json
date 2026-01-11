@@ -68,8 +68,8 @@
     "clickToFlip": "Click to learn more"
   },
   "auth": {
-    "signInRequired": "Sign in required",
-    "signInToSave": "Please sign in to save resources to your hub.",
+    "signInRequired": "Create an Account to Save",
+    "signInToSave": "With a free account, you can save resources to your personal hub and track your progress as you access them. Redirecting to sign in...",
     "stayLoggedIn": "Stay logged in for 30 days",
     "easyLogin": "Quick and easy - use your email or a social account"
   },
