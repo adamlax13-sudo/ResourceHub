@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
-import { ServiceModal } from "@/components/ServiceModal";
-import { WelcomeModal } from "@/components/WelcomeModal";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw } from "lucide-react";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+
+const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
+const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
 
 function FlipCard({ frontContent, backContent, index }: { 
   frontContent: React.ReactNode; 
@@ -76,7 +77,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
-      <WelcomeModal />
+      <Suspense fallback={null}>
+        <WelcomeModal />
+      </Suspense>
       <Hero onSearch={handleSearch} isLoading={isPending} />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
@@ -185,11 +188,13 @@ export default function Home() {
       </div>
 
       {/* Service Details Modal */}
-      <ServiceModal
-        service={selectedService}
-        isOpen={!!selectedService}
-        onClose={() => setSelectedService(null)}
-      />
+      <Suspense fallback={null}>
+        <ServiceModal
+          service={selectedService}
+          isOpen={!!selectedService}
+          onClose={() => setSelectedService(null)}
+        />
+      </Suspense>
 
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-2">
