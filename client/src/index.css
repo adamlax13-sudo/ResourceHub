@@ -177,6 +177,12 @@ input[type="search"]::-webkit-search-cancel-button {
   .preserve-3d {
     transform-style: preserve-3d;
   }
+  
+  /* Text overflow utilities for long URLs */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 /* Reduced Motion Support - Accessibility */

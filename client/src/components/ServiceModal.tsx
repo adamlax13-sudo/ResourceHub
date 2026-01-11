@@ -124,9 +124,9 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </h3>
                   <div className="grid gap-3">
                     {service.requiredDocs.map((doc, idx) => (
-                      <div key={idx} className="flex items-start gap-3 bg-card p-4 rounded-xl shadow-sm border border-border">
+                      <div key={idx} className="flex items-start gap-3 bg-card p-4 rounded-xl shadow-sm border border-border min-w-0">
                         <FileText className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm text-foreground font-medium">{doc}</span>
+                        <span className="text-sm text-foreground font-medium break-words min-w-0">{doc}</span>
                       </div>
                     ))}
                     {service.requiredDocs.length === 0 && (
@@ -144,43 +144,43 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   <h3 className="font-bold text-lg border-b border-border pb-4">{t('service.keyInfo')}</h3>
 
                   <div className="space-y-4">
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <Clock className="w-4 h-4 text-primary" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
-                        <div className="font-medium text-foreground mt-0.5">{service.waitTimes}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{service.waitTimes}</div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.eligibility')}</div>
-                        <div className="font-medium text-foreground mt-0.5">{service.eligibility}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{service.eligibility}</div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
                         <MapPin className="w-4 h-4 text-orange-600" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
-                        <div className="font-medium text-foreground mt-0.5">{service.location}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{service.location}</div>
                       </div>
                     </div>
                     
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <Phone className="w-4 h-4 text-primary" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.contact')}</div>
-                        <div className="font-medium text-foreground mt-0.5 break-words">{service.contact}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-all">{service.contact}</div>
                       </div>
                     </div>
                   </div>

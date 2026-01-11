@@ -25,9 +25,9 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
               <span className="text-xs font-bold text-primary">{index + 1}</span>
             </div>
 
-            <div className="glass-card p-4 md:p-5 hover:shadow-md transition-shadow">
+            <div className="glass-card p-4 md:p-5 hover:shadow-md transition-shadow overflow-hidden">
               <h4 className="font-semibold text-foreground mb-1">Step {index + 1}</h4>
-              <p className="text-muted-foreground text-sm leading-relaxed">{step}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed break-words overflow-wrap-anywhere">{step}</p>
             </div>
           </motion.div>
         ))}
