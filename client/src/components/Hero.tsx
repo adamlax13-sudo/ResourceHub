@@ -335,15 +335,16 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
                 >
                   {/* Sliding indicator - uses transform for consistent animation speed */}
                   <motion.div
-                    className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-white shadow-lg"
+                    className="absolute inset-y-1 rounded-full bg-white shadow-lg"
                     initial={false}
                     animate={{
-                      x: searchMode === 'fast' ? 0 : 'calc(100% + 4px)',
+                      left: searchMode === 'fast' ? '4px' : 'calc(50% + 2px)',
+                      right: searchMode === 'fast' ? 'calc(50% + 2px)' : '4px',
                     }}
                     transition={{
-                      type: "spring",
-                      stiffness: 700,
-                      damping: 35,
+                      type: "tween",
+                      duration: 0.15,
+                      ease: "easeOut",
                     }}
                     style={{
                       boxShadow: '0 0 12px rgba(255,255,255,0.3)',
