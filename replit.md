@@ -121,6 +121,12 @@ Preferred communication style: Simple, everyday language.
 - **Search results**: Cached in database to avoid repeat AI calls
 - **React Query**: staleTime: Infinity prevents unnecessary refetches
 
+### Background Prefetching
+- **Recommendations**: Prefetched after sign-in using requestIdleCallback
+- **Low priority**: Runs only when browser is idle (after 1.5s fallback)
+- **Hook**: client/src/hooks/use-prefetch-recommendations.ts
+- **Cache**: Data ready before user navigates to Recommended page
+
 ### Accessibility
 - **Reduced motion**: CSS @media (prefers-reduced-motion: reduce) disables animations
 - **Smooth scrolling**: Only for users who prefer motion
