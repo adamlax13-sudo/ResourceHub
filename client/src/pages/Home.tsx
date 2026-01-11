@@ -81,17 +81,26 @@ export default function Home() {
           >
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {[
-                { title: t('howItWorks.step1Title'), desc: t('howItWorks.step1Desc') },
-                { title: t('howItWorks.step2Title'), desc: t('howItWorks.step2Desc') },
-                { title: t('howItWorks.step3Title'), desc: t('howItWorks.step3Desc') }
+                { title: t('howItWorks.step1Title'), desc: t('howItWorks.step1Desc'), icon: "🔍" },
+                { title: t('howItWorks.step2Title'), desc: t('howItWorks.step2Desc'), icon: "📋" },
+                { title: t('howItWorks.step3Title'), desc: t('howItWorks.step3Desc'), icon: "🤝" }
               ].map((step, i) => (
-                <div key={i} className="flex flex-col items-center p-6">
-                  <div className="w-12 h-12 rounded-2xl bg-card shadow-lg border border-border flex items-center justify-center text-primary font-bold text-xl mb-4">
-                    {i + 1}
+                <motion.div 
+                  key={i} 
+                  className="flex flex-col items-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + i * 0.15 }}
+                >
+                  <div className="relative mb-4">
+                    <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-lg border border-primary/20 flex items-center justify-center text-primary font-bold text-xl group-hover:scale-110 transition-transform duration-300">
+                      {i + 1}
+                    </div>
                   </div>
-                  <h3 className="font-display font-bold text-lg mb-2 text-foreground">{step.title}</h3>
-                  <p className="text-muted-foreground text-sm">{step.desc}</p>
-                </div>
+                  <h3 className="font-display font-bold text-lg mb-2 text-foreground group-hover:text-primary transition-colors">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm text-center">{step.desc}</p>
+                </motion.div>
               ))}
             </div>
           </motion.div>

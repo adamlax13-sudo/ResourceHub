@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -27,14 +26,13 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
 
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground pt-20 pb-32 md:pt-28 md:pb-48 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
+      {/* Animated gradient overlay for extra flair */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-purple-900/50 opacity-90" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
+      
       {/* Navigation */}
       <div className="absolute top-0 left-0 right-0 z-20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img src={rocLogo} alt="ROC Logo" className="h-10 w-auto" />
-            <span className="font-display font-bold text-white text-lg hidden sm:block">{t('app.name')}</span>
-          </div>
-          
+        <div className="container mx-auto px-4 py-4 flex justify-end items-center">
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
             <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
             {!authLoading && user ? (
@@ -87,26 +85,60 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
         </div>
       </div>
 
-      {/* Geometric Background Pattern - Inspired by ROC crystalline triangle */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        <svg className="absolute -top-20 -left-20 w-96 h-96" viewBox="0 0 200 200" fill="none">
+      {/* Geometric Background Pattern - Inspired by ROC crystalline triangle with animation */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-15 pointer-events-none">
+        <motion.svg 
+          className="absolute -top-20 -left-20 w-96 h-96" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+        >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="1" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
-        </svg>
-        <svg className="absolute top-1/4 right-0 w-72 h-72 rotate-45" viewBox="0 0 200 200" fill="none">
+        </motion.svg>
+        <motion.svg 
+          className="absolute top-1/4 right-0 w-72 h-72 rotate-45" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.05, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
-        </svg>
-        <svg className="absolute bottom-10 left-1/4 w-48 h-48 -rotate-12" viewBox="0 0 200 200" fill="none">
+        </motion.svg>
+        <motion.svg 
+          className="absolute bottom-10 left-1/4 w-48 h-48 -rotate-12" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
-        </svg>
+        </motion.svg>
+        {/* Additional floating particles */}
+        <motion.div 
+          className="absolute top-1/3 left-1/3 w-2 h-2 bg-white rounded-full"
+          animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute top-2/3 right-1/3 w-1.5 h-1.5 bg-white rounded-full"
+          animate={{ y: [0, -15, 0], opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-white rounded-full"
+          animate={{ y: [0, -10, 0], opacity: [0.2, 0.7, 0.2] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
       </div>
 
       <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center mt-8">
@@ -131,12 +163,14 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           className="relative max-w-2xl mx-auto"
         >
           <div className="relative group">
+            {/* Glow effect on focus */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('app.searchPlaceholder')}
-              className="w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground"
+              className="relative w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               disabled={isLoading}
               data-testid="input-search"
             />
