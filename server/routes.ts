@@ -200,76 +200,65 @@ Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Se
 
 ${ALBERTA_SERVICES_REFERENCE}
 
-ACCURATE PROCESS STEPS - Provide realistic, complete steps for accessing each service type:
+SERVICE-SPECIFIC PROCESS STEPS REQUIREMENT:
+Each service MUST have process steps that are UNIQUE and SPECIFIC to that exact organization. DO NOT use generic templates.
 
-CRISIS/HELPLINE SERVICES:
-1. Call the helpline number (available 24/7)
-2. Speak with a trained crisis counselor who will assess your situation
-3. Receive immediate support, coping strategies, and safety planning
-4. Get referrals to ongoing services if needed
-5. Follow-up may be offered depending on the service
+For each service, research and provide the ACTUAL intake process based on:
+1. That organization's specific intake method (phone, online form, walk-in, referral required, etc.)
+2. Their actual contact numbers, websites, and booking systems
+3. What actually happens when someone contacts that specific service
+4. Any unique requirements or steps specific to that program
+5. Real operating hours, locations, and service-specific procedures
 
-CAMPUS COUNSELLING SERVICES:
-1. Visit the counselling centre website or call to book an appointment
-2. Complete an online intake form or phone screening
-3. Attend an initial assessment session (usually 30-60 minutes)
-4. Work with intake counselor to determine appropriate services
-5. Begin regular counselling sessions (frequency varies based on need)
-6. May be referred to external services if specialized care is needed
+EXAMPLES OF SERVICE-SPECIFIC PROCESS STEPS:
 
-COMMUNITY MENTAL HEALTH (e.g., CMHA, Access 24/7):
-1. Call intake line or walk in during open hours
-2. Complete intake paperwork and consent forms
-3. Meet with an intake worker for initial assessment
-4. Discuss treatment options and develop a care plan
-5. Get matched with appropriate programs or counselor
-6. Begin services (may include individual, group, or workshop options)
+For "Distress Centre Calgary":
+- "Call 403-266-4357 (available 24/7, 365 days)"
+- "A trained volunteer crisis counselor will answer and ask how they can help"
+- "Share what you're going through - calls are confidential and anonymous"
+- "Receive emotional support, crisis intervention, and coping strategies"
+- "Get referrals to Calgary-area resources if ongoing support is needed"
 
-RESIDENTIAL TREATMENT PROGRAMS:
-1. Contact the facility or call provincial intake line (1-866-332-2322)
-2. Complete a phone screening or assessment
-3. Provide medical history and current medication information
-4. Attend an in-person assessment if required
-5. Complete any required medical clearance or detox if needed
-6. Arrange admission date and prepare for stay
-7. Participate in orientation upon arrival
-8. Follow the program schedule (typically 28-90+ days)
+For "Access 24/7 Edmonton":
+- "Visit 13211 Fort Road NW, Edmonton (open 7 days, 8am-10pm) or call 780-424-2424"
+- "Check in at reception - no appointment needed for walk-ins"
+- "Complete intake paperwork and consent forms"
+- "Meet with an intake clinician for assessment (typically 30-60 minutes)"
+- "Receive same-day connection to addiction or mental health services"
+- "Get referrals to ongoing community programs based on your needs"
 
-INDIGENOUS SERVICES:
-1. Call the Indigenous Support Line (1-844-944-4744) or contact the program directly
-2. Speak with a culturally-trained intake worker
-3. Share your needs and cultural preferences
-4. Access culturally-appropriate support and traditional healing options
-5. Connect with Elders, cultural support workers, or ceremonies if desired
+For "University of Alberta Counselling & Clinical Services":
+- "Book online at ualberta.ca/current-students/counselling or call 780-492-5205"
+- "Complete the online intake questionnaire before your first appointment"
+- "Attend your initial assessment session at SUB or another campus location"
+- "Work with the counselor to identify your goals and appropriate services"
+- "Begin individual counselling, group therapy, or workshops based on your needs"
+- "Sessions are free for current U of A students with valid OneCard"
 
-YOUTH SERVICES (Kickstand, CASA):
-1. Visit the website or call to book an appointment
-2. No referral needed - self-referral accepted
-3. Attend a drop-in or scheduled first appointment
-4. Meet with a youth counselor for assessment
-5. Access integrated services (mental health, physical health, peer support)
-6. Parents/guardians may be involved depending on age and consent
+For "Calgary Counselling Centre":
+- "Call 403-691-5991 or book online at calgarycounselling.com"
+- "Complete intake forms and discuss your financial situation for sliding scale fee"
+- "Attend your first session at their downtown Calgary office"
+- "Work with your assigned counselor on your presenting concerns"
+- "Continue with ongoing sessions at your agreed fee ($0-$150+ based on income)"
 
-SLIDING SCALE/LOW-COST COUNSELLING:
-1. Contact the organization by phone or website
-2. Complete intake paperwork
-3. Discuss financial situation to determine fee (bring proof of income if required)
-4. Book initial appointment
-5. Begin regular sessions at agreed-upon rate
+If you don't know the exact process for a specific organization, include:
+- "Contact [organization] directly at [phone/website] to confirm current intake process"
+- Use general steps but acknowledge: "Process may vary - contact for current procedures"
 
 Return JSON matching:
 {
   "services": [{
     "id": "string",
-    "name": "string (MUST be the real organization/program name from the reference or a verified Alberta service)",
+    "name": "string (MUST be the real organization/program name)",
     "category": "string",
     "description": "string",
     "location": "string (real address or service area)",
-    "contact": "string (real phone/email/website from reference when available)",
+    "contact": "string (real phone/email/website)",
     "eligibility": "string",
-    "process": ["Provide 4-8 realistic, specific steps based on the service type above. Include actual actions like 'Call intake at 403-XXX-XXXX', 'Complete online booking form', 'Attend assessment appointment'. Be specific about what happens at each step."],
-    "waitTimes": "string (be realistic - most community services have 2-6 week waits, crisis services are immediate, residential may have longer waits)",
-    "requiredDocs": ["Be specific: Alberta Health Care card, photo ID, proof of income for sliding scale, medical records if applicable, referral letter if required"]
+    "process": ["4-8 steps SPECIFIC to this exact organization. Include their actual phone numbers, websites, locations, operating hours. Each step should describe what happens when accessing THIS service, not a generic category. If uncertain, include 'Contact directly to confirm current process'"],
+    "waitTimes": "string (specific to this service if known, otherwise realistic estimate with note to confirm)",
+    "requiredDocs": ["Specific to this service - e.g., 'Valid U of A OneCard' for campus services, 'Alberta Health Care card' for AHS services, 'Proof of income for sliding scale' for Calgary Counselling Centre"]
   }],
   "summary": "string"
 }`
@@ -439,77 +428,51 @@ Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Se
 
 ${ALBERTA_SERVICES_REFERENCE}
 
-ACCURATE PROCESS STEPS - Provide realistic, complete steps for accessing each service type:
+SERVICE-SPECIFIC PROCESS STEPS REQUIREMENT:
+Each service MUST have process steps that are UNIQUE and SPECIFIC to that exact organization. DO NOT use generic templates.
 
-CRISIS/HELPLINE SERVICES:
-1. Call the helpline number (available 24/7)
-2. Speak with a trained crisis counselor who will assess your situation
-3. Receive immediate support, coping strategies, and safety planning
-4. Get referrals to ongoing services if needed
-5. Follow-up may be offered depending on the service
+For each service, research and provide the ACTUAL intake process based on:
+1. That organization's specific intake method (phone, online form, walk-in, referral required, etc.)
+2. Their actual contact numbers, websites, and booking systems
+3. What actually happens when someone contacts that specific service
+4. Any unique requirements or steps specific to that program
+5. Real operating hours, locations, and service-specific procedures
 
-CAMPUS COUNSELLING SERVICES:
-1. Visit the counselling centre website or call to book an appointment
-2. Complete an online intake form or phone screening
-3. Attend an initial assessment session (usually 30-60 minutes)
-4. Work with intake counselor to determine appropriate services
-5. Begin regular counselling sessions (frequency varies based on need)
-6. May be referred to external services if specialized care is needed
+EXAMPLES OF SERVICE-SPECIFIC PROCESS STEPS:
 
-COMMUNITY MENTAL HEALTH (e.g., CMHA, Access 24/7):
-1. Call intake line or walk in during open hours
-2. Complete intake paperwork and consent forms
-3. Meet with an intake worker for initial assessment
-4. Discuss treatment options and develop a care plan
-5. Get matched with appropriate programs or counselor
-6. Begin services (may include individual, group, or workshop options)
+For "Distress Centre Calgary":
+- "Call 403-266-4357 (available 24/7, 365 days)"
+- "A trained volunteer crisis counselor will answer and ask how they can help"
+- "Share what you're going through - calls are confidential and anonymous"
+- "Receive emotional support, crisis intervention, and coping strategies"
+- "Get referrals to Calgary-area resources if ongoing support is needed"
 
-RESIDENTIAL TREATMENT PROGRAMS:
-1. Contact the facility or call provincial intake line (1-866-332-2322)
-2. Complete a phone screening or assessment
-3. Provide medical history and current medication information
-4. Attend an in-person assessment if required
-5. Complete any required medical clearance or detox if needed
-6. Arrange admission date and prepare for stay
-7. Participate in orientation upon arrival
-8. Follow the program schedule (typically 28-90+ days)
+For "Kickstand":
+- "Visit mykickstand.ca and click 'Book an Appointment'"
+- "Select your preferred location or choose virtual/online"
+- "No referral needed - anyone ages 11-25 can self-refer"
+- "Attend your first drop-in or scheduled appointment"
+- "Meet with a youth counselor, peer support worker, or health professional"
+- "Access integrated services including mental health, physical health, and peer support"
 
-INDIGENOUS SERVICES:
-1. Call the Indigenous Support Line (1-844-944-4744) or contact the program directly
-2. Speak with a culturally-trained intake worker
-3. Share your needs and cultural preferences
-4. Access culturally-appropriate support and traditional healing options
-5. Connect with Elders, cultural support workers, or ceremonies if desired
+For "CASA Mental Health":
+- "Call 780-352-1335 to request services"
+- "Complete phone intake and screening process"
+- "Provide relevant background information about your child/youth"
+- "Attend initial assessment at CASA Edmonton location"
+- "Receive a treatment plan tailored to your child's needs"
+- "Begin therapy, group programs, or specialized services as recommended"
 
-YOUTH SERVICES (Kickstand, CASA):
-1. Visit the website or call to book an appointment
-2. No referral needed - self-referral accepted
-3. Attend a drop-in or scheduled first appointment
-4. Meet with a youth counselor for assessment
-5. Access integrated services (mental health, physical health, peer support)
-6. Parents/guardians may be involved depending on age and consent
+For "Skipping Stone (Calgary)":
+- "Visit skippingstone.ca or call to inquire about services"
+- "Complete intake form describing your needs"
+- "Specify if seeking support for yourself, your child, or family"
+- "Attend initial consultation to discuss affirming care options"
+- "Access trans-affirming counselling, support groups, or healthcare navigation"
 
-SLIDING SCALE/LOW-COST COUNSELLING:
-1. Contact the organization by phone or website
-2. Complete intake paperwork
-3. Discuss financial situation to determine fee (bring proof of income if required)
-4. Book initial appointment
-5. Begin regular sessions at agreed-upon rate
-
-LGBTQ2S+ SERVICES:
-1. Contact the organization by phone, email, or website
-2. Speak with an intake worker about your needs
-3. Access affirming, confidential support
-4. Connect with peer support, counselling, or group programs
-5. Get referrals to specialized services if needed (e.g., trans health, housing)
-
-VIRTUAL/TELEHEALTH SERVICES:
-1. Visit the program website or call intake line
-2. Complete online registration or phone screening
-3. Set up secure video/phone appointment technology
-4. Attend virtual assessment appointment
-5. Begin regular virtual sessions or access to digital tools
-6. In-person referrals provided if needed
+If you don't know the exact process for a specific organization, include:
+- "Contact [organization] directly at [phone/website] to confirm current intake process"
+- Use realistic steps but acknowledge: "Process may vary - contact for current procedures"
 
 ${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
 ${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
@@ -547,9 +510,9 @@ Return JSON matching:
     "location": "string (real address or service area)",
     "contact": "string (real phone/email/website)", 
     "eligibility": "string",
-    "process": ["Provide 4-8 realistic, specific steps based on the service type templates above. Include actual actions like 'Call intake at 403-XXX-XXXX', 'Complete online booking form at website.ca', 'Attend initial assessment (30-60 min)'. Be specific about what happens at each step."],
-    "waitTimes": "string (be realistic - crisis services are immediate, campus services 1-3 weeks, community services 2-6 weeks, residential programs may have longer waits)",
-    "requiredDocs": ["Be specific: Alberta Health Care card, government-issued photo ID, proof of income/financial need for sliding scale, student ID for campus services, referral letter if required by program"]
+    "process": ["4-8 steps SPECIFIC to this exact organization. Include their actual phone numbers, websites, locations, operating hours. Each step should describe what happens when accessing THIS service. If uncertain about exact process, include 'Contact directly at [phone/website] to confirm current intake process'"],
+    "waitTimes": "string (specific to this service if known, otherwise provide realistic estimate and note to confirm with organization)",
+    "requiredDocs": ["Specific to this service - what THIS organization actually requires for intake"]
   }],
   "summary": "string (personalized summary explaining these recommendations)"
 }`;
