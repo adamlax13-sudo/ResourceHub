@@ -146,11 +146,11 @@ export default function Recommended() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Card 
-                    className="h-full flex flex-col hover-elevate cursor-pointer group"
+                    className="h-full flex flex-col hover-elevate cursor-pointer group overflow-hidden"
                     onClick={() => setSelectedService(convertToServiceDetail(rec))}
                     data-testid={`card-recommendation-${rec.id}`}
                   >
-                    <CardHeader className="pb-3">
+                    <CardHeader className="pb-3 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
                           {rec.category}
@@ -168,36 +168,36 @@ export default function Recommended() {
                       </CardDescription>
                     </CardHeader>
                     
-                    <CardContent className="flex-1 pb-3 flex flex-col">
+                    <CardContent className="flex-1 pb-4 flex flex-col min-w-0">
                       <div className="bg-muted/50 rounded-lg p-3 mb-4">
-                        <p className="text-sm text-muted-foreground italic">
+                        <p className="text-sm text-muted-foreground italic line-clamp-3 break-words">
                           <Sparkles className="w-3 h-3 inline mr-1 text-primary" />
                           {rec.reasoning}
                         </p>
                       </div>
                       
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-3 text-sm min-w-0">
                         {rec.location && (
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-2 min-w-0">
                             <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground">{rec.location}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.location}</span>
                           </div>
                         )}
                         {rec.contact && (
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-2 min-w-0">
                             <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground">{rec.contact}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.contact}</span>
                           </div>
                         )}
                         {rec.waitTimes && (
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-2 min-w-0">
                             <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground">{rec.waitTimes}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0">{rec.waitTimes}</span>
                           </div>
                         )}
                       </div>
                       
-                      <div className="mt-auto pt-3 border-t border-border">
+                      <div className="mt-auto pt-4 border-t border-border">
                         <p className="text-xs text-muted-foreground">
                           {rec.process && rec.process.length > 0 
                             ? `${rec.process.length} ${t('service.steps')} • ${t('service.clickDetails')}`
