@@ -110,6 +110,7 @@ const UNIVERSITY_OPTIONS = [
   { value: "lethbridge-college", label: "Lethbridge College" },
   { value: "red-deer-polytechnic", label: "Red Deer Polytechnic" },
   { value: "grande-prairie-regional-college", label: "Grande Prairie Regional College" },
+  { value: "keyano-college", label: "Keyano College" },
   { value: "lakeland-college", label: "Lakeland College" },
   { value: "medicine-hat-college", label: "Medicine Hat College" },
   { value: "olds-college", label: "Olds College" },
