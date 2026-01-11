@@ -89,7 +89,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="text-2xl md:text-3xl font-display font-bold text-foreground">
+              <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground break-words">
                 {service.name}
               </DialogTitle>
               <DialogDescription className="text-base text-muted-foreground mt-1">
