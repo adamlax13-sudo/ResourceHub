@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -32,7 +33,14 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       
       {/* Navigation */}
       <div className="absolute top-0 left-0 right-0 z-20">
-        <div className="container mx-auto px-4 py-4 flex justify-end items-center">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          {/* Logo with transparent background effect */}
+          <img 
+            src={rocLogo} 
+            alt="ROC Logo" 
+            className="h-10 w-auto mix-blend-screen brightness-150" 
+          />
+          
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
             <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
             {!authLoading && user ? (
