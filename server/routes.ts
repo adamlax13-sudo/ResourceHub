@@ -200,6 +200,63 @@ Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Se
 
 ${ALBERTA_SERVICES_REFERENCE}
 
+ACCURATE PROCESS STEPS - Provide realistic, complete steps for accessing each service type:
+
+CRISIS/HELPLINE SERVICES:
+1. Call the helpline number (available 24/7)
+2. Speak with a trained crisis counselor who will assess your situation
+3. Receive immediate support, coping strategies, and safety planning
+4. Get referrals to ongoing services if needed
+5. Follow-up may be offered depending on the service
+
+CAMPUS COUNSELLING SERVICES:
+1. Visit the counselling centre website or call to book an appointment
+2. Complete an online intake form or phone screening
+3. Attend an initial assessment session (usually 30-60 minutes)
+4. Work with intake counselor to determine appropriate services
+5. Begin regular counselling sessions (frequency varies based on need)
+6. May be referred to external services if specialized care is needed
+
+COMMUNITY MENTAL HEALTH (e.g., CMHA, Access 24/7):
+1. Call intake line or walk in during open hours
+2. Complete intake paperwork and consent forms
+3. Meet with an intake worker for initial assessment
+4. Discuss treatment options and develop a care plan
+5. Get matched with appropriate programs or counselor
+6. Begin services (may include individual, group, or workshop options)
+
+RESIDENTIAL TREATMENT PROGRAMS:
+1. Contact the facility or call provincial intake line (1-866-332-2322)
+2. Complete a phone screening or assessment
+3. Provide medical history and current medication information
+4. Attend an in-person assessment if required
+5. Complete any required medical clearance or detox if needed
+6. Arrange admission date and prepare for stay
+7. Participate in orientation upon arrival
+8. Follow the program schedule (typically 28-90+ days)
+
+INDIGENOUS SERVICES:
+1. Call the Indigenous Support Line (1-844-944-4744) or contact the program directly
+2. Speak with a culturally-trained intake worker
+3. Share your needs and cultural preferences
+4. Access culturally-appropriate support and traditional healing options
+5. Connect with Elders, cultural support workers, or ceremonies if desired
+
+YOUTH SERVICES (Kickstand, CASA):
+1. Visit the website or call to book an appointment
+2. No referral needed - self-referral accepted
+3. Attend a drop-in or scheduled first appointment
+4. Meet with a youth counselor for assessment
+5. Access integrated services (mental health, physical health, peer support)
+6. Parents/guardians may be involved depending on age and consent
+
+SLIDING SCALE/LOW-COST COUNSELLING:
+1. Contact the organization by phone or website
+2. Complete intake paperwork
+3. Discuss financial situation to determine fee (bring proof of income if required)
+4. Book initial appointment
+5. Begin regular sessions at agreed-upon rate
+
 Return JSON matching:
 {
   "services": [{
@@ -210,9 +267,9 @@ Return JSON matching:
     "location": "string (real address or service area)",
     "contact": "string (real phone/email/website from reference when available)",
     "eligibility": "string",
-    "process": ["step 1", "step 2"],
-    "waitTimes": "string",
-    "requiredDocs": ["doc 1"]
+    "process": ["Provide 4-8 realistic, specific steps based on the service type above. Include actual actions like 'Call intake at 403-XXX-XXXX', 'Complete online booking form', 'Attend assessment appointment'. Be specific about what happens at each step."],
+    "waitTimes": "string (be realistic - most community services have 2-6 week waits, crisis services are immediate, residential may have longer waits)",
+    "requiredDocs": ["Be specific: Alberta Health Care card, photo ID, proof of income for sliding scale, medical records if applicable, referral letter if required"]
   }],
   "summary": "string"
 }`
@@ -382,6 +439,78 @@ Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Se
 
 ${ALBERTA_SERVICES_REFERENCE}
 
+ACCURATE PROCESS STEPS - Provide realistic, complete steps for accessing each service type:
+
+CRISIS/HELPLINE SERVICES:
+1. Call the helpline number (available 24/7)
+2. Speak with a trained crisis counselor who will assess your situation
+3. Receive immediate support, coping strategies, and safety planning
+4. Get referrals to ongoing services if needed
+5. Follow-up may be offered depending on the service
+
+CAMPUS COUNSELLING SERVICES:
+1. Visit the counselling centre website or call to book an appointment
+2. Complete an online intake form or phone screening
+3. Attend an initial assessment session (usually 30-60 minutes)
+4. Work with intake counselor to determine appropriate services
+5. Begin regular counselling sessions (frequency varies based on need)
+6. May be referred to external services if specialized care is needed
+
+COMMUNITY MENTAL HEALTH (e.g., CMHA, Access 24/7):
+1. Call intake line or walk in during open hours
+2. Complete intake paperwork and consent forms
+3. Meet with an intake worker for initial assessment
+4. Discuss treatment options and develop a care plan
+5. Get matched with appropriate programs or counselor
+6. Begin services (may include individual, group, or workshop options)
+
+RESIDENTIAL TREATMENT PROGRAMS:
+1. Contact the facility or call provincial intake line (1-866-332-2322)
+2. Complete a phone screening or assessment
+3. Provide medical history and current medication information
+4. Attend an in-person assessment if required
+5. Complete any required medical clearance or detox if needed
+6. Arrange admission date and prepare for stay
+7. Participate in orientation upon arrival
+8. Follow the program schedule (typically 28-90+ days)
+
+INDIGENOUS SERVICES:
+1. Call the Indigenous Support Line (1-844-944-4744) or contact the program directly
+2. Speak with a culturally-trained intake worker
+3. Share your needs and cultural preferences
+4. Access culturally-appropriate support and traditional healing options
+5. Connect with Elders, cultural support workers, or ceremonies if desired
+
+YOUTH SERVICES (Kickstand, CASA):
+1. Visit the website or call to book an appointment
+2. No referral needed - self-referral accepted
+3. Attend a drop-in or scheduled first appointment
+4. Meet with a youth counselor for assessment
+5. Access integrated services (mental health, physical health, peer support)
+6. Parents/guardians may be involved depending on age and consent
+
+SLIDING SCALE/LOW-COST COUNSELLING:
+1. Contact the organization by phone or website
+2. Complete intake paperwork
+3. Discuss financial situation to determine fee (bring proof of income if required)
+4. Book initial appointment
+5. Begin regular sessions at agreed-upon rate
+
+LGBTQ2S+ SERVICES:
+1. Contact the organization by phone, email, or website
+2. Speak with an intake worker about your needs
+3. Access affirming, confidential support
+4. Connect with peer support, counselling, or group programs
+5. Get referrals to specialized services if needed (e.g., trans health, housing)
+
+VIRTUAL/TELEHEALTH SERVICES:
+1. Visit the program website or call intake line
+2. Complete online registration or phone screening
+3. Set up secure video/phone appointment technology
+4. Attend virtual assessment appointment
+5. Begin regular virtual sessions or access to digital tools
+6. In-person referrals provided if needed
+
 ${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
 ${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
 
@@ -418,9 +547,9 @@ Return JSON matching:
     "location": "string (real address or service area)",
     "contact": "string (real phone/email/website)", 
     "eligibility": "string",
-    "process": ["step 1", "step 2"],
-    "waitTimes": "string",
-    "requiredDocs": ["doc 1"]
+    "process": ["Provide 4-8 realistic, specific steps based on the service type templates above. Include actual actions like 'Call intake at 403-XXX-XXXX', 'Complete online booking form at website.ca', 'Attend initial assessment (30-60 min)'. Be specific about what happens at each step."],
+    "waitTimes": "string (be realistic - crisis services are immediate, campus services 1-3 weeks, community services 2-6 weeks, residential programs may have longer waits)",
+    "requiredDocs": ["Be specific: Alberta Health Care card, government-issued photo ID, proof of income/financial need for sliding scale, student ID for campus services, referral letter if required by program"]
   }],
   "summary": "string (personalized summary explaining these recommendations)"
 }`;
