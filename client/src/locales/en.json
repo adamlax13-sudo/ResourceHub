@@ -30,7 +30,9 @@
     "contactProvider": "Contact Service Provider",
     "externalLink": "External link opens in a new tab",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "steps": "steps",
+    "clickDetails": "Click for full details"
   },
   "myResources": {
     "title": "My Resources",

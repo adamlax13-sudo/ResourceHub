@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,10 +7,12 @@ import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Sparkles, Loader2, Heart, ExternalLink, MapPin, Phone, Clock, User, LogOut } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, Heart, ExternalLink, MapPin, Phone, Clock, User, LogOut, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
+import { ServiceModal } from "@/components/ServiceModal";
+import { type ServiceDetail } from "@shared/schema";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 export default function Recommended() {
@@ -20,6 +22,7 @@ export default function Recommended() {
   const addFavorite = useAddFavorite();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -30,6 +33,19 @@ export default function Recommended() {
   const isFavorited = (serviceId: string) => {
     return favorites?.some(f => f.serviceId === serviceId);
   };
+
+  const convertToServiceDetail = (rec: any): ServiceDetail => ({
+    id: rec.id,
+    name: rec.name,
+    category: rec.category,
+    description: rec.description,
+    location: rec.location || "",
+    contact: rec.contact || "",
+    eligibility: rec.eligibility || "",
+    process: rec.process || [],
+    waitTimes: rec.waitTimes || "",
+    requiredDocs: rec.requiredDocs || [],
+  });
 
   const handleSave = async (rec: any) => {
     if (isFavorited(rec.id)) return;
@@ -130,7 +146,11 @@ export default function Recommended() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="h-full flex flex-col hover-elevate">
+                  <Card 
+                    className="h-full flex flex-col hover-elevate cursor-pointer group"
+                    onClick={() => setSelectedService(convertToServiceDetail(rec))}
+                    data-testid={`card-recommendation-${rec.id}`}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -143,8 +163,8 @@ export default function Recommended() {
                           </Badge>
                         )}
                       </div>
-                      <CardTitle className="text-lg">{rec.name}</CardTitle>
-                      <CardDescription className="text-sm">
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors">{rec.name}</CardTitle>
+                      <CardDescription className="text-sm line-clamp-2">
                         {rec.description}
                       </CardDescription>
                     </CardHeader>
@@ -177,14 +197,25 @@ export default function Recommended() {
                           </div>
                         )}
                       </div>
+                      
+                      {rec.process && rec.process.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <p className="text-xs text-muted-foreground">
+                            {rec.process.length} {t('service.steps')} • {t('service.clickDetails')}
+                          </p>
+                        </div>
+                      )}
                     </CardContent>
                     
-                    <CardFooter className="pt-3 border-t">
+                    <CardFooter className="pt-3 border-t flex gap-2">
                       <Button
-                        className="w-full"
+                        className="flex-1"
                         variant={isFavorited(rec.id) ? "secondary" : "default"}
                         disabled={isFavorited(rec.id) || addFavorite.isPending}
-                        onClick={() => handleSave(rec)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSave(rec);
+                        }}
                         data-testid={`button-save-${rec.id}`}
                       >
                         {isFavorited(rec.id) ? (
@@ -200,6 +231,17 @@ export default function Recommended() {
                             {t('service.save')}
                           </>
                         )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedService(convertToServiceDetail(rec));
+                        }}
+                        data-testid={`button-details-${rec.id}`}
+                      >
+                        <ArrowRight className="w-4 h-4" />
                       </Button>
                     </CardFooter>
                   </Card>
@@ -234,6 +276,12 @@ export default function Recommended() {
           </motion.div>
         )}
       </main>
+
+      <ServiceModal
+        service={selectedService}
+        isOpen={!!selectedService}
+        onClose={() => setSelectedService(null)}
+      />
     </div>
   );
 }
