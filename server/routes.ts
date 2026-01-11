@@ -206,26 +206,28 @@ PROCESS STEPS - USE ONLY VERIFIED INFO:
 - If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
 - Each step should use real contact info from the database
 
-EXAMPLES (use phone/URL from database only):
+DETAILED PROCESS STEPS (5-7 steps per service):
+- Use ONLY verified contact info from the reference database - NEVER invent URLs
+- Include specific details: phone numbers, websites, hours, locations, what to expect
+- Describe what happens at each stage - be helpful and informative
 
-For "Recovery College Calgary":
-- "Visit recoverycollegecalgary.ca or call 403-297-1402"
-- "Browse free courses - no referral or account needed"
-- "Register for a course or attend Wednesday drop-in session"
-- "Attend peer-led session (virtual or in-person available)"
+GOOD EXAMPLE for Recovery College Calgary:
+["Visit recoverycollegecalgary.ca or call 403-297-1402 to learn about available courses",
+ "Browse the course catalog - topics include anxiety, stress management, recovery skills, and more",
+ "No referral, diagnosis, or account creation needed - courses are completely FREE for anyone 16+",
+ "Register online for your chosen course, or attend a Wednesday drop-in session at their Calgary location",
+ "Attend your peer-led session - available both virtually and in-person",
+ "Courses are co-facilitated by trained Peer Supporters with lived experience of mental health or addiction recovery"]
 
-For "Distress Centre Calgary":
-- "Call 403-266-4357 (available 24/7)"
-- "Speak with trained volunteer crisis counselor"
-- "Receive emotional support and coping strategies"
-- "Get referrals to Calgary-area resources if needed"
+GOOD EXAMPLE for Distress Centre Calgary:
+["Call 403-266-4357 - available 24 hours a day, 7 days a week, 365 days a year",
+ "A trained volunteer crisis counselor will answer and ask how they can help",
+ "Share what you're going through - all calls are completely confidential and anonymous",
+ "Receive emotional support, active listening, and crisis intervention if needed",
+ "Get referrals to appropriate Calgary-area mental health and social services",
+ "Follow-up support and ConnecTeen youth line (403-264-8336) also available"]
 
-For "CMHA Calgary":
-- "Call 403-297-1402 or visit cmha.calgary.ab.ca"
-- "Connect with Community Navigator for free guidance"
-- "Get matched to appropriate programs (YouthSMART, Peer Support, etc.)"
-
-If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
+If unsure of exact details: "Contact [org] at [phone from database] to confirm current intake process and hours"
 
 Return JSON matching:
 {
@@ -424,12 +426,28 @@ PERSONALIZATION:
 - Consider disability accommodations if indicated
 - Suggest similar services to favorites but in unexplored categories
 
-PROCESS STEPS - BE CONSERVATIVE:
-- Use ONLY verified contact info from the reference database
-- Each step must use phone/email from the database - NEVER invent URLs
-- If unsure of exact process, use: "Contact [org] at [phone from database] for current intake steps"
-- Example for Recovery College Calgary: ["Visit recoverycollegecalgary.ca or call 403-297-1402", "Browse free courses - no account needed", "Register for a course or attend Wed drop-in", "Attend peer-led session (virtual or in-person)"]
-- Example for crisis line: ["Call 403-266-4357 (24/7)", "Speak with trained crisis counselor", "Receive support and referrals"]
+DETAILED PROCESS STEPS (5-7 steps per service):
+- Use ONLY verified contact info from the reference database - NEVER invent URLs
+- Include specific details: phone numbers, websites, hours, locations, what to expect
+- Describe what happens at each stage - be helpful and detailed
+
+GOOD EXAMPLE for Recovery College Calgary:
+["Visit recoverycollegecalgary.ca or call 403-297-1402 to learn about available courses",
+ "Browse the course catalog - topics include anxiety, stress management, recovery skills, and more",
+ "No referral, diagnosis, or account creation needed - courses are completely FREE for anyone 16+",
+ "Register online for your chosen course, or attend a Wednesday drop-in session at their Calgary location",
+ "Attend your peer-led session - available both virtually and in-person",
+ "Courses are co-facilitated by trained Peer Supporters with lived experience of mental health or addiction recovery"]
+
+GOOD EXAMPLE for Distress Centre Calgary:
+["Call 403-266-4357 - available 24 hours a day, 7 days a week, 365 days a year",
+ "A trained volunteer crisis counselor will answer and ask how they can help",
+ "Share what you're going through - all calls are completely confidential and anonymous",
+ "Receive emotional support, active listening, and crisis intervention if needed",
+ "Get referrals to appropriate Calgary-area mental health and social services",
+ "Follow-up support and ConnecTeen youth line (403-264-8336) also available"]
+
+If unsure of exact details: "Contact [org] at [phone from database] to confirm current intake process and hours"
 
 Return JSON:
 {"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended for this user","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step with real contact info","Step 2","Step 3","Step 4"],"waitTimes":"Realistic estimate","requiredDocs":["Required doc"]}],"summary":"Personalized summary"}

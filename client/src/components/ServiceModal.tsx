@@ -19,15 +19,12 @@ interface ServiceModalProps {
 function linkifyText(text: string): React.ReactNode {
   if (!text) return text;
   
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-  const phoneRegex = /(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g;
-  
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
   
-  const combinedRegex = /(https?:\/\/[^\s]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g;
+  // Match: full URLs, emails, phone numbers, and domain names (like recoverycollegecalgary.ca)
+  const combinedRegex = /(https?:\/\/[^\s,]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})|([a-zA-Z0-9][-a-zA-Z0-9]*\.(?:ca|com|org|net|edu|gov)(?:\/[^\s,]*)?)/gi;
   
   let match;
   while ((match = combinedRegex.exec(text)) !== null) {
@@ -52,6 +49,13 @@ function linkifyText(text: string): React.ReactNode {
       const cleanPhone = matched.replace(/[^\d+]/g, '');
       parts.push(
         <a key={key++} href={`tel:${cleanPhone}`} className="text-primary hover:underline">
+          {matched}
+        </a>
+      );
+    } else if (match[4]) {
+      const url = matched.startsWith('http') ? matched : `https://${matched}`;
+      parts.push(
+        <a key={key++} href={url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
           {matched}
         </a>
       );

@@ -16,6 +16,60 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { type ServiceDetail } from "@shared/schema";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
+function linkifyText(text: string): React.ReactNode {
+  if (!text) return text;
+  
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+  
+  const combinedRegex = /(https?:\/\/[^\s,]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})|([a-zA-Z0-9][-a-zA-Z0-9]*\.(?:ca|com|org|net|edu)(?:\/[^\s,]*)?)/gi;
+  
+  let match;
+  while ((match = combinedRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    
+    const matched = match[0];
+    if (match[1]) {
+      parts.push(
+        <a key={key++} href={matched} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+          {matched}
+        </a>
+      );
+    } else if (match[2]) {
+      parts.push(
+        <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
+          {matched}
+        </a>
+      );
+    } else if (match[3]) {
+      const cleanPhone = matched.replace(/[^\d+]/g, '');
+      parts.push(
+        <a key={key++} href={`tel:${cleanPhone}`} className="text-primary hover:underline">
+          {matched}
+        </a>
+      );
+    } else if (match[4]) {
+      const url = matched.startsWith('http') ? matched : `https://${matched}`;
+      parts.push(
+        <a key={key++} href={url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+          {matched}
+        </a>
+      );
+    }
+    
+    lastIndex = match.index + matched.length;
+  }
+  
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
+}
+
 export default function Recommended() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: recommendations, isLoading, error } = useRecommendations();
@@ -264,19 +318,19 @@ export default function Recommended() {
                         {rec.location && (
                           <div className="flex items-start gap-2 min-w-0">
                             <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Location: </span>{rec.location}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Location: </span>{linkifyText(rec.location)}</span>
                           </div>
                         )}
                         {rec.contact && (
                           <div className="flex items-start gap-2 min-w-0">
                             <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Contact: </span>{rec.contact}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Contact: </span>{linkifyText(rec.contact)}</span>
                           </div>
                         )}
                         {rec.waitTimes && (
                           <div className="flex items-start gap-2 min-w-0">
                             <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
-                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Wait time: </span>{rec.waitTimes}</span>
+                            <span className="text-muted-foreground break-words line-clamp-2 min-w-0"><span className="sr-only">Wait time: </span>{linkifyText(rec.waitTimes)}</span>
                           </div>
                         )}
                       </div>
