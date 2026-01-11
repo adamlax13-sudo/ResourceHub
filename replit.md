@@ -134,9 +134,23 @@ Preferred communication style: Simple, everyday language.
 
 ### AI Optimizations
 - **Streamlined prompts**: Reduced token count while maintaining quality requirements
-- **Lower temperature**: temperature: 0.3 for faster, more consistent responses
-- **Service-specific steps**: AI generates organization-specific intake processes, not generic templates
+- **Variable temperature**: temperature: 0.3-0.4 depending on task complexity
+- **Service-specific steps**: AI generates organization-specific intake processes with 3-8 steps based on service complexity
 - **Skeleton loading**: Recommended page shows skeleton cards during AI processing for better perceived performance
+- **Comprehensive Reference Database**: 250+ line ALBERTA_SERVICES_REFERENCE in server/routes.ts covering:
+  - 24/7 Crisis Lines (211, 311, 811, 988, Mental Health Helpline, Addiction Helpline, Distress Centre, ConnecTeen, Kids Help Phone, Hope for Wellness, Indigenous Support Line)
+  - Calgary Mental Health Urgent Care Centres (Sheldon Chumir 24/7, South Calgary, Airdrie, Banff, Canmore, Cochrane, Okotoks)
+  - Calgary/Edmonton Mental Health & Addiction Services (RAAM, Renfrew Recovery, Calgary Dream Centre, CMHA, etc.)
+  - Low-Cost/Sliding Scale Counselling (Calgary Counselling Centre, Community Connect YYC, Jade Counselling)
+  - Indigenous Services (Miskanawah, AFCC, Niitoiyis, Sunrise Healing Lodge, Poundmaker's Lodge, Hope for Wellness)
+  - Peer-Based Recovery Support (AA, NA, SMART Recovery, Al-Anon, gambling/eating disorder support)
+  - University/College Campus Services (UCalgary, UofA, MRU, MacEwan, NAIT, SAIT, etc.)
+  - LGBTQ2S+ Services (Calgary Outlink, Skipping Stone, Pride Centre, Camp fYrefly)
+  - Domestic Violence & Sexual Assault resources (CCASA, Fear Is Not Love, Ruth House)
+  - Baby & Parenting Resources (Calgary Pregnancy Care, Best Beginning, Made by Momma)
+  - Free Food Resources (Calgary Food Bank, The Alex CFC, Calgary Drop-In, community churches)
+  - Basic Needs & Community Resources (WINS Hubs, Mustard Seed, Rise Calgary, clothing rooms)
+  - Detox & Residential Treatment Programs (Renfrew, Lander, Oxford House, George Spady)
 
 ### Accessibility
 - **WCAG Compliance**: Hero search with proper labels, roles, and aria-describedby
