@@ -11,6 +11,145 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
+// Comprehensive Alberta Mental Health & Social Services Reference Database
+const ALBERTA_SERVICES_REFERENCE = `
+=== ALBERTA MENTAL HEALTH & SOCIAL SERVICES REFERENCE DATABASE ===
+
+## 24/7 CRISIS & HELPLINES
+- Mental Health Help Line: 1-877-303-2642 (24/7 crisis intervention, confidential)
+- 988 Suicide Crisis Helpline: Call or text 988
+- Addiction Helpline: 1-866-332-2322 (24/7 confidential addiction support)
+- Health Link: 811 (24/7 health advice, addiction & mental health team)
+- Indigenous Support Line: 1-844-944-4744 or 811 (culturally relevant mental health)
+- Hope for Wellness Helpline: 1-855-242-3310 (24/7 for all Indigenous peoples)
+- Kids Help Phone: 1-800-668-6868 or text CONNECT to 686868 (ages 5-29)
+- Distress Centre Calgary: 403-266-4357 (24/7)
+- Distress Line Edmonton: 780-482-4357
+- Access 24/7 Edmonton: 1-888-594-0211 (non-urgent advice, appointments)
+- ConnecTeen Calgary: 403-264-8336 (youth crisis support)
+- Virtual Opioid Dependency Program (VODP): 1-844-383-7688
+
+## PROVINCIAL ORGANIZATIONS
+- Recovery Alberta: recoveryalberta.ca, info@recoveryalberta.ca - Main provincial provider
+- Alberta Health Services Addiction & Mental Health: albertahealthservices.ca/amh
+- 211 Alberta: Dial 211 - Community services database 24/7
+- Centre of Recovery Excellence (CoRE): recoveryexcellence.org
+- Recovery Access Alberta: recoveryaccessalberta.ca - Searchable treatment directory
+
+## YOUTH SERVICES (Ages 11-25)
+- Kickstand: mykickstand.ca - Free virtual & in-person for ages 11-25, no waitlist
+- CASA Mental Health: casamentalhealth.org, 780-352-1335 - Children & youth mental health Edmonton
+- Emerging Adult Mental Health: Ages 16-29, Alberta Children's Hospital Calgary, 7 days/week 10am-10pm
+- Northern Alberta Youth Recovery Centre: 105-bed long-term treatment (under development)
+
+## EDMONTON SERVICES
+- Access 24/7 Edmonton: 13211 Fort Rd NW, Open 7 days 8am-10pm - One-stop adult intake
+- CMHA Edmonton: edmonton.cmha.ca - Mental health programs & advocacy
+- Mental Health Foundation: mentalhealthfoundation.ca
+- YWCA Edmonton Counselling: counselling@ywcaedm.org, Sliding scale $5-$200/session
+- The Family Centre: 780-423-2831, First session free then sliding scale
+- CASA Mental Health Edmonton: casamentalhealth.org - Children/youth, Indigenous programs
+- Mobile Crisis Adults Edmonton: 780-342-7777
+- Mobile Crisis Children Edmonton: 780-413-4733
+- Pride Centre of Edmonton: pridecentreofedmonton.ca
+- Poundmaker's Lodge Treatment Centres: 1-866-458-1884, St Albert - Indigenous addiction treatment
+
+## CALGARY SERVICES
+- Access Mental Health Calgary: 403-943-1500, Mon-Fri 8am-5pm - Free, no referral needed
+- CMHA Calgary: cmha.calgary.ab.ca - Community Navigator, YouthSMART (12-24), Recovery College
+- Distress Centre Calgary: 403-266-4357 - 24/7 crisis, counselling, ConnecTeen
+- Calgary Counselling Centre: calgarycounselling.com - Sliding scale, no waitlist
+- Centre for Mental Health & Addictions: thecentres.ca - Sliding scale starting $10/session
+- Calgary Foothills PCN: 587-774-9736 - Free one-session-at-a-time counselling
+- Sheldon M. Chumir Centre: 24/7 urgent mental health assessment & crisis
+- Calgary Dream Centre: calgarydreamcentre.ca - 7-week residential addiction recovery
+- The Alex Community Health Centre: 403-266-2622, info@thealex.ca
+- Wood's Homes Calgary: woodshomes.ca - Children, youth, families crisis services
+
+## UNIVERSITY/COLLEGE CAMPUS SERVICES
+- University of Alberta Counselling & Clinical Services: ualberta.ca/current-students/counselling, Free confidential counselling
+- U of A First Peoples' House: Indigenous student support
+- U of A The Landing: Gender & sexual diversity support
+- U of A Graduate Student Assistance Program (GSAP): 780-428-7909
+- University of Calgary Student Wellness Services: ucalgary.ca/wellness-services, 403-210-9355
+- U of C Community Mental Health & Well-Being Strategy (CMHWS): UFlourish events
+- Mount Royal University Wellness Services: mtroyal.ca/CampusServices/WellnessServices
+- MRU Iniskim Centre: Indigenous student support
+- MacEwan University Wellness & Psychological Services
+- NAIT Student Counselling: nait.ca/student-services
+- SAIT Student Development & Counselling
+- Lethbridge College Counselling Services
+- Red Deer Polytechnic Counselling
+- NorQuest College Student Wellness
+- Bow Valley College Learner Success Services
+
+## LGBTQ2S+ SERVICES
+- Camp fYrefly: fyrefly.ca - Leadership retreat ages 14-24, Edmonton (U of A)
+- CHEW Project (Fyrefly Institute): Edmonton & Calgary street outreach, harm reduction
+- Calgary Outlink: calgaryoutlink.ca - Support, education, Inside Out Youth Group (13-18)
+- Skipping Stone: skippingstone.ca, Calgary - Trans/gender-diverse youth & adults
+- Pride Centre of Edmonton: pridecentreofedmonton.ca
+- Centre for Sexuality Calgary: centreforsexuality.ca
+- Aura Calgary: 587-779-5015 - Housing-first for LGBTQ2S+ youth 14-24
+- Rainbow Alliance for Youth Edmonton: Ages 12-24
+
+## INDIGENOUS SERVICES
+- Indigenous Support Line: 1-844-944-4744 or 811
+- Hope for Wellness Help Line: 1-855-242-3310 (24/7, online chat hopeforwellness.ca)
+- AHS Indigenous Mental Health Program: 403-955-6645 (Calgary intake) - Self-referral available
+- CASA Indigenous Mental Health Services: Trauma-informed for Indigenous children, teens, families
+- Poundmaker's Lodge Treatment Centres: 1-866-458-1884, St Albert
+- Aboriginal Counseling Services Association of Alberta: 780-242-4357, aboriginalcounseling.com
+- Métis Nation of Alberta Health: health@metis.org - Up to 12 therapy sessions, $225/session
+- Blood Tribe Department of Health - Bringing the Spirit Home Program
+- Kapown Treatment Center: 32-bed mental health & addiction
+- Indigenous Services Canada Mental Wellness Unit: 780-495-4837
+
+## ADDICTION TREATMENT & RECOVERY
+- Recovery Alberta: recoveryalberta.ca - Provincial provider
+- Virtual Rapid Access Addiction Medicine: 1-844-383-7688 - Same/next-day, no waitlist
+- Virtual Opioid Dependency Program (VODP): 1-844-383-7688 - Same-day OAT access
+- Red Deer Recovery Community (EHN Canada): Long-term residential
+- Fresh Start Recovery Centre Lethbridge: 14-week residential for men
+- Our House Addiction Recovery Centre
+- Teen Challenge Alberta Men's Centre
+- Glendon Treatment Center
+- Nightwind Treatment Centre (Kihew House)
+- Grace House Drumheller: Women only, 1-year program
+- Renfrew Recovery Centre: Adult detoxification
+- Drug Treatment Courts: Judicially supervised for non-violent offenders
+- DORS App: dorsapp.ca - Digital Overdose Response System
+
+## MENTAL HEALTH ORGANIZATIONS
+- CMHA Alberta Division: alberta.cmha.ca - Buddy Up (men's mental health), Family-to-Family peer support
+- Centre for Suicide Prevention: suicideinfo.ca, Calgary
+- Canadian Mental Health Association Calgary: cmha.calgary.ab.ca
+- Canadian Mental Health Association Edmonton: edmonton.cmha.ca
+- BounceBack: bounceback.cmha.ca - Free CBT program
+
+## SPECIALIZED SERVICES
+- ARCH Psychological Services: archpsychological.com - Indigenous counselling, Jordan's Principle billing
+- Counselling Alberta Partnership: Pay-what-you-can, no waitlist
+- Hull Services Calgary: Children, youth, families
+- Carya Calgary: Family support services
+- Inglewood Opportunity Calgary
+- YESS Edmonton: yess.org - Youth shelter, supportive housing ages 15-24
+- HOME Central Alberta: Two-Spirit, Indigenous, Queer-led safe spaces
+
+## HOUSING & HOMELESSNESS
+- YESS Edmonton: yess.org - Youth ages 15-24
+- Aura Calgary: LGBTQ2S+ youth housing 14-24
+- Mustard Seed Calgary/Edmonton: Shelter, addiction support
+- Calgary Dream Centre: Transitional housing
+
+## FINANCIAL ASSISTANCE FOR THERAPY
+- Jordan's Principle: For all First Nations children - Covers psychological care, counseling
+- Métis Nation of Alberta: Up to 12 sessions, $225/session for MNA citizens
+- Sliding scale services: Calgary Counselling Centre, The Family Centre Edmonton, Centre for Mental Health & Addictions
+`;
+
+
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -54,19 +193,22 @@ CRITICAL REQUIREMENT: Every service you return MUST be a REAL, SPECIFIC organiza
 - Never return generic categories like "Local Counseling Services" or "Community Support Groups" - always name the specific organization
 - If you're unsure about exact contact details, provide the organization's main website or general intake number
 - Prefer well-established organizations with verifiable online presence
+- PRIORITIZE services from the reference database below - these are verified real Alberta services
 
 Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary"
 Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center"
+
+${ALBERTA_SERVICES_REFERENCE}
 
 Return JSON matching:
 {
   "services": [{
     "id": "string",
-    "name": "string (MUST be the real organization/program name)",
+    "name": "string (MUST be the real organization/program name from the reference or a verified Alberta service)",
     "category": "string",
     "description": "string",
     "location": "string (real address or service area)",
-    "contact": "string (real phone/email/website)",
+    "contact": "string (real phone/email/website from reference when available)",
     "eligibility": "string",
     "process": ["step 1", "step 2"],
     "waitTimes": "string",
@@ -233,9 +375,12 @@ CRITICAL REQUIREMENT: Every service you recommend MUST be a REAL, SPECIFIC organ
 - If you're unsure about exact contact details, provide the organization's main website or general intake number
 - Prefer well-established organizations with verifiable online presence
 - For campus services, use the actual name (e.g., "U of A Wellness Services" not "Campus Mental Health")
+- PRIORITIZE services from the reference database below - these are verified real Alberta services
 
 Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary", "University of Calgary Student Wellness Services"
 Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center", "Student Health Services"
+
+${ALBERTA_SERVICES_REFERENCE}
 
 ${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
 ${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
