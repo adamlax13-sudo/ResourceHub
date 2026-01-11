@@ -56,10 +56,10 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-2xl md:rounded-3xl">
-        <div className="flex flex-col h-full max-h-[90vh]">
-          {/* Header */}
-          <div className="bg-card px-6 py-6 md:px-8 md:py-8 border-b border-border flex-shrink-0">
+      <DialogContent className="max-w-4xl h-[90vh] max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-2xl md:rounded-3xl">
+        <div className="flex flex-col h-full">
+          {/* Header - compact on mobile */}
+          <div className="bg-card px-4 py-4 md:px-8 md:py-6 border-b border-border flex-shrink-0">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Badge className="w-fit bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none">
@@ -89,16 +89,16 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground break-words">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words line-clamp-2">
                 {service.name}
               </DialogTitle>
-              <DialogDescription className="text-base text-muted-foreground mt-1">
+              <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1 line-clamp-3 md:line-clamp-none">
                 {service.description}
               </DialogDescription>
             </div>
           </div>
 
-          <ScrollArea className="flex-grow">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="p-6 md:p-8 grid md:grid-cols-12 gap-8">
               
               {/* Left Column: Process & Requirements */}
