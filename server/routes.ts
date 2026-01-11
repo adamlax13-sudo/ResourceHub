@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { createHash } from "crypto";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
@@ -440,7 +441,8 @@ const ALBERTA_SERVICES_REFERENCE = `
 - Alberta.ca Residential Treatment Lookup: alberta.ca/lookup/residential-addiction-treatment-service-providers.aspx
 `;
 
-
+// Auto-generate cache version from database content hash - invalidates cache when database is updated
+const DATABASE_HASH = createHash('md5').update(ALBERTA_SERVICES_REFERENCE).digest('hex').slice(0, 8);
 
 export async function registerRoutes(
   httpServer: Server,
@@ -468,7 +470,8 @@ export async function registerRoutes(
   app.post(api.search.query.path, async (req, res) => {
     try {
       const input = api.search.query.input.parse(req.body);
-      const normalizedQuery = input.query.trim().toLowerCase();
+      // Include database hash in cache key - automatically invalidates cache when database content changes
+      const normalizedQuery = `${DATABASE_HASH}:${input.query.trim().toLowerCase()}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
 
@@ -480,13 +483,21 @@ export async function registerRoutes(
             content: `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 
 CRITICAL REQUIREMENTS:
-- Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary")
-- ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database below
-- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
-- Never return generic categories like "Local Counseling Services" or "Community Support Groups"
-- PRIORITIZE services from the reference database below - these are verified and current
+1. EXACT NAME MATCH PRIORITY: If the user's query contains an exact organization name from the database (e.g., "Alpha House", "Calgary Drop-In", "Mustard Seed"), you MUST include that specific organization in your results FIRST.
+2. Every service MUST be a REAL, SPECIFIC Alberta organization from the reference database below
+3. ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database
+4. DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
+5. Never return generic categories like "Local Counseling Services" or "Community Support Groups"
+6. PRIORITIZE services from the reference database - these are verified and current
 
-Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary"
+SEARCH MATCHING RULES:
+- If query mentions "Alpha House" → MUST include Alpha House Society Calgary and Alpha House Detox
+- If query mentions "Calgary Drop-In" → MUST include Calgary Drop-In Centre
+- If query mentions "Mustard Seed" → MUST include Mustard Seed services
+- If query mentions "CMHA" → MUST include relevant CMHA chapter
+- For partial name matches, include the most relevant matching service(s)
+
+Examples of GOOD responses: "Alpha House Society Calgary", "Calgary Drop-In Centre", "Kids Help Phone", "CMHA Edmonton"
 Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center"
 
 ${ALBERTA_SERVICES_REFERENCE}
