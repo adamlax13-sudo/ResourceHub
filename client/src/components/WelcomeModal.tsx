@@ -49,7 +49,9 @@ export function WelcomeModal() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
           <div className="mx-auto mb-4">
-            <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto" />
+            <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+              <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto hover:opacity-80 transition-opacity" />
+            </a>
           </div>
           <DialogTitle className="text-2xl font-display">
             {t('profile.welcomeTitle')}

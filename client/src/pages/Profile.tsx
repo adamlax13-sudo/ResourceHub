@@ -209,7 +209,9 @@ export default function Profile() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 sm:gap-4">
-              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+                <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              </a>
               <Link href="/">
                 <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
                   {t('nav.home')}

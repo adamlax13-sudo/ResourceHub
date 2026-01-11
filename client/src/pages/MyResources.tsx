@@ -105,7 +105,9 @@ export default function MyResources() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 sm:gap-4">
-              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+                <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              </a>
               <Link href="/">
                 <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
                   {t('nav.home')}
@@ -393,7 +395,9 @@ export default function MyResources() {
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <img src={rocLogo} alt="ROC Logo" className="w-24 h-auto mx-auto mb-4 opacity-30" loading="lazy" />
+              <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+                <img src={rocLogo} alt="ROC Logo" className="w-24 h-auto mx-auto mb-4 opacity-30 hover:opacity-50 transition-opacity" loading="lazy" />
+              </a>
               <h2 className="text-xl font-semibold text-foreground mb-2">{t('myResources.empty')}</h2>
               <p className="text-muted-foreground mb-6">
                 {t('myResources.emptyDesc')}

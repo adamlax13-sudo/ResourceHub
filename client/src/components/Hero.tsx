@@ -35,11 +35,13 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       <div className="absolute top-0 left-0 right-0 z-20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img 
-              src={rocLogo} 
-              alt="ROC Logo" 
-              className="h-12 w-auto" 
-            />
+            <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+              <img 
+                src={rocLogo} 
+                alt="ROC Logo" 
+                className="h-12 w-auto" 
+              />
+            </a>
             <span className="font-display font-bold text-white text-lg hidden sm:block leading-tight">Recovery on<br />Campus Alberta</span>
           </div>
           

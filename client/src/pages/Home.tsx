@@ -199,7 +199,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-2">
         <div className="container mx-auto px-4 text-center">
-          <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto mb-4 opacity-60" loading="lazy" />
+          <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
+            <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto mb-4 opacity-60 hover:opacity-80 transition-opacity" loading="lazy" />
+          </a>
           <p className="text-muted-foreground text-sm">
             {t('app.footer')}
           </p>
