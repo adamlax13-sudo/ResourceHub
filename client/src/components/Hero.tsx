@@ -38,13 +38,6 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
     }
   };
 
-  const toggleMode = () => {
-    setSearchMode(prev => prev === 'fast' ? 'comprehensive' : 'fast');
-    if (navigator.vibrate) {
-      navigator.vibrate(12);
-    }
-  };
-
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground pt-20 pb-32 md:pt-28 md:pb-48 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
       {/* Animated gradient overlay for extra flair */}
@@ -323,39 +316,40 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           </div>
           {/* Search Mode Toggle */}
           <div className="mt-4 flex flex-col items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  disabled={isLoading}
-                  className="group relative grid grid-cols-2 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1 transition-all hover:bg-white/15 disabled:opacity-50"
-                  data-testid="toggle-search-mode"
-                  aria-label={`Switch to ${searchMode === 'fast' ? 'comprehensive' : 'fast'} search`}
-                >
-                  {/* Sliding indicator - uses transform for consistent animation speed */}
-                  <motion.div
-                    className="absolute inset-y-1 rounded-full bg-white shadow-lg"
-                    initial={false}
-                    animate={{
-                      left: searchMode === 'fast' ? '4px' : 'calc(50% + 2px)',
-                      right: searchMode === 'fast' ? 'calc(50% + 2px)' : '4px',
-                    }}
-                    transition={{
-                      type: "tween",
-                      duration: 0.15,
-                      ease: "easeOut",
-                    }}
-                    style={{
-                      boxShadow: '0 0 12px rgba(255,255,255,0.3)',
-                    }}
-                  />
-                  
-                  {/* Fast option */}
-                  <div
-                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
-                      searchMode === 'fast' ? 'text-primary' : 'text-white/70'
+            <div
+              className="group relative grid grid-cols-2 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1 transition-all hover:bg-white/15"
+              data-testid="toggle-search-mode"
+            >
+              {/* Sliding indicator - uses transform for consistent animation speed */}
+              <motion.div
+                className="absolute inset-y-1 rounded-full bg-white shadow-lg pointer-events-none"
+                initial={false}
+                animate={{
+                  left: searchMode === 'fast' ? '4px' : 'calc(50% + 2px)',
+                  right: searchMode === 'fast' ? 'calc(50% + 2px)' : '4px',
+                }}
+                transition={{
+                  type: "tween",
+                  duration: 0.15,
+                  ease: "easeOut",
+                }}
+                style={{
+                  boxShadow: '0 0 12px rgba(255,255,255,0.3)',
+                }}
+              />
+              
+              {/* Quick option with its own tooltip */}
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => { setSearchMode('fast'); if (navigator.vibrate) navigator.vibrate(12); }}
+                    disabled={isLoading}
+                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50 ${
+                      searchMode === 'fast' ? 'text-primary' : 'text-white/70 hover:text-white/90'
                     }`}
+                    aria-label="Quick search mode"
+                    data-testid="toggle-quick"
                   >
                     <motion.div
                       animate={{ scale: searchMode === 'fast' ? [1, 1.2, 1] : 1 }}
@@ -364,13 +358,28 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
                       <Zap className={`w-4 h-4 ${searchMode === 'fast' ? 'fill-primary/20' : ''}`} />
                     </motion.div>
                     <span>Quick</span>
-                  </div>
-                  
-                  {/* Comprehensive option */}
-                  <div
-                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
-                      searchMode === 'comprehensive' ? 'text-primary' : 'text-white/70'
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-center">
+                  <p className="font-medium">Quick Search</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Top priority services, faster results (~10 seconds)
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+              
+              {/* All Results option with its own tooltip */}
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => { setSearchMode('comprehensive'); if (navigator.vibrate) navigator.vibrate(12); }}
+                    disabled={isLoading}
+                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50 ${
+                      searchMode === 'comprehensive' ? 'text-primary' : 'text-white/70 hover:text-white/90'
                     }`}
+                    aria-label="All results search mode"
+                    data-testid="toggle-all-results"
                   >
                     <motion.div
                       animate={{ scale: searchMode === 'comprehensive' ? [1, 1.2, 1] : 1 }}
@@ -379,18 +388,16 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
                       <Layers className={`w-4 h-4 ${searchMode === 'comprehensive' ? 'fill-primary/20' : ''}`} />
                     </motion.div>
                     <span>All Results</span>
-                  </div>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-center">
-                <p className="font-medium">{searchMode === 'fast' ? 'Quick Search' : 'All Results'}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {searchMode === 'fast' 
-                    ? 'Top priority services, faster results (~10 seconds)' 
-                    : 'Every matching service with full details (~30-60 seconds)'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-center">
+                  <p className="font-medium">All Results</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Every matching service with full details (~30-60 seconds)
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             
             <p id="search-hint" className="text-sm text-white/70 font-medium">
               {t('app.searchHint')}
