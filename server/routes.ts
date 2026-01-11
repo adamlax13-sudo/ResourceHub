@@ -206,28 +206,35 @@ PROCESS STEPS - USE ONLY VERIFIED INFO:
 - If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
 - Each step should use real contact info from the database
 
-DETAILED PROCESS STEPS (5-7 steps per service):
+PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
+- Provide as many steps as needed (typically 3-8) to accurately reflect how someone actually accesses this service
+- Simple services (crisis lines) may need only 3-4 steps; complex services (intake assessments) may need 6-8
 - Use ONLY verified contact info from the reference database - NEVER invent URLs
-- Include specific details: phone numbers, websites, hours, locations, what to expect
-- Describe what happens at each stage - be helpful and informative
+- Include specific details: phone numbers, websites, hours, what to expect at each stage
 
-GOOD EXAMPLE for Recovery College Calgary:
-["Visit recoverycollegecalgary.ca or call 403-297-1402 to learn about available courses",
- "Browse the course catalog - topics include anxiety, stress management, recovery skills, and more",
- "No referral, diagnosis, or account creation needed - courses are completely FREE for anyone 16+",
- "Register online for your chosen course, or attend a Wednesday drop-in session at their Calgary location",
- "Attend your peer-led session - available both virtually and in-person",
- "Courses are co-facilitated by trained Peer Supporters with lived experience of mental health or addiction recovery"]
+EXAMPLE for crisis line (simple - 4 steps):
+["Call 403-266-4357 - available 24/7, 365 days a year",
+ "A trained crisis counselor will answer and ask how they can help",
+ "Share what you're going through - calls are confidential and anonymous",
+ "Receive support and referrals to Calgary-area resources if needed"]
 
-GOOD EXAMPLE for Distress Centre Calgary:
-["Call 403-266-4357 - available 24 hours a day, 7 days a week, 365 days a year",
- "A trained volunteer crisis counselor will answer and ask how they can help",
- "Share what you're going through - all calls are completely confidential and anonymous",
- "Receive emotional support, active listening, and crisis intervention if needed",
- "Get referrals to appropriate Calgary-area mental health and social services",
- "Follow-up support and ConnecTeen youth line (403-264-8336) also available"]
+EXAMPLE for Recovery College Calgary (moderate - 5 steps):
+["Visit recoverycollegecalgary.ca or call 403-297-1402",
+ "Browse free courses - topics include anxiety, stress, recovery skills",
+ "No referral or account needed - FREE for anyone 16+",
+ "Register online or attend Wednesday drop-in sessions",
+ "Attend peer-led session (virtual or in-person)"]
 
-If unsure of exact details: "Contact [org] at [phone from database] to confirm current intake process and hours"
+EXAMPLE for clinical assessment service (complex - 7 steps):
+["Call intake line during business hours to request assessment",
+ "Complete phone screening to determine eligibility",
+ "Receive appointment date (wait times vary)",
+ "Bring required documents to first appointment",
+ "Meet with clinician for initial assessment",
+ "Discuss treatment options and create care plan",
+ "Begin recommended services or get referrals"]
+
+If unsure of exact details: "Contact [org] at [phone from database] to confirm current process"
 
 Return JSON matching:
 {
@@ -426,28 +433,26 @@ PERSONALIZATION:
 - Consider disability accommodations if indicated
 - Suggest similar services to favorites but in unexplored categories
 
-DETAILED PROCESS STEPS (5-7 steps per service):
+PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
+- Provide as many steps as needed (typically 3-8) to accurately reflect how someone actually accesses this service
+- Simple services (crisis lines) may need only 3-4 steps; complex services (intake assessments) may need 6-8
 - Use ONLY verified contact info from the reference database - NEVER invent URLs
-- Include specific details: phone numbers, websites, hours, locations, what to expect
-- Describe what happens at each stage - be helpful and detailed
+- Include specific details: phone numbers, websites, hours, what to expect at each stage
 
-GOOD EXAMPLE for Recovery College Calgary:
-["Visit recoverycollegecalgary.ca or call 403-297-1402 to learn about available courses",
- "Browse the course catalog - topics include anxiety, stress management, recovery skills, and more",
- "No referral, diagnosis, or account creation needed - courses are completely FREE for anyone 16+",
- "Register online for your chosen course, or attend a Wednesday drop-in session at their Calgary location",
- "Attend your peer-led session - available both virtually and in-person",
- "Courses are co-facilitated by trained Peer Supporters with lived experience of mental health or addiction recovery"]
+EXAMPLE for crisis line (simple - 4 steps):
+["Call 403-266-4357 - available 24/7",
+ "Speak with trained crisis counselor",
+ "Receive confidential support",
+ "Get referrals if needed"]
 
-GOOD EXAMPLE for Distress Centre Calgary:
-["Call 403-266-4357 - available 24 hours a day, 7 days a week, 365 days a year",
- "A trained volunteer crisis counselor will answer and ask how they can help",
- "Share what you're going through - all calls are completely confidential and anonymous",
- "Receive emotional support, active listening, and crisis intervention if needed",
- "Get referrals to appropriate Calgary-area mental health and social services",
- "Follow-up support and ConnecTeen youth line (403-264-8336) also available"]
+EXAMPLE for Recovery College (moderate - 5 steps):
+["Visit recoverycollegecalgary.ca or call 403-297-1402",
+ "Browse free courses on mental health and recovery",
+ "No referral or account needed - FREE for 16+",
+ "Register online or attend Wednesday drop-ins",
+ "Attend peer-led session (virtual or in-person)"]
 
-If unsure of exact details: "Contact [org] at [phone from database] to confirm current intake process and hours"
+If unsure of exact details: "Contact [org] at [phone from database] to confirm current process"
 
 Return JSON:
 {"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended for this user","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step with real contact info","Step 2","Step 3","Step 4"],"waitTimes":"Realistic estimate","requiredDocs":["Required doc"]}],"summary":"Personalized summary"}
