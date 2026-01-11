@@ -85,18 +85,16 @@ export default function Recommended() {
       <header className="bg-primary text-primary-foreground py-6">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-back">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              </Link>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <img src={rocLogo} alt="ROC Logo" className="h-6 sm:h-8 w-auto" />
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <Sparkles className="w-4 sm:w-5 h-4 sm:h-5" />
-                  <h1 className="text-base sm:text-2xl font-display font-bold">{t('recommended.title')}</h1>
-                </div>
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-back">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
+                <h1 className="text-xl sm:text-3xl font-display font-bold">{t('recommended.title')}</h1>
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-3">
@@ -170,7 +168,7 @@ export default function Recommended() {
                       </CardDescription>
                     </CardHeader>
                     
-                    <CardContent className="flex-1 pb-3">
+                    <CardContent className="flex-1 pb-3 flex flex-col">
                       <div className="bg-muted/50 rounded-lg p-3 mb-4">
                         <p className="text-sm text-muted-foreground italic">
                           <Sparkles className="w-3 h-3 inline mr-1 text-primary" />
@@ -199,13 +197,14 @@ export default function Recommended() {
                         )}
                       </div>
                       
-                      {rec.process && rec.process.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <p className="text-xs text-muted-foreground">
-                            {rec.process.length} {t('service.steps')} • {t('service.clickDetails')}
-                          </p>
-                        </div>
-                      )}
+                      <div className="mt-auto pt-3 border-t border-border">
+                        <p className="text-xs text-muted-foreground">
+                          {rec.process && rec.process.length > 0 
+                            ? `${rec.process.length} ${t('service.steps')} • ${t('service.clickDetails')}`
+                            : t('service.clickDetails')
+                          }
+                        </p>
+                      </div>
                     </CardContent>
                     
                     <CardFooter className="pt-3 border-t flex gap-2">
