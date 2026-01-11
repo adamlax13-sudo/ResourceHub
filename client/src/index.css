@@ -178,3 +178,35 @@ input[type="search"]::-webkit-search-cancel-button {
     transform-style: preserve-3d;
   }
 }
+
+/* Reduced Motion Support - Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Smooth scrolling for users who don't prefer reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Focus visible styles for keyboard navigation */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Skip to main content link for accessibility */
+.skip-link {
+  @apply absolute -top-10 left-0 bg-primary text-primary-foreground p-3 z-50 transition-all;
+}
+.skip-link:focus {
+  @apply top-0;
+}

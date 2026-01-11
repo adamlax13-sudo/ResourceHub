@@ -375,7 +375,7 @@ export default function MyResources() {
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <img src={rocLogo} alt="ROC Logo" className="w-24 h-auto mx-auto mb-4 opacity-30" />
+              <img src={rocLogo} alt="ROC Logo" className="w-24 h-auto mx-auto mb-4 opacity-30" loading="lazy" />
               <h2 className="text-xl font-semibold text-foreground mb-2">{t('myResources.empty')}</h2>
               <p className="text-muted-foreground mb-6">
                 {t('myResources.emptyDesc')}

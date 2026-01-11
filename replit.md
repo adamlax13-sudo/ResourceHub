@@ -100,3 +100,29 @@ Preferred communication style: Simple, everyday language.
 - **Form Handling**: react-hook-form with @hookform/resolvers and Zod
 - **Date Utilities**: date-fns
 - **Icons**: Lucide React
+
+## Performance Optimizations
+
+### Code Splitting
+- **Route-level**: All pages lazy-loaded via React.lazy (Home, MyResources, Profile, Recommended)
+- **Component-level**: ServiceModal and WelcomeModal load on-demand
+- **Suspense boundaries**: PageLoader component shows while chunks load
+
+### Translation Loading
+- **On-demand**: Only selected language loads; others fetch when switched
+- **Default**: English loads immediately, other 9 languages lazy-load
+- **Configuration**: client/src/lib/i18n.ts with partialBundledLanguages
+
+### Image Optimization
+- **Lazy loading**: Footer and empty-state logos use loading="lazy"
+- **Header logos**: Load eagerly for branding visibility
+
+### Caching
+- **Search results**: Cached in database to avoid repeat AI calls
+- **React Query**: staleTime: Infinity prevents unnecessary refetches
+
+### Accessibility
+- **Reduced motion**: CSS @media (prefers-reduced-motion: reduce) disables animations
+- **Smooth scrolling**: Only for users who prefer motion
+- **Focus visible**: Clear outline styles for keyboard navigation
+- **Skip link**: CSS class available for skip-to-content links
