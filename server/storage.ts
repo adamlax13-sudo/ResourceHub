@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, searches, favorites, recommendationsCache, type User, type Search, type Favorite, type UpdateDemographics, type RecommendationsCache } from "@shared/schema";
+import { users, searches, favorites, recommendationsCache, feedback, type User, type Search, type Favorite, type UpdateDemographics, type RecommendationsCache, type Feedback, type InsertFeedback } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
@@ -21,6 +21,9 @@ export interface IStorage {
   // Recommendations cache
   getCachedRecommendations(profileHash: string): Promise<RecommendationsCache | undefined>;
   cacheRecommendations(profileHash: string, results: any): Promise<RecommendationsCache>;
+
+  // Feedback
+  submitFeedback(feedbackData: InsertFeedback): Promise<Feedback>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -141,6 +144,11 @@ export class DatabaseStorage implements IStorage {
     await db.delete(recommendationsCache).where(eq(recommendationsCache.profileHash, profileHash));
     const [newCache] = await db.insert(recommendationsCache).values({ profileHash, results }).returning();
     return newCache;
+  }
+
+  async submitFeedback(feedbackData: InsertFeedback): Promise<Feedback> {
+    const [newFeedback] = await db.insert(feedback).values(feedbackData).returning();
+    return newFeedback;
   }
 }
 
