@@ -207,13 +207,15 @@ export default function Recommended() {
                         )}
                       </div>
                       
-                      <div className="mt-auto pt-6 border-t border-border">
-                        <p className="text-xs text-muted-foreground">
-                          {rec.process && rec.process.length > 0 
-                            ? `${rec.process.length} ${t('service.steps')} • ${t('service.clickDetails')}`
-                            : t('service.clickDetails')
-                          }
-                        </p>
+                      <div className="mt-auto pt-8">
+                        <div className="flex items-center gap-2">
+                          {rec.process && rec.process.length > 0 && (
+                            <Badge variant="secondary" className="bg-primary/10 text-primary font-semibold">
+                              {rec.process.length} {t('service.steps')}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">{t('service.clickDetails')}</span>
+                        </div>
                       </div>
                     </CardContent>
                     
