@@ -47,22 +47,33 @@ export async function registerRoutes(
           {
             role: "system",
             content: `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
-            Return JSON matching:
-            {
-              "services": [{
-                "id": "string",
-                "name": "string",
-                "category": "string",
-                "description": "string",
-                "location": "string",
-                "contact": "string",
-                "eligibility": "string",
-                "process": ["step 1", "step 2"],
-                "waitTimes": "string",
-                "requiredDocs": ["doc 1"]
-              }],
-              "summary": "string"
-            }`
+
+CRITICAL REQUIREMENT: Every service you return MUST be a REAL, SPECIFIC organization, program, or service that actually exists in Alberta, Canada. 
+- Include the actual organization name (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary")
+- Provide real phone numbers, websites, and addresses when available
+- Never return generic categories like "Local Counseling Services" or "Community Support Groups" - always name the specific organization
+- If you're unsure about exact contact details, provide the organization's main website or general intake number
+- Prefer well-established organizations with verifiable online presence
+
+Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary"
+Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center"
+
+Return JSON matching:
+{
+  "services": [{
+    "id": "string",
+    "name": "string (MUST be the real organization/program name)",
+    "category": "string",
+    "description": "string",
+    "location": "string (real address or service area)",
+    "contact": "string (real phone/email/website)",
+    "eligibility": "string",
+    "process": ["step 1", "step 2"],
+    "waitTimes": "string",
+    "requiredDocs": ["doc 1"]
+  }],
+  "summary": "string"
+}`
           },
           { role: "user", content: input.query }
         ],
@@ -215,6 +226,17 @@ Include the specific campus location or nearest service location in the "locatio
       
 Based on the user's profile and preferences, recommend 5-7 relevant recovery and support services.
 
+CRITICAL REQUIREMENT: Every service you recommend MUST be a REAL, SPECIFIC organization, program, or service that actually exists in Alberta, Canada.
+- Include the actual organization name (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary", "University of Alberta Counselling & Clinical Services")
+- Provide real phone numbers, websites, and addresses when available
+- Never return generic categories like "Local Counseling Services" or "Community Support Groups" - always name the specific organization
+- If you're unsure about exact contact details, provide the organization's main website or general intake number
+- Prefer well-established organizations with verifiable online presence
+- For campus services, use the actual name (e.g., "U of A Wellness Services" not "Campus Mental Health")
+
+Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary", "University of Calgary Student Wellness Services"
+Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center", "Student Health Services"
+
 ${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
 ${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
 
@@ -244,12 +266,12 @@ Return JSON matching:
 {
   "recommendations": [{
     "id": "string (unique id)",
-    "name": "string (service name)",
+    "name": "string (MUST be the real organization/program name - not a generic category)",
     "category": "string (e.g., Mental Health, Financial Aid, Housing, LGBTQ2S+ Support, Cultural Services)",
     "description": "string (brief description)",
     "reasoning": "string (why this is recommended for this user)",
-    "location": "string",
-    "contact": "string", 
+    "location": "string (real address or service area)",
+    "contact": "string (real phone/email/website)", 
     "eligibility": "string",
     "process": ["step 1", "step 2"],
     "waitTimes": "string",
