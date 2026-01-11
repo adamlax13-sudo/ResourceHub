@@ -159,8 +159,9 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-white tracking-tight leading-tight">
-            Recovery on Campus<br />Alberta Resource Hub
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-white tracking-tight">
+            <span className="block">Recovery on Campus</span>
+            <span className="block mt-2">Alberta Resource Hub</span>
           </h1>
           <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-light">
             {t('app.subtitle')}
