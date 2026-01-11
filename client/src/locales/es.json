@@ -130,5 +130,26 @@
   "nav2": {
     "profile": "Perfil",
     "recommended": "Para Mí"
+  },
+  "feedback": {
+    "link": "Comentarios y Sugerencias",
+    "title": "Comparte Tus Comentarios",
+    "description": "¡Ayúdanos a mejorar! Tus comentarios ayudan a hacer este recurso mejor para todos.",
+    "name": "Nombre (opcional)",
+    "namePlaceholder": "Tu nombre",
+    "email": "Correo (opcional)",
+    "emailPlaceholder": "tu@correo.com",
+    "message": "Tus Comentarios",
+    "messagePlaceholder": "Comparte tus pensamientos, sugerencias o reporta problemas...",
+    "cancel": "Cancelar",
+    "submit": "Enviar Comentarios",
+    "sending": "Enviando...",
+    "successTitle": "Comentarios Enviados",
+    "successMessage": "¡Gracias por tus comentarios! Apreciamos que te tomes el tiempo para ayudarnos a mejorar.",
+    "errorTitle": "Error",
+    "errorMessage": "No se pudieron enviar los comentarios. Por favor intenta de nuevo.",
+    "thankYou": "¡Gracias!",
+    "thankYouMessage": "Tus comentarios han sido recibidos y nos ayudarán a mejorar la plataforma.",
+    "close": "Cerrar"
   }
 }

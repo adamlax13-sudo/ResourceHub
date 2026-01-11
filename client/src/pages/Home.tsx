@@ -5,8 +5,9 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, Search, ClipboardList, Heart, RotateCcw } from "lucide-react";
+import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import { FeedbackModal } from "@/components/FeedbackModal";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
@@ -69,6 +70,7 @@ function FlipCard({ frontContent, backContent, index }: {
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
   const handleSearch = (query: string) => {
@@ -202,11 +204,21 @@ export default function Home() {
           <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
             <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto mb-4 opacity-60 hover:opacity-80 transition-opacity" loading="lazy" />
           </a>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm mb-4">
             {t('app.footer')}
           </p>
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+            data-testid="button-open-feedback"
+          >
+            <MessageSquare className="w-4 h-4" />
+            {t('feedback.link')}
+          </button>
         </div>
       </footer>
+
+      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </div>
   );
 }

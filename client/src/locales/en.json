@@ -142,5 +142,26 @@
   "nav2": {
     "profile": "Profile",
     "recommended": "For Me"
+  },
+  "feedback": {
+    "link": "Feedback & Suggestions",
+    "title": "Share Your Feedback",
+    "description": "Help us improve! Your feedback helps make this resource better for everyone.",
+    "name": "Name (optional)",
+    "namePlaceholder": "Your name",
+    "email": "Email (optional)",
+    "emailPlaceholder": "your@email.com",
+    "message": "Your Feedback",
+    "messagePlaceholder": "Share your thoughts, suggestions, or report any issues...",
+    "cancel": "Cancel",
+    "submit": "Send Feedback",
+    "sending": "Sending...",
+    "successTitle": "Feedback Sent",
+    "successMessage": "Thank you for your feedback! We appreciate you taking the time to help us improve.",
+    "errorTitle": "Error",
+    "errorMessage": "Failed to submit feedback. Please try again.",
+    "thankYou": "Thank You!",
+    "thankYouMessage": "Your feedback has been received and will help us improve the platform.",
+    "close": "Close"
   }
 }

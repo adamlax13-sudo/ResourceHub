@@ -130,5 +130,26 @@
   "nav2": {
     "profile": "Profil",
     "recommended": "Pour Moi"
+  },
+  "feedback": {
+    "link": "Commentaires et Suggestions",
+    "title": "Partagez Vos Commentaires",
+    "description": "Aidez-nous à améliorer! Vos commentaires aident à rendre cette ressource meilleure pour tout le monde.",
+    "name": "Nom (optionnel)",
+    "namePlaceholder": "Votre nom",
+    "email": "Courriel (optionnel)",
+    "emailPlaceholder": "votre@courriel.com",
+    "message": "Vos Commentaires",
+    "messagePlaceholder": "Partagez vos pensées, suggestions ou signalez des problèmes...",
+    "cancel": "Annuler",
+    "submit": "Envoyer",
+    "sending": "Envoi en cours...",
+    "successTitle": "Commentaires Envoyés",
+    "successMessage": "Merci pour vos commentaires! Nous apprécions que vous preniez le temps de nous aider à améliorer.",
+    "errorTitle": "Erreur",
+    "errorMessage": "Impossible d'envoyer les commentaires. Veuillez réessayer.",
+    "thankYou": "Merci!",
+    "thankYouMessage": "Vos commentaires ont été reçus et nous aideront à améliorer la plateforme.",
+    "close": "Fermer"
   }
 }
