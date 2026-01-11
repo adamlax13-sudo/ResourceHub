@@ -67,20 +67,9 @@ export const favorites = pgTable("favorites", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Feedback submissions from users
-export const feedback = pgTable("feedback", {
-  id: serial("id").primaryKey(),
-  name: varchar("name"),
-  email: varchar("email"),
-  feedbackType: varchar("feedback_type").notNull(), // suggestion, bug, general, other
-  message: text("message").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertFavoriteSchema = createInsertSchema(favorites).omit({ id: true, createdAt: true });
-export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true });
 
 // Schema for updating user demographics (all optional)
 export const updateDemographicsSchema = z.object({
@@ -106,8 +95,6 @@ export type UpsertUser = typeof users.$inferInsert;
 export type Search = typeof searches.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
 export type RecommendationsCache = typeof recommendationsCache.$inferSelect;
-export type Feedback = typeof feedback.$inferSelect;
-export type InsertFeedback = typeof feedback.$inferInsert;
 
 export interface ServiceDetail {
   id: string;
