@@ -135,53 +135,90 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        {/* Additional floating triangles with varied orientations */}
+        {/* Additional floating triangles with varied orientations - spaced out */}
+        {/* Large complex triangle - bottom right */}
         <motion.svg 
-          className="absolute top-16 right-1/4 w-24 h-24" 
+          className="absolute -bottom-16 -right-16 w-80 h-80" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ y: [0, -15, 0], rotate: [35, 55, 35] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, -12, 0], rotate: [130, 145, 130] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.6" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.4" />
+        </motion.svg>
+        {/* Large complex triangle - center left */}
+        <motion.svg 
+          className="absolute top-1/3 -left-10 w-72 h-72" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, 15, 0], rotate: [220, 235, 220], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.7" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.4" />
+        </motion.svg>
+        {/* Medium triangle - top center-right */}
+        <motion.svg 
+          className="absolute top-8 right-[15%] w-36 h-36" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, -18, 0], rotate: [45, 65, 45] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
+          <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.6" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
+        </motion.svg>
+        {/* Small triangle - far left bottom */}
+        <motion.svg 
+          className="absolute bottom-[15%] left-[5%] w-20 h-20" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, -12, 0], rotate: [160, 180, 160] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
         </motion.svg>
+        {/* Small triangle - center area */}
         <motion.svg 
-          className="absolute top-1/2 left-10 w-32 h-32" 
+          className="absolute top-[45%] right-[35%] w-14 h-14" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ y: [0, 12, 0], rotate: [150, 165, 150], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.5" fill="none" />
-        </motion.svg>
-        <motion.svg 
-          className="absolute bottom-1/3 right-10 w-56 h-56" 
-          viewBox="0 0 200 200" 
-          fill="none"
-          animate={{ y: [0, -8, 0], rotate: [200, 215, 200], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.3" />
-        </motion.svg>
-        <motion.svg 
-          className="absolute top-3/4 left-1/2 w-16 h-16" 
-          viewBox="0 0 200 200" 
-          fill="none"
-          animate={{ y: [0, -18, 0], rotate: [90, 110, 90] }}
+          animate={{ y: [0, 10, 0], rotate: [280, 300, 280] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
         </motion.svg>
+        {/* Tiny triangle - bottom center */}
         <motion.svg 
-          className="absolute top-20 left-1/2 w-20 h-20" 
+          className="absolute bottom-[25%] left-[45%] w-10 h-10" 
           viewBox="0 0 200 200" 
           fill="none"
-          animate={{ y: [0, 10, 0], rotate: [270, 285, 270], opacity: [0.5, 0.9, 0.5] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          animate={{ y: [0, -8, 0], rotate: [70, 90, 70], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2.5" fill="none" />
+        </motion.svg>
+        {/* Medium complex triangle - far right center */}
+        <motion.svg 
+          className="absolute top-[55%] -right-8 w-48 h-48" 
+          viewBox="0 0 200 200" 
+          fill="none"
+          animate={{ y: [0, 10, 0], rotate: [310, 325, 310], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+        >
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.3" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.3" />
         </motion.svg>
         {/* Additional floating particles */}
         <motion.div 
