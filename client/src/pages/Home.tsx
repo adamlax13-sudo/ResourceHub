@@ -107,11 +107,6 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="bg-card p-8 rounded-3xl shadow-xl border border-border mb-12">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-4">{t('search.summary')}</h2>
-                <p className="text-muted-foreground leading-relaxed text-lg">{data.summary}</p>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {data.services.map((service, index) => (
                   <ServiceCard

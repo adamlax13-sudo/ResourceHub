@@ -264,17 +264,6 @@ export default function Recommended() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {recommendations.summary && (
-              <Card className="mb-8 bg-primary/5 border-primary/20">
-                <CardContent className="py-6">
-                  <div className="flex items-start gap-4">
-                    <Sparkles className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-foreground">{recommendations.summary}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {recommendations.recommendations.map((rec: any, index: number) => (
                 <motion.div
