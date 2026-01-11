@@ -73,8 +73,8 @@ export default function Home() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
-  const handleSearch = (query: string) => {
-    search({ query });
+  const handleSearch = (query: string, mode: 'fast' | 'comprehensive') => {
+    search({ query, mode });
   };
 
   return (

@@ -1,27 +1,47 @@
-import { Search, User, Sparkles, Heart, LogOut } from "lucide-react";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { Search, User, Sparkles, Heart, LogOut, Zap, Layers } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
+type SearchMode = 'fast' | 'comprehensive';
+
 interface HeroProps {
-  onSearch: (query: string) => void;
+  onSearch: (query: string, mode: SearchMode) => void;
   isLoading: boolean;
 }
 
 export function Hero({ onSearch, isLoading }: HeroProps) {
   const [query, setQuery] = useState("");
+  const [searchMode, setSearchMode] = useState<SearchMode>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('searchMode') as SearchMode) || 'fast';
+    }
+    return 'fast';
+  });
   const { user, isLoading: authLoading } = useAuth();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    localStorage.setItem('searchMode', searchMode);
+  }, [searchMode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query);
+      onSearch(query, searchMode);
+    }
+  };
+
+  const toggleMode = () => {
+    setSearchMode(prev => prev === 'fast' ? 'comprehensive' : 'fast');
+    if (navigator.vibrate) {
+      navigator.vibrate(12);
     }
   };
 
@@ -301,9 +321,81 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               )}
             </button>
           </div>
-          <p id="search-hint" className="mt-4 text-sm text-white/70 font-medium">
-            {t('app.searchHint')}
-          </p>
+          {/* Search Mode Toggle */}
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={toggleMode}
+                  disabled={isLoading}
+                  className="group relative grid grid-cols-2 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1 transition-all hover:bg-white/15 disabled:opacity-50"
+                  data-testid="toggle-search-mode"
+                  aria-label={`Switch to ${searchMode === 'fast' ? 'comprehensive' : 'fast'} search`}
+                >
+                  {/* Sliding indicator - uses CSS grid for responsive sizing */}
+                  <motion.div
+                    className="absolute inset-y-1 rounded-full bg-white shadow-lg"
+                    initial={false}
+                    animate={{
+                      left: searchMode === 'fast' ? '4px' : '50%',
+                      right: searchMode === 'fast' ? '50%' : '4px',
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                    }}
+                    style={{
+                      boxShadow: '0 0 12px rgba(255,255,255,0.3)',
+                    }}
+                  />
+                  
+                  {/* Fast option */}
+                  <div
+                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                      searchMode === 'fast' ? 'text-primary' : 'text-white/70'
+                    }`}
+                  >
+                    <motion.div
+                      animate={{ scale: searchMode === 'fast' ? [1, 1.2, 1] : 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Zap className={`w-4 h-4 ${searchMode === 'fast' ? 'fill-primary/20' : ''}`} />
+                    </motion.div>
+                    <span>Quick</span>
+                  </div>
+                  
+                  {/* Comprehensive option */}
+                  <div
+                    className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                      searchMode === 'comprehensive' ? 'text-primary' : 'text-white/70'
+                    }`}
+                  >
+                    <motion.div
+                      animate={{ scale: searchMode === 'comprehensive' ? [1, 1.2, 1] : 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Layers className={`w-4 h-4 ${searchMode === 'comprehensive' ? 'fill-primary/20' : ''}`} />
+                    </motion.div>
+                    <span>All Results</span>
+                  </div>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs text-center">
+                <p className="font-medium">{searchMode === 'fast' ? 'Quick Search' : 'All Results'}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {searchMode === 'fast' 
+                    ? 'Top priority services, faster results (~10 seconds)' 
+                    : 'Every matching service with full details (~30-60 seconds)'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <p id="search-hint" className="text-sm text-white/70 font-medium">
+              {t('app.searchHint')}
+            </p>
+          </div>
         </motion.form>
       </div>
     </div>
