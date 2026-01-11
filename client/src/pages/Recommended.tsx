@@ -289,8 +289,8 @@ export default function Recommended() {
                           </Badge>
                         )}
                       </div>
-                      <CardTitle className="text-lg group-hover:text-primary transition-colors break-words line-clamp-2">{rec.name}</CardTitle>
-                      <CardDescription className="text-sm line-clamp-2">
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors min-w-0 break-words hyphens-auto line-clamp-2">{rec.name}</CardTitle>
+                      <CardDescription className="text-sm min-w-0 break-words line-clamp-2">
                         {rec.description}
                       </CardDescription>
                     </CardHeader>
