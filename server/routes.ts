@@ -183,6 +183,7 @@ export async function registerRoutes(
       if (user.religion) demographicContext.push(`Religion/Spirituality: ${user.religion}`);
       if (user.inAddiction) demographicContext.push(`Recovery Status: ${user.inAddiction}`);
       if (user.university) demographicContext.push(`University/College: ${user.university}`);
+      if (user.disability) demographicContext.push(`Disability Status: ${user.disability}`);
       if (user.serviceFormat) demographicContext.push(`Service Format Preference: ${user.serviceFormat}`);
       if (user.supportStyle) demographicContext.push(`Support Style Preference: ${user.supportStyle}`);
       
@@ -221,6 +222,7 @@ For example:
 - Faith-based or spiritual support if relevant to religion
 - Addiction recovery and harm reduction services if user indicates recovery status
 - Campus-specific services and nearby community resources if user indicated their university/college
+- Accessible services and disability accommodations if user indicates a disability (prioritize services with accessibility features, accommodation support, assistive technology, accessible locations, disability support offices)
 - Similar services to their favorites but in different categories they haven't explored
 
 SERVICE DELIVERY PREFERENCES (prioritize but don't exclude based on these):
