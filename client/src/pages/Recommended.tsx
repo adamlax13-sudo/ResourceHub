@@ -176,7 +176,7 @@ export default function Recommended() {
                         </p>
                       </div>
                       
-                      <div className="space-y-3 text-sm min-w-0 mb-6">
+                      <div className="space-y-3 text-sm min-w-0">
                         {rec.location && (
                           <div className="flex items-start gap-2 min-w-0">
                             <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -197,7 +197,7 @@ export default function Recommended() {
                         )}
                       </div>
                       
-                      <div className="mt-auto pt-4 border-t border-border">
+                      <div className="mt-auto pt-6 border-t border-border">
                         <p className="text-xs text-muted-foreground">
                           {rec.process && rec.process.length > 0 
                             ? `${rec.process.length} ${t('service.steps')} • ${t('service.clickDetails')}`
