@@ -25,6 +25,7 @@ export const users = pgTable("users", {
   education: varchar("education"),
   religion: varchar("religion"),
   inAddiction: varchar("in_addiction"),
+  university: varchar("university"),
   profileCompleted: timestamp("profile_completed"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -61,6 +62,7 @@ export const updateDemographicsSchema = z.object({
   education: z.string().optional().nullable(),
   religion: z.string().optional().nullable(),
   inAddiction: z.string().optional().nullable(),
+  university: z.string().optional().nullable(),
 });
 
 export type UpdateDemographics = z.infer<typeof updateDemographicsSchema>;

@@ -56,12 +56,12 @@ Preferred communication style: Simple, everyday language.
 - **Schema Location**: shared/schema.ts
 - **Tables**: 
   - `sessions` - Authentication session storage
-  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, profileCompleted)
+  - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, profileCompleted)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
 
 ### User Profile & Personalization
-- **Optional Demographics**: 7 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status (all optional)
+- **Optional Demographics**: 8 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college (all optional)
 - **Profile Page**: /profile - Form to manage demographic preferences with descriptive help text
 - **Recommendations Page**: /recommended - AI-powered personalized service recommendations
 - **Privacy**: Demographics used only for recommendations, never shared with third parties

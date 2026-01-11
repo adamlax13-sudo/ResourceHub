@@ -90,6 +90,8 @@
     "religionDesc": "Nos ajuda a encontrar apoio baseado em fé, se necessário.",
     "inAddiction": "Status de Recuperação",
     "inAddictionDesc": "Nos ajuda a conectá-lo com recursos de dependência e recuperação.",
+    "university": "Universidade/Faculdade",
+    "universityDesc": "Nos ajuda a encontrar recursos específicos do campus perto de você.",
     "selectPlaceholder": "Selecione uma opção (opcional)",
     "saveButton": "Salvar Perfil",
     "clearButton": "Limpar Tudo",

@@ -96,6 +96,27 @@ const ADDICTION_OPTIONS = [
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
 
+const UNIVERSITY_OPTIONS = [
+  { value: "university-of-alberta", label: "University of Alberta" },
+  { value: "university-of-calgary", label: "University of Calgary" },
+  { value: "university-of-lethbridge", label: "University of Lethbridge" },
+  { value: "macewan-university", label: "MacEwan University" },
+  { value: "mount-royal-university", label: "Mount Royal University" },
+  { value: "athabasca-university", label: "Athabasca University" },
+  { value: "nait", label: "NAIT" },
+  { value: "sait", label: "SAIT" },
+  { value: "norquest-college", label: "NorQuest College" },
+  { value: "bow-valley-college", label: "Bow Valley College" },
+  { value: "lethbridge-college", label: "Lethbridge College" },
+  { value: "red-deer-polytechnic", label: "Red Deer Polytechnic" },
+  { value: "grande-prairie-regional-college", label: "Grande Prairie Regional College" },
+  { value: "lakeland-college", label: "Lakeland College" },
+  { value: "medicine-hat-college", label: "Medicine Hat College" },
+  { value: "olds-college", label: "Olds College" },
+  { value: "other", label: "Other Alberta Institution" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
 export default function Profile() {
   const { user, isLoading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
@@ -114,6 +135,7 @@ export default function Profile() {
       education: null,
       religion: null,
       inAddiction: null,
+      university: null,
     },
   });
 
@@ -127,6 +149,7 @@ export default function Profile() {
         education: profile.education || null,
         religion: profile.religion || null,
         inAddiction: profile.inAddiction || null,
+        university: profile.university || null,
       });
     }
   }, [profile, form]);
@@ -410,6 +433,34 @@ export default function Profile() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="university"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('profile.university')}</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value || undefined}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-university">
+                              <SelectValue placeholder={t('profile.selectPlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {UNIVERSITY_OPTIONS.map(opt => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>{t('profile.universityDesc')}</FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="flex gap-3 pt-4">
                     <Button 
                       type="submit" 
@@ -426,7 +477,7 @@ export default function Profile() {
                     <Button 
                       type="button" 
                       variant="outline"
-                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null, education: null, religion: null, inAddiction: null })}
+                      onClick={() => form.reset({ age: null, gender: null, race: null, sexuality: null, education: null, religion: null, inAddiction: null, university: null })}
                       data-testid="button-clear-profile"
                     >
                       {t('profile.clearButton')}

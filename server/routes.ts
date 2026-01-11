@@ -179,6 +179,7 @@ export async function registerRoutes(
       if (user.education) demographicContext.push(`Education Level: ${user.education}`);
       if (user.religion) demographicContext.push(`Religion/Spirituality: ${user.religion}`);
       if (user.inAddiction) demographicContext.push(`Recovery Status: ${user.inAddiction}`);
+      if (user.university) demographicContext.push(`University/College: ${user.university}`);
       
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
       const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
@@ -201,6 +202,7 @@ For example:
 - Student-specific resources if relevant to education level
 - Faith-based or spiritual support if relevant to religion
 - Addiction recovery and harm reduction services if user indicates recovery status
+- Campus-specific services if user indicated their university/college
 - Similar services to their favorites but in different categories they haven't explored
 
 Return JSON matching:

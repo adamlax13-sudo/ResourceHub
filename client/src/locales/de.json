@@ -90,6 +90,8 @@
     "religionDesc": "Hilft uns, glaubensbasierte Unterstützung bei Bedarf zu finden.",
     "inAddiction": "Genesungsstatus",
     "inAddictionDesc": "Hilft uns, Sie mit Sucht- und Genesungsressourcen zu verbinden.",
+    "university": "Universität/Hochschule",
+    "universityDesc": "Hilft uns, campusspezifische Ressourcen in Ihrer Nähe zu finden.",
     "selectPlaceholder": "Wählen Sie eine Option (optional)",
     "saveButton": "Profil Speichern",
     "clearButton": "Alle Löschen",

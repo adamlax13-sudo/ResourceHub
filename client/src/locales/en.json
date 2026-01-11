@@ -88,6 +88,8 @@
     "religionDesc": "Helps us find faith-based support if needed.",
     "inAddiction": "Recovery Status",
     "inAddictionDesc": "Helps us connect you with addiction and recovery resources.",
+    "university": "University/College",
+    "universityDesc": "Helps us find campus-specific resources near you.",
     "selectPlaceholder": "Select an option (optional)",
     "saveButton": "Save Profile",
     "clearButton": "Clear All",

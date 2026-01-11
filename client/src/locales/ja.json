@@ -90,6 +90,8 @@
     "religionDesc": "必要に応じて信仰に基づくサポートを見つけるのに役立ちます。",
     "inAddiction": "回復ステータス",
     "inAddictionDesc": "中毒と回復のリソースとあなたをつなぐのに役立ちます。",
+    "university": "大学/カレッジ",
+    "universityDesc": "あなたの近くのキャンパス固有のリソースを見つけるのに役立ちます。",
     "selectPlaceholder": "オプションを選択してください（オプション）",
     "saveButton": "プロフィールを保存",
     "clearButton": "すべてクリア",
