@@ -1,8 +1,54 @@
-import { CheckCircle2, Circle, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProcessTimelineProps {
   steps: string[];
+}
+
+function linkifyText(text: string): React.ReactNode {
+  if (!text) return text;
+  
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+  
+  const combinedRegex = /(https?:\/\/[^\s]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/g;
+  
+  let match;
+  while ((match = combinedRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    
+    const matched = match[0];
+    if (match[1]) {
+      parts.push(
+        <a key={key++} href={matched} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+          {matched}
+        </a>
+      );
+    } else if (match[2]) {
+      parts.push(
+        <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
+          {matched}
+        </a>
+      );
+    } else if (match[3]) {
+      const cleanPhone = matched.replace(/[^\d+]/g, '');
+      parts.push(
+        <a key={key++} href={`tel:${cleanPhone}`} className="text-primary hover:underline">
+          {matched}
+        </a>
+      );
+    }
+    
+    lastIndex = match.index + matched.length;
+  }
+  
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  
+  return parts.length > 0 ? parts : text;
 }
 
 export function ProcessTimeline({ steps }: ProcessTimelineProps) {
@@ -27,7 +73,7 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
 
             <div className="glass-card p-4 md:p-5 hover:shadow-md transition-shadow overflow-hidden">
               <h4 className="font-semibold text-foreground mb-1">Step {index + 1}</h4>
-              <p className="text-muted-foreground text-sm leading-relaxed break-words overflow-wrap-anywhere">{step}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed break-words overflow-wrap-anywhere">{linkifyText(step)}</p>
             </div>
           </motion.div>
         ))}
