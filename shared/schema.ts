@@ -43,6 +43,14 @@ export const searches = pgTable("searches", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Cache recommendations based on user profile hash
+export const recommendationsCache = pgTable("recommendations_cache", {
+  id: serial("id").primaryKey(),
+  profileHash: varchar("profile_hash").notNull().unique(),
+  results: jsonb("results").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const favorites = pgTable("favorites", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -81,6 +89,7 @@ export type User = typeof users.$inferSelect;
 export type UpsertUser = typeof users.$inferInsert;
 export type Search = typeof searches.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
+export type RecommendationsCache = typeof recommendationsCache.$inferSelect;
 
 export interface ServiceDetail {
   id: string;

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, searches, favorites, type User, type Search, type Favorite, type UpdateDemographics } from "@shared/schema";
+import { users, searches, favorites, recommendationsCache, type User, type Search, type Favorite, type UpdateDemographics, type RecommendationsCache } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
@@ -17,6 +17,10 @@ export interface IStorage {
   addFavorite(favorite: Omit<Favorite, 'id' | 'createdAt'>): Promise<Favorite>;
   updateFavorite(id: number, updates: Partial<Favorite>): Promise<Favorite>;
   deleteFavorite(id: number): Promise<void>;
+
+  // Recommendations cache
+  getCachedRecommendations(profileHash: string): Promise<RecommendationsCache | undefined>;
+  cacheRecommendations(profileHash: string, results: any): Promise<RecommendationsCache>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -123,6 +127,18 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFavorite(id: number): Promise<void> {
     await db.delete(favorites).where(eq(favorites.id, id));
+  }
+
+  async getCachedRecommendations(profileHash: string): Promise<RecommendationsCache | undefined> {
+    const [cached] = await db.select().from(recommendationsCache).where(eq(recommendationsCache.profileHash, profileHash));
+    return cached;
+  }
+
+  async cacheRecommendations(profileHash: string, results: any): Promise<RecommendationsCache> {
+    // Delete existing cache for this profile hash first (upsert pattern)
+    await db.delete(recommendationsCache).where(eq(recommendationsCache.profileHash, profileHash));
+    const [newCache] = await db.insert(recommendationsCache).values({ profileHash, results }).returning();
+    return newCache;
   }
 }
 

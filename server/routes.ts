@@ -366,7 +366,7 @@ Return JSON matching:
     res.json(updated);
   });
 
-  // Recommendations endpoint
+  // Recommendations endpoint with caching for speed
   app.get(api.recommendations.get.path, async (req: any, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Not authenticated" });
@@ -380,153 +380,92 @@ Return JSON matching:
       
       const favorites = await storage.getFavorites(user.id);
       
-      // Build context for recommendations
-      const demographicContext = [];
-      if (user.age) demographicContext.push(`Age: ${user.age}`);
-      if (user.gender) demographicContext.push(`Gender: ${user.gender}`);
-      if (user.race) demographicContext.push(`Race/Ethnicity: ${user.race}`);
-      if (user.sexuality) demographicContext.push(`Sexual Orientation: ${user.sexuality}`);
-      if (user.education) demographicContext.push(`Education Level: ${user.education}`);
-      if (user.religion) demographicContext.push(`Religion/Spirituality: ${user.religion}`);
-      if (user.inAddiction) demographicContext.push(`Recovery Status: ${user.inAddiction}`);
-      if (user.university) demographicContext.push(`University/College: ${user.university}`);
-      if (user.disability) demographicContext.push(`Disability Status: ${user.disability}`);
-      if (user.serviceFormat) demographicContext.push(`Service Format Preference: ${user.serviceFormat}`);
-      if (user.supportStyle) demographicContext.push(`Support Style Preference: ${user.supportStyle}`);
+      // Build profile hash for caching (based on demographics + favorite categories sorted)
+      const favoriteCategories = Array.from(new Set(favorites.map(f => f.category))).sort().join(',');
+      const profileData = [
+        user.age || '',
+        user.gender || '',
+        user.race || '',
+        user.sexuality || '',
+        user.education || '',
+        user.religion || '',
+        user.inAddiction || '',
+        user.university || '',
+        user.disability || '',
+        user.serviceFormat || '',
+        user.supportStyle || '',
+        favoriteCategories // Include sorted categories, not just count
+      ].join('|');
+      const profileHash = Buffer.from(profileData).toString('base64');
       
-      const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
-      const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
+      // Check cache first (cache expires after profile changes or new favorites)
+      const cached = await storage.getCachedRecommendations(profileHash);
+      if (cached) {
+        return res.json(cached.results);
+      }
       
-      // Build location context for more specific recommendations
-      const locationContext = user.university ? `
-LOCATION-SPECIFIC GUIDANCE:
-The user attends ${user.university.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}. 
-Prioritize recommending:
-1. On-campus services directly at their institution (counseling centers, student wellness, campus health services)
-2. Services specifically partnered with or located near their campus
-3. Student-specific resources available in their city (Edmonton for U of A, NAIT, MacEwan, NorQuest; Calgary for U of C, SAIT, Mount Royal, Bow Valley; Lethbridge for U of L and Lethbridge College, etc.)
-4. Provincial services with locations accessible from their campus
-
-Include the specific campus location or nearest service location in the "location" field when possible.
-` : '';
-
-      const prompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta, Canada.
+      // Build compact context for faster processing
+      const demographics = [];
+      if (user.age) demographics.push(`age:${user.age}`);
+      if (user.gender) demographics.push(`gender:${user.gender}`);
+      if (user.race) demographics.push(`ethnicity:${user.race}`);
+      if (user.sexuality) demographics.push(`orientation:${user.sexuality}`);
+      if (user.education) demographics.push(`education:${user.education}`);
+      if (user.religion) demographics.push(`faith:${user.religion}`);
+      if (user.inAddiction) demographics.push(`recovery:${user.inAddiction}`);
+      if (user.university) demographics.push(`school:${user.university}`);
+      if (user.disability) demographics.push(`disability:${user.disability}`);
+      if (user.serviceFormat) demographics.push(`format:${user.serviceFormat}`);
+      if (user.supportStyle) demographics.push(`style:${user.supportStyle}`);
       
-Based on the user's profile and preferences, recommend 5-7 relevant recovery and support services.
+      const favCategoriesList = favoriteCategories ? favoriteCategories.split(',').slice(0, 3) : [];
+      
+      // Streamlined prompt for faster response - maintains quality requirements
+      const prompt = `Recovery on Campus Resource Hub - Alberta personalized recommendations.
 
-CRITICAL REQUIREMENT: Every service you recommend MUST be a REAL, SPECIFIC organization, program, or service that actually exists in Alberta, Canada.
-- Include the actual organization name (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary", "University of Alberta Counselling & Clinical Services")
-- Provide real phone numbers, websites, and addresses when available
-- Never return generic categories like "Local Counseling Services" or "Community Support Groups" - always name the specific organization
-- If you're unsure about exact contact details, provide the organization's main website or general intake number
-- Prefer well-established organizations with verifiable online presence
-- For campus services, use the actual name (e.g., "U of A Wellness Services" not "Campus Mental Health")
-- PRIORITIZE services from the reference database below - these are verified real Alberta services
-
-Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary", "University of Calgary Student Wellness Services"
-Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center", "Student Health Services"
+CRITICAL REQUIREMENTS:
+- Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "CMHA Edmonton", "Distress Centre Calgary", "U of A Counselling")
+- NEVER return generic categories like "Local Mental Health Clinic" - always name the actual organization
+- Use REAL phone numbers, websites, and addresses from the reference database
+- Prioritize services from the reference database below
 
 ${ALBERTA_SERVICES_REFERENCE}
 
-SERVICE-SPECIFIC PROCESS STEPS REQUIREMENT:
-Each service MUST have process steps that are UNIQUE and SPECIFIC to that exact organization. DO NOT use generic templates.
+USER PROFILE: ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general recommendations'}
+${favCategoriesList.length > 0 ? `Favorite categories: ${favCategoriesList.join(', ')}` : ''}
+${user.university ? `Campus: ${user.university.replace(/-/g, ' ')} - prioritize on-campus/nearby services` : ''}
 
-For each service, research and provide the ACTUAL intake process based on:
-1. That organization's specific intake method (phone, online form, walk-in, referral required, etc.)
-2. Their actual contact numbers, websites, and booking systems
-3. What actually happens when someone contacts that specific service
-4. Any unique requirements or steps specific to that program
-5. Real operating hours, locations, and service-specific procedures
+PERSONALIZATION:
+- Match services to user identity (LGBTQ2S+, Indigenous, age-appropriate, faith-based if relevant)
+- Respect format preference (virtual/in-person) and support style (one-on-one/group)
+- Include campus services if university specified
+- Consider disability accommodations if indicated
+- Suggest similar services to favorites but in unexplored categories
 
-EXAMPLES OF SERVICE-SPECIFIC PROCESS STEPS:
+PROCESS STEPS: Each service needs 4-6 steps SPECIFIC to that organization with actual phone numbers, websites, hours.
+Example for "Distress Centre Calgary": ["Call 403-266-4357 (24/7)", "Speak with trained crisis counselor", "Receive support and referrals"]
+If unsure of exact process: include "Contact [org] at [website/phone] to confirm current intake process"
 
-For "Distress Centre Calgary":
-- "Call 403-266-4357 (available 24/7, 365 days)"
-- "A trained volunteer crisis counselor will answer and ask how they can help"
-- "Share what you're going through - calls are confidential and anonymous"
-- "Receive emotional support, crisis intervention, and coping strategies"
-- "Get referrals to Calgary-area resources if ongoing support is needed"
+Return JSON:
+{"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended for this user","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step with real contact info","Step 2","Step 3","Step 4"],"waitTimes":"Realistic estimate","requiredDocs":["Required doc"]}],"summary":"Personalized summary"}
 
-For "Kickstand":
-- "Visit mykickstand.ca and click 'Book an Appointment'"
-- "Select your preferred location or choose virtual/online"
-- "No referral needed - anyone ages 11-25 can self-refer"
-- "Attend your first drop-in or scheduled appointment"
-- "Meet with a youth counselor, peer support worker, or health professional"
-- "Access integrated services including mental health, physical health, and peer support"
-
-For "CASA Mental Health":
-- "Call 780-352-1335 to request services"
-- "Complete phone intake and screening process"
-- "Provide relevant background information about your child/youth"
-- "Attend initial assessment at CASA Edmonton location"
-- "Receive a treatment plan tailored to your child's needs"
-- "Begin therapy, group programs, or specialized services as recommended"
-
-For "Skipping Stone (Calgary)":
-- "Visit skippingstone.ca or call to inquire about services"
-- "Complete intake form describing your needs"
-- "Specify if seeking support for yourself, your child, or family"
-- "Attend initial consultation to discuss affirming care options"
-- "Access trans-affirming counselling, support groups, or healthcare navigation"
-
-If you don't know the exact process for a specific organization, include:
-- "Contact [organization] directly at [phone/website] to confirm current intake process"
-- Use realistic steps but acknowledge: "Process may vary - contact for current procedures"
-
-${demographicContext.length > 0 ? `User Demographics (use to personalize recommendations):
-${demographicContext.join('\n')}` : 'No demographic information provided - give general recommendations.'}
-
-${favoriteCategories.length > 0 ? `User's favorite service categories: ${favoriteCategories.join(', ')}` : 'No favorites yet.'}
-${favoriteNames.length > 0 ? `Services they've saved: ${favoriteNames.join(', ')}` : ''}
-${locationContext}
-IMPORTANT: Consider services that would be especially relevant or welcoming for this user's identity and needs.
-For example:
-- LGBTQ2S+ resources if relevant to sexuality/gender
-- Culturally-specific services if relevant to race/ethnicity  
-- Age-appropriate services
-- Student-specific resources if relevant to education level
-- Faith-based or spiritual support if relevant to religion
-- Addiction recovery and harm reduction services if user indicates recovery status
-- Campus-specific services and nearby community resources if user indicated their university/college
-- Accessible services and disability accommodations if user indicates a disability (prioritize services with accessibility features, accommodation support, assistive technology, accessible locations, disability support offices)
-- Similar services to their favorites but in different categories they haven't explored
-
-SERVICE DELIVERY PREFERENCES (prioritize but don't exclude based on these):
-- If user prefers virtual/online services, prioritize telehealth, online counseling, virtual support groups, chat/text services
-- If user prefers in-person services, prioritize walk-in clinics, on-campus counseling, in-person support groups
-- If user prefers one-on-one support, prioritize individual counseling, mentorship programs, case management
-- If user prefers group/peer support, prioritize support groups, peer networks, group therapy, community programs
-These are preferences only - still include a mix of options, but rank preferred formats higher in the list.
-
-Return JSON matching:
-{
-  "recommendations": [{
-    "id": "string (unique id)",
-    "name": "string (MUST be the real organization/program name - not a generic category)",
-    "category": "string (e.g., Mental Health, Financial Aid, Housing, LGBTQ2S+ Support, Cultural Services)",
-    "description": "string (brief description)",
-    "reasoning": "string (why this is recommended for this user)",
-    "location": "string (real address or service area)",
-    "contact": "string (real phone/email/website)", 
-    "eligibility": "string",
-    "process": ["4-8 steps SPECIFIC to this exact organization. Include their actual phone numbers, websites, locations, operating hours. Each step should describe what happens when accessing THIS service. If uncertain about exact process, include 'Contact directly at [phone/website] to confirm current intake process'"],
-    "waitTimes": "string (specific to this service if known, otherwise provide realistic estimate and note to confirm with organization)",
-    "requiredDocs": ["Specific to this service - what THIS organization actually requires for intake"]
-  }],
-  "summary": "string (personalized summary explaining these recommendations)"
-}`;
+Recommend exactly 5 services.`;
 
       const completion = await openai.chat.completions.create({
         model: "gpt-5.1",
         messages: [
           { role: "system", content: prompt },
-          { role: "user", content: "Please provide personalized service recommendations." }
+          { role: "user", content: "Provide personalized recommendations." }
         ],
         response_format: { type: "json_object" },
+        temperature: 0.3, // Lower temperature for faster, more consistent responses
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
+      
+      // Cache the results for this profile
+      await storage.cacheRecommendations(profileHash, results);
+      
       res.json(results);
     } catch (err) {
       console.error("Recommendations error:", err);

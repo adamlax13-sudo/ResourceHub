@@ -59,6 +59,7 @@ Preferred communication style: Simple, everyday language.
   - `users` - User profiles with Replit ID and optional demographics (age, gender, race, sexuality, education, religion, inAddiction, university, disability, serviceFormat, supportStyle, profileCompleted)
   - `searches` - Cached AI search results
   - `favorites` - User saved resources with progress tracking
+  - `recommendations_cache` - Cached AI recommendations based on profile hash
 
 ### User Profile & Personalization
 - **Optional Demographics**: 11 fields total - age range, gender identity, race/ethnicity, sexual orientation, education level, religion/spirituality, addiction recovery status, university/college, disability status, service format preference (virtual/in-person), support style preference (one-on-one/group) (all optional)
@@ -119,6 +120,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Caching
 - **Search results**: Cached in database with normalized keys (trim + lowercase) for better hit rates
+- **Recommendations cache**: Server-side caching based on user profile hash (demographics + favorite categories)
+- **Cache invalidation**: Recommendations cache auto-invalidates when profile changes or favorites change
 - **Duplicate prevention**: Favorites API returns 409 if service already saved
 - **React Query**: staleTime: Infinity prevents unnecessary refetches
 
@@ -127,6 +130,12 @@ Preferred communication style: Simple, everyday language.
 - **Low priority**: Runs only when browser is idle (after 1.5s fallback)
 - **Hook**: client/src/hooks/use-prefetch-recommendations.ts
 - **Cache**: Data ready before user navigates to Recommended page
+
+### AI Optimizations
+- **Streamlined prompts**: Reduced token count while maintaining quality requirements
+- **Lower temperature**: temperature: 0.3 for faster, more consistent responses
+- **Service-specific steps**: AI generates organization-specific intake processes, not generic templates
+- **Skeleton loading**: Recommended page shows skeleton cards during AI processing for better perceived performance
 
 ### Accessibility
 - **WCAG Compliance**: Hero search with proper labels, roles, and aria-describedby

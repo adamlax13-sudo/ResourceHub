@@ -124,6 +124,7 @@
   "recommended": {
     "title": "Recommended for Me",
     "loading": "Finding personalized recommendations...",
+    "loadingDesc": "Analyzing your profile and finding the best resources for you.",
     "error": "Unable to load recommendations. Please try again.",
     "retry": "Try Again",
     "emptyTitle": "No Recommendations Yet",

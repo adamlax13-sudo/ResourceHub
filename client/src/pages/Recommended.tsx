@@ -7,6 +7,7 @@ import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles, Loader2, Heart, MapPin, Phone, Clock, User, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -69,13 +70,86 @@ export default function Recommended() {
     }
   };
 
+  // Skeleton loading component for better UX
+  const SkeletonCard = () => (
+    <Card className="h-full flex flex-col overflow-hidden">
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <Skeleton className="h-5 w-24" />
+        </div>
+        <Skeleton className="h-6 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+      </CardHeader>
+      <CardContent className="flex-1 pb-6 flex flex-col">
+        <div className="bg-muted/50 rounded-lg p-3 mb-4">
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-4/5" />
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="pt-4 border-t flex gap-2">
+        <Skeleton className="h-10 flex-1" />
+        <Skeleton className="h-10 w-10" />
+      </CardFooter>
+    </Card>
+  );
+
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">{t('recommended.loading')}</p>
-        </div>
+      <div className="min-h-screen bg-background">
+        <header className="bg-primary text-primary-foreground py-6">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
+              </div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
+                <h1 className="text-xl sm:text-3xl font-display font-bold">{t('recommended.title')}</h1>
+              </div>
+              <div className="w-24" />
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-8">
+          <Card className="mb-8 bg-primary/5 border-primary/20">
+            <CardContent className="py-6">
+              <div className="flex items-center gap-4">
+                <Loader2 className="w-6 h-6 text-primary animate-spin flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground">{t('recommended.loading')}</p>
+                  <p className="text-sm text-muted-foreground">{t('recommended.loadingDesc')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <SkeletonCard />
+              </motion.div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
