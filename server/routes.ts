@@ -184,6 +184,19 @@ export async function registerRoutes(
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category)));
       const favoriteNames = favorites.slice(0, 5).map(f => f.serviceName);
       
+      // Build location context for more specific recommendations
+      const locationContext = user.university ? `
+LOCATION-SPECIFIC GUIDANCE:
+The user attends ${user.university.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}. 
+Prioritize recommending:
+1. On-campus services directly at their institution (counseling centers, student wellness, campus health services)
+2. Services specifically partnered with or located near their campus
+3. Student-specific resources available in their city (Edmonton for U of A, NAIT, MacEwan, NorQuest; Calgary for U of C, SAIT, Mount Royal, Bow Valley; Lethbridge for U of L and Lethbridge College, etc.)
+4. Provincial services with locations accessible from their campus
+
+Include the specific campus location or nearest service location in the "location" field when possible.
+` : '';
+
       const prompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta, Canada.
       
 Based on the user's profile and preferences, recommend 5-7 relevant recovery and support services.
@@ -193,7 +206,7 @@ ${demographicContext.join('\n')}` : 'No demographic information provided - give 
 
 ${favoriteCategories.length > 0 ? `User's favorite service categories: ${favoriteCategories.join(', ')}` : 'No favorites yet.'}
 ${favoriteNames.length > 0 ? `Services they've saved: ${favoriteNames.join(', ')}` : ''}
-
+${locationContext}
 IMPORTANT: Consider services that would be especially relevant or welcoming for this user's identity and needs.
 For example:
 - LGBTQ2S+ resources if relevant to sexuality/gender
@@ -202,7 +215,7 @@ For example:
 - Student-specific resources if relevant to education level
 - Faith-based or spiritual support if relevant to religion
 - Addiction recovery and harm reduction services if user indicates recovery status
-- Campus-specific services if user indicated their university/college
+- Campus-specific services and nearby community resources if user indicated their university/college
 - Similar services to their favorites but in different categories they haven't explored
 
 Return JSON matching:
