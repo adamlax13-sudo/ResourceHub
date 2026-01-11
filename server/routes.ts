@@ -37,7 +37,8 @@ export async function registerRoutes(
   app.post(api.search.query.path, async (req, res) => {
     try {
       const input = api.search.query.input.parse(req.body);
-      const cached = await storage.getSearchByQuery(input.query);
+      const normalizedQuery = input.query.trim().toLowerCase();
+      const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
 
       const completion = await openai.chat.completions.create({
@@ -69,7 +70,7 @@ export async function registerRoutes(
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
-      await storage.createSearch({ query: input.query, results });
+      await storage.createSearch({ query: normalizedQuery, results });
       res.json(results);
     } catch (err) {
       res.status(500).json({ message: "Search failed" });
@@ -89,6 +90,13 @@ export async function registerRoutes(
     const input = api.favorites.add.input.parse(req.body);
     const user = await storage.getUserByReplitId(req.user.claims.sub);
     if (!user) return res.status(401).send();
+    
+    // Check for duplicate before adding
+    const existingFavorites = await storage.getFavorites(user.id);
+    const isDuplicate = existingFavorites.some(f => f.serviceId === input.serviceId);
+    if (isDuplicate) {
+      return res.status(409).json({ message: "Service already saved" });
+    }
     
     const fav = await storage.addFavorite({
       userId: user.id,

@@ -173,33 +173,39 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.2 }}
           onSubmit={handleSubmit}
           className="relative max-w-2xl mx-auto"
+          role="search"
+          aria-label={t('app.searchPlaceholder')}
         >
           <div className="relative group">
             {/* Glow effect on focus */}
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+            <label htmlFor="hero-search" className="sr-only">{t('app.searchPlaceholder')}</label>
             <input
-              type="text"
+              id="hero-search"
+              type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('app.searchPlaceholder')}
               className="relative w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               disabled={isLoading}
+              aria-describedby="search-hint"
               data-testid="input-search"
             />
             <button
               type="submit"
               disabled={isLoading || !query.trim()}
               className="absolute right-2 top-2 h-12 w-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+              aria-label={isLoading ? "Searching..." : "Search"}
               data-testid="button-search"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
               ) : (
-                <Search className="w-6 h-6" />
+                <Search className="w-6 h-6" aria-hidden="true" />
               )}
             </button>
           </div>
-          <p className="mt-4 text-sm text-white/70 font-medium">
+          <p id="search-hint" className="mt-4 text-sm text-white/70 font-medium">
             {t('app.searchHint')}
           </p>
         </motion.form>
