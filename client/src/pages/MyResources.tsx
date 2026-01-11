@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp, Sparkles, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -113,7 +113,25 @@ export default function MyResources() {
               </Link>
             </div>
             <h1 className="text-xl sm:text-3xl font-display font-bold">{t('myResources.title')}</h1>
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Link href="/recommended">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-recommended-mobile">
+                  <Sparkles className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-recommended">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {t('nav2.recommended')}
+                </Button>
+              </Link>
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-profile-mobile">
+                  <User className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-profile">
+                  <User className="w-4 h-4 mr-2" />
+                  {t('nav2.profile')}
+                </Button>
+              </Link>
               <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
               <a href="/api/logout">
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 sm:hidden" data-testid="button-logout-mobile">

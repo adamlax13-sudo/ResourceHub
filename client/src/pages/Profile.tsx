@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Loader2, Check, LogOut } from "lucide-react";
+import { User, Loader2, Check, LogOut, Sparkles, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -217,7 +217,24 @@ export default function Profile() {
               </Link>
             </div>
             <h1 className="text-xl sm:text-3xl font-display font-bold">{t('profile.title')}</h1>
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Link href="/recommended">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-recommended-mobile">
+                  <Sparkles className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-recommended">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {t('nav2.recommended')}
+                </Button>
+              </Link>
+              <Link href="/my-resources">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-my-resources-mobile">
+                  <Heart className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-my-resources">
+                  {t('nav.myResources')}
+                </Button>
+              </Link>
               <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
               <a href="/api/logout">
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 sm:hidden" data-testid="button-logout-mobile">
