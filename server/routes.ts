@@ -56,7 +56,8 @@ const ALBERTA_SERVICES_REFERENCE = `
 
 ## CALGARY SERVICES
 - Access Mental Health Calgary: 403-943-1500, Mon-Fri 8am-5pm - Free, no referral needed
-- CMHA Calgary: cmha.calgary.ab.ca - Community Navigator, YouthSMART (12-24), Recovery College
+- CMHA Calgary: cmha.calgary.ab.ca, 403-297-1402 - Community Navigator, YouthSMART (12-24), Peer Support
+- Recovery College Calgary: recoverycollegecalgary.ca, 403-297-1402, recovery.college@cmha.calgary.ab.ca - FREE courses on mental health & addiction recovery, peer-led, ages 16+, no referral needed, drop-ins Wed, virtual & in-person
 - Distress Centre Calgary: 403-266-4357 - 24/7 crisis, counselling, ConnecTeen
 - Calgary Counselling Centre: calgarycounselling.com - Sliding scale, no waitlist
 - Centre for Mental Health & Addictions: thecentres.ca - Sliding scale starting $10/session
@@ -187,64 +188,44 @@ export async function registerRoutes(
             role: "system",
             content: `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 
-CRITICAL REQUIREMENT: Every service you return MUST be a REAL, SPECIFIC organization, program, or service that actually exists in Alberta, Canada. 
-- Include the actual organization name (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary")
-- Provide real phone numbers, websites, and addresses when available
-- Never return generic categories like "Local Counseling Services" or "Community Support Groups" - always name the specific organization
-- If you're unsure about exact contact details, provide the organization's main website or general intake number
-- Prefer well-established organizations with verifiable online presence
-- PRIORITIZE services from the reference database below - these are verified real Alberta services
+CRITICAL REQUIREMENTS:
+- Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "Alberta Health Services Addiction & Mental Health", "CMHA Edmonton", "Distress Centre Calgary")
+- ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database below
+- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
+- Never return generic categories like "Local Counseling Services" or "Community Support Groups"
+- PRIORITIZE services from the reference database below - these are verified and current
 
 Examples of GOOD responses: "Kids Help Phone", "Access Open Minds Edmonton", "CASA Mental Health", "Centre for Suicide Prevention Calgary"
 Examples of BAD responses: "Local Mental Health Clinic", "Community Addiction Services", "Campus Counseling Center"
 
 ${ALBERTA_SERVICES_REFERENCE}
 
-SERVICE-SPECIFIC PROCESS STEPS REQUIREMENT:
-Each service MUST have process steps that are UNIQUE and SPECIFIC to that exact organization. DO NOT use generic templates.
+PROCESS STEPS - USE ONLY VERIFIED INFO:
+- Use ONLY phone numbers, emails, and URLs from the reference database above
+- DO NOT invent URLs - if not in database, use phone number instead
+- If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
+- Each step should use real contact info from the database
 
-For each service, research and provide the ACTUAL intake process based on:
-1. That organization's specific intake method (phone, online form, walk-in, referral required, etc.)
-2. Their actual contact numbers, websites, and booking systems
-3. What actually happens when someone contacts that specific service
-4. Any unique requirements or steps specific to that program
-5. Real operating hours, locations, and service-specific procedures
+EXAMPLES (use phone/URL from database only):
 
-EXAMPLES OF SERVICE-SPECIFIC PROCESS STEPS:
+For "Recovery College Calgary":
+- "Visit recoverycollegecalgary.ca or call 403-297-1402"
+- "Browse free courses - no referral or account needed"
+- "Register for a course or attend Wednesday drop-in session"
+- "Attend peer-led session (virtual or in-person available)"
 
 For "Distress Centre Calgary":
-- "Call 403-266-4357 (available 24/7, 365 days)"
-- "A trained volunteer crisis counselor will answer and ask how they can help"
-- "Share what you're going through - calls are confidential and anonymous"
-- "Receive emotional support, crisis intervention, and coping strategies"
-- "Get referrals to Calgary-area resources if ongoing support is needed"
+- "Call 403-266-4357 (available 24/7)"
+- "Speak with trained volunteer crisis counselor"
+- "Receive emotional support and coping strategies"
+- "Get referrals to Calgary-area resources if needed"
 
-For "Access 24/7 Edmonton":
-- "Visit 13211 Fort Road NW, Edmonton (open 7 days, 8am-10pm) or call 780-424-2424"
-- "Check in at reception - no appointment needed for walk-ins"
-- "Complete intake paperwork and consent forms"
-- "Meet with an intake clinician for assessment (typically 30-60 minutes)"
-- "Receive same-day connection to addiction or mental health services"
-- "Get referrals to ongoing community programs based on your needs"
+For "CMHA Calgary":
+- "Call 403-297-1402 or visit cmha.calgary.ab.ca"
+- "Connect with Community Navigator for free guidance"
+- "Get matched to appropriate programs (YouthSMART, Peer Support, etc.)"
 
-For "University of Alberta Counselling & Clinical Services":
-- "Book online at ualberta.ca/current-students/counselling or call 780-492-5205"
-- "Complete the online intake questionnaire before your first appointment"
-- "Attend your initial assessment session at SUB or another campus location"
-- "Work with the counselor to identify your goals and appropriate services"
-- "Begin individual counselling, group therapy, or workshops based on your needs"
-- "Sessions are free for current U of A students with valid OneCard"
-
-For "Calgary Counselling Centre":
-- "Call 403-691-5991 or book online at calgarycounselling.com"
-- "Complete intake forms and discuss your financial situation for sliding scale fee"
-- "Attend your first session at their downtown Calgary office"
-- "Work with your assigned counselor on your presenting concerns"
-- "Continue with ongoing sessions at your agreed fee ($0-$150+ based on income)"
-
-If you don't know the exact process for a specific organization, include:
-- "Contact [organization] directly at [phone/website] to confirm current intake process"
-- Use general steps but acknowledge: "Process may vary - contact for current procedures"
+If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
 
 Return JSON matching:
 {
@@ -426,8 +407,9 @@ Return JSON matching:
 CRITICAL REQUIREMENTS:
 - Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "CMHA Edmonton", "Distress Centre Calgary", "U of A Counselling")
 - NEVER return generic categories like "Local Mental Health Clinic" - always name the actual organization
-- Use REAL phone numbers, websites, and addresses from the reference database
-- Prioritize services from the reference database below
+- ONLY use URLs, phone numbers, and addresses that are EXACTLY as listed in the reference database below
+- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
+- Prioritize services from the reference database below - these are verified and current
 
 ${ALBERTA_SERVICES_REFERENCE}
 
@@ -442,9 +424,12 @@ PERSONALIZATION:
 - Consider disability accommodations if indicated
 - Suggest similar services to favorites but in unexplored categories
 
-PROCESS STEPS: Each service needs 4-6 steps SPECIFIC to that organization with actual phone numbers, websites, hours.
-Example for "Distress Centre Calgary": ["Call 403-266-4357 (24/7)", "Speak with trained crisis counselor", "Receive support and referrals"]
-If unsure of exact process: include "Contact [org] at [website/phone] to confirm current intake process"
+PROCESS STEPS - BE CONSERVATIVE:
+- Use ONLY verified contact info from the reference database
+- Each step must use phone/email from the database - NEVER invent URLs
+- If unsure of exact process, use: "Contact [org] at [phone from database] for current intake steps"
+- Example for Recovery College Calgary: ["Visit recoverycollegecalgary.ca or call 403-297-1402", "Browse free courses - no account needed", "Register for a course or attend Wed drop-in", "Attend peer-led session (virtual or in-person)"]
+- Example for crisis line: ["Call 403-266-4357 (24/7)", "Speak with trained crisis counselor", "Receive support and referrals"]
 
 Return JSON:
 {"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended for this user","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step with real contact info","Step 2","Step 3","Step 4"],"waitTimes":"Realistic estimate","requiredDocs":["Required doc"]}],"summary":"Personalized summary"}
