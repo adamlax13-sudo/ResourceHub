@@ -66,6 +66,7 @@ Preferred communication style: Simple, everyday language.
 - **Location-Based Recommendations**: User's location is used to prioritize geographically relevant services in AI recommendations
 - **Profile Page**: /profile - Form to manage demographic preferences with descriptive help text
 - **Recommendations Page**: /recommended - AI-powered personalized service recommendations
+- **Favorites-Informed Recommendations**: AI uses saved resources to understand user interests and recommends complementary services; already-saved services are excluded from recommendations
 - **Privacy**: Demographics used only for recommendations, never shared with third parties
 - **Onboarding Flow**: WelcomeModal prompts new users to complete profile after first login; uses session-based dismissal and backend profileCompleted flag
 - **Profile Completion Tracking**: profileCompleted timestamp stored in database, set when user saves demographic info

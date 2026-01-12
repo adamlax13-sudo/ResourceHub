@@ -658,6 +658,10 @@ Return JSON matching:
       // Build category list from favorites for context
       const favoriteCategories = Array.from(new Set(favorites.map(f => f.category))).sort().join(',');
       
+      // Build list of already-saved services to exclude from recommendations
+      const savedServiceNames = favorites.map(f => f.serviceName).filter(Boolean);
+      const savedServiceIds = favorites.map(f => f.serviceId).filter(Boolean);
+      
       // Build compact context for faster processing
       const demographics = [];
       if (user.age) demographics.push(`age:${user.age}`);
@@ -703,7 +707,11 @@ CRITICAL REQUIREMENTS:
 ${ALBERTA_SERVICES_REFERENCE}
 
 USER PROFILE (USE THIS TO FILTER RECOMMENDATIONS): ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general Alberta recommendations'}
-${favCategoriesList.length > 0 ? `Favorite categories (suggest similar): ${favCategoriesList.join(', ')}` : ''}
+${favCategoriesList.length > 0 ? `Favorite categories (suggest similar services in these areas): ${favCategoriesList.join(', ')}` : ''}
+${savedServiceNames.length > 0 ? `
+ALREADY SAVED RESOURCES (DO NOT RECOMMEND THESE - user already has them saved):
+${savedServiceNames.slice(0, 10).join(', ')}
+Instead, use these saved services to understand user's interests and recommend COMPLEMENTARY or SIMILAR services they haven't saved yet.` : ''}
 ${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - MUST include at least 1-2 on-campus or nearby services` : ''}
 ${user.university === 'in-highschool' ? 'User is a HIGH SCHOOL student - MUST prioritize youth services appropriate for under-18' : ''}
 ${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - MUST prioritize services in or accessible from this city` : ''}
@@ -757,6 +765,17 @@ Recommend exactly 5 services with VARIED step counts reflecting each service's a
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
+      
+      // Filter out any recommendations that match already-saved services (backup filter)
+      if (results.recommendations && savedServiceIds.length > 0) {
+        const savedNamesLower = savedServiceNames.map(n => n.toLowerCase());
+        results.recommendations = results.recommendations.filter((rec: any) => {
+          const recNameLower = rec.name?.toLowerCase() || '';
+          // Check if this recommendation matches any saved service
+          return !savedServiceIds.includes(rec.id) && 
+                 !savedNamesLower.some(saved => recNameLower.includes(saved) || saved.includes(recNameLower));
+        });
+      }
       
       res.json(results);
     } catch (err) {
