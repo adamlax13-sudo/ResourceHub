@@ -116,8 +116,8 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
           {/* Header - compact on mobile */}
           <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <Badge className="w-fit bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none">
+              <div className="flex items-start justify-between gap-2 flex-wrap">
+                <Badge className="w-fit max-w-[60%] md:max-w-none bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none whitespace-normal text-left">
                   {service.category}
                 </Badge>
                 {!isFavorited && (
@@ -126,7 +126,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     size="sm"
                     onClick={handleFavorite}
                     disabled={addFavorite.isPending}
-                    className="gap-2 mr-8"
+                    className="gap-2 shrink-0"
                     aria-label={`Save ${service.name} to my resources`}
                     data-testid="button-save-resource"
                   >
@@ -135,17 +135,18 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     ) : (
                       <Heart className="w-4 h-4" aria-hidden="true" />
                     )}
-                    {t('service.save')}
+                    <span className="hidden sm:inline">{t('service.save')}</span>
                   </Button>
                 )}
                 {isFavorited && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 mr-8" aria-label="Service saved">
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 shrink-0" aria-label="Service saved">
                     <CheckCircle className="w-3 h-3 mr-1" aria-hidden="true" />
-                    {t('service.saved')}
+                    <span className="hidden sm:inline">{t('service.saved')}</span>
+                    <span className="sm:hidden">Saved</span>
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words line-clamp-2">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words pr-8">
                 {service.name}
               </DialogTitle>
               <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1 line-clamp-3 md:line-clamp-none">
