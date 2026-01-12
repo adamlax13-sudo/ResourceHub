@@ -115,7 +115,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header - compact on mobile */}
           <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 pr-8 md:pr-10">
               <div className="flex items-start justify-between gap-2 flex-wrap">
                 <Badge className="w-fit max-w-[60%] md:max-w-none bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none whitespace-normal text-left">
                   {service.category}
@@ -146,7 +146,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words pr-8">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words">
                 {service.name}
               </DialogTitle>
               <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1 line-clamp-3 md:line-clamp-none">
