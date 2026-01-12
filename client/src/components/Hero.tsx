@@ -399,9 +399,24 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
               </Tooltip>
             </div>
             
-            <p id="search-hint" className="text-sm text-white/70 font-medium">
-              {t('app.searchHint')}
-            </p>
+            {isLoading ? (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-sm text-white font-medium"
+              >
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>
+                  {searchMode === 'fast' 
+                    ? 'Finding top resources... (~10 seconds)' 
+                    : 'Searching all resources... (~30-60 seconds)'}
+                </span>
+              </motion.div>
+            ) : (
+              <p id="search-hint" className="text-sm text-white/70 font-medium">
+                {t('app.searchHint')}
+              </p>
+            )}
           </div>
         </motion.form>
       </div>
