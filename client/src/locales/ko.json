@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "저장됨!",
-    "resourceAdded": "내 리소스에 추가되었습니다."
+    "resourceAdded": "내 리소스에 추가되었습니다.",
+    "viewResources": "보기"
   },
   "language": {
     "select": "언어"

@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "تم الحفظ!",
-    "resourceAdded": "تمت إضافة المورد إلى مواردي."
+    "resourceAdded": "تمت إضافة المورد إلى مواردي.",
+    "viewResources": "عرض"
   },
   "language": {
     "select": "اللغة"

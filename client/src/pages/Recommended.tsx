@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useRecommendations } from "@/hooks/use-profile";
@@ -12,6 +12,7 @@ import { Sparkles, Loader2, Heart, MapPin, Phone, Clock, User, ArrowRight } from
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { type ServiceDetail } from "@shared/schema";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -77,6 +78,7 @@ export default function Recommended() {
   const addFavorite = useAddFavorite();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
 
   useEffect(() => {
@@ -115,6 +117,15 @@ export default function Recommended() {
       toast({
         title: t('toast.saved'),
         description: t('toast.resourceAdded'),
+        action: (
+          <ToastAction 
+            altText={t('toast.viewResources')} 
+            onClick={() => setLocation('/my-resources')}
+            data-testid="toast-action-view-resources"
+          >
+            {t('toast.viewResources')}
+          </ToastAction>
+        ),
       });
     } catch (error) {
       toast({

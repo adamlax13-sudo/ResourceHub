@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "Sauvegardé!",
-    "resourceAdded": "Ressource ajoutée à Mes Ressources."
+    "resourceAdded": "Ressource ajoutée à Mes Ressources.",
+    "viewResources": "Voir"
   },
   "language": {
     "select": "Langue"

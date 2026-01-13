@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "已保存！",
-    "resourceAdded": "资源已添加到我的资源。"
+    "resourceAdded": "资源已添加到我的资源。",
+    "viewResources": "查看"
   },
   "language": {
     "select": "语言"

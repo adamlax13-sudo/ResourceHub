@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "सहेजा गया!",
-    "resourceAdded": "संसाधन मेरे संसाधन में जोड़ा गया।"
+    "resourceAdded": "संसाधन मेरे संसाधन में जोड़ा गया।",
+    "viewResources": "देखें"
   },
   "language": {
     "select": "भाषा"

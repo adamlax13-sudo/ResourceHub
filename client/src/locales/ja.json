@@ -65,7 +65,8 @@
   },
   "toast": {
     "saved": "保存しました！",
-    "resourceAdded": "マイリソースに追加しました。"
+    "resourceAdded": "マイリソースに追加しました。",
+    "viewResources": "見る"
   },
   "language": {
     "select": "言語"

@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useAddFavorite, useFavorites } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useLocation } from "wouter";
 
 interface ServiceModalProps {
   service: ServiceDetail | null;
@@ -77,6 +79,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
   const addFavorite = useAddFavorite();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
 
   if (!service) return null;
 
@@ -104,6 +107,18 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
         toast({
           title: t('toast.saved'),
           description: t('toast.resourceAdded'),
+          action: (
+            <ToastAction 
+              altText={t('toast.viewResources')} 
+              onClick={() => {
+                onClose();
+                setLocation('/my-resources');
+              }}
+              data-testid="toast-action-view-resources"
+            >
+              {t('toast.viewResources')}
+            </ToastAction>
+          ),
         });
       },
     });
