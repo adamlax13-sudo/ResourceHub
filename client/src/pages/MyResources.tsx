@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useUpdateFavorite, useDeleteFavorite } from "@/hooks/use-favorites";
@@ -29,6 +29,7 @@ export default function MyResources() {
   const [filter, setFilter] = useState<string>("all");
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
 
   const toggleCardExpanded = (id: number) => {
     setExpandedCards(prev => {
@@ -132,31 +133,39 @@ export default function MyResources() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <Link href="/">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-home">
-                      <Home className="w-4 h-4 mr-2" />
-                      {t('nav.home')}
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/recommended">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-recommended">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      {t('nav2.recommended')}
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/profile">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-profile">
-                      <User className="w-4 h-4 mr-2" />
-                      {t('nav2.profile')}
-                    </DropdownMenuItem>
-                  </Link>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-home"
+                    onSelect={() => setLocation('/')}
+                  >
+                    <Home className="w-4 h-4 mr-2" />
+                    {t('nav.home')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-recommended"
+                    onSelect={() => setLocation('/recommended')}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {t('nav2.recommended')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-profile"
+                    onSelect={() => setLocation('/profile')}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {t('nav2.profile')}
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <a href="/api/logout">
-                    <DropdownMenuItem className="cursor-pointer text-destructive" data-testid="menu-logout">
-                      <LogOut className="w-4 h-4 mr-2" />
-                      {t('nav.logout')}
-                    </DropdownMenuItem>
-                  </a>
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-destructive" 
+                    data-testid="menu-logout"
+                    onSelect={() => { window.location.href = '/api/logout'; }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    {t('nav.logout')}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               
