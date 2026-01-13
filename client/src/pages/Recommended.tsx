@@ -8,7 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles, Loader2, Heart, MapPin, Phone, Clock, User, ArrowRight } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sparkles, Loader2, Heart, MapPin, Phone, Clock, User, ArrowRight, Menu, Home, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
@@ -221,37 +227,78 @@ export default function Recommended() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-6">
+      <header className="bg-primary text-primary-foreground py-4 sm:py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
-                <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
-              </a>
-              <Link href="/">
+          <div className="flex items-center justify-between gap-2">
+            {/* Left: Logo as home link */}
+            <Link href="/">
+              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto cursor-pointer" data-testid="logo-home" />
+            </Link>
+            
+            {/* Center: Title */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
+              <h1 className="text-lg sm:text-3xl font-display font-bold">{t('recommended.title')}</h1>
+            </div>
+            
+            {/* Right: Navigation */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Mobile: Dropdown menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="md:hidden">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-mobile-menu">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-home"
+                    onSelect={() => setLocation('/')}
+                  >
+                    <Home className="w-4 h-4 mr-2" />
+                    {t('nav.home')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-my-resources"
+                    onSelect={() => setLocation('/my-resources')}
+                  >
+                    <Heart className="w-4 h-4 mr-2" />
+                    {t('nav.myResources')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    data-testid="menu-profile"
+                    onSelect={() => setLocation('/profile')}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {t('nav2.profile')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-destructive" 
+                    data-testid="menu-logout"
+                    onSelect={() => { window.location.href = '/api/logout'; }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    {t('nav.logout')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Desktop: Full navigation */}
+              <Link href="/" className="hidden md:block">
                 <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
                   {t('nav.home')}
                 </Button>
               </Link>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Sparkles className="w-5 sm:w-6 h-5 sm:h-6" />
-              <h1 className="text-xl sm:text-3xl font-display font-bold">{t('recommended.title')}</h1>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Link href="/my-resources">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-my-resources-mobile">
-                  <Heart className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-my-resources">
+              <Link href="/my-resources" className="hidden md:block">
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-my-resources">
                   {t('nav.myResources')}
                 </Button>
               </Link>
-              <Link href="/profile">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-profile-mobile">
-                  <User className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-profile">
+              <Link href="/profile" className="hidden md:block">
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-profile">
                   <User className="w-4 h-4 mr-2" />
                   {t('nav2.profile')}
                 </Button>

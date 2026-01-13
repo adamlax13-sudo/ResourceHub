@@ -8,7 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp, Sparkles, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp, Sparkles, User, Menu, Home, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -101,45 +108,79 @@ export default function MyResources() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-6">
+      <header className="bg-primary text-primary-foreground py-4 sm:py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
-                <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto" />
-              </a>
-              <Link href="/">
+          <div className="flex items-center justify-between gap-2">
+            {/* Left: Logo as home link */}
+            <Link href="/">
+              <img src={rocLogo} alt="ROC Logo" className="h-8 sm:h-10 w-auto cursor-pointer" data-testid="logo-home" />
+            </Link>
+            
+            {/* Center: Title */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Heart className="w-5 sm:w-6 h-5 sm:h-6" />
+              <h1 className="text-lg sm:text-3xl font-display font-bold">{t('myResources.title')}</h1>
+            </div>
+            
+            {/* Right: Navigation */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Mobile: Dropdown menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="md:hidden">
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" data-testid="button-mobile-menu">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <Link href="/">
+                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-home">
+                      <Home className="w-4 h-4 mr-2" />
+                      {t('nav.home')}
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/recommended">
+                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-recommended">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      {t('nav2.recommended')}
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/profile">
+                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-profile">
+                      <User className="w-4 h-4 mr-2" />
+                      {t('nav2.profile')}
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <a href="/api/logout">
+                    <DropdownMenuItem className="cursor-pointer text-destructive" data-testid="menu-logout">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('nav.logout')}
+                    </DropdownMenuItem>
+                  </a>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Desktop: Full navigation */}
+              <Link href="/" className="hidden md:block">
                 <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="button-home">
                   {t('nav.home')}
                 </Button>
               </Link>
-            </div>
-            <h1 className="text-xl sm:text-3xl font-display font-bold">{t('myResources.title')}</h1>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Link href="/recommended">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-recommended-mobile">
-                  <Sparkles className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-recommended">
+              <Link href="/recommended" className="hidden md:block">
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-recommended">
                   <Sparkles className="w-4 h-4 mr-2" />
                   {t('nav2.recommended')}
                 </Button>
               </Link>
-              <Link href="/profile">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-profile-mobile">
-                  <User className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-profile">
+              <Link href="/profile" className="hidden md:block">
+                <Button variant="ghost" className="text-white hover:bg-white/20" data-testid="link-profile">
                   <User className="w-4 h-4 mr-2" />
                   {t('nav2.profile')}
                 </Button>
               </Link>
               <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
-              <a href="/api/logout">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 sm:hidden" data-testid="button-logout-mobile">
-                  <LogOut className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/20 hidden sm:flex" data-testid="button-logout">
+              <a href="/api/logout" className="hidden md:block">
+                <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-logout">
                   {t('nav.logout')}
                 </Button>
               </a>
