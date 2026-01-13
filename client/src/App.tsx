@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
 import { usePrefetchRecommendations } from "@/hooks/use-prefetch-recommendations";
+import { SearchProvider } from "@/contexts/SearchContext";
 import './lib/i18n';
 
 const Home = lazy(() => import("@/pages/Home"));
@@ -51,7 +52,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AppContent />
+        <SearchProvider>
+          <AppContent />
+        </SearchProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

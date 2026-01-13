@@ -14,10 +14,11 @@ type SearchMode = 'fast' | 'comprehensive';
 interface HeroProps {
   onSearch: (query: string, mode: SearchMode) => void;
   isLoading: boolean;
+  initialQuery?: string;
 }
 
-export function Hero({ onSearch, isLoading }: HeroProps) {
-  const [query, setQuery] = useState("");
+export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
+  const [query, setQuery] = useState(initialQuery);
   const [searchMode, setSearchMode] = useState<SearchMode>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('searchMode') as SearchMode) || 'fast';
@@ -26,6 +27,12 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
   });
   const { user, isLoading: authLoading } = useAuth();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (initialQuery && initialQuery !== query) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
 
   useEffect(() => {
     localStorage.setItem('searchMode', searchMode);

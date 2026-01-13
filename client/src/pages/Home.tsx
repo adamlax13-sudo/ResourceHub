@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
 import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
+import { useSearchContext } from "@/contexts/SearchContext";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
@@ -69,9 +70,18 @@ function FlipCard({ frontContent, backContent, index }: {
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
+  const { searchState, setSearchResults } = useSearchContext();
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (data && data.services) {
+      setSearchResults(data.query || '', data.mode || 'fast', data.services);
+    }
+  }, [data, setSearchResults]);
+
+  const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
   const handleSearch = (query: string, mode: 'fast' | 'comprehensive') => {
     search({ query, mode });
@@ -82,7 +92,7 @@ export default function Home() {
       <Suspense fallback={null}>
         <WelcomeModal />
       </Suspense>
-      <Hero onSearch={handleSearch} isLoading={isPending} />
+      <Hero onSearch={handleSearch} isLoading={isPending} initialQuery={searchState.query} />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
         <AnimatePresence mode="wait">
@@ -101,14 +111,14 @@ export default function Home() {
             </motion.div>
           )}
 
-          {data && (
+          {displayServices && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {data.services.map((service, index) => (
+                {displayServices.map((service, index) => (
                   <ServiceCard
                     key={service.id}
                     service={service}
@@ -118,7 +128,7 @@ export default function Home() {
                 ))}
               </div>
 
-              {data.services.length === 0 && (
+              {displayServices.length === 0 && (
                 <div className="text-center py-20 text-muted-foreground">
                   {t('search.noResults')}
                 </div>
@@ -127,7 +137,7 @@ export default function Home() {
           )}
         </AnimatePresence>
         
-        {!data && !isPending && !error && (
+        {!displayServices && !isPending && !error && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
