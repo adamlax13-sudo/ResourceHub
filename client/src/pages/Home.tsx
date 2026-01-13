@@ -77,7 +77,7 @@ export default function Home() {
 
   useEffect(() => {
     if (data && data.services) {
-      setSearchResults(data.query || '', data.mode || 'fast', data.services);
+      setSearchResults(data.query, data.mode, data.services);
     }
   }, [data, setSearchResults]);
 

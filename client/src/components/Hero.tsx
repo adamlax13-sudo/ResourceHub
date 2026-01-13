@@ -29,7 +29,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (initialQuery && initialQuery !== query) {
+    if (initialQuery !== query) {
       setQuery(initialQuery);
     }
   }, [initialQuery]);

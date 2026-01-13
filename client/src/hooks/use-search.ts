@@ -4,8 +4,13 @@ import { z } from "zod";
 
 type SearchInput = z.infer<typeof api.search.query.input>;
 
+interface ExtendedSearchResponse extends SearchResponse {
+  query: string;
+  mode: 'fast' | 'comprehensive';
+}
+
 export function useSearch() {
-  return useMutation<SearchResponse, Error, SearchInput>({
+  return useMutation<ExtendedSearchResponse, Error, SearchInput>({
     mutationFn: async (data) => {
       const res = await fetch(api.search.query.path, {
         method: api.search.query.method,
@@ -18,7 +23,12 @@ export function useSearch() {
         throw new Error(error.message || "Failed to fetch search results");
       }
 
-      return res.json();
+      const response = await res.json();
+      return {
+        ...response,
+        query: data.query,
+        mode: data.mode || 'fast',
+      };
     },
   });
 }
