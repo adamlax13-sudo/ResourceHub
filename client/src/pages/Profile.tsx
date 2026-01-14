@@ -124,6 +124,9 @@ const UNIVERSITY_OPTIONS = [
   { value: "lakeland-college", label: "Lakeland College" },
   { value: "medicine-hat-college", label: "Medicine Hat College" },
   { value: "olds-college", label: "Olds College" },
+  { value: "crow-community-college", label: "Crow Community College" },
+  { value: "old-sun-community-college", label: "Old Sun Community College" },
+  { value: "yellowhead-tribal-college", label: "Yellowhead Tribal College" },
   { value: "other", label: "Other Alberta Institution" },
   { value: "prefer-not-to-say", label: "Prefer not to say" },
 ];
