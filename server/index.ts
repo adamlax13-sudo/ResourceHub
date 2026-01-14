@@ -1,98 +1,93 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { serveStatic } from "./static";
-import { createServer } from "http";
+// server/index.ts
 
-const app = express();
-const httpServer = createServer(app);
+import express from "express";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
-declare module "http" {
-  interface IncomingMessage {
-    rawBody: unknown;
+// --- Helper: check required secrets ---
+const requiredSecrets = ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REDIRECT_URI", "AUTH_SECRET"];
+for (const key of requiredSecrets) {
+  if (!process.env[key]) {
+    console.error(`Error: Missing required secret ${key}. Please set it in Render Dashboard.`);
+    process.exit(1);
   }
 }
 
+// --- Express app ---
+const app = express();
+
+// --- Session setup ---
 app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
+  session({
+    secret: process.env.AUTH_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === "production" }, // secure cookies in prod
+  })
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
+// --- Passport Google OAuth ---
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.GOOGLE_REDIRECT_URI!,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      // Here you can save profile info to your database
+      return done(null, profile);
     }
-  });
+  )
+);
 
-  next();
+// --- Serialize / deserialize user ---
+passport.serializeUser((user: any, done) => done(null, user));
+passport.deserializeUser((obj: any, done) => done(null, obj));
+
+// --- Auth routes ---
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    // Successful login
+    res.redirect("/profile");
+  }
+);
+
+// --- Protected route example ---
+app.get("/profile", (req, res) => {
+  if (!req.isAuthenticated || !req.isAuthenticated()) return res.redirect("/auth/google");
+  res.send(`
+    <h1>Welcome ${req.user?.displayName}</h1>
+    <p>Email: ${req.user?.emails?.[0]?.value}</p>
+    <p><a href="/logout">Logout</a></p>
+  `);
 });
 
-(async () => {
-  await registerRoutes(httpServer, app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+// --- Logout ---
+app.get("/logout", (req, res) => {
+  req.logout(() => {
+    res.redirect("/");
   });
+});
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
-  } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
-  }
+// --- Home page ---
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>ResourceHub</h1>
+    <p><a href="/auth/google">Login with Google</a></p>
+  `);
+});
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
-})();
+// --- Start server ---
+const port = parseInt(process.env.PORT || "5000", 10);
+app.listen(port, () => console.log(`Server running on port ${port}`));
+
+export default app;
