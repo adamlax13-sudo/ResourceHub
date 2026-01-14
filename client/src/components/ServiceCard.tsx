@@ -41,18 +41,18 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
           {service.name}
         </h3>
         
-        <p className="text-muted-foreground line-clamp-2 mb-6 flex-grow min-w-0 break-words">
+        <p className="text-muted-foreground mb-6 flex-grow min-w-0 break-words whitespace-normal overflow-wrap-anywhere">
           {service.description}
         </p>
 
         <div className="space-y-3 mt-auto">
-          <div className="flex items-center text-sm text-slate-600">
-            <MapPin className="w-4 h-4 mr-2 text-primary/60" aria-hidden="true" />
-            <span className="truncate"><span className="sr-only">Location: </span>{service.location}</span>
+          <div className="flex items-start text-sm text-slate-600">
+            <MapPin className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
+            <span className="break-words"><span className="sr-only">Location: </span>{service.location}</span>
           </div>
-          <div className="flex items-center text-sm text-slate-600">
-            <Clock className="w-4 h-4 mr-2 text-primary/60" aria-hidden="true" />
-            <span className="truncate"><span className="sr-only">Wait time: </span>{service.waitTimes}</span>
+          <div className="flex items-start text-sm text-slate-600">
+            <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
+            <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes}</span>
           </div>
         </div>
 
