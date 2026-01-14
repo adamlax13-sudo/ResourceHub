@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
+import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
@@ -96,8 +97,9 @@ export default function Home() {
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
         <AnimatePresence mode="wait">
-          {error && (
+          {error && !isPending && (
             <motion.div
+              key="error"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -111,8 +113,25 @@ export default function Home() {
             </motion.div>
           )}
 
-          {displayServices && (
+          {isPending && (
             <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <ServiceCardSkeleton key={index} index={index} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {!isPending && displayServices && (
+            <motion.div
+              key="results"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
