@@ -477,8 +477,33 @@ export async function registerRoutes(
       const queryLower = input.query.toLowerCase();
       const isCrisisQuery = suicideKeywords.some(keyword => queryLower.includes(keyword));
       
+      // Normalize query for better cache hits - handle common variations
+      const normalizeForCache = (q: string): string => {
+        return q
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, ' ')  // Multiple spaces to single space
+          .replace(/['']/g, "'") // Smart quotes to regular
+          .replace(/[""]/g, '"') // Smart quotes to regular
+          // Common typo corrections for cache matching
+          .replace(/counc[ei]l+ing/g, 'counselling')
+          .replace(/addic[it]+on/g, 'addiction')
+          .replace(/ment[ae]l/g, 'mental')
+          .replace(/he[al]+th/g, 'health')
+          .replace(/anxi[ei]ty/g, 'anxiety')
+          .replace(/depress?i?on/g, 'depression')
+          .replace(/indigen[io]+us/g, 'indigenous')
+          .replace(/homel?e?ss/g, 'homeless')
+          .replace(/sheltt?er/g, 'shelter')
+          .replace(/emerg[ae]n[cs]y/g, 'emergency')
+          .replace(/supp?orr?t/g, 'support')
+          .replace(/trea?t?ment/g, 'treatment')
+          .replace(/alc[oa]h?ol/g, 'alcohol')
+          .replace(/re[ha]+b/g, 'rehab');
+      };
+      
       // Include database hash and mode in cache key
-      const normalizedQuery = `${DATABASE_HASH}:${mode}:${input.query.trim().toLowerCase()}`;
+      const normalizedQuery = `${DATABASE_HASH}:${mode}:${normalizeForCache(input.query)}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
 
