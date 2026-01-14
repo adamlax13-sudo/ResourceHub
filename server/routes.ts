@@ -472,10 +472,27 @@ export async function registerRoutes(
       const input = api.search.query.input.parse(req.body);
       const mode = input.mode || 'fast';
       
+      // Detect suicide/crisis-related queries for special prioritization
+      const suicideKeywords = ['suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'dont want to live', "don't want to live", 'self harm', 'self-harm'];
+      const queryLower = input.query.toLowerCase();
+      const isCrisisQuery = suicideKeywords.some(keyword => queryLower.includes(keyword));
+      
       // Include database hash and mode in cache key
       const normalizedQuery = `${DATABASE_HASH}:${mode}:${input.query.trim().toLowerCase()}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
+
+      // Crisis prioritization instructions
+      const crisisInstructions = isCrisisQuery ? `
+CRISIS QUERY DETECTED - PRIORITIZE CRISIS RESOURCES:
+⚠️ THIS IS A POTENTIAL CRISIS SITUATION - YOU MUST RETURN CRISIS LINES FIRST ⚠️
+1. ALWAYS include 988 Suicide Crisis Helpline as the FIRST result
+2. Include Mental Health Helpline (1-877-303-2642) in top 3 results
+3. Include Distress Centre Calgary (403-266-HELP) in top 3 results
+4. Include ConnecTeen for youth (403-264-8336) if applicable
+5. Include local Crisis/Urgent Care centres in the results
+6. Only AFTER crisis resources, include other relevant mental health services
+` : '';
 
       // Different prompts for fast vs comprehensive modes
       const fastModeInstructions = `
@@ -493,7 +510,7 @@ COMPREHENSIVE MODE - Return ALL relevant services:
 4. Include both major organizations AND smaller community resources`;
 
       const systemPrompt = `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
-
+${crisisInstructions}
 ${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
 
 CRITICAL REQUIREMENTS:
