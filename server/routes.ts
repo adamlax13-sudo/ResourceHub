@@ -520,6 +520,30 @@ CRITICAL REQUIREMENTS:
 - DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
 - Never return generic categories like "Local Counseling Services" or "Community Support Groups"
 
+SPELLING & TYPO TOLERANCE - INTERPRET USER INTENT:
+- Always interpret what the user MEANT, not just what they typed
+- Common misspellings to recognize:
+  * "counceling/councilling/counsling/counsilling" → counselling/counseling
+  * "addiciton/addicton/addction" → addiction
+  * "mentl/menal/mential" → mental
+  * "helth/heath/heatlh" → health
+  * "detox/detoxx/detocks" → detox
+  * "rehab/reahb/rahab" → rehab
+  * "sheltr/sheltter/shleter" → shelter
+  * "emergancy/emergeny/emrgency" → emergency
+  * "suport/supprt/suporrt" → support
+  * "treatmnt/tretment/treatement" → treatment
+  * "alcahol/alchol/alcohal" → alcohol
+  * "anxeity/anxity/anixety" → anxiety
+  * "depresion/depressin/deppression" → depression
+  * "indiginous/indigenious/indegenous" → Indigenous
+  * "homless/homelss/houseless" → homeless
+  * "psyciatry/phsychiatry/pschiatry" → psychiatry
+- Handle missing spaces: "mentalhealth" → "mental health", "foodbank" → "food bank"
+- Handle extra spaces: "Al pha House" → "Alpha House"
+- Handle common abbreviations: "AA" → "Alcoholics Anonymous", "NA" → "Narcotics Anonymous", "MH" → "mental health"
+- If the query is unclear but seems related to recovery/support services, provide relevant general results
+
 SEARCH MATCHING RULES:
 - If query mentions "Alpha House" → MUST include Alpha House Society Calgary and Alpha House Detox
 - If query mentions "Calgary Drop-In" → MUST include Calgary Drop-In Centre
