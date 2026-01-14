@@ -505,37 +505,7 @@ export async function registerRoutes(
       // Include database hash and mode in cache key
       const normalizedQuery = `${DATABASE_HASH}:${mode}:${normalizeForCache(input.query)}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
-      if (cached) {
-        // For crisis queries, ensure 988 is first even in cached results
-        const cachedResults = cached.results as { services?: any[]; summary?: string };
-        if (isCrisisQuery && cachedResults?.services) {
-          const crisis988Service = {
-            id: "988-suicide-crisis-helpline",
-            name: "988 Suicide Crisis Helpline",
-            category: "24/7 Crisis Line",
-            description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.",
-            location: "Canada-wide (available in Alberta)",
-            contact: "Call or text 988",
-            eligibility: "Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis",
-            process: [
-              "Call or text 988 from any phone - available 24/7",
-              "You will be connected to a trained crisis counselor",
-              "Share what you're going through at your own pace",
-              "The counselor will provide immediate support and safety planning",
-              "You may be connected to local resources for ongoing support"
-            ],
-            waitTimes: "Immediate - 24/7 availability",
-            requiredDocs: ["None - anonymous and confidential"]
-          };
-          
-          // Remove any existing 988 entry and prepend fresh one
-          cachedResults.services = cachedResults.services.filter((s: any) => 
-            !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
-          );
-          cachedResults.services.unshift(crisis988Service);
-        }
-        return res.json(cachedResults);
-      }
+      if (cached) return res.json(cached.results);
 
       // Crisis prioritization instructions
       const crisisInstructions = isCrisisQuery ? `
