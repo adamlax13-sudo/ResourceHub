@@ -12,7 +12,7 @@ export function ServiceCardSkeleton({ index }: ServiceCardSkeletonProps) {
       transition={{ delay: index * 0.05, duration: 0.3 }}
       className="h-full"
     >
-      <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden animate-pulse">
+      <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden animate-pulse" style={{ animationDuration: '3s' }}>
         <div className="flex justify-between items-start mb-4">
           <div className="h-6 w-24 bg-muted rounded-full" />
         </div>
