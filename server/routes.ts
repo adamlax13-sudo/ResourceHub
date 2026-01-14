@@ -467,29 +467,13 @@ export async function registerRoutes(
     res.json(user);
   });
 
-  app.post(api.search.query.path, async (req: any, res) => {
+  app.post(api.search.query.path, async (req, res) => {
     try {
       const input = api.search.query.input.parse(req.body);
       const mode = input.mode || 'fast';
       
-      // Check if user is logged in and has a university set
-      let userUniversity: string | null = null;
-      let userLocation: string | null = null;
-      if (req.isAuthenticated && req.isAuthenticated()) {
-        const user = await storage.getUserByReplitId(req.user.claims.sub);
-        if (user?.university && user.university !== 'not-in-university' && user.university !== 'in-highschool') {
-          userUniversity = user.university.replace(/-/g, ' ');
-        }
-        if (user?.location && user.location !== 'prefer-not-to-say') {
-          userLocation = user.location === 'other' && user.customLocation 
-            ? user.customLocation 
-            : user.location?.replace(/-/g, ' ');
-        }
-      }
-      
-      // Include database hash, mode, and university in cache key for personalized results
-      const universityKey = userUniversity ? `:uni:${userUniversity}` : '';
-      const normalizedQuery = `${DATABASE_HASH}:${mode}${universityKey}:${input.query.trim().toLowerCase()}`;
+      // Include database hash and mode in cache key
+      const normalizedQuery = `${DATABASE_HASH}:${mode}:${input.query.trim().toLowerCase()}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) return res.json(cached.results);
 
@@ -508,23 +492,9 @@ COMPREHENSIVE MODE - Return ALL relevant services:
 3. Provide detailed process steps (4-8 steps each) with full contact information
 4. Include both major organizations AND smaller community resources`;
 
-      // Build university prioritization instructions if user has a university set
-      const universityPrioritization = userUniversity ? `
-UNIVERSITY/CAMPUS PRIORITIZATION:
-The user is a student at ${userUniversity}. When results are relevant to the query:
-- PRIORITIZE campus counselling, wellness centers, and student services at ${userUniversity} by listing them FIRST
-- Include on-campus or university-affiliated resources before off-campus alternatives when both are relevant
-- If the query relates to mental health, counselling, crisis support, or student wellness, ALWAYS include ${userUniversity}'s campus resources if available
-- This prioritization only applies when campus resources are genuinely relevant to the search - don't force irrelevant campus services` : '';
-
-      const locationContext = userLocation ? `
-USER LOCATION: ${userLocation}, Alberta - When multiple services match, prefer services in or near this location.` : '';
-
       const systemPrompt = `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 
 ${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
-${universityPrioritization}
-${locationContext}
 
 CRITICAL REQUIREMENTS:
 - EXACT NAME MATCH PRIORITY: If the user's query contains an exact organization name (e.g., "Alpha House", "Calgary Drop-In", "Mustard Seed"), you MUST include that specific organization in your results FIRST.
@@ -742,19 +712,13 @@ ${savedServiceNames.length > 0 ? `
 ALREADY SAVED RESOURCES (DO NOT RECOMMEND THESE - user already has them saved):
 ${savedServiceNames.slice(0, 10).join(', ')}
 Instead, use these saved services to understand user's interests and recommend COMPLEMENTARY or SIMILAR services they haven't saved yet.` : ''}
-${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `
-UNIVERSITY STUDENT PRIORITIZATION (HIGH PRIORITY):
-User is a student at ${user.university.replace(/-/g, ' ')}. This is a "Recovery on Campus" platform, so campus resources are especially valuable:
-- List 2-3 on-campus or university-affiliated services FIRST in recommendations (campus counselling, wellness center, student support, campus food bank, etc.)
-- These campus resources should appear at the TOP of the list, before off-campus alternatives
-- Only include campus resources that are relevant to the user's other profile attributes
-- After campus resources, include complementary off-campus services` : ''}
+${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - MUST include at least 1-2 on-campus or nearby services` : ''}
 ${user.university === 'in-highschool' ? 'User is a HIGH SCHOOL student - MUST prioritize youth services appropriate for under-18' : ''}
 ${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - MUST prioritize services in or accessible from this city` : ''}
 
 PERSONALIZATION RULES (FOLLOW STRICTLY):
-- If user specified university: List 2-3 campus-specific resources FIRST, then off-campus services
-- If user specified location: Remaining services should be in/near that city
+- If user specified location: At least 3 of 5 services should be in/near that city
+- If user specified university: Include 1-2 campus-specific resources
 - If user is LGBTQ2S+: Include at least 1 LGBTQ2S+-affirming service
 - If user is Indigenous: Include at least 1 Indigenous-specific service
 - If user specified recovery status: Include relevant addiction/recovery support
