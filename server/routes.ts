@@ -610,6 +610,37 @@ Return JSON matching:
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
+      
+      // For crisis queries, ensure 988 is ALWAYS the first result
+      if (isCrisisQuery && results.services) {
+        const crisis988Service = {
+          id: "988-suicide-crisis-helpline",
+          name: "988 Suicide Crisis Helpline",
+          category: "24/7 Crisis Line",
+          description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.",
+          location: "Canada-wide (available in Alberta)",
+          contact: "Call or text 988",
+          eligibility: "Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis",
+          process: [
+            "Call or text 988 from any phone - available 24/7",
+            "You will be connected to a trained crisis counselor",
+            "Share what you're going through at your own pace",
+            "The counselor will provide immediate support and safety planning",
+            "You may be connected to local resources for ongoing support"
+          ],
+          waitTimes: "Immediate - 24/7 availability",
+          requiredDocs: ["None - anonymous and confidential"]
+        };
+        
+        // Remove any existing 988 entry to avoid duplicates
+        results.services = results.services.filter((s: any) => 
+          !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
+        );
+        
+        // Prepend 988 as the first result
+        results.services.unshift(crisis988Service);
+      }
+      
       await storage.createSearch({ query: normalizedQuery, results });
       res.json(results);
     } catch (err) {
