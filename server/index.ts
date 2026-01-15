@@ -1,106 +1,42 @@
 import express from "express";
 import session from "express-session";
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { createServer } from "http";
 import path from "path";
+import { registerRoutes } from "./routes";
 
-// --- Helper: check required secrets ---
-const requiredSecrets = [
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "GOOGLE_REDIRECT_URI",
-  "AUTH_SECRET",
-];
-for (const key of requiredSecrets) {
-  if (!process.env[key]) {
-    console.error(
-      `Error: Missing required secret ${key}. Please set it in Render Dashboard.`
-    );
-    process.exit(1);
-  }
-}
-
-// --- Express app ---
 const app = express();
 
-// --- Session setup ---
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+const sessionSecret = process.env.AUTH_SECRET || process.env.SESSION_SECRET || "dev-secret-change-in-production";
+
 app.use(
   session({
-    secret: process.env.AUTH_SECRET!,
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production" }, // secure cookies in prod
+    cookie: { 
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000
+    },
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
+const httpServer = createServer(app);
 
-// --- Passport Google OAuth ---
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: process.env.GOOGLE_REDIRECT_URI!,
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      // Here you can save profile info to your database
-      return done(null, profile);
-    }
-  )
-);
+(async () => {
+  await registerRoutes(httpServer, app);
 
-// --- Serialize / deserialize user ---
-passport.serializeUser((user: any, done) => done(null, user));
-passport.deserializeUser((obj: any, done) => done(null, obj));
+  const clientBuildPath = path.join(__dirname, "../dist/public");
+  app.use(express.static(clientBuildPath));
 
-// --- Auth routes ---
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    // Successful login
-    res.redirect("/profile");
-  }
-);
-
-// --- Protected route example ---
-app.get("/profile", (req, res) => {
-  if (!req.isAuthenticated || !req.isAuthenticated())
-    return res.redirect("/auth/google");
-
-  res.send(`
-    <h1>Welcome ${req.user?.displayName}</h1>
-    <p>Email: ${req.user?.emails?.[0]?.value}</p>
-    <p><a href="/logout">Logout</a></p>
-  `);
-});
-
-// --- Logout ---
-app.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    res.redirect("/");
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
   });
-});
 
-// --- Serve React frontend ---
-const clientBuildPath = path.join(__dirname, "../dist/public");
-app.use(express.static(clientBuildPath));
-
-// Catch-all: send index.html for React Router
-app.get("*", (req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
-// --- Start server ---
-const port = parseInt(process.env.PORT || "5000", 10);
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Server running on port ${port}`);
-});
+  const port = parseInt(process.env.PORT || "5000", 10);
+  httpServer.listen(port, "0.0.0.0", () => {
+    console.log(`Server running on port ${port}`);
+  });
+})();
