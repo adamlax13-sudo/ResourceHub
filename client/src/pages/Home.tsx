@@ -7,7 +7,7 @@ import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { type ServiceDetail } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
 

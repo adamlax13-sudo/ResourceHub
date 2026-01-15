@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 type SearchMode = 'fast' | 'comprehensive';
 

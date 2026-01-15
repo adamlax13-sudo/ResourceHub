@@ -22,7 +22,7 @@ import {
 import { motion } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 const AGE_OPTIONS = [
   { value: "under-18", label: "Under 18" },

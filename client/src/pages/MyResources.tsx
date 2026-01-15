@@ -18,7 +18,7 @@ import {
 import { Trash2, PlayCircle, CheckCircle, Loader2, LogOut, MapPin, Phone, Mail, FileText, Clock, ExternalLink, ChevronDown, ChevronUp, Sparkles, User, Menu, Home, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import type { Favorite, ServiceDetail } from "@shared/routes";
 
 export default function MyResources() {

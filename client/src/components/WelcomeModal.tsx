@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { User, Sparkles, ArrowRight } from "lucide-react";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 export function WelcomeModal() {
   const { user, isLoading: authLoading } = useAuth();

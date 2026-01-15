@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { type ServiceDetail } from "@shared/schema";
-import rocLogo from "@assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 function linkifyText(text: string): React.ReactNode {
   if (!text) return text;
