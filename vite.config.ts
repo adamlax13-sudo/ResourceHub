@@ -9,7 +9,7 @@ export default defineConfig({
     port: Number(process.env.PORT) || 5173,
   },
   build: {
-    outDir: path.resolve(__dirname, 'dist/public'), // output for Express to serve
+    outDir: path.resolve(__dirname, "client/src"), // output for Express to serve
     emptyOutDir: true
   }
 });
