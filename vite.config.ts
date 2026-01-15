@@ -5,18 +5,21 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
 
-  root: path.resolve(__dirname),
+  // Tell Vite that the actual frontend lives in /client
+  root: path.resolve(__dirname, "client"),
 
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@shared": path.resolve(__dirname, "../shared"),
+      "@": path.resolve(__dirname, "client/src"),
+      "@shared": path.resolve(__dirname, "shared"),
     },
   },
 
   build: {
-    outDir: path.resolve(__dirname, "../dist/public"),
+    // Output built frontend into server-accessible folder
+    outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
 });
+
 
