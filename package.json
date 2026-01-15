@@ -108,7 +108,7 @@
   },
     "devDependencies": {
       "@vitejs/plugin-react": "^4.7.0",
-      "vite": "^7.3.0"
+      "vite": "^7.3.0",
       "autoprefixer": "^10.4.20",
       "postcss": "^8.4.47"
   },
