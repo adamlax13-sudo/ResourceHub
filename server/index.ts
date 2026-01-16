@@ -1,34 +1,12 @@
 import express from "express";
-import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
 import { createServer } from "http";
 import path from "path";
 import { registerRoutes } from "./routes";
 
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-const sessionSecret = process.env.AUTH_SECRET || process.env.SESSION_SECRET || "dev-secret-change-in-production";
-
-const PgSession = connectPgSimple(session);
-
-app.use(
-  session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL,
-      tableName: 'session',
-      createTableIfMissing: true // Auto-creates the session table
-    }),
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000
-    },
-  })
-);
 
 const httpServer = createServer(app);
 

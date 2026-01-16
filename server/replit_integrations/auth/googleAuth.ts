@@ -7,16 +7,33 @@ import { authStorage } from "./storage";
 
 export function getSession() {
   const sessionTtl = 30 * 24 * 60 * 60 * 1000; // 30 days
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  
+  // Use PostgreSQL session store if DATABASE_URL is available
+  if (process.env.DATABASE_URL) {
+    const pgStore = connectPg(session);
+    const sessionStore = new pgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      ttl: sessionTtl,
+      tableName: "sessions",
+    });
+    return session({
+      secret: process.env.SESSION_SECRET || process.env.AUTH_SECRET || "dev-secret",
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: sessionTtl,
+      },
+    });
+  }
+  
+  // Fallback to memory store for development
   return session({
-    secret: process.env.SESSION_SECRET!,
-    store: sessionStore,
+    secret: process.env.SESSION_SECRET || process.env.AUTH_SECRET || "dev-secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -44,7 +61,10 @@ export async function setupGoogleAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const callbackURL = process.env.GOOGLE_CALLBACK_URL || "/api/callback";
+  // Support both callback URL formats
+  const callbackURL = process.env.GOOGLE_CALLBACK_URL || 
+    process.env.GOOGLE_REDIRECT_URI || 
+    "/auth/google/callback";
 
   passport.use(
     new GoogleStrategy(
@@ -79,6 +99,7 @@ export async function setupGoogleAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
+  // Login route - redirects to Google
   app.get("/api/login", (req, res, next) => {
     passport.authenticate("google", {
       scope: ["profile", "email"],
@@ -86,13 +107,31 @@ export async function setupGoogleAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/callback", (req, res, next) => {
+  // Also support /auth/google for login
+  app.get("/auth/google", (req, res, next) => {
     passport.authenticate("google", {
-      successRedirect: "/",
-      failureRedirect: "/api/login",
+      scope: ["profile", "email"],
+      prompt: "select_account",
     })(req, res, next);
   });
 
+  // Callback route - handles Google's response
+  app.get("/auth/google/callback", (req, res, next) => {
+    passport.authenticate("google", {
+      successRedirect: "/",
+      failureRedirect: "/",
+    })(req, res, next);
+  });
+
+  // Also support /api/callback for backwards compatibility
+  app.get("/api/callback", (req, res, next) => {
+    passport.authenticate("google", {
+      successRedirect: "/",
+      failureRedirect: "/",
+    })(req, res, next);
+  });
+
+  // Logout route
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
       res.redirect("/");
