@@ -1,10 +1,7 @@
-import { Search, User, Sparkles, Heart, LogOut, Zap, Layers } from "lucide-react";
+import { Search, Zap, Layers } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "wouter";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -25,7 +22,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
     }
     return 'fast';
   });
-  const { user, isLoading: authLoading } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -47,11 +43,9 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
 
   return (
     <div className="relative w-screen max-w-full overflow-hidden bg-primary text-primary-foreground pt-20 pb-32 md:pt-28 md:pb-48 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
-      {/* Animated gradient overlay for extra flair */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-purple-900/50 opacity-90" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
       
-      {/* Navigation */}
       <div className="absolute top-0 left-0 right-0 z-20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -65,59 +59,12 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
             <span className="font-display font-bold text-white text-lg hidden sm:block leading-tight">Recovery on<br />Campus Alberta</span>
           </div>
           
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-wrap justify-end">
+          <div className="flex items-center gap-2">
             <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
-            {!authLoading && user ? (
-              <>
-                <Link href="/recommended">
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-recommended-mobile">
-                    <Sparkles className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-recommended">
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {t('nav2.recommended')}
-                  </Button>
-                </Link>
-                <Link href="/my-resources">
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-my-resources-mobile">
-                    <Heart className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-my-resources">
-                    {t('nav.myResources')}
-                  </Button>
-                </Link>
-                <Link href="/profile">
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="link-profile-mobile">
-                    <User className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" className="text-white hover:bg-white/20 hidden md:flex" data-testid="link-profile">
-                    <User className="w-4 h-4 mr-2" />
-                    {t('nav2.profile')}
-                  </Button>
-                </Link>
-                <a href="/api/logout">
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 md:hidden" data-testid="button-logout-mobile">
-                    <LogOut className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/20 hidden md:flex" data-testid="button-logout">
-                    {t('nav.logout')}
-                  </Button>
-                </a>
-              </>
-            ) : (
-              <a href="/api/login">
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/20" data-testid="button-login">
-                  <User className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">{t('nav.signIn')}</span>
-                  <span className="sm:hidden">Login</span>
-                </Button>
-              </a>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Geometric Background Pattern - Inspired by ROC crystalline triangle with animation */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-25 pointer-events-none">
         <motion.svg 
           className="absolute -top-20 -left-20 w-96 h-96" 
@@ -155,8 +102,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        {/* Additional floating triangles - well spaced with bounce-like physics */}
-        {/* Large complex triangle - bottom right corner */}
         <motion.svg 
           className="absolute -bottom-24 -right-24 w-72 h-72" 
           viewBox="0 0 200 200" 
@@ -174,7 +119,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
-        {/* Medium complex triangle - far left middle */}
         <motion.svg 
           className="absolute top-[60%] -left-20 w-52 h-52" 
           viewBox="0 0 200 200" 
@@ -192,7 +136,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
-        {/* Small triangle - top far right */}
         <motion.svg 
           className="absolute top-[8%] right-[8%] w-20 h-20" 
           viewBox="0 0 200 200" 
@@ -206,7 +149,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
         </motion.svg>
-        {/* Tiny triangle - bottom left area */}
         <motion.svg 
           className="absolute bottom-[20%] left-[18%] w-12 h-12" 
           viewBox="0 0 200 200" 
@@ -220,7 +162,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
         </motion.svg>
-        {/* Small triangle - center right */}
         <motion.svg 
           className="absolute top-[40%] right-[12%] w-16 h-16" 
           viewBox="0 0 200 200" 
@@ -234,7 +175,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
         >
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.8" fill="none" />
         </motion.svg>
-        {/* Medium complex triangle - bottom center-left */}
         <motion.svg 
           className="absolute bottom-[5%] left-[35%] w-32 h-32" 
           viewBox="0 0 200 200" 
@@ -250,7 +190,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.6" fill="none" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
-        {/* Additional floating particles */}
         <motion.div 
           className="absolute top-1/3 left-1/3 w-2 h-2 bg-white rounded-full"
           animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
@@ -293,7 +232,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           aria-label={t('app.searchPlaceholder')}
         >
           <div className="relative group">
-            {/* Glow effect on focus */}
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <label htmlFor="hero-search" className="sr-only">{t('app.searchPlaceholder')}</label>
             <input
@@ -321,13 +259,11 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
               )}
             </button>
           </div>
-          {/* Search Mode Toggle */}
           <div className="mt-4 flex flex-col items-center gap-2">
             <div
               className="group relative grid grid-cols-2 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 p-1 transition-all hover:bg-white/15"
               data-testid="toggle-search-mode"
             >
-              {/* Sliding indicator - uses transform for consistent animation speed */}
               <motion.div
                 className="absolute inset-y-1 rounded-full bg-white shadow-lg pointer-events-none"
                 initial={false}
@@ -345,7 +281,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
                 }}
               />
               
-              {/* Quick option with its own tooltip */}
               <Tooltip delayDuration={200}>
                 <TooltipTrigger asChild>
                   <button
@@ -375,7 +310,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
                 </TooltipContent>
               </Tooltip>
               
-              {/* All Results option with its own tooltip */}
               <Tooltip delayDuration={200}>
                 <TooltipTrigger asChild>
                   <button

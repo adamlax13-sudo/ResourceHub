@@ -5,7 +5,6 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import OpenAI from "openai";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -448,25 +447,6 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup Replit Auth first
-  await setupAuth(app);
-  registerAuthRoutes(app);
-
-  app.get(api.auth.me.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) {
-      return res.json(null);
-    }
-    const replitId = req.user.claims.sub;
-    const user = await storage.upsertUser({ 
-      replitId,
-      email: req.user.claims.email,
-      firstName: req.user.claims.first_name,
-      lastName: req.user.claims.last_name,
-      profileImageUrl: req.user.claims.profile_image_url
-    });
-    res.json(user);
-  });
-
   app.post(api.search.query.path, async (req, res) => {
     try {
       const input = api.search.query.input.parse(req.body);
@@ -524,7 +504,7 @@ CRISIS QUERY DETECTED - PRIORITIZE CRISIS RESOURCES:
 FAST MODE - Return 5-8 most relevant services quickly:
 1. Return ONLY the 5-8 most relevant, high-priority services that best match the query
 2. Prioritize crisis lines, major treatment centers, and well-known organizations
-3. Keep process steps brief (3-4 steps each)
+3. Provide detailed process steps (4-8 steps each) with full contact information
 4. Focus on immediate, actionable resources`;
 
       const comprehensiveModeInstructions = `
@@ -645,239 +625,6 @@ Return JSON matching:
       res.json(results);
     } catch (err) {
       res.status(500).json({ message: "Search failed" });
-    }
-  });
-
-  app.get(api.favorites.list.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send();
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) return res.json([]);
-    const favs = await storage.getFavorites(user.id);
-    res.json(favs);
-  });
-
-  app.post(api.favorites.add.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send();
-    const input = api.favorites.add.input.parse(req.body);
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) return res.status(401).send();
-    
-    // Check for duplicate before adding
-    const existingFavorites = await storage.getFavorites(user.id);
-    const isDuplicate = existingFavorites.some(f => f.serviceId === input.serviceId);
-    if (isDuplicate) {
-      return res.status(409).json({ message: "Service already saved" });
-    }
-    
-    const fav = await storage.addFavorite({
-      userId: user.id,
-      serviceId: input.serviceId,
-      serviceName: input.serviceName,
-      category: input.category,
-      serviceDetails: input.serviceDetails || null,
-      status: 'saved',
-      completedSteps: []
-    });
-    res.status(201).json(fav);
-  });
-
-  app.patch(api.favorites.update.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send();
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) return res.status(401).send();
-    
-    const id = parseInt(req.params.id);
-    const favorite = await storage.getFavorite(id);
-    if (!favorite || favorite.userId !== user.id) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-    
-    const input = api.favorites.update.input.parse(req.body);
-    const updated = await storage.updateFavorite(id, input);
-    res.json(updated);
-  });
-
-  app.delete(api.favorites.delete.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send();
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) return res.status(401).send();
-    
-    const id = parseInt(req.params.id);
-    const favorite = await storage.getFavorite(id);
-    if (!favorite || favorite.userId !== user.id) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-    
-    await storage.deleteFavorite(id);
-    res.status(204).send();
-  });
-
-  // Profile endpoints
-  app.get(api.profile.get.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-    res.json(user);
-  });
-
-  app.patch(api.profile.update.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    const user = await storage.getUserByReplitId(req.user.claims.sub);
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-    
-    const input = api.profile.update.input.parse(req.body);
-    const updated = await storage.updateUserDemographics(user.id, input);
-    res.json(updated);
-  });
-
-  // Recommendations endpoint - always generate fresh recommendations for variety
-  app.get(api.recommendations.get.path, async (req: any, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    
-    try {
-      const user = await storage.getUserByReplitId(req.user.claims.sub);
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      
-      const favorites = await storage.getFavorites(user.id);
-      
-      // Build category list from favorites for context
-      const favoriteCategories = Array.from(new Set(favorites.map(f => f.category))).sort().join(',');
-      
-      // Build list of already-saved services to exclude from recommendations
-      const savedServiceNames = favorites.map(f => f.serviceName).filter(Boolean);
-      const savedServiceIds = favorites.map(f => f.serviceId).filter(Boolean);
-      
-      // Build compact context for faster processing
-      const demographics = [];
-      if (user.age) demographics.push(`age:${user.age}`);
-      if (user.gender) demographics.push(`gender:${user.gender}`);
-      if (user.race) demographics.push(`ethnicity:${user.race}`);
-      if (user.sexuality) demographics.push(`orientation:${user.sexuality}`);
-      if (user.education) demographics.push(`education:${user.education}`);
-      if (user.religion) demographics.push(`faith:${user.religion}`);
-      if (user.inAddiction) demographics.push(`recovery:${user.inAddiction}`);
-      if (user.university) demographics.push(`school:${user.university}`);
-      const userLocation = user.location === 'other' && user.customLocation 
-        ? user.customLocation 
-        : user.location?.replace(/-/g, ' ');
-      if (userLocation) demographics.push(`location:${userLocation}`);
-      if (user.disability) demographics.push(`disability:${user.disability}`);
-      if (user.serviceFormat) demographics.push(`format:${user.serviceFormat}`);
-      if (user.supportStyle) demographics.push(`style:${user.supportStyle}`);
-      
-      const favCategoriesList = favoriteCategories ? favoriteCategories.split(',').slice(0, 3) : [];
-      
-      // Streamlined prompt for faster response - maintains quality requirements with variety
-      const prompt = `Recovery on Campus Resource Hub - Alberta personalized recommendations.
-
-PRIORITY #1 - PROFILE RELEVANCE (MANDATORY):
-All recommendations MUST be directly relevant to the user's profile. Every service you recommend should match at least one of these criteria based on their profile:
-- Location: Services in or accessible from their city/area
-- Identity: LGBTQ2S+ services if indicated, Indigenous services if indicated, age-appropriate services
-- University: Campus-specific resources if they're a student at that institution
-- Recovery status: Addiction/recovery services if in recovery
-- Preferences: Virtual vs in-person, one-on-one vs group as specified
-- Faith/religion: Faith-based services if indicated
-
-PRIORITY #2 - VARIETY WITHIN RELEVANCE:
-While staying relevant to the profile above, select DIFFERENT services each time from the many matching options. Don't repeat the same 5 services - explore the full range of profile-appropriate options.
-
-CRITICAL REQUIREMENTS:
-- Every service MUST be a REAL, SPECIFIC Alberta organization (e.g., "CMHA Edmonton", "Distress Centre Calgary", "U of A Counselling")
-- NEVER return generic categories like "Local Mental Health Clinic" - always name the actual organization
-- ONLY use URLs, phone numbers, and addresses that are EXACTLY as listed in the reference database below
-- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
-- Prioritize services from the reference database below - these are verified and current
-
-${ALBERTA_SERVICES_REFERENCE}
-
-USER PROFILE (USE THIS TO FILTER RECOMMENDATIONS): ${demographics.length > 0 ? demographics.join(', ') : 'No profile - give general Alberta recommendations'}
-${favCategoriesList.length > 0 ? `Favorite categories (suggest similar services in these areas): ${favCategoriesList.join(', ')}` : ''}
-${savedServiceNames.length > 0 ? `
-ALREADY SAVED RESOURCES (DO NOT RECOMMEND THESE - user already has them saved):
-${savedServiceNames.slice(0, 10).join(', ')}
-Instead, use these saved services to understand user's interests and recommend COMPLEMENTARY or SIMILAR services they haven't saved yet.` : ''}
-${user.university && user.university !== 'not-in-university' && user.university !== 'in-highschool' ? `Campus: ${user.university.replace(/-/g, ' ')} - MUST include at least 1-2 on-campus or nearby services` : ''}
-${user.university === 'in-highschool' ? 'User is a HIGH SCHOOL student - MUST prioritize youth services appropriate for under-18' : ''}
-${userLocation && userLocation !== 'prefer not to say' ? `Location: ${userLocation}, Alberta - MUST prioritize services in or accessible from this city` : ''}
-
-PERSONALIZATION RULES (FOLLOW STRICTLY):
-- If user specified location: At least 3 of 5 services should be in/near that city
-- If user specified university: Include 1-2 campus-specific resources
-- If user is LGBTQ2S+: Include at least 1 LGBTQ2S+-affirming service
-- If user is Indigenous: Include at least 1 Indigenous-specific service
-- If user specified recovery status: Include relevant addiction/recovery support
-- If user specified format preference: Prioritize matching format (virtual/in-person)
-- If user specified support style: Prioritize matching style (one-on-one/group)
-- Consider disability accommodations if indicated
-- Suggest services in categories similar to favorites but in unexplored areas
-
-PROCESS STEPS - REFLECT THE REAL INTAKE JOURNEY:
-- IMPORTANT: Different services have DIFFERENT numbers of steps - vary based on actual complexity
-- Simple services (crisis lines, drop-ins) = 3-4 steps
-- Moderate services (counselling intake, peer support) = 4-6 steps  
-- Complex services (residential treatment, formal assessments) = 6-8 steps
-- Use ONLY verified contact info from the reference database - NEVER invent URLs
-- Include specific details: phone numbers, websites, hours, what to expect at each stage
-
-EXAMPLE crisis line (3 steps):
-["Call 403-266-4357 - available 24/7", "Speak with trained counselor", "Get referrals if needed"]
-
-EXAMPLE peer support drop-in (4 steps):
-["Visit recoverycollegecalgary.ca or call 403-297-1402", "Browse free courses", "No referral needed - FREE for 16+", "Attend peer-led session"]
-
-EXAMPLE university counselling (6 steps):
-["Visit campus counselling website", "Complete online intake form", "Wait for email confirmation (1-3 days)", "Book initial phone screening", "Attend assessment appointment", "Begin regular counselling sessions"]
-
-EXAMPLE residential treatment (8 steps):
-["Call 1-866-332-2322 Addiction Helpline for referral", "Complete phone screening assessment", "Gather required documents (ID, health card)", "Attend in-person intake interview", "Wait for bed availability (may be 1-4 weeks)", "Complete medical assessment on arrival", "Participate in orientation program", "Begin structured treatment program"]
-
-If unsure: "Contact [org] at [phone from database] to confirm current process"
-
-Return JSON (note: process array length varies by service complexity):
-{"recommendations":[{"id":"unique","name":"Real Org Name","category":"Category","description":"Brief","reasoning":"Why recommended","location":"Real address","contact":"Real phone/website","eligibility":"Who qualifies","process":["Step 1...","Step 2...","...as many as needed for this specific service"],"waitTimes":"Estimate","requiredDocs":["Doc if any"]}],"summary":"Summary"}
-
-Recommend exactly 5 services with VARIED step counts reflecting each service's actual process.`;
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-5.1",
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: "Provide personalized recommendations." }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.6, // Balanced: variety while maintaining profile relevance
-      });
-
-      const results = JSON.parse(completion.choices[0].message.content!);
-      
-      // Filter out any recommendations that match already-saved services (backup filter)
-      if (results.recommendations && savedServiceIds.length > 0) {
-        const savedNamesLower = savedServiceNames.map(n => n.toLowerCase());
-        results.recommendations = results.recommendations.filter((rec: any) => {
-          const recNameLower = rec.name?.toLowerCase() || '';
-          // Check if this recommendation matches any saved service
-          return !savedServiceIds.includes(rec.id) && 
-                 !savedNamesLower.some(saved => recNameLower.includes(saved) || saved.includes(recNameLower));
-        });
-      }
-      
-      res.json(results);
-    } catch (err) {
-      console.error("Recommendations error:", err);
-      res.status(500).json({ message: "Failed to get recommendations" });
     }
   });
 

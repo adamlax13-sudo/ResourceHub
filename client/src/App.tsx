@@ -5,14 +5,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
-import { usePrefetchRecommendations } from "@/hooks/use-prefetch-recommendations";
 import { SearchProvider } from "@/contexts/SearchContext";
 import './lib/i18n';
 
 const Home = lazy(() => import("@/pages/Home"));
-const MyResources = lazy(() => import("@/pages/MyResources"));
-const Profile = lazy(() => import("@/pages/Profile"));
-const Recommended = lazy(() => import("@/pages/Recommended"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 function PageLoader() {
@@ -28,23 +24,9 @@ function Router() {
     <Suspense fallback={<PageLoader />}>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/my-resources" component={MyResources} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/recommended" component={Recommended} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
-  );
-}
-
-function AppContent() {
-  usePrefetchRecommendations();
-  
-  return (
-    <>
-      <Toaster />
-      <Router />
-    </>
   );
 }
 
@@ -53,7 +35,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SearchProvider>
-          <AppContent />
+          <Toaster />
+          <Router />
         </SearchProvider>
       </TooltipProvider>
     </QueryClientProvider>
