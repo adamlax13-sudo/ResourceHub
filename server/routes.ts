@@ -1,10 +1,11 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { createHash } from "crypto";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import OpenAI from "openai";
+import { strictLimiter, feedbackLimiter } from "./middleware/rateLimiter";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -447,7 +448,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  app.post(api.search.query.path, async (req, res) => {
+  app.post(api.search.query.path, strictLimiter, async (req: Request, res: Response) => {
     try {
       const input = api.search.query.input.parse(req.body);
       const mode = input.mode || 'fast';
@@ -629,7 +630,7 @@ Return JSON matching:
   });
 
   // Feedback endpoint
-  app.post("/api/feedback", async (req, res) => {
+  app.post("/api/feedback", feedbackLimiter, async (req: Request, res: Response) => {
     try {
       const feedbackSchema = z.object({
         name: z.string().optional(),

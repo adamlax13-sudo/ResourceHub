@@ -4,9 +4,8 @@ import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
-  getUserByReplitId(replitId: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  upsertUser(user: Partial<User> & { replitId: string }): Promise<User>;
+  upsertUser(user: Partial<User> & { email: string }): Promise<User>;
   updateUserDemographics(userId: number, demographics: UpdateDemographics): Promise<User>;
 
   createSearch(search: { query: string; results: any }): Promise<Search>;
@@ -33,47 +32,26 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async getUserByReplitId(replitId: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.replitId, replitId));
-    return user;
-  }
-
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
   }
 
-  async upsertUser(insertUser: Partial<User> & { replitId: string }): Promise<User> {
-    let user = await this.getUserByReplitId(insertUser.replitId);
+  async upsertUser(insertUser: Partial<User> & { email: string }): Promise<User> {
+    const user = await this.getUserByEmail(insertUser.email);
     if (user) {
       const [updated] = await db.update(users)
-        .set({ 
-          email: insertUser.email,
+        .set({
           firstName: insertUser.firstName,
           lastName: insertUser.lastName,
-          profileImageUrl: insertUser.profileImageUrl
+          profileImageUrl: insertUser.profileImageUrl,
+          updatedAt: new Date(),
         })
-        .where(eq(users.replitId, insertUser.replitId))
+        .where(eq(users.email, insertUser.email))
         .returning();
       return updated;
     }
-    
-    if (insertUser.email) {
-      user = await this.getUserByEmail(insertUser.email);
-      if (user) {
-        const [updated] = await db.update(users)
-          .set({ 
-            replitId: insertUser.replitId,
-            firstName: insertUser.firstName,
-            lastName: insertUser.lastName,
-            profileImageUrl: insertUser.profileImageUrl
-          })
-          .where(eq(users.email, insertUser.email))
-          .returning();
-        return updated;
-      }
-    }
-    
+
     const [newUser] = await db.insert(users).values(insertUser as any).returning();
     return newUser;
   }

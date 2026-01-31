@@ -2,11 +2,15 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { registerRoutes } from "./routes";
+import { apiLimiter } from "./middleware/rateLimiter";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Apply global rate limiting to all routes
+app.use(apiLimiter);
 
 const httpServer = createServer(app);
 

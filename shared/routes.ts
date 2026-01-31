@@ -28,7 +28,6 @@ export const favoriteSchema = z.object({
 
 export const userProfileSchema = z.object({
   id: z.number(),
-  replitId: z.string().nullable(),
   email: z.string().nullable().optional(),
   firstName: z.string().nullable().optional(),
   lastName: z.string().nullable().optional(),

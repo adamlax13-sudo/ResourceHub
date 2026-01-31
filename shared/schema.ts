@@ -1,14 +1,6 @@
 import { pgTable, text, serial, jsonb, timestamp, integer, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { sql } from "drizzle-orm";
-
-// Mandatory for Replit Auth
-export const sessions = pgTable("sessions", {
-  sid: varchar("sid").primaryKey(),
-  sess: jsonb("sess").notNull(),
-  expire: timestamp("expire").notNull(),
-});
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -16,7 +8,6 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
-  replitId: text("replit_id").unique(),
   // Optional demographic fields for personalized recommendations
   age: varchar("age"),
   gender: varchar("gender"),
