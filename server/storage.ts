@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { searches, feedback, type Search, type Feedback, type InsertFeedback } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { searches, feedback, services, type Search, type Feedback, type InsertFeedback, type Service } from "@shared/schema";
+import { eq, or, ilike, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   createSearch(search: { query: string; results: any }): Promise<Search>;
@@ -8,6 +8,10 @@ export interface IStorage {
 
   createFeedback(feedbackData: InsertFeedback): Promise<Feedback>;
   getAllFeedback(): Promise<Feedback[]>;
+
+  // Service queries
+  getAllActiveServices(): Promise<Service[]>;
+  searchServices(searchTerm: string): Promise<Service[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -28,6 +32,35 @@ export class DatabaseStorage implements IStorage {
 
   async getAllFeedback(): Promise<Feedback[]> {
     return await db.select().from(feedback);
+  }
+
+  // Service methods
+  async getAllActiveServices(): Promise<Service[]> {
+    return await db
+      .select()
+      .from(services)
+      .where(eq(services.isActive, true))
+      .orderBy(desc(services.lastChecked));
+  }
+
+  async searchServices(searchTerm: string): Promise<Service[]> {
+    const term = `%${searchTerm}%`;
+    return await db
+      .select()
+      .from(services)
+      .where(
+        and(
+          eq(services.isActive, true),
+          or(
+            ilike(services.name, term),
+            ilike(services.description, term),
+            ilike(services.category, term),
+            ilike(services.location, term),
+            ilike(services.contact, term)
+          )
+        )
+      )
+      .orderBy(desc(services.lastChecked));
   }
 }
 
