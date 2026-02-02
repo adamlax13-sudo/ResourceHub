@@ -47,21 +47,29 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
       
       <div className="absolute top-0 left-0 right-0 z-20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
-              <img 
-                src={rocLogo} 
-                alt="ROC Logo" 
-                className="h-12 w-auto" 
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href="https://www.recoveryoncampusalberta.ca/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 transition-transform hover:scale-105"
+            >
+              <img
+                src={rocLogo}
+                alt="ROC Logo"
+                className="h-10 sm:h-12 w-auto"
               />
             </a>
-            <span className="font-display font-bold text-white text-lg hidden sm:block leading-tight">Recovery on<br />Campus Alberta</span>
+            <span className="font-display font-bold text-white text-base sm:text-lg hidden sm:block leading-tight">
+              Recovery on<br />Campus Alberta
+            </span>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher variant="ghost" className="text-white hover:bg-white/20" />
-          </div>
+
+          <LanguageSwitcher
+            variant="ghost"
+            className="text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
+          />
         </div>
       </div>
 

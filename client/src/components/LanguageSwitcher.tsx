@@ -25,20 +25,29 @@ export function LanguageSwitcher({ variant = 'ghost', className = '' }: Language
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={variant} size="sm" className={`gap-2 ${className}`} data-testid="button-language-switcher">
-          <Globe className="w-4 h-4" />
-          <span className="hidden sm:inline">{currentLanguage.nativeName}</span>
+        <Button
+          variant={variant}
+          size="sm"
+          className={`gap-2 h-9 px-3 ${className}`}
+          data-testid="button-language-switcher"
+        >
+          <Globe className="w-4 h-4 flex-shrink-0" />
+          <span className="hidden sm:inline text-sm font-medium">
+            {currentLanguage.nativeName}
+          </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
+      <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto w-64">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
-            className={i18n.language === lang.code ? 'bg-accent' : ''}
+            className={`cursor-pointer ${
+              i18n.language === lang.code ? 'bg-accent' : ''
+            }`}
             data-testid={`language-option-${lang.code}`}
           >
-            <span className="mr-2">{lang.nativeName}</span>
+            <span className="mr-2 font-medium">{lang.nativeName}</span>
             <span className="text-muted-foreground text-sm">({lang.name})</span>
           </DropdownMenuItem>
         ))}
