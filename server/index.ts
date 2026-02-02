@@ -6,6 +6,9 @@ import { apiLimiter } from "./middleware/rateLimiter";
 
 const app = express();
 
+// Trust the first proxy (Render, Heroku, etc.) for rate limiting
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
