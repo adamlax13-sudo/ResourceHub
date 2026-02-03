@@ -21,14 +21,21 @@ async function runMigration() {
     await client.connect();
     console.log('Connected successfully!');
 
-    const sqlPath = path.join(__dirname, 'create_searches_feedback_tables.sql');
-    const sql = fs.readFileSync(sqlPath, 'utf8');
+    // Run all migration files in order
+    const migrationFiles = [
+      'create_searches_feedback_tables.sql',
+      'add_ai_service_enrichments.sql',
+    ];
 
-    console.log('Running migration...');
-    await client.query(sql);
-    console.log('✓ Migration completed successfully!');
-    console.log('✓ Tables "searches" and "feedback" created');
-    console.log('✓ Indexes created for better performance');
+    for (const file of migrationFiles) {
+      const sqlPath = path.join(__dirname, file);
+      const sql = fs.readFileSync(sqlPath, 'utf8');
+      console.log(`Running migration: ${file}...`);
+      await client.query(sql);
+      console.log(`✓ ${file} completed`);
+    }
+
+    console.log('✓ All migrations completed successfully!');
 
   } catch (error) {
     console.error('Migration failed:', error.message);

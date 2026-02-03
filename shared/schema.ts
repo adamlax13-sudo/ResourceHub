@@ -45,6 +45,24 @@ export const services = pgTable("services", {
   notes: text("notes"),
 });
 
+// AI-generated service enrichments cache
+// Stores OpenAI-generated details per service so future searches can skip the API call
+export const aiServiceEnrichments = pgTable("ai_service_enrichments", {
+  id: serial("id").primaryKey(),
+  serviceId: varchar("service_id", { length: 255 }).notNull().unique(),
+  serviceName: varchar("service_name", { length: 500 }).notNull(),
+  aiDescription: text("ai_description").notNull(),
+  aiCategory: varchar("ai_category", { length: 255 }),
+  aiProcessSteps: jsonb("ai_process_steps").notNull(),
+  aiEligibility: text("ai_eligibility"),
+  aiWaitTimes: varchar("ai_wait_times", { length: 255 }),
+  aiRequiredDocs: jsonb("ai_required_docs"),
+  aiLocation: text("ai_location"),
+  aiContact: text("ai_contact"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true });
 
@@ -52,6 +70,7 @@ export type Search = typeof searches.$inferSelect;
 export type Feedback = typeof feedback.$inferSelect;
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Service = typeof services.$inferSelect;
+export type AiServiceEnrichment = typeof aiServiceEnrichments.$inferSelect;
 
 export interface ServiceDetail {
   id: string;
