@@ -11,6 +11,11 @@ vite.config.ts.*
 .env.production
 .env.development
 
+# Python
+__pycache__/
+*.pyc
+scraper/venv/
+
 # Replit files (legacy)
 .replit
 replit.nix

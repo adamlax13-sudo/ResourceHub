@@ -7,5 +7,8 @@ lxml>=5.1.0
 SQLAlchemy>=2.0.0
 psycopg2-binary>=2.9.9
 
+# OpenAI API
+openai>=1.30.0
+
 # Utilities
 python-dotenv>=1.0.0
