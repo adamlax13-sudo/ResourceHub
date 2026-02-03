@@ -49,12 +49,13 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   app.post(api.search.query.path, strictLimiter, async (req: Request, res: Response) => {
+    let dbServices: Service[] = [];
     try {
       const input = api.search.query.input.parse(req.body);
       const mode = input.mode || 'fast';
 
       // Query database for all active services
-      const dbServices = await storage.getAllActiveServices();
+      dbServices = await storage.getAllActiveServices();
 
       // Create dynamic hash based on service count and latest update timestamp
       // This invalidates cache when services are added/updated
@@ -122,14 +123,14 @@ CRISIS QUERY DETECTED - PRIORITIZE CRISIS RESOURCES:
 FAST MODE - Return 5-8 most relevant services quickly:
 1. Return ONLY the 5-8 most relevant, high-priority services that best match the query
 2. Prioritize crisis lines, major treatment centers, and well-known organizations
-3. Provide detailed process steps (4-8 steps each) with full contact information
+3. Provide detailed process steps (4-8 steps each) with full contact information (do not make these us, ensure it is real information)
 4. Focus on immediate, actionable resources`;
 
       const comprehensiveModeInstructions = `
 COMPREHENSIVE MODE - Return ALL relevant services:
 1. RETURN ALL RELEVANT SERVICES - DO NOT limit or cap results. If 15 services match, return all 15. If 30 match, return all 30.
 2. Be COMPREHENSIVE - include crisis lines, shelters, treatment programs, support groups, peer support, counselling, and all related services
-3. Provide detailed process steps (4-8 steps each) with full contact information
+3. Provide detailed process steps (4-8 steps each) with full contact information (do not make these us, ensure it is real information)
 4. Include both major organizations AND smaller community resources`;
 
       const systemPrompt = `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
@@ -242,7 +243,23 @@ Return JSON matching:
       await storage.createSearch({ query: normalizedQuery, results });
       res.json(results);
     } catch (err) {
-      res.status(500).json({ message: "Search failed" });
+      // Log detailed error information for debugging
+      console.error("=== Search Error ===");
+      console.error("Error:", err);
+      console.error("OpenAI API Key configured:", !!process.env.AI_INTEGRATIONS_OPENAI_API_KEY);
+      console.error("OpenAI Base URL:", process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || 'default');
+      console.error("Database services available:", dbServices?.length || 0);
+      console.error("===================");
+
+      // Return error with helpful message
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      res.status(500).json({
+        message: "Search failed",
+        error: errorMessage,
+        hint: !process.env.AI_INTEGRATIONS_OPENAI_API_KEY
+          ? "OpenAI API key not configured"
+          : undefined
+      });
     }
   });
 
