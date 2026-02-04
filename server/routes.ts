@@ -13,6 +13,22 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
+// ============= PII SCRUBBING =============
+// Strips potential PII (phone numbers, full addresses) from a search query
+// before it is forwarded to the LLM API.
+function scrubPii(query: string): string {
+  let scrubbed = query;
+  // Alberta phone numbers: (780) 123-4567, 780-123-4567, 780.123.4567, +1 780 123 4567, etc.
+  scrubbed = scrubbed.replace(/(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, '[PHONE]');
+  // Numeric street addresses: "123 Main Street", "4567 12 Ave NW"
+  scrubbed = scrubbed.replace(/\b\d{1,5}\s+\d{0,4}\s*(?:street|st|avenue|ave|road|rd|drive|dr|boulevard|blvd|crescent|cres|place|pl|way|lane|ln|court|ct|terrace|trail|park)\b/gi, '[ADDRESS]');
+  // Postal codes: T2P 1A1
+  scrubbed = scrubbed.replace(/\b[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d\b/g, '[POSTAL]');
+  // Email addresses
+  scrubbed = scrubbed.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]');
+  return scrubbed;
+}
+
 // ============= STOP WORDS (excluded from keyword extraction) =============
 const STOP_WORDS = new Set([
   'i', 'me', 'my', 'we', 'our', 'you', 'your', 'need', 'help', 'want',
@@ -362,6 +378,12 @@ export async function registerRoutes(
     let dbServices: Service[] = [];
     try {
       const input = api.search.query.input.parse(req.body);
+
+      // Honeypot check: bots fill hidden fields, humans don't
+      if (input.hp) {
+        return res.json({ services: [], summary: "No results found." });
+      }
+
       const mode = input.mode || 'fast';
 
       // OPTIMIZATION 1: In-memory services cache
@@ -505,11 +527,14 @@ Return JSON matching:
   "summary": "string"
 }`;
 
+      // Scrub PII from query before sending to the LLM
+      const sanitizedQuery = scrubPii(input.query);
+
       const completion = await openai.chat.completions.create({
         model: "gpt-5.1",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: input.query }
+          { role: "user", content: sanitizedQuery }
         ],
         response_format: { type: "json_object" },
         temperature: mode === 'fast' ? 0.2 : 0.3,
@@ -582,10 +607,16 @@ Return JSON matching:
       const feedbackSchema = z.object({
         name: z.string().optional(),
         email: z.string().email().optional().or(z.literal('')),
-        message: z.string().min(1, "Message is required"),
+        message: z.string().min(1, "Message is required").max(2000, "Message is too long"),
+        hp: z.string().max(0).optional(),
       });
 
       const validatedData = feedbackSchema.parse(req.body);
+
+      // Honeypot check
+      if (validatedData.hp) {
+        return res.json({ success: true, id: 0 });
+      }
 
       const feedbackData = {
         name: validatedData.name || null,

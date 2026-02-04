@@ -19,8 +19,9 @@ export const api = {
       method: 'POST' as const,
       path: '/api/search',
       input: z.object({
-        query: z.string().min(1, "Please enter what you're looking for"),
+        query: z.string().min(1, "Please enter what you're looking for").max(200, "Search query is too long (200 characters max)"),
         mode: z.enum(['fast', 'comprehensive']).optional().default('fast'),
+        hp: z.string().max(0).optional(),
       }),
       responses: {
         200: z.object({

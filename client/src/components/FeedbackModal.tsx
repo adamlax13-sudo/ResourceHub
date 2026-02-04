@@ -21,10 +21,11 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [hp, setHp] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: async (data: { name?: string; email?: string; message: string }) => {
+    mutationFn: async (data: { name?: string; email?: string; message: string; hp?: string }) => {
       return apiRequest("POST", "/api/feedback", data);
     },
     onSuccess: () => {
@@ -51,6 +52,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       name: name.trim() || undefined,
       email: email.trim() || undefined,
       message: message.trim(),
+      ...(hp ? { hp } : {}),
     });
   };
 
@@ -58,6 +60,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     setName("");
     setEmail("");
     setMessage("");
+    setHp("");
     setSubmitted(false);
     onClose();
   };
@@ -83,6 +86,11 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Honeypot: hidden from humans, bots fill it and get silently rejected */}
+            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+              <label htmlFor="feedback-website">Website</label>
+              <input id="feedback-website" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="feedback-name">{t('feedback.name')}</Label>
               <Input

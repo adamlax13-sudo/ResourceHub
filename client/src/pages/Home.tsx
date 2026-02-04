@@ -84,8 +84,8 @@ export default function Home() {
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = (query: string, mode: 'fast' | 'comprehensive') => {
-    search({ query, mode });
+  const handleSearch = (query: string, mode: 'fast' | 'comprehensive', hp?: string) => {
+    search({ query, mode, ...(hp ? { hp } : {}) });
   };
 
   return (

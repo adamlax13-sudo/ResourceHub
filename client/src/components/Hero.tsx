@@ -9,13 +9,14 @@ import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png
 type SearchMode = 'fast' | 'comprehensive';
 
 interface HeroProps {
-  onSearch: (query: string, mode: SearchMode) => void;
+  onSearch: (query: string, mode: SearchMode, hp?: string) => void;
   isLoading: boolean;
   initialQuery?: string;
 }
 
 export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
+  const [hp, setHp] = useState("");
   const [searchMode, setSearchMode] = useState<SearchMode>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('searchMode') as SearchMode) || 'fast';
@@ -37,7 +38,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query, searchMode);
+      onSearch(query, searchMode, hp);
     }
   };
 
@@ -239,6 +240,11 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
           role="search"
           aria-label={t('app.searchPlaceholder')}
         >
+          {/* Honeypot field: hidden from humans, bots fill it and get silently rejected */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+            <label htmlFor="website-url">Website</label>
+            <input id="website-url" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
+          </div>
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <label htmlFor="hero-search" className="sr-only">{t('app.searchPlaceholder')}</label>
@@ -248,6 +254,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "" }: HeroProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('app.searchPlaceholder')}
+              maxLength={200}
               className="relative w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
               disabled={isLoading}
               aria-describedby="search-hint"
