@@ -1,717 +1,904 @@
 """
-Web scraper for Alberta mental health and social services.
-Runs monthly to keep service information up-to-date.
-Uses OpenAI web search to find missing service websites and
-AI-powered extraction to populate database fields.
+Unified Alberta Service Scraper.
+
+Combines reference data sync, 211 Alberta discovery, and website enrichment
+into a single script. Designed to run monthly on the 1st via Render cron job.
+
+Phases:
+  1. Reference Data Sync  — sync hardcoded reference services, scrape websites
+  2. 211 Alberta Discovery — find new services on ab.211.ca via OpenAI web search
+  3. 211 Enrichment        — fill sparse fields from 211 Alberta data
+  4. Website Enrichment    — scrape/re-scrape service websites for updated info
+
+Usage:
+  python scraper.py                   # Full run (all phases)
+  python scraper.py --phase reference # Only reference data sync
+  python scraper.py --phase 211       # Only 211 discovery + insert
+  python scraper.py --phase enrich    # Only 211 enrichment of sparse services
+  python scraper.py --phase websites  # Only website scraping/enrichment
 """
+import argparse
+import json
+import logging
 import os
 import re
-import json
-import hashlib
-import logging
+import time
+import uuid
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
-import time
-import uuid
 
 import requests
 from bs4 import BeautifulSoup
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
-
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker
 
-load_dotenv()  # Load .env file
+load_dotenv()
 
 from models import Base, Service, ServiceHistory, ScraperLog
 
-# Try to import OpenAI for AI-powered enrichment
 try:
     from openai import OpenAI as OpenAIClient
     HAS_OPENAI = True
 except ImportError:
     HAS_OPENAI = False
 
-# Configure logging
+# ──────────────────────────────────────────────────────────────────────────────
+# Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
-# Database connection
 DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'postgresql://user:password@localhost:5432/recovery_hub'
+    "DATABASE_URL",
+    "postgresql://user:password@localhost:5432/recovery_hub",
 )
-
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
-
-class ServiceScraper:
-    """Scraper for service information with AI-powered enrichment."""
-
-    def __init__(self, session):
-        self.session = session
-        self.run_id = str(uuid.uuid4())[:8]
-        self.log = ScraperLog(run_id=self.run_id, status='running')
-        session.add(self.log)
-        session.commit()
-        self.openai_client = None
-        self._init_openai()
-
-    def _init_openai(self):
-        """Initialize OpenAI client for web search and AI enrichment."""
-        if not HAS_OPENAI:
-            logger.warning("openai package not installed - AI enrichment disabled")
-            return
-
-        api_key = os.getenv('AI_INTEGRATIONS_OPENAI_API_KEY')
-        if not api_key:
-            logger.warning("AI_INTEGRATIONS_OPENAI_API_KEY not set - AI enrichment disabled")
-            return
-
-        try:
-            kwargs = {'api_key': api_key}
-            base_url = os.getenv('AI_INTEGRATIONS_OPENAI_BASE_URL')
-            if base_url:
-                kwargs['base_url'] = base_url
-            self.openai_client = OpenAIClient(**kwargs)
-            logger.info("OpenAI client initialized for AI enrichment")
-        except Exception as e:
-            logger.error(f"Failed to initialize OpenAI client: {e}")
-
-    def scrape_service(self, service_data: Dict, existing_url: Optional[str] = None) -> Optional[Dict]:
-        """
-        Scrape a single service for updated information.
-
-        Args:
-            service_data: Dictionary with service info from reference database
-            existing_url: URL already stored in database for this service
-
-        Returns:
-            Dictionary with scraped data or None if scraping failed
-        """
-        try:
-            # Extract contact info to find scrapable URLs
-            contact = service_data.get('contact', '')
-            urls = self._extract_urls(contact)
-
-            # Use existing URL from database if no URL in contact field
-            if not urls and existing_url:
-                urls = [existing_url]
-                logger.info(f"Using existing DB URL for {service_data['name']}: {existing_url}")
-
-            # Use OpenAI web search to find website if still no URL
-            if not urls and self.openai_client:
-                found_url = self._find_website_with_ai(service_data)
-                if found_url:
-                    urls = [found_url]
-                    logger.info(f"AI found URL for {service_data['name']}: {found_url}")
-
-            if not urls:
-                # No URL to scrape, return original data
-                logger.info(f"No URL found for {service_data['name']}")
-                return service_data
-
-            # Try to scrape the first valid URL
-            primary_url = urls[0]
-            logger.info(f"Scraping {service_data['name']} from {primary_url}")
-
-            scraped_data = self._scrape_website(primary_url, service_data)
-
-            # Merge scraped data with original data
-            if scraped_data:
-                return {**service_data, **scraped_data, 'website_url': primary_url}
-
-            return {**service_data, 'website_url': primary_url}
-
-        except Exception as e:
-            logger.error(f"Error scraping {service_data.get('name', 'Unknown')}: {e}")
-            self.log.errors_count += 1
-            return service_data
-
-    def _extract_urls(self, text: str) -> List[str]:
-        """Extract URLs from text."""
-        url_pattern = r'https?://[^\s,]+'
-        domain_pattern = r'[a-zA-Z0-9][-a-zA-Z0-9]*\.(?:ca|com|org|net|edu|gov)(?:/[^\s,]*)?'
-
-        urls = re.findall(url_pattern, text)
-        domains = re.findall(domain_pattern, text)
-
-        # Add http:// to bare domains
-        for domain in domains:
-            if not domain.startswith('http'):
-                urls.append(f'https://{domain}')
-
-        return list(set(urls))  # Remove duplicates
-
-    def _find_website_with_ai(self, service_data: Dict) -> Optional[str]:
-        """
-        Use OpenAI web search to find a service's official website.
-
-        Args:
-            service_data: Dictionary with service info
-
-        Returns:
-            URL string if found, None otherwise
-        """
-        if not self.openai_client:
-            return None
-
-        name = service_data.get('name', '')
-        location = service_data.get('location', 'Alberta, Canada')
-        category = service_data.get('category', 'social service')
-
-        try:
-            response = self.openai_client.responses.create(
-                model="gpt-4o-mini",
-                tools=[{"type": "web_search"}],
-                input=(
-                    f'Find the official website URL for "{name}" located in {location}. '
-                    f'This is a {category} organization in Alberta, Canada. '
-                    f'Return ONLY the main website URL, nothing else. '
-                    f'If you cannot find it, respond with "NOT_FOUND".'
-                ),
-            )
-
-            result_text = response.output_text.strip()
-
-            if 'NOT_FOUND' in result_text:
-                logger.info(f"AI could not find website for {name}")
-                return None
-
-            # Extract URL from the response text
-            found_urls = re.findall(r'https?://[^\s\)\]"\'<>,]+', result_text)
-            if found_urls:
-                url = found_urls[0].rstrip('.')
-                logger.info(f"AI web search found: {url} for {name}")
-                return url
-
-            logger.info(f"AI response did not contain a URL for {name}")
-            return None
-
-        except Exception as e:
-            logger.error(f"AI web search failed for {name}: {e}")
-            return None
-
-    def _scrape_website(self, url: str, original_data: Dict) -> Dict:
-        """
-        Scrape website for service information with optional AI enrichment.
-
-        Args:
-            url: Website URL
-            original_data: Original service data for context
-
-        Returns:
-            Dictionary with scraped data
-        """
-        try:
-            # Set headers to avoid being blocked
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (compatible; ServiceBot/1.0; +http://recoveryoncampusalberta.ca)',
-            }
-
-            response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.content, 'html.parser')
-
-            # Base scraped data
-            scraped = {
-                'data_source': url,
-                'last_scraped': datetime.now().isoformat(),
-            }
-
-            # Try AI-powered extraction first (much better results)
-            if self.openai_client:
-                page_text = self._extract_page_text(soup)
-                if page_text:
-                    ai_data = self._enrich_with_ai(page_text, original_data)
-                    if ai_data:
-                        scraped.update(ai_data)
-                        return scraped
-
-            # Fallback to basic regex extraction if AI is unavailable
-            contact_info = self._extract_contact_info(soup, url)
-            if contact_info:
-                scraped['contact'] = contact_info
-
-            hours = self._extract_hours(soup)
-            if hours:
-                scraped['hours_of_operation'] = hours
-
-            description = self._extract_description(soup, original_data.get('name', ''))
-            if description:
-                scraped['description'] = description
-
-            return scraped
-
-        except requests.RequestException as e:
-            logger.warning(f"Failed to scrape {url}: {e}")
-            return {}
-        except Exception as e:
-            logger.error(f"Unexpected error scraping {url}: {e}")
-            return {}
-
-    def _extract_page_text(self, soup: BeautifulSoup) -> Optional[str]:
-        """Extract clean text content from a page for AI processing."""
-        # Remove script and style elements
-        for element in soup(['script', 'style', 'nav', 'footer', 'header']):
-            element.decompose()
-
-        text = soup.get_text(separator=' ', strip=True)
-
-        # Clean up whitespace
-        text = re.sub(r'\s+', ' ', text)
-
-        # Limit to ~4000 chars to stay within token limits
-        if len(text) > 4000:
-            text = text[:4000]
-
-        return text if len(text) > 100 else None
-
-    def _enrich_with_ai(self, page_text: str, service_data: Dict) -> Optional[Dict]:
-        """
-        Use OpenAI to extract structured service data from webpage text.
-
-        Only extracts supplemental fields that aren't already well-populated
-        in the reference data (service_format, languages, booking_url, tags).
-        Also extracts an updated description and hours if the website has
-        better information.
-
-        Args:
-            page_text: Clean text from the scraped webpage
-            service_data: Original service data for context
-
-        Returns:
-            Dictionary with extracted fields, or None if extraction failed
-        """
-        if not self.openai_client:
-            return None
-
-        name = service_data.get('name', '')
-        category = service_data.get('category', '')
-
-        try:
-            completion = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a data extraction assistant. Given webpage content from an Alberta "
-                            "service organization, extract structured information. Return a JSON object with "
-                            "ONLY the fields where you found clear, reliable information on the page. "
-                            "Use null for any field where the information is not clearly available.\n\n"
-                            "Fields to extract:\n"
-                            '- "description": A clear 2-3 sentence description of what this service provides (only if the page has good info)\n'
-                            '- "hours_of_operation": Current hours (e.g., "Mon-Fri 9am-5pm", "24/7"). Only if clearly stated.\n'
-                            '- "service_format": One of "in-person", "virtual", "hybrid", or null\n'
-                            '- "languages_supported": Array of languages offered (e.g., ["English", "French"]). Only if mentioned.\n'
-                            '- "booking_url": Direct URL for booking/referral/intake if different from main page, or null\n'
-                            '- "tags": Array of 5-10 relevant search keywords for this service\n\n'
-                            "Rules:\n"
-                            "- Only include data you are confident about from the webpage\n"
-                            "- Do NOT guess or fabricate information\n"
-                            "- For tags, generate keywords based on the service type, target population, and treatments offered"
-                        ),
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            f"Service: {name}\n"
-                            f"Category: {category}\n\n"
-                            f"Webpage content:\n{page_text}"
-                        ),
-                    },
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.1,
-            )
-
-            result = json.loads(completion.choices[0].message.content)
-
-            # Build enrichment dict with only non-null values
-            enriched = {}
-
-            if result.get('description'):
-                enriched['description'] = result['description']
-            if result.get('hours_of_operation'):
-                enriched['hours_of_operation'] = result['hours_of_operation']
-            if result.get('service_format'):
-                enriched['service_format'] = result['service_format']
-            if result.get('languages_supported'):
-                enriched['languages_supported'] = result['languages_supported']
-            if result.get('booking_url'):
-                enriched['booking_url'] = result['booking_url']
-            if result.get('tags'):
-                enriched['tags'] = result['tags']
-
-            if enriched:
-                logger.info(f"AI enriched {name} with fields: {list(enriched.keys())}")
-
-            return enriched if enriched else None
-
-        except Exception as e:
-            logger.error(f"AI enrichment failed for {name}: {e}")
-            return None
-
-    def _extract_contact_info(self, soup: BeautifulSoup, base_url: str) -> Optional[str]:
-        """Extract contact information from page."""
-        contact_parts = []
-
-        # Look for phone numbers
-        text = soup.get_text()
-        phone_pattern = r'\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'
-        phones = re.findall(phone_pattern, text)
-        if phones:
-            contact_parts.append(f"Phone: {phones[0]}")
-
-        # Look for email addresses
-        email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
-        emails = re.findall(email_pattern, text)
-        if emails:
-            contact_parts.append(f"Email: {emails[0]}")
-
-        # Add website
-        contact_parts.append(f"Website: {base_url}")
-
-        return ' | '.join(contact_parts) if contact_parts else None
-
-    def _extract_hours(self, soup: BeautifulSoup) -> Optional[str]:
-        """Extract hours of operation."""
-        text = soup.get_text()
-
-        hours_patterns = [
-            r'(?:Mon|Monday).*?(?:Fri|Friday).*?\d{1,2}(?:am|pm).*?\d{1,2}(?:am|pm)',
-            r'\d{1,2}(?:am|pm).*?(?:to|-)\s*\d{1,2}(?:am|pm)',
-        ]
-
-        for pattern in hours_patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                return match.group(0)
-
+# 211 Alberta search categories
+SEARCH_CATEGORIES = [
+    "mental health counselling services",
+    "addiction treatment programs",
+    "crisis intervention services",
+    "youth mental health services",
+    "Indigenous mental health and wellness services",
+    "women's shelters and domestic violence services",
+    "emergency shelters and housing support",
+    "food banks and meal programs",
+    "substance abuse recovery and treatment centres",
+    "LGBTQ+ support services",
+    "family counselling services",
+    "grief and bereavement support",
+    "employment and job training programs",
+    "newcomer and immigrant support services",
+    "disability support services",
+    "seniors mental health services",
+    "harm reduction services",
+    "eating disorder support",
+    "gambling addiction support",
+    "trauma and PTSD support services",
+    "peer support programs",
+    "outreach and mobile crisis teams",
+    "detox centres",
+    "transitional housing programs",
+    "legal aid for mental health and social issues",
+]
+
+MAJOR_REGIONS = ["Calgary", "Edmonton", "Alberta province-wide"]
+SECONDARY_REGIONS = [
+    "Lethbridge", "Red Deer", "Medicine Hat", "Grande Prairie", "Fort McMurray",
+]
+
+# Keywords that trigger searching secondary regions for a category
+EXPANDED_SEARCH_KEYWORDS = [
+    "shelter", "crisis", "food", "addiction", "mental health counselling",
+]
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Helpers
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def init_openai() -> Optional[OpenAIClient]:
+    """Initialize and return an OpenAI client, or None if unavailable."""
+    if not HAS_OPENAI:
+        logger.warning("openai package not installed — AI features disabled")
         return None
 
-    def _extract_description(self, soup: BeautifulSoup, service_name: str) -> Optional[str]:
-        """Extract service description."""
-        meta_desc = soup.find('meta', attrs={'name': 'description'})
-        if meta_desc and meta_desc.get('content'):
-            return meta_desc['content']
+    api_key = os.getenv("AI_INTEGRATIONS_OPENAI_API_KEY")
+    if not api_key:
+        logger.warning("AI_INTEGRATIONS_OPENAI_API_KEY not set — AI features disabled")
+        return None
 
-        paragraphs = soup.find_all('p')
-        for p in paragraphs[:5]:
-            text = p.get_text().strip()
-            if len(text) > 50 and service_name.lower() in text.lower():
-                return text
+    kwargs: dict = {"api_key": api_key}
+    base_url = os.getenv("AI_INTEGRATIONS_OPENAI_BASE_URL")
+    if base_url:
+        kwargs["base_url"] = base_url
 
+    try:
+        client = OpenAIClient(**kwargs)
+        logger.info("OpenAI client initialized")
+        return client
+    except Exception as e:
+        logger.error(f"Failed to initialize OpenAI client: {e}")
         return None
 
 
-def generate_service_id(name: str, location: str = '') -> str:
+def generate_service_id(name: str, location: str = "") -> str:
     """Generate a unique service ID from name and location."""
     text = f"{name.lower()}-{location.lower()}".strip()
-    text = re.sub(r'[^a-z0-9-]', '-', text)
-    text = re.sub(r'-+', '-', text)
-    return text.strip('-')[:255]
+    text = re.sub(r"[^a-z0-9-]", "-", text)
+    text = re.sub(r"-+", "-", text)
+    return text.strip("-")[:255]
 
 
-def calculate_data_hash(service_data: Dict) -> str:
-    """Calculate hash of service data for change detection."""
-    relevant_fields = [
-        'name', 'description', 'location', 'contact',
-        'eligibility', 'process_steps', 'wait_times',
-        'required_docs', 'hours_of_operation'
-    ]
+def safe_string(value, max_len: int = 0) -> str:
+    """Coerce a value to a plain string, handling dicts/lists from AI output."""
+    if value is None:
+        return ""
+    if isinstance(value, dict):
+        return ", ".join(f"{k}: {v}" for k, v in value.items())
+    if isinstance(value, list):
+        return json.dumps(value)
+    s = str(value)
+    return s[:max_len] if max_len else s
 
-    data_to_hash = {k: v for k, v in service_data.items() if k in relevant_fields}
-    data_str = json.dumps(data_to_hash, sort_keys=True)
-    return hashlib.md5(data_str.encode()).hexdigest()
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Website Scraping (used by Phase 1 and Phase 4)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def extract_urls(text: str) -> List[str]:
+    """Extract URLs from a text string."""
+    url_pattern = r"https?://[^\s,]+"
+    domain_pattern = r"[a-zA-Z0-9][-a-zA-Z0-9]*\.(?:ca|com|org|net|edu|gov)(?:/[^\s,]*)?"
+    urls = re.findall(url_pattern, text)
+    for domain in re.findall(domain_pattern, text):
+        if not domain.startswith("http"):
+            urls.append(f"https://{domain}")
+    return list(set(urls))
+
+
+def find_website_with_ai(client: OpenAIClient, name: str, location: str, category: str) -> Optional[str]:
+    """Use OpenAI web search to find a service's official website."""
+    try:
+        response = client.responses.create(
+            model="gpt-4o-mini",
+            tools=[{"type": "web_search"}],
+            input=(
+                f'Find the official website URL for "{name}" located in {location or "Alberta, Canada"}. '
+                f"This is a {category or 'social service'} organization in Alberta, Canada. "
+                f'Return ONLY the main website URL, nothing else. '
+                f'If you cannot find it, respond with "NOT_FOUND".'
+            ),
+        )
+        result_text = response.output_text.strip()
+        if "NOT_FOUND" in result_text:
+            return None
+        found = re.findall(r"https?://[^\s\)\]\"'<>,]+", result_text)
+        return found[0].rstrip(".") if found else None
+    except Exception as e:
+        logger.error(f"AI web search failed for {name}: {e}")
+        return None
+
+
+def scrape_website(url: str) -> Dict:
+    """Scrape a website and return raw page text + basic extracted data."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; ServiceBot/1.0; +http://recoveryoncampusalberta.ca)",
+    }
+    try:
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.content, "html.parser")
+
+        for tag in soup(["script", "style", "nav", "footer", "header"]):
+            tag.decompose()
+
+        page_text = re.sub(r"\s+", " ", soup.get_text(separator=" ", strip=True))
+        return {"page_text": page_text[:4000], "data_source": url}
+
+    except requests.RequestException as e:
+        logger.warning(f"Failed to scrape {url}: {e}")
+        return {}
+
+
+def enrich_with_ai(client: OpenAIClient, page_text: str, name: str, category: str) -> Optional[Dict]:
+    """Use OpenAI to extract structured service data from webpage text."""
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a data extraction assistant. Given webpage content from an Alberta "
+                        "service organization, extract structured information. Return a JSON object with "
+                        "ONLY the fields where you found clear, reliable information on the page. "
+                        "Use null for any field where the information is not clearly available.\n\n"
+                        "Fields to extract:\n"
+                        '- "description": A clear 2-3 sentence description of what this service provides\n'
+                        '- "hours_of_operation": Current hours (e.g., "Mon-Fri 9am-5pm", "24/7")\n'
+                        '- "service_format": One of "in-person", "virtual", "hybrid", or null\n'
+                        '- "languages_supported": Array of languages offered\n'
+                        '- "booking_url": Direct URL for booking/referral/intake if different from main page\n'
+                        '- "contact": Contact info (phone/email) if clearly listed\n'
+                        '- "eligibility": Who can access this service\n'
+                        '- "tags": Array of 5-10 relevant search keywords\n\n'
+                        "Rules:\n"
+                        "- Only include data you are confident about from the webpage\n"
+                        "- Do NOT guess or fabricate information\n"
+                        "- For tags, generate keywords based on service type, target population, treatments"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"Service: {name}\nCategory: {category}\n\nWebpage content:\n{page_text}",
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+        )
+        result = json.loads(completion.choices[0].message.content)
+        enriched = {k: v for k, v in result.items() if v is not None}
+        return enriched if enriched else None
+    except Exception as e:
+        logger.error(f"AI enrichment failed for {name}: {e}")
+        return None
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 211 Alberta Discovery (Phase 2)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def get_existing_services_lookup(session) -> Dict:
+    """Build a lookup dict of existing active services for deduplication."""
+    services = session.query(Service).filter_by(is_active=True).all()
+    lookup: Dict = {}
+    for s in services:
+        normalized = s.name.lower().strip()
+        lookup[normalized] = s
+        short = re.sub(r"\s*\(.*?\)\s*", "", normalized).strip()
+        if short != normalized:
+            lookup[short] = s
+    return lookup
+
+
+def service_exists(name: str, existing: Dict) -> bool:
+    """Check if a service already exists in the lookup."""
+    normalized = name.lower().strip()
+    if normalized in existing:
+        return True
+    short = re.sub(r"\s*\(.*?\)\s*", "", normalized).strip()
+    if short in existing:
+        return True
+    for existing_name in existing:
+        if len(normalized) > 5 and len(existing_name) > 5:
+            if normalized in existing_name or existing_name in normalized:
+                return True
+    return False
+
+
+def discover_services_for_category(
+    client: OpenAIClient, category: str, region: str,
+) -> List[Dict]:
+    """Use OpenAI web search to find services on ab.211.ca."""
+    try:
+        response = client.responses.create(
+            model="gpt-4o-mini",
+            tools=[{"type": "web_search"}],
+            input=(
+                f"Search the 211 Alberta website (ab.211.ca) for {category} "
+                f"in {region}, Alberta, Canada. "
+                f"List ALL services and organizations you can find. "
+                f"For each service, provide:\n"
+                f"1. Organization/service name\n"
+                f"2. Brief description of what they offer\n"
+                f"3. Phone number (if available)\n"
+                f"4. Website URL (if available)\n"
+                f"5. Address or location\n"
+                f"6. Hours of operation (if available)\n"
+                f"7. Eligibility criteria (if mentioned)\n\n"
+                f"Focus on services specifically listed on ab.211.ca. "
+                f'If you find no results for this specific category in this region, say "NO_RESULTS".'
+            ),
+        )
+        result_text = response.output_text.strip()
+        if "NO_RESULTS" in result_text:
+            logger.info(f"No 211 results for '{category}' in {region}")
+            return []
+        return parse_discovery_results(client, result_text, category, region)
+    except Exception as e:
+        logger.error(f"211 discovery failed for '{category}' in {region}: {e}")
+        return []
+
+
+def parse_discovery_results(
+    client: OpenAIClient, raw_text: str, category: str, region: str,
+) -> List[Dict]:
+    """Parse raw AI web search results into structured service dicts."""
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a data extraction assistant. Parse the following text about "
+                        "Alberta social services into a JSON array of service objects. "
+                        "Each object should have these fields:\n"
+                        '- "name": Organization or service name (required)\n'
+                        '- "description": What the service provides (1-3 sentences)\n'
+                        '- "contact": Phone, email, and/or website combined in one string\n'
+                        '- "location": Physical address or area served\n'
+                        '- "website_url": Website URL if mentioned\n'
+                        '- "hours_of_operation": Hours if mentioned\n'
+                        '- "eligibility": Who can access the service\n'
+                        '- "category": The service category\n\n'
+                        "Rules:\n"
+                        "- Only include services that are clearly real organizations\n"
+                        "- Do NOT include 211 itself as a service\n"
+                        "- Do NOT include generic helpline numbers (988, 911) unless they are specific Alberta services\n"
+                        "- Combine duplicate entries for the same organization\n"
+                        "- If a field is not mentioned, use null\n"
+                        '- Return a JSON object with a "services" array'
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"Category: {category}\nRegion: {region}\n\nRaw text to parse:\n{raw_text[:6000]}",
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+        )
+        result = json.loads(completion.choices[0].message.content)
+        services = result.get("services", [])
+        for svc in services:
+            if not svc.get("category"):
+                svc["category"] = category.title()
+            if not svc.get("location"):
+                svc["location"] = region
+        return services
+    except Exception as e:
+        logger.error(f"Failed to parse discovery results: {e}")
+        return []
+
+
+def enrich_existing_service_from_211(
+    client: OpenAIClient, service: Service,
+) -> Optional[Dict]:
+    """Search 211 Alberta for additional info about an existing service."""
+    try:
+        response = client.responses.create(
+            model="gpt-4o-mini",
+            tools=[{"type": "web_search"}],
+            input=(
+                f'Search ab.211.ca for information about "{service.name}" '
+                f'in {service.location or "Alberta"}. '
+                f"Find: description, phone number, website, address, "
+                f"hours of operation, eligibility criteria, and any other details. "
+                f'If this service is not on 211 Alberta, say "NOT_FOUND".'
+            ),
+        )
+        result_text = response.output_text.strip()
+        if "NOT_FOUND" in result_text:
+            return None
+
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Extract updated service information from 211 Alberta data. "
+                        "Return a JSON object with ONLY fields that have clear, "
+                        "reliable information. Use null for unknown fields.\n\n"
+                        "Fields:\n"
+                        '- "description": Updated description (2-3 sentences)\n'
+                        '- "contact": Phone and/or email\n'
+                        '- "hours_of_operation": Operating hours\n'
+                        '- "eligibility": Who can access this service\n'
+                        '- "website_url": Website URL\n'
+                        '- "tags": Array of 5-10 search keywords\n\n'
+                        "Only include data clearly from 211 Alberta. Do not fabricate."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        f"Service: {service.name}\n"
+                        f"Current description: {service.description or 'None'}\n"
+                        f"Current location: {service.location or 'None'}\n\n"
+                        f"211 Alberta data:\n{result_text[:4000]}"
+                    ),
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+        )
+        result = json.loads(completion.choices[0].message.content)
+        updates = {k: v for k, v in result.items() if v and k in (
+            "description", "contact", "hours_of_operation", "eligibility", "website_url", "tags",
+        )}
+        return updates if updates else None
+    except Exception as e:
+        logger.error(f"Failed to enrich {service.name} from 211: {e}")
+        return None
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Change Detection (Phase 1)
+# ──────────────────────────────────────────────────────────────────────────────
 
 
 def detect_changes(old_data: Dict, new_data: Dict) -> Tuple[bool, List[str]]:
-    """
-    Detect what fields changed between old and new data.
-
-    Returns:
-        Tuple of (has_changes, list_of_changed_fields)
-    """
-    tracked_fields = [
-        'name', 'description', 'location', 'contact',
-        'eligibility', 'process_steps', 'wait_times',
-        'required_docs', 'hours_of_operation'
+    """Detect what fields changed between old and new data."""
+    tracked = [
+        "name", "description", "location", "contact",
+        "eligibility", "process_steps", "wait_times",
+        "required_docs", "hours_of_operation",
     ]
-
-    changed_fields = []
-    for field in tracked_fields:
+    changed = []
+    for field in tracked:
         old_val = old_data.get(field)
         new_val = new_data.get(field)
-
-        # Normalize for comparison
         if isinstance(old_val, list):
             old_val = sorted(old_val) if old_val else []
         if isinstance(new_val, list):
             new_val = sorted(new_val) if new_val else []
-
         if old_val != new_val:
-            changed_fields.append(field)
+            changed.append(field)
+    return len(changed) > 0, changed
 
-    return len(changed_fields) > 0, changed_fields
 
-
-def sync_service_data(
-    service_data: Dict,
-    session,
-    scraper: Optional[ServiceScraper] = None
-) -> str:
+def sync_service_data(service_data: Dict, session, log: ScraperLog) -> str:
     """
-    Sync service data to database.
-
-    Compares with existing data, creates history entries for changes,
-    and updates last_checked timestamp. Also fills in supplemental fields
-    (service_format, languages_supported, booking_url, tags) when available.
-
-    Args:
-        service_data: Dictionary with service information
-        session: SQLAlchemy session
-        scraper: ServiceScraper instance for tracking
-
-    Returns:
-        Action taken: 'created', 'updated', 'unchanged'
+    Sync a service dict to the database.
+    Returns 'created', 'updated', or 'unchanged'.
     """
-    try:
-        # Generate service ID
-        service_id = generate_service_id(
-            service_data['name'],
-            service_data.get('location', '')
+    service_id = generate_service_id(
+        service_data["name"], service_data.get("location", ""),
+    )
+    existing = session.query(Service).filter_by(service_id=service_id).first()
+
+    if not existing:
+        new_svc = Service(
+            service_id=service_id,
+            name=service_data["name"],
+            category=service_data.get("category", "Unknown"),
+            description=service_data.get("description"),
+            location=service_data.get("location"),
+            contact=service_data.get("contact"),
+            eligibility=service_data.get("eligibility"),
+            process_steps=service_data.get("process", []),
+            wait_times=service_data.get("waitTimes"),
+            required_docs=service_data.get("requiredDocs", []),
+            hours_of_operation=service_data.get("hours_of_operation"),
+            website_url=service_data.get("website_url"),
+            booking_url=service_data.get("booking_url"),
+            service_format=service_data.get("service_format"),
+            languages_supported=service_data.get("languages_supported"),
+            tags=service_data.get("tags"),
+            data_source=service_data.get("data_source", "manual"),
         )
+        session.add(new_svc)
+        history = ServiceHistory(
+            service_id=service_id,
+            name=new_svc.name,
+            category=new_svc.category,
+            description=new_svc.description,
+            location=new_svc.location,
+            contact=new_svc.contact,
+            eligibility=new_svc.eligibility,
+            hours_of_operation=new_svc.hours_of_operation,
+            website_url=new_svc.website_url,
+            change_type="created",
+            changed_fields=["all"],
+            data_source=new_svc.data_source,
+        )
+        session.add(history)
+        log.services_created += 1
+        logger.info(f"Created new service: {service_data['name']}")
+        return "created"
 
-        # Check if service exists
-        existing = session.query(Service).filter_by(service_id=service_id).first()
+    # ── Existing service: check for updates ──
+    old_data = {
+        "name": existing.name,
+        "description": existing.description,
+        "location": existing.location,
+        "contact": existing.contact,
+        "eligibility": existing.eligibility,
+        "process_steps": existing.process_steps,
+        "wait_times": existing.wait_times,
+        "required_docs": existing.required_docs,
+        "hours_of_operation": existing.hours_of_operation,
+    }
+    new_data = {
+        "name": service_data["name"],
+        "description": service_data.get("description"),
+        "location": service_data.get("location"),
+        "contact": service_data.get("contact"),
+        "eligibility": service_data.get("eligibility"),
+        "process_steps": service_data.get("process", []),
+        "wait_times": service_data.get("waitTimes"),
+        "required_docs": service_data.get("requiredDocs", []),
+        "hours_of_operation": service_data.get("hours_of_operation"),
+    }
 
-        if not existing:
-            # Create new service
-            new_service = Service(
-                service_id=service_id,
-                name=service_data['name'],
-                category=service_data.get('category', 'Unknown'),
-                description=service_data.get('description'),
-                location=service_data.get('location'),
-                contact=service_data.get('contact'),
-                eligibility=service_data.get('eligibility'),
-                process_steps=service_data.get('process', []),
-                wait_times=service_data.get('waitTimes'),
-                required_docs=service_data.get('requiredDocs', []),
-                hours_of_operation=service_data.get('hours_of_operation'),
-                website_url=service_data.get('website_url'),
-                booking_url=service_data.get('booking_url'),
-                service_format=service_data.get('service_format'),
-                languages_supported=service_data.get('languages_supported'),
-                tags=service_data.get('tags'),
-                data_source=service_data.get('data_source', 'manual'),
+    has_changes, changed_fields = detect_changes(old_data, new_data)
+    existing.last_checked = datetime.now()
+
+    # Fill supplemental fields if empty
+    supplemental = False
+    for field, key in [
+        ("website_url", "website_url"), ("booking_url", "booking_url"),
+        ("service_format", "service_format"), ("tags", "tags"),
+        ("languages_supported", "languages_supported"),
+        ("data_source", "data_source"),
+    ]:
+        if service_data.get(key) and not getattr(existing, field, None):
+            setattr(existing, field, service_data[key])
+            supplemental = True
+
+    if supplemental:
+        existing.last_updated = datetime.now()
+
+    if has_changes:
+        for f in ["name", "description", "location", "contact", "eligibility", "hours_of_operation"]:
+            if new_data.get(f) is not None:
+                setattr(existing, f, new_data[f])
+        existing.process_steps = new_data["process_steps"]
+        existing.wait_times = new_data["wait_times"]
+        existing.required_docs = new_data["required_docs"]
+        existing.last_updated = datetime.now()
+        if service_data.get("website_url"):
+            existing.website_url = service_data["website_url"]
+        if service_data.get("data_source"):
+            existing.data_source = service_data["data_source"]
+
+        history = ServiceHistory(
+            service_id=service_id,
+            name=existing.name,
+            category=existing.category,
+            description=existing.description,
+            location=existing.location,
+            contact=existing.contact,
+            eligibility=existing.eligibility,
+            hours_of_operation=existing.hours_of_operation,
+            website_url=existing.website_url,
+            change_type="updated",
+            changed_fields=changed_fields,
+            data_source=existing.data_source,
+        )
+        session.add(history)
+        log.services_updated += 1
+        logger.info(f"Updated service: {service_data['name']} (changed: {', '.join(changed_fields)})")
+        return "updated"
+
+    if supplemental:
+        log.services_updated += 1
+        return "updated"
+
+    return "unchanged"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Phase Runners
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def phase_reference_sync(session, client: Optional[OpenAIClient], log: ScraperLog):
+    """Phase 1: Sync reference data and scrape websites for updates."""
+    logger.info("═══ Phase 1: Reference Data Sync ═══")
+    from reference_data import load_alberta_services
+
+    services_data = load_alberta_services()
+    log.services_checked += len(services_data)
+
+    for svc_data in services_data:
+        try:
+            service_id = generate_service_id(svc_data["name"], svc_data.get("location", ""))
+            existing = session.query(Service).filter_by(service_id=service_id).first()
+            existing_url = existing.website_url if existing else None
+
+            # Try to find a URL to scrape
+            urls = extract_urls(svc_data.get("contact", ""))
+            if not urls and existing_url:
+                urls = [existing_url]
+            if not urls and client:
+                found = find_website_with_ai(
+                    client, svc_data["name"],
+                    svc_data.get("location", "Alberta"),
+                    svc_data.get("category", ""),
+                )
+                if found:
+                    urls = [found]
+
+            # Scrape and enrich if we have a URL
+            if urls and client:
+                scraped = scrape_website(urls[0])
+                if scraped.get("page_text"):
+                    ai_data = enrich_with_ai(client, scraped["page_text"], svc_data["name"], svc_data.get("category", ""))
+                    if ai_data:
+                        svc_data.update(ai_data)
+                svc_data["website_url"] = urls[0]
+                svc_data["data_source"] = urls[0]
+
+            sync_service_data(svc_data, session, log)
+            session.commit()
+            time.sleep(2 if client else 1)
+
+        except Exception as e:
+            logger.error(f"Error processing {svc_data.get('name', '?')}: {e}")
+            session.rollback()
+
+
+def phase_211_discovery(session, client: OpenAIClient, log: ScraperLog):
+    """Phase 2: Discover new services from 211 Alberta."""
+    logger.info("═══ Phase 2: 211 Alberta Discovery ═══")
+
+    existing = get_existing_services_lookup(session)
+    logger.info(f"Loaded {len(existing)} existing services for deduplication")
+
+    all_discovered: List[Dict] = []
+
+    for category in SEARCH_CATEGORIES:
+        regions = MAJOR_REGIONS.copy()
+        if any(kw in category.lower() for kw in EXPANDED_SEARCH_KEYWORDS):
+            regions.extend(SECONDARY_REGIONS)
+
+        for region in regions:
+            logger.info(f"Searching 211: '{category}' in {region}")
+            discovered = discover_services_for_category(client, category, region)
+
+            for svc in discovered:
+                name = svc.get("name", "").strip()
+                if not name:
+                    continue
+                if service_exists(name, existing):
+                    continue
+                all_discovered.append(svc)
+                existing[name.lower().strip()] = True
+
+            time.sleep(3)
+
+    # Deduplicate by name
+    seen: set = set()
+    unique: List[Dict] = []
+    for svc in all_discovered:
+        key = svc["name"].lower().strip()
+        if key not in seen:
+            seen.add(key)
+            unique.append(svc)
+
+    logger.info(f"Found {len(unique)} potentially new services from 211")
+    log.services_checked += len(SEARCH_CATEGORIES) * len(MAJOR_REGIONS)
+
+    # Insert new services
+    for svc in unique:
+        try:
+            sid = generate_service_id(svc["name"], svc.get("location", ""))
+            if session.query(Service).filter_by(service_id=sid).first():
+                continue
+
+            new_svc = Service(
+                service_id=sid,
+                name=svc["name"],
+                category=svc.get("category", "Unknown"),
+                description=svc.get("description"),
+                location=svc.get("location"),
+                contact=svc.get("contact"),
+                eligibility=svc.get("eligibility"),
+                hours_of_operation=svc.get("hours_of_operation"),
+                website_url=svc.get("website_url"),
+                tags=svc.get("tags"),
+                data_source="211 Alberta (ab.211.ca)",
             )
-
-            session.add(new_service)
-
-            # Create history entry
-            history = ServiceHistory(
-                service_id=service_id,
-                name=new_service.name,
-                category=new_service.category,
-                description=new_service.description,
-                location=new_service.location,
-                contact=new_service.contact,
-                eligibility=new_service.eligibility,
-                process_steps=new_service.process_steps,
-                wait_times=new_service.wait_times,
-                required_docs=new_service.required_docs,
-                hours_of_operation=new_service.hours_of_operation,
-                website_url=new_service.website_url,
-                change_type='created',
-                changed_fields=['all'],
-                data_source=new_service.data_source,
-            )
-            session.add(history)
-
-            if scraper:
-                scraper.log.services_created += 1
-
-            logger.info(f"Created new service: {service_data['name']}")
-            return 'created'
-
-        # Compare with existing data
-        old_data = {
-            'name': existing.name,
-            'description': existing.description,
-            'location': existing.location,
-            'contact': existing.contact,
-            'eligibility': existing.eligibility,
-            'process_steps': existing.process_steps,
-            'wait_times': existing.wait_times,
-            'required_docs': existing.required_docs,
-            'hours_of_operation': existing.hours_of_operation,
-        }
-
-        new_data = {
-            'name': service_data['name'],
-            'description': service_data.get('description'),
-            'location': service_data.get('location'),
-            'contact': service_data.get('contact'),
-            'eligibility': service_data.get('eligibility'),
-            'process_steps': service_data.get('process', []),
-            'wait_times': service_data.get('waitTimes'),
-            'required_docs': service_data.get('requiredDocs', []),
-            'hours_of_operation': service_data.get('hours_of_operation'),
-        }
-
-        has_changes, changed_fields = detect_changes(old_data, new_data)
-
-        # Update last_checked timestamp always
-        existing.last_checked = datetime.now()
-
-        # Always fill in supplemental fields if they're empty in the DB
-        supplemental_updated = False
-        if service_data.get('website_url') and not existing.website_url:
-            existing.website_url = service_data['website_url']
-            supplemental_updated = True
-        if service_data.get('booking_url') and not existing.booking_url:
-            existing.booking_url = service_data['booking_url']
-            supplemental_updated = True
-        if service_data.get('service_format') and not existing.service_format:
-            existing.service_format = service_data['service_format']
-            supplemental_updated = True
-        if service_data.get('languages_supported') and not existing.languages_supported:
-            existing.languages_supported = service_data['languages_supported']
-            supplemental_updated = True
-        if service_data.get('tags') and not existing.tags:
-            existing.tags = service_data['tags']
-            supplemental_updated = True
-        if service_data.get('data_source') and not existing.data_source:
-            existing.data_source = service_data['data_source']
-            supplemental_updated = True
-
-        if supplemental_updated:
-            existing.last_updated = datetime.now()
-
-        if has_changes:
-            # Update service with new data
-            existing.name = new_data['name']
-            existing.description = new_data['description']
-            existing.location = new_data['location']
-            existing.contact = new_data['contact']
-            existing.eligibility = new_data['eligibility']
-            existing.process_steps = new_data['process_steps']
-            existing.wait_times = new_data['wait_times']
-            existing.required_docs = new_data['required_docs']
-            existing.hours_of_operation = new_data['hours_of_operation']
-            existing.last_updated = datetime.now()
-
-            if service_data.get('website_url'):
-                existing.website_url = service_data['website_url']
-            if service_data.get('data_source'):
-                existing.data_source = service_data['data_source']
-
-            # Create history entry
-            history = ServiceHistory(
-                service_id=service_id,
-                name=existing.name,
-                category=existing.category,
-                description=existing.description,
-                location=existing.location,
-                contact=existing.contact,
-                eligibility=existing.eligibility,
-                process_steps=existing.process_steps,
-                wait_times=existing.wait_times,
-                required_docs=existing.required_docs,
-                hours_of_operation=existing.hours_of_operation,
-                website_url=existing.website_url,
-                change_type='updated',
-                changed_fields=changed_fields,
-                data_source=existing.data_source,
-            )
-            session.add(history)
-
-            if scraper:
-                scraper.log.services_updated += 1
-
-            logger.info(f"Updated service: {service_data['name']} (changed: {', '.join(changed_fields)})")
-            return 'updated'
-
-        if supplemental_updated:
-            if scraper:
-                scraper.log.services_updated += 1
-            logger.info(f"Supplemental update for: {service_data['name']}")
-            return 'updated'
-
-        logger.debug(f"No changes for service: {service_data['name']}")
-        return 'unchanged'
-
-    except Exception as e:
-        logger.error(f"Error syncing service {service_data.get('name', 'Unknown')}: {e}")
-        if scraper:
-            scraper.log.errors_count += 1
-        raise
+            session.add(new_svc)
+            session.add(ServiceHistory(
+                service_id=sid,
+                name=svc["name"],
+                category=svc.get("category", "Unknown"),
+                description=svc.get("description"),
+                location=svc.get("location"),
+                contact=svc.get("contact"),
+                eligibility=svc.get("eligibility"),
+                hours_of_operation=svc.get("hours_of_operation"),
+                website_url=svc.get("website_url"),
+                change_type="created",
+                changed_fields=["all"],
+                data_source="211 Alberta (ab.211.ca)",
+            ))
+            session.commit()
+            log.services_created += 1
+            logger.info(f"NEW from 211: {svc['name']} ({svc.get('location', '?')})")
+        except Exception as e:
+            logger.error(f"Failed to add {svc.get('name')}: {e}")
+            session.rollback()
 
 
-def run_scraper():
-    """Main scraper function - run this on cron schedule."""
+def phase_211_enrich(session, client: OpenAIClient, log: ScraperLog):
+    """Phase 3: Enrich sparse services with 211 Alberta data."""
+    logger.info("═══ Phase 3: 211 Enrichment ═══")
+
+    sparse = session.query(Service).filter(
+        Service.is_active == True,
+        (Service.description == None) | (Service.description == "") |
+        (Service.hours_of_operation == None) |
+        (Service.eligibility == None),
+    ).limit(50).all()
+
+    logger.info(f"Enriching {len(sparse)} sparse services from 211")
+
+    for service in sparse:
+        service_name = service.name
+        try:
+            updates = enrich_existing_service_from_211(client, service)
+            if not updates:
+                continue
+
+            updated = False
+            if updates.get("description") and not service.description:
+                service.description = updates["description"]
+                updated = True
+            if updates.get("hours_of_operation") and not service.hours_of_operation:
+                service.hours_of_operation = safe_string(updates["hours_of_operation"], 500)
+                updated = True
+            if updates.get("eligibility") and not service.eligibility:
+                service.eligibility = safe_string(updates["eligibility"])
+                updated = True
+            if updates.get("website_url") and not service.website_url:
+                service.website_url = updates["website_url"]
+                updated = True
+            if updates.get("contact") and not service.contact:
+                service.contact = safe_string(updates["contact"])
+                updated = True
+            if updates.get("tags") and not service.tags:
+                service.tags = updates["tags"]
+                updated = True
+
+            if updated:
+                service.last_updated = datetime.now()
+                session.commit()
+                log.services_updated += 1
+                logger.info(f"Enriched from 211: {service_name}")
+
+            time.sleep(3)
+
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Failed to enrich {service_name}: {e}")
+
+
+def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLog):
+    """Phase 4: Scrape/re-scrape service websites for updated info."""
+    logger.info("═══ Phase 4: Website Enrichment ═══")
+    if not client:
+        logger.warning("OpenAI client unavailable — skipping website enrichment")
+        return
+
+    # Services that have a website but are missing supplemental fields
+    services = session.query(Service).filter(
+        Service.is_active == True,
+        Service.website_url != None,
+        Service.website_url != "",
+        (Service.tags == None) |
+        (Service.service_format == None) |
+        (Service.languages_supported == None),
+    ).limit(100).all()
+
+    logger.info(f"Re-scraping {len(services)} services with websites")
+
+    for service in services:
+        try:
+            scraped = scrape_website(service.website_url)
+            if not scraped.get("page_text"):
+                continue
+
+            ai_data = enrich_with_ai(client, scraped["page_text"], service.name, service.category)
+            if not ai_data:
+                continue
+
+            updated = False
+            if ai_data.get("tags") and not service.tags:
+                service.tags = ai_data["tags"]
+                updated = True
+            if ai_data.get("service_format") and not service.service_format:
+                service.service_format = ai_data["service_format"]
+                updated = True
+            if ai_data.get("languages_supported") and not service.languages_supported:
+                service.languages_supported = ai_data["languages_supported"]
+                updated = True
+            if ai_data.get("booking_url") and not service.booking_url:
+                service.booking_url = ai_data["booking_url"]
+                updated = True
+            if ai_data.get("description") and not service.description:
+                service.description = ai_data["description"]
+                updated = True
+            if ai_data.get("hours_of_operation") and not service.hours_of_operation:
+                service.hours_of_operation = safe_string(ai_data["hours_of_operation"], 500)
+                updated = True
+            if ai_data.get("eligibility") and not service.eligibility:
+                service.eligibility = safe_string(ai_data["eligibility"])
+                updated = True
+            if ai_data.get("contact") and not service.contact:
+                service.contact = safe_string(ai_data["contact"])
+                updated = True
+
+            if updated:
+                service.last_updated = datetime.now()
+                session.commit()
+                log.services_updated += 1
+                logger.info(f"Website enriched: {service.name}")
+
+            time.sleep(2)
+
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Failed website enrich for {service.name}: {e}")
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Main
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def run_scraper(phases: Optional[List[str]] = None):
+    """Run the scraper with the specified phases (or all phases if None)."""
     start_time = time.time()
     session = SessionLocal()
 
     try:
-        logger.info("Starting scraper run")
+        Base.metadata.create_all(engine)
+        client = init_openai()
 
-        scraper = ServiceScraper(session)
+        run_id = f"unified-{str(uuid.uuid4())[:8]}"
+        log = ScraperLog(run_id=run_id, status="running")
+        session.add(log)
+        session.commit()
 
-        # Load reference data
-        from reference_data import load_alberta_services
-        services_data = load_alberta_services()
+        all_phases = phases is None
+        phase_set = set(phases or [])
 
-        scraper.log.services_checked = len(services_data)
+        # Phase 1: Reference Data
+        if all_phases or "reference" in phase_set:
+            phase_reference_sync(session, client, log)
 
-        for service_data in services_data:
-            try:
-                # Check if service already has a website_url in the database
-                service_id = generate_service_id(
-                    service_data['name'],
-                    service_data.get('location', '')
-                )
-                existing = session.query(Service).filter_by(service_id=service_id).first()
-                existing_url = existing.website_url if existing else None
+        # Phase 2: 211 Discovery (requires OpenAI)
+        if (all_phases or "211" in phase_set) and client:
+            phase_211_discovery(session, client, log)
 
-                # Scrape for updates (passes existing URL to avoid redundant AI search)
-                updated_data = scraper.scrape_service(service_data, existing_url=existing_url)
+        # Phase 3: 211 Enrichment (requires OpenAI)
+        if (all_phases or "enrich" in phase_set) and client:
+            phase_211_enrich(session, client, log)
 
-                # Sync to database
-                sync_service_data(updated_data, session, scraper)
+        # Phase 4: Website Enrichment
+        if all_phases or "websites" in phase_set:
+            phase_website_enrich(session, client, log)
 
-                session.commit()
-
-                # Delay between requests (2s when using AI, 1s otherwise)
-                delay = 2 if scraper.openai_client else 1
-                time.sleep(delay)
-
-            except Exception as e:
-                logger.error(f"Error processing service: {e}")
-                session.rollback()
-                continue
-
-        # Update log
-        scraper.log.status = 'completed'
-        scraper.log.completed_at = datetime.now()
-        scraper.log.duration_seconds = int(time.time() - start_time)
+        # Finalize log
+        log.status = "completed"
+        log.completed_at = datetime.now()
+        log.duration_seconds = int(time.time() - start_time)
         session.commit()
 
         logger.info(
-            f"Scraper completed: {scraper.log.services_checked} checked, "
-            f"{scraper.log.services_created} created, "
-            f"{scraper.log.services_updated} updated, "
-            f"{scraper.log.errors_count} errors"
+            f"Scraper completed: "
+            f"{log.services_checked} checked, "
+            f"{log.services_created} created, "
+            f"{log.services_updated} updated, "
+            f"{log.errors_count} errors, "
+            f"duration={log.duration_seconds}s"
         )
 
     except Exception as e:
@@ -722,16 +909,13 @@ def run_scraper():
         session.close()
 
 
-def init_database():
-    """Initialize database tables."""
-    logger.info("Initializing database...")
-    Base.metadata.create_all(engine)
-    logger.info("Database initialized successfully")
-
-
-if __name__ == '__main__':
-    # Initialize database if needed
-    init_database()
-
-    # Run scraper
-    run_scraper()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Alberta Service Scraper")
+    parser.add_argument(
+        "--phase",
+        choices=["reference", "211", "enrich", "websites"],
+        nargs="+",
+        help="Run specific phase(s). Omit to run all.",
+    )
+    args = parser.parse_args()
+    run_scraper(phases=args.phase)
