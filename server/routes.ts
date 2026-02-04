@@ -106,7 +106,11 @@ function formatServicesForAI(servicesList: Service[]): string {
     for (const service of categoryServices) {
       const contact = service.contact || 'N/A';
       const description = service.description || 'Service information available upon contact';
-      formatted += `- ${service.name}: ${contact} - ${description}\n`;
+      const tags = Array.isArray(service.tags) && (service.tags as string[]).length > 0
+        ? ` [Tags: ${(service.tags as string[]).join(', ')}]`
+        : '';
+      const elig = service.eligibility ? ` [Eligibility: ${service.eligibility}]` : '';
+      formatted += `- ${service.name}: ${contact} - ${description}${tags}${elig}\n`;
     }
     formatted += '\n';
   }
@@ -212,19 +216,28 @@ function preFilterServices(query: string, allServices: Service[]): ScoredService
     const name = (service.name || '').toLowerCase();
     const desc = (service.description || '').toLowerCase();
     const cat = (service.category || '').toLowerCase();
-    const tags = JSON.stringify(service.tags || []).toLowerCase();
     const eligibility = (service.eligibility || '').toLowerCase();
     const notes = (service.notes || '').toLowerCase();
 
+    // Parse tags as actual array for proper matching
+    const tagsArray: string[] = Array.isArray(service.tags)
+      ? (service.tags as string[]).map(t => String(t).toLowerCase())
+      : [];
+
     // Full query match in name (strongest signal)
     if (name.includes(queryLower)) score += 100;
+
+    // Full query match against individual tags (strong signal)
+    if (tagsArray.some(tag => tag === queryLower || tag.includes(queryLower) || queryLower.includes(tag))) {
+      score += 50;
+    }
 
     // Keyword matches with different weights
     for (const kw of keywords) {
       if (name.includes(kw)) score += 30;
       if (cat.includes(kw)) score += 25;
       if (desc.includes(kw)) score += 15;
-      if (tags.includes(kw)) score += 10;
+      if (tagsArray.some(tag => tag.includes(kw))) score += 20;
       if (eligibility.includes(kw)) score += 10;
       if (notes.includes(kw)) score += 5;
     }
@@ -250,21 +263,35 @@ function composeFromEnrichments(
 
   const resultServices = selected.map(({ service }) => {
     const enrichment = enrichments.get(service.serviceId);
-    if (!enrichment) throw new Error(`Missing enrichment for ${service.serviceId}`);
 
-    const processSteps = (enrichment.aiProcessSteps as string[]) || [];
+    if (enrichment) {
+      const processSteps = (enrichment.aiProcessSteps as string[]) || [];
+      return {
+        id: service.serviceId,
+        name: service.name,
+        category: enrichment.aiCategory || service.category,
+        description: enrichment.aiDescription,
+        location: enrichment.aiLocation || service.location || '',
+        contact: enrichment.aiContact || service.contact || '',
+        eligibility: enrichment.aiEligibility || service.eligibility || '',
+        process: mode === 'fast' ? processSteps.slice(0, 4) : processSteps,
+        waitTimes: enrichment.aiWaitTimes || service.waitTimes || '',
+        requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
+      };
+    }
 
+    // Fallback to raw DB data when enrichment is missing
     return {
       id: service.serviceId,
       name: service.name,
-      category: enrichment.aiCategory || service.category,
-      description: enrichment.aiDescription,
-      location: enrichment.aiLocation || service.location || '',
-      contact: enrichment.aiContact || service.contact || '',
-      eligibility: enrichment.aiEligibility || service.eligibility || '',
-      process: mode === 'fast' ? processSteps.slice(0, 4) : processSteps,
-      waitTimes: enrichment.aiWaitTimes || service.waitTimes || '',
-      requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
+      category: service.category,
+      description: service.description || '',
+      location: service.location || '',
+      contact: service.contact || '',
+      eligibility: service.eligibility || '',
+      process: (service.processSteps as string[]) || [],
+      waitTimes: service.waitTimes || '',
+      requiredDocs: (service.requiredDocs as string[]) || [],
     };
   });
 
@@ -415,7 +442,8 @@ export async function registerRoutes(
         const serviceIds = topServices.map(s => s.service.serviceId);
         const enrichments = await storage.getEnrichmentsByServiceIds(serviceIds);
 
-        if (serviceIds.every(id => enrichments.has(id))) {
+        const enrichedCount = serviceIds.filter(id => enrichments.has(id)).length;
+        if (enrichedCount >= Math.ceil(serviceIds.length * 0.6)) {
           // All top services have cached enrichments - compose locally (skip OpenAI)
           const results = composeFromEnrichments(topServices, enrichments, mode, input.query, isCrisisQuery);
           await storage.createSearch({ query: normalizedQuery, results });
@@ -426,8 +454,8 @@ export async function registerRoutes(
       // OPTIMIZATION 4: Send only pre-filtered services to OpenAI
       // Instead of sending all 342+ services, send only the relevant ones
       // This dramatically reduces token count and response latency
-      const maxPreFilter = mode === 'fast' ? 40 : 80;
-      const usePreFiltered = preFiltered.length >= 10;
+      const maxPreFilter = mode === 'fast' ? 25 : 50;
+      const usePreFiltered = preFiltered.length >= 3;
       const relevantServices = usePreFiltered
         ? preFiltered.slice(0, maxPreFilter).map(s => s.service)
         : cachedServices;
@@ -449,80 +477,45 @@ CRISIS QUERY DETECTED - PRIORITIZE CRISIS RESOURCES:
 
       // Different prompts for fast vs comprehensive modes
       const fastModeInstructions = `
-FAST MODE - Return 5-8 most relevant services quickly:
-1. Return ONLY the 5-8 most relevant, high-priority services that best match the query
-2. Prioritize crisis lines, major treatment centers, and well-known organizations
-3. Provide detailed process steps (4-8 steps each) with full contact information (do not make these us, ensure it is real information)
-4. Focus on immediate, actionable resources`;
+FAST MODE - Return 5-8 most relevant services:
+1. Return ONLY the 5-8 most relevant services matching the query
+2. Prioritize crisis lines, then major treatment centers
+3. Include real contact info and 3-4 process steps per service`;
 
       const comprehensiveModeInstructions = `
 COMPREHENSIVE MODE - Return ALL relevant services:
-1. RETURN ALL RELEVANT SERVICES - DO NOT limit or cap results. If 15 services match, return all 15. If 30 match, return all 30.
-2. Be COMPREHENSIVE - include crisis lines, shelters, treatment programs, support groups, peer support, counselling, and all related services
-3. Provide detailed process steps (4-8 steps each) with full contact information (do not make these us, ensure it is real information)
-4. Include both major organizations AND smaller community resources`;
+1. Return ALL services that match - do NOT limit results
+2. Include crisis lines, shelters, treatment, support groups, counselling, and all related services
+3. Include real contact info and 4-8 process steps per service`;
 
-      const systemPrompt = `You are helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
+      const systemPrompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 ${crisisInstructions}
 ${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
 
-CRITICAL REQUIREMENTS:
-- EXACT NAME MATCH PRIORITY: If the user's query contains an exact organization name (e.g., "Alpha House", "Calgary Drop-In", "Mustard Seed"), you MUST include that specific organization in your results FIRST.
-- Every service MUST be a REAL, SPECIFIC Alberta organization from the reference database below
-- ONLY use URLs, phone numbers, and addresses EXACTLY as listed in the reference database
-- DO NOT invent or guess URLs - if a URL is not in the database, use the phone number instead
-- Never return generic categories like "Local Counseling Services" or "Community Support Groups"
-
-SPELLING & TYPO TOLERANCE - INTERPRET USER INTENT:
-- Always interpret what the user MEANT, not just what they typed
-- Common misspellings to recognize:
-  * "counceling/councilling/counsling/counsilling" → counselling/counseling
-  * "addiciton/addicton/addction" → addiction
-  * "mentl/menal/mential" → mental
-  * "helth/heath/heatlh" → health
-  * "detox/detoxx/detocks" → detox
-  * "rehab/reahb/rahab" → rehab
-  * "sheltr/sheltter/shleter" → shelter
-  * "emergancy/emergeny/emrgency" → emergency
-  * "suport/supprt/suporrt" → support
-  * "treatmnt/tretment/treatement" → treatment
-  * "alcahol/alchol/alcohal" → alcohol
-  * "anxeity/anxity/anixety" → anxiety
-  * "depresion/depressin/deppression" → depression
-  * "indiginous/indigenious/indegenous" → Indigenous
-  * "homless/homelss/houseless" → homeless
-  * "psyciatry/phsychiatry/pschiatry" → psychiatry
-- Handle missing spaces: "mentalhealth" → "mental health", "foodbank" → "food bank"
-- Handle extra spaces: "Al pha House" → "Alpha House"
-- Handle common abbreviations: "AA" → "Alcoholics Anonymous", "NA" → "Narcotics Anonymous", "MH" → "mental health"
-- If the query is unclear but seems related to recovery/support services, provide relevant general results
-
-SEARCH MATCHING RULES:
-- If query mentions "Alpha House" → MUST include Alpha House Society Calgary and Alpha House Detox
-- If query mentions "Calgary Drop-In" → MUST include Calgary Drop-In Centre
-- If query mentions "Mustard Seed" → MUST include Mustard Seed services
-- If query mentions "CMHA" → MUST include relevant CMHA chapter
+REQUIREMENTS:
+- Every service MUST be a REAL Alberta organization from the reference database below
+- Match services by name, description, category, AND tags (tags are shown in [Tags: ...] brackets)
+- If the user's query matches a service's tags, that service MUST be included in results
+- Use ONLY URLs, phone numbers, and addresses EXACTLY as listed in the database
+- DO NOT invent URLs - if not in database, use the phone number instead
+- Never return generic categories - only real named organizations
+- Interpret user intent even with typos or misspellings
 
 ${filteredReference}
 
-PROCESS STEPS - USE ONLY VERIFIED INFO:
-- Use ONLY phone numbers, emails, and URLs from the reference database above
-- DO NOT invent URLs - if not in database, use phone number instead
-- If unsure of exact process: "Contact [org] at [phone from database] for current intake steps"
-
-Return JSON matching:
+Return JSON:
 {
   "services": [{
     "id": "string",
-    "name": "string (MUST be the real organization/program name)",
+    "name": "string (exact org name from database)",
     "category": "string",
     "description": "string",
-    "location": "string (real address or service area)",
-    "contact": "string (real phone/email/website)",
+    "location": "string",
+    "contact": "string (real phone/email/website from database)",
     "eligibility": "string",
-    "process": ["${mode === 'fast' ? '3-4' : '4-8'} steps SPECIFIC to this organization with real contact info"],
+    "process": ["${mode === 'fast' ? '3-4' : '4-8'} actionable steps with real contact info"],
     "waitTimes": "string",
-    "requiredDocs": ["Specific to this service"]
+    "requiredDocs": ["specific to this service"]
   }],
   "summary": "string"
 }`;
@@ -531,13 +524,13 @@ Return JSON matching:
       const sanitizedQuery = scrubPii(input.query);
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-5.1",
+        model: mode === 'fast' ? "gpt-4.1-mini" : "gpt-4.1",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: sanitizedQuery }
         ],
         response_format: { type: "json_object" },
-        temperature: mode === 'fast' ? 0.2 : 0.3,
+        temperature: 0.2,
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
