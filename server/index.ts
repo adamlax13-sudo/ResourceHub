@@ -30,7 +30,7 @@ app.use(helmet({
 
 // CORS: restrict API access to your Render domain and localhost dev
 const allowedOrigins = [
-  'https://recovery-hub.onrender.com',
+  'https://resourcehub-wwg6.onrender.com',
   'https://recoveryoncampusalberta.ca',
   'https://www.recoveryoncampusalberta.ca',
 ];
