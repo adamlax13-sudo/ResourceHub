@@ -258,7 +258,7 @@ function composeFromEnrichments(
   query: string,
   isCrisisQuery: boolean
 ): { services: any[]; summary: string } {
-  const limit = mode === 'fast' ? 8 : scoredServices.length;
+  const limit = mode === 'fast' ? 12 : scoredServices.length;
   const selected = scoredServices.slice(0, limit);
 
   const resultServices = selected.map(({ service }) => {
@@ -437,13 +437,14 @@ export async function registerRoutes(
       // response locally without calling OpenAI. This gets faster over time as
       // more services accumulate enrichments from previous searches.
       if (preFiltered.length >= 3) {
-        const topCount = mode === 'fast' ? 8 : Math.min(preFiltered.length, 30);
+        const topCount = mode === 'fast' ? 12 : Math.min(preFiltered.length, 60);
         const topServices = preFiltered.slice(0, topCount);
         const serviceIds = topServices.map(s => s.service.serviceId);
         const enrichments = await storage.getEnrichmentsByServiceIds(serviceIds);
 
         const enrichedCount = serviceIds.filter(id => enrichments.has(id)).length;
-        if (enrichedCount >= Math.ceil(serviceIds.length * 0.6)) {
+        const enrichmentThreshold = mode === 'fast' ? 0.7 : 0.9;
+        if (enrichedCount >= Math.ceil(serviceIds.length * enrichmentThreshold)) {
           // All top services have cached enrichments - compose locally (skip OpenAI)
           const results = composeFromEnrichments(topServices, enrichments, mode, input.query, isCrisisQuery);
           await storage.createSearch({ query: normalizedQuery, results });
@@ -454,8 +455,8 @@ export async function registerRoutes(
       // OPTIMIZATION 4: Send only pre-filtered services to OpenAI
       // Instead of sending all 342+ services, send only the relevant ones
       // This dramatically reduces token count and response latency
-      const maxPreFilter = mode === 'fast' ? 25 : 50;
-      const usePreFiltered = preFiltered.length >= 3;
+      const maxPreFilter = mode === 'fast' ? 40 : 120;
+      const usePreFiltered = preFiltered.length >= 5;
       const relevantServices = usePreFiltered
         ? preFiltered.slice(0, maxPreFilter).map(s => s.service)
         : cachedServices;
@@ -477,16 +478,20 @@ CRISIS QUERY DETECTED - PRIORITIZE CRISIS RESOURCES:
 
       // Different prompts for fast vs comprehensive modes
       const fastModeInstructions = `
-FAST MODE - Return 5-8 most relevant services:
-1. Return ONLY the 5-8 most relevant services matching the query
-2. Prioritize crisis lines, then major treatment centers
-3. Include real contact info and 3-4 process steps per service`;
+FAST MODE - Return 8-12 most relevant services:
+1. Return the 8-12 most relevant services matching the query
+2. Prioritize crisis lines, then major treatment centers, then community programs
+3. Include real contact info and 3-4 process steps per service
+4. Err on the side of inclusion - if a service could be relevant, include it`;
 
       const comprehensiveModeInstructions = `
-COMPREHENSIVE MODE - Return ALL relevant services:
-1. Return ALL services that match - do NOT limit results
-2. Include crisis lines, shelters, treatment, support groups, counselling, and all related services
-3. Include real contact info and 4-8 process steps per service`;
+COMPREHENSIVE MODE - Return ALL relevant services (CRITICAL):
+1. You MUST return EVERY service from the database that could be relevant to the query
+2. If 15 services match, return all 15. If 40 match, return all 40. NEVER cap or limit results.
+3. Include: crisis lines, shelters, treatment programs, support groups, peer support, counselling, community programs, campus resources, online resources, and ANY service with matching tags
+4. A service is relevant if its name, description, category, tags, OR eligibility relates to the query
+5. Include real contact info and 4-8 process steps per service
+6. When in doubt about relevance, INCLUDE the service`;
 
       const systemPrompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 ${crisisInstructions}
