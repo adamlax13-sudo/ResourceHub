@@ -59,17 +59,61 @@ const ALBERTA_LOCATIONS = new Set([
 
 // Variations and abbreviations that map to canonical location names
 const LOCATION_ALIASES: Record<string, string> = {
+  // Airport codes
   'yyc': 'calgary',
   'yeg': 'edmonton',
   'yqf': 'red deer',
   'yql': 'lethbridge',
   'ymm': 'fort mcmurray',
+  'ygp': 'grande prairie',
+  'yxh': 'medicine hat',
+  'yqd': 'lloydminster',
+  'yod': 'cold lake',
+
+  // Fort McMurray variations
+  'fort mac': 'fort mcmurray',
+  'fortmac': 'fort mcmurray',
+  'ft mac': 'fort mcmurray',
+  'ft. mac': 'fort mcmurray',
   'ft mcmurray': 'fort mcmurray',
   'ft. mcmurray': 'fort mcmurray',
+  'wood buffalo': 'fort mcmurray',
+
+  // Fort Saskatchewan variations
+  'fort sask': 'fort saskatchewan',
+  'ft sask': 'fort saskatchewan',
+  'ft. sask': 'fort saskatchewan',
   'ft saskatchewan': 'fort saskatchewan',
   'ft. saskatchewan': 'fort saskatchewan',
-  'st. albert': 'st albert',
+
+  // Medicine Hat variations
   'med hat': 'medicine hat',
+  'medhat': 'medicine hat',
+  'the hat': 'medicine hat',
+
+  // St. Albert variations
+  'st. albert': 'st albert',
+  'stalbert': 'st albert',
+  'saint albert': 'st albert',
+
+  // Red Deer variations
+  'rdeer': 'red deer',
+  'r deer': 'red deer',
+
+  // Grande Prairie variations
+  'gp': 'grande prairie',
+  'grand prairie': 'grande prairie',
+
+  // Common short forms
+  'sherwood': 'sherwood park',
+  'spruce': 'spruce grove',
+  'stony': 'stony plain',
+  'sylvan': 'sylvan lake',
+  'cold lk': 'cold lake',
+  'high rv': 'high river',
+  'slave lk': 'slave lake',
+  'peace rv': 'peace river',
+  'drayton': 'drayton valley',
 };
 
 // Province-wide indicators
@@ -553,8 +597,49 @@ function preFilterServices(query: string, allServices: Service[]): ScoredService
   // ========== QUERY INTENT ==========
   const queryIntent = classifyQueryIntent(correctedQuery);
 
+  // Detect location-only queries (user just typed a city name without topic keywords)
+  const isLocationOnlyQuery = specifiedLocation && nonLocationKeywords.length === 0;
+
   if (nonLocationKeywords.length === 0 && !specifiedLocation) {
     return allServices.map(s => ({ service: s, score: 1 }));
+  }
+
+  // ========== LOCATION-ONLY QUERY HANDLING ==========
+  // For queries like "fort mac" or "medicine hat", return ALL services in that location
+  // plus province-wide services, without requiring keyword matches
+  if (isLocationOnlyQuery) {
+    console.log(`Location-only query detected: "${specifiedLocation}" - returning all matching services`);
+    const locationResults: ScoredService[] = [];
+    const now = Date.now();
+
+    for (const service of allServices) {
+      const serviceLocation = (service.location || '').toLowerCase();
+      const locationMatch = matchesLocation(serviceLocation, specifiedLocation!);
+
+      if (locationMatch === 'none') continue; // Skip services from wrong locations
+
+      // Base score for matching services
+      let score = locationMatch === 'exact' ? 300 : 150; // Exact location vs province-wide
+
+      // Recency boost
+      const lastUpdated = service.lastUpdated?.getTime() || 0;
+      const daysSinceUpdate = lastUpdated > 0 ? (now - lastUpdated) / (1000 * 60 * 60 * 24) : 365;
+      if (daysSinceUpdate < 30) score += 20;
+      else if (daysSinceUpdate < 90) score += 10;
+
+      // Popularity boost
+      const clickCount = (service as any).clickCount || 0;
+      score += Math.min(clickCount * 2, 30);
+
+      // Data completeness boost (prefer services with more info)
+      const missingFields = countMissingFields(service);
+      score += (5 - missingFields) * 5; // +25 for complete, +0 for 5 missing
+
+      locationResults.push({ service, score });
+    }
+
+    console.log(`Location-only query "${specifiedLocation}": found ${locationResults.length} services`);
+    return locationResults.sort((a, b) => b.score - a.score);
   }
 
   const scored: ScoredService[] = [];
@@ -706,7 +791,27 @@ function composeFromEnrichments(
   query: string,
   isCrisisQuery: boolean
 ): { services: any[]; summary: string } {
-  const limit = mode === 'fast' ? 15 : scoredServices.length;
+  // For location-only queries or small result sets, return all results
+  // Only apply the 15-result limit for large result sets in fast mode
+  const locationContext = extractLocationContext(query);
+  const baseKeywords = extractKeywords(query);
+  const nonLocationKeywords = baseKeywords.filter(kw =>
+    !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
+  );
+  const isLocationOnlyQuery = locationContext.specifiedLocation && nonLocationKeywords.length === 0;
+
+  // For location-only queries, return all results (up to 50)
+  // For regular queries in fast mode, limit to 15
+  // For regular queries in comprehensive mode, no limit
+  let limit: number;
+  if (isLocationOnlyQuery) {
+    limit = Math.min(scoredServices.length, 50); // Return all for location queries (cap at 50)
+  } else if (mode === 'fast') {
+    limit = 15;
+  } else {
+    limit = scoredServices.length;
+  }
+
   const selected = scoredServices.slice(0, limit);
 
   const resultServices = selected.map(({ service }) => {
@@ -776,11 +881,27 @@ function composeFromEnrichments(
 function buildSummary(count: number, query: string): string {
   const keywords = extractKeywords(query);
   const locationContext = extractLocationContext(query);
-  const topic = keywords.filter(kw => !ALBERTA_LOCATIONS.has(kw)).join(', ') || query;
+  const nonLocationKeywords = keywords.filter(kw =>
+    !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
+  );
+  const isLocationOnlyQuery = locationContext.specifiedLocation && nonLocationKeywords.length === 0;
+
+  // Format location name nicely (capitalize first letter of each word)
+  const formatLocation = (loc: string) => loc.split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+
+  // For location-only queries, provide a cleaner summary
+  if (isLocationOnlyQuery && locationContext.specifiedLocation) {
+    const locationName = formatLocation(locationContext.specifiedLocation);
+    return `Found ${count} service${count === 1 ? '' : 's'} available in ${locationName} and province-wide. These include mental health, addiction, housing, and social services. Contact any service directly for current availability.`;
+  }
+
+  const topic = nonLocationKeywords.join(', ') || query;
 
   // Include location in summary if specified
   const locationPhrase = locationContext.specifiedLocation
-    ? ` in ${locationContext.specifiedLocation.charAt(0).toUpperCase() + locationContext.specifiedLocation.slice(1)} and province-wide`
+    ? ` in ${formatLocation(locationContext.specifiedLocation)} and province-wide`
     : '';
 
   return `Found ${count} Alberta service${count === 1 ? '' : 's'} related to ${topic}${locationPhrase}. These are verified resources available to help with your needs. Contact any service directly for current availability and intake information.`;
@@ -894,8 +1015,27 @@ export async function registerRoutes(
       // If we have cached AI enrichments for all relevant services, compose the
       // response locally without calling OpenAI. This gets faster over time as
       // more services accumulate enrichments from previous searches.
+
+      // Detect location-only queries for special handling
+      const queryLocationContext = extractLocationContext(input.query);
+      const queryBaseKeywords = extractKeywords(input.query);
+      const queryNonLocationKeywords = queryBaseKeywords.filter(kw =>
+        !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
+      );
+      const isLocationOnlySearch = queryLocationContext.specifiedLocation && queryNonLocationKeywords.length === 0;
+
       if (preFiltered.length >= 3) {
-        const topCount = mode === 'fast' ? 15 : Math.min(preFiltered.length, 80);
+        // For location-only queries, include all matching services (up to 50)
+        // For regular queries, use the standard limits
+        let topCount: number;
+        if (isLocationOnlySearch) {
+          topCount = Math.min(preFiltered.length, 50); // All results for location queries
+        } else if (mode === 'fast') {
+          topCount = 15;
+        } else {
+          topCount = Math.min(preFiltered.length, 80);
+        }
+
         const topServices = preFiltered.slice(0, topCount);
         const serviceIds = topServices.map(s => s.service.serviceId);
         const enrichments = await storage.getEnrichmentsByServiceIds(serviceIds);
@@ -954,7 +1094,19 @@ COMPREHENSIVE MODE - Return ALL relevant services (CRITICAL):
 
       // Detect location context for OpenAI prompt
       const locationContext = extractLocationContext(input.query);
-      const locationInstructions = locationContext.specifiedLocation ? `
+
+      // Location-only query instructions (user just typed a city name)
+      const locationOnlyInstructions = isLocationOnlySearch && locationContext.specifiedLocation ? `
+LOCATION-ONLY QUERY DETECTED: User wants ALL services available in "${locationContext.specifiedLocation.toUpperCase()}"
+- Return EVERY service from the database that serves ${locationContext.specifiedLocation}
+- ALSO return ALL province-wide services (marked as "Alberta", "province-wide", "provincial", etc.)
+- Include ALL categories: crisis lines, shelters, addiction, mental health, housing, counselling, support groups, etc.
+- DO NOT limit results - if 30 services match, return all 30
+- DO NOT include services from OTHER cities unless they are province-wide
+- Order by category for easy browsing (crisis first, then by alphabetical category)
+` : '';
+
+      const locationInstructions = (!isLocationOnlySearch && locationContext.specifiedLocation) ? `
 LOCATION-SPECIFIC QUERY DETECTED: User is looking for services in "${locationContext.specifiedLocation.toUpperCase()}"
 - PRIORITIZE services located in or serving ${locationContext.specifiedLocation}
 - ALSO INCLUDE province-wide services (marked as "Alberta", "province-wide", "provincial", etc.)
@@ -965,6 +1117,7 @@ LOCATION-SPECIFIC QUERY DETECTED: User is looking for services in "${locationCon
 
       const systemPrompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta.
 ${crisisInstructions}
+${locationOnlyInstructions}
 ${locationInstructions}
 ${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
 
