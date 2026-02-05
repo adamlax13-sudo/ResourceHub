@@ -43,6 +43,31 @@ export const services = pgTable("services", {
   lastUpdated: timestamp("last_updated").defaultNow(),
   tags: jsonb("tags"),
   notes: text("notes"),
+  // Search improvement columns (added by add_search_improvements.sql)
+  popularityScore: integer("popularity_score").default(0),
+  clickCount: integer("click_count").default(0),
+});
+
+// Search analytics - tracks user searches and clicks for improving results
+export const searchAnalytics = pgTable("search_analytics", {
+  id: serial("id").primaryKey(),
+  query: text("query").notNull(),
+  normalizedQuery: text("normalized_query").notNull(),
+  resultCount: integer("result_count").default(0),
+  clickedServiceId: varchar("clicked_service_id", { length: 255 }),
+  clickPosition: integer("click_position"),
+  sessionId: varchar("session_id", { length: 255 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Service aliases - for acronyms, common names, and known misspellings
+export const serviceAliases = pgTable("service_aliases", {
+  id: serial("id").primaryKey(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  alias: varchar("alias", { length: 255 }).notNull(),
+  aliasType: varchar("alias_type", { length: 50 }).default("common_name"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // AI-generated service enrichments cache
@@ -65,12 +90,16 @@ export const aiServiceEnrichments = pgTable("ai_service_enrichments", {
 
 export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true });
+export const insertSearchAnalyticsSchema = createInsertSchema(searchAnalytics).omit({ id: true, createdAt: true });
 
 export type Search = typeof searches.$inferSelect;
 export type Feedback = typeof feedback.$inferSelect;
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Service = typeof services.$inferSelect;
 export type AiServiceEnrichment = typeof aiServiceEnrichments.$inferSelect;
+export type SearchAnalytics = typeof searchAnalytics.$inferSelect;
+export type InsertSearchAnalytics = z.infer<typeof insertSearchAnalyticsSchema>;
+export type ServiceAlias = typeof serviceAliases.$inferSelect;
 
 export interface ServiceDetail {
   id: string;

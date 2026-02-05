@@ -386,7 +386,8 @@ def enrich_existing_service_from_211(
                 f'Search ab.211.ca for information about "{service.name}" '
                 f'in {service.location or "Alberta"}. '
                 f"Find: description, phone number, website, address, "
-                f"hours of operation, eligibility criteria, and any other details. "
+                f"hours of operation, eligibility criteria, required documents, "
+                f"and the step-by-step process to access this service. "
                 f'If this service is not on 211 Alberta, say "NOT_FOUND".'
             ),
         )
@@ -409,7 +410,9 @@ def enrich_existing_service_from_211(
                         '- "hours_of_operation": Operating hours\n'
                         '- "eligibility": Who can access this service\n'
                         '- "website_url": Website URL\n'
-                        '- "tags": Array of 5-10 search keywords\n\n'
+                        '- "tags": Array of 5-10 search keywords\n'
+                        '- "process_steps": Array of 3-6 steps to access this service (e.g., ["Call intake line", "Complete assessment", "Attend appointment"])\n'
+                        '- "required_docs": Array of documents needed (e.g., ["Photo ID", "Health card", "Proof of address"])\n\n'
                         "Only include data clearly from 211 Alberta. Do not fabricate."
                     ),
                 },
@@ -428,7 +431,8 @@ def enrich_existing_service_from_211(
         )
         result = json.loads(completion.choices[0].message.content)
         updates = {k: v for k, v in result.items() if v and k in (
-            "description", "contact", "hours_of_operation", "eligibility", "website_url", "tags",
+            "description", "contact", "hours_of_operation", "eligibility",
+            "website_url", "tags", "process_steps", "required_docs",
         )}
         return updates if updates else None
     except Exception as e:
@@ -727,24 +731,44 @@ def phase_211_discovery(session, client: OpenAIClient, log: ScraperLog):
             session.rollback()
 
 
+def count_missing_fields(service: Service) -> int:
+    """Count how many key fields are missing from a service."""
+    missing = 0
+    if not service.description or service.description.strip() == "":
+        missing += 1
+    if not service.contact or service.contact.strip() == "":
+        missing += 1
+    if not service.website_url or service.website_url.strip() == "":
+        missing += 1
+    if not service.process_steps or (isinstance(service.process_steps, list) and len(service.process_steps) == 0):
+        missing += 1
+    if not service.required_docs or (isinstance(service.required_docs, list) and len(service.required_docs) == 0):
+        missing += 1
+    return missing
+
+
 def phase_211_enrich(session, client: OpenAIClient, log: ScraperLog):
-    """Phase 3: Enrich sparse services with 211 Alberta data."""
+    """Phase 3: Enrich sparse services with 211 Alberta data.
+
+    Targets services missing 2+ key fields: description, contact, website_url,
+    process_steps, required_docs. Runs until all services have sufficient data.
+    """
     logger.info("═══ Phase 3: 211 Enrichment ═══")
 
-    sparse = session.query(Service).filter(
-        Service.is_active == True,
-        (Service.description == None) | (Service.description == "") |
-        (Service.hours_of_operation == None) |
-        (Service.eligibility == None),
-    ).limit(50).all()
+    # Get ALL active services and filter to those missing 2+ key fields
+    all_services = session.query(Service).filter(Service.is_active == True).all()
+    sparse = [s for s in all_services if count_missing_fields(s) >= 2]
 
-    logger.info(f"Enriching {len(sparse)} sparse services from 211")
+    logger.info(f"Found {len(sparse)} services missing 2+ key fields (out of {len(all_services)} total)")
 
-    for service in sparse:
+    for i, service in enumerate(sparse):
         service_name = service.name
+        logger.info(f"[{i+1}/{len(sparse)}] Enriching: {service_name}")
         try:
             updates = enrich_existing_service_from_211(client, service)
             if not updates:
+                logger.info(f"  No updates found for {service_name}")
+                time.sleep(2)
                 continue
 
             updated = False
@@ -766,18 +790,30 @@ def phase_211_enrich(session, client: OpenAIClient, log: ScraperLog):
             if updates.get("tags") and not service.tags:
                 service.tags = updates["tags"]
                 updated = True
+            if updates.get("process_steps") and not service.process_steps:
+                service.process_steps = updates["process_steps"]
+                updated = True
+            if updates.get("required_docs") and not service.required_docs:
+                service.required_docs = updates["required_docs"]
+                updated = True
 
             if updated:
                 service.last_updated = datetime.now()
                 session.commit()
                 log.services_updated += 1
-                logger.info(f"Enriched from 211: {service_name}")
+                logger.info(f"  ✓ Enriched: {service_name} (missing fields now: {count_missing_fields(service)})")
+            else:
+                logger.info(f"  No new fields to update for {service_name}")
 
             time.sleep(3)
 
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to enrich {service_name}: {e}")
+            logger.error(f"  ✗ Failed to enrich {service_name}: {e}")
+
+    # Log final stats
+    remaining = len([s for s in all_services if count_missing_fields(s) >= 2])
+    logger.info(f"Enrichment complete. Services still missing 2+ fields: {remaining}")
 
 
 def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLog):

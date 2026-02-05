@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { searches, feedback, services, aiServiceEnrichments, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment } from "@shared/schema";
-import { eq, or, ilike, and, desc, inArray } from "drizzle-orm";
+import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
+import { eq, or, ilike, and, desc, inArray, sql } from "drizzle-orm";
 
 export interface IStorage {
   createSearch(search: { query: string; results: any }): Promise<Search>;
@@ -27,6 +27,23 @@ export interface IStorage {
     aiLocation?: string | null;
     aiContact?: string | null;
   }): Promise<void>;
+
+  // Search analytics and click tracking
+  trackSearchClick(data: {
+    query: string;
+    normalizedQuery: string;
+    resultCount: number;
+    clickedServiceId?: string;
+    clickPosition?: number;
+    sessionId?: string;
+    userAgent?: string;
+  }): Promise<void>;
+  getClickCountForService(serviceId: string): Promise<number>;
+  getPopularSearches(limit?: number): Promise<{ query: string; count: number }[]>;
+
+  // Service aliases
+  getAliasesForServices(): Promise<Map<string, string[]>>;
+  findServiceByAlias(alias: string): Promise<string | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -135,6 +152,89 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date(),
         },
       });
+  }
+
+  // ============= SEARCH ANALYTICS & CLICK TRACKING =============
+  async trackSearchClick(data: {
+    query: string;
+    normalizedQuery: string;
+    resultCount: number;
+    clickedServiceId?: string;
+    clickPosition?: number;
+    sessionId?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    await db.insert(searchAnalytics).values({
+      query: data.query,
+      normalizedQuery: data.normalizedQuery,
+      resultCount: data.resultCount,
+      clickedServiceId: data.clickedServiceId || null,
+      clickPosition: data.clickPosition || null,
+      sessionId: data.sessionId || null,
+      userAgent: data.userAgent || null,
+    });
+
+    // If a service was clicked, increment its click count
+    if (data.clickedServiceId) {
+      await db
+        .update(services)
+        .set({
+          clickCount: sql`COALESCE(${services.clickCount}, 0) + 1`,
+        })
+        .where(eq(services.serviceId, data.clickedServiceId));
+    }
+  }
+
+  async getClickCountForService(serviceId: string): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(searchAnalytics)
+      .where(eq(searchAnalytics.clickedServiceId, serviceId));
+    return result[0]?.count ?? 0;
+  }
+
+  async getPopularSearches(limit: number = 20): Promise<{ query: string; count: number }[]> {
+    const result = await db
+      .select({
+        query: searchAnalytics.normalizedQuery,
+        count: sql<number>`COUNT(*)`,
+      })
+      .from(searchAnalytics)
+      .groupBy(searchAnalytics.normalizedQuery)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(limit);
+    return result.map(r => ({ query: r.query, count: Number(r.count) }));
+  }
+
+  // ============= SERVICE ALIASES =============
+  async getAliasesForServices(): Promise<Map<string, string[]>> {
+    const aliases = await db.select().from(serviceAliases);
+    const map = new Map<string, string[]>();
+    for (const alias of aliases) {
+      const existing = map.get(alias.serviceId) || [];
+      existing.push(alias.alias.toLowerCase());
+      map.set(alias.serviceId, existing);
+    }
+    return map;
+  }
+
+  async findServiceByAlias(alias: string): Promise<string | null> {
+    const result = await db
+      .select({ serviceId: serviceAliases.serviceId })
+      .from(serviceAliases)
+      .where(sql`lower(${serviceAliases.alias}) = ${alias.toLowerCase()}`)
+      .limit(1);
+    return result[0]?.serviceId ?? null;
+  }
+
+  // Get all aliases as a lookup map (alias -> serviceId)
+  async getAliasLookup(): Promise<Map<string, string>> {
+    const aliases = await db.select().from(serviceAliases);
+    const map = new Map<string, string>();
+    for (const alias of aliases) {
+      map.set(alias.alias.toLowerCase(), alias.serviceId);
+    }
+    return map;
   }
 }
 

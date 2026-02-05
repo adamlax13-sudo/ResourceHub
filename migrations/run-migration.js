@@ -25,6 +25,7 @@ async function runMigration() {
     const migrationFiles = [
       'create_searches_feedback_tables.sql',
       'add_ai_service_enrichments.sql',
+      'add_search_improvements.sql',
     ];
 
     for (const file of migrationFiles) {
