@@ -424,6 +424,99 @@ function hasMinimumData(service: Service): boolean {
   return countMissingFields(service) < 2;
 }
 
+// ============= DATA QUALITY SCORING =============
+// Calculates a comprehensive quality score based on data completeness and content quality
+// Higher score = more complete and higher quality information
+// Max score: ~200 points
+function calculateQualityScore(service: Service): number {
+  let quality = 0;
+
+  // ===== DESCRIPTION (max 40 points) =====
+  const desc = service.description?.trim() || '';
+  if (desc) {
+    quality += 15; // Has description
+    // Bonus for longer, more detailed descriptions
+    if (desc.length > 100) quality += 5;
+    if (desc.length > 250) quality += 10;
+    if (desc.length > 500) quality += 10;
+  }
+
+  // ===== CONTACT INFO (max 30 points) =====
+  const contact = service.contact?.trim() || '';
+  if (contact) {
+    quality += 10; // Has contact info
+    // Check for phone number pattern
+    if (/\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(contact) || /1[-.\s]?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(contact)) {
+      quality += 10; // Has phone number
+    }
+    // Check for email
+    if (/@/.test(contact)) {
+      quality += 10; // Has email
+    }
+  }
+
+  // ===== WEBSITE URL (max 15 points) =====
+  if (service.websiteUrl?.trim()) {
+    quality += 15;
+  }
+
+  // ===== HOURS OF OPERATION (max 15 points) =====
+  if (service.hoursOfOperation?.trim()) {
+    quality += 15;
+  }
+
+  // ===== ELIGIBILITY (max 20 points) =====
+  const elig = service.eligibility?.trim() || '';
+  if (elig) {
+    quality += 10;
+    if (elig.length > 50) quality += 5;
+    if (elig.length > 150) quality += 5;
+  }
+
+  // ===== PROCESS STEPS (max 20 points) =====
+  const steps = service.processSteps as string[] | null;
+  if (steps && Array.isArray(steps) && steps.length > 0) {
+    quality += 10;
+    if (steps.length >= 2) quality += 5;
+    if (steps.length >= 4) quality += 5;
+  }
+
+  // ===== REQUIRED DOCS (max 15 points) =====
+  const docs = service.requiredDocs as string[] | null;
+  if (docs && Array.isArray(docs) && docs.length > 0) {
+    quality += 10;
+    if (docs.length >= 2) quality += 5;
+  }
+
+  // ===== TAGS (max 20 points) =====
+  const tags = service.tags as string[] | null;
+  if (tags && Array.isArray(tags) && tags.length > 0) {
+    quality += 5;
+    if (tags.length >= 3) quality += 5;
+    if (tags.length >= 6) quality += 5;
+    if (tags.length >= 10) quality += 5;
+  }
+
+  // ===== LOCATION (max 10 points) =====
+  if (service.location?.trim()) {
+    quality += 10;
+  }
+
+  // ===== LANGUAGES (max 10 points) =====
+  const langs = service.languagesSupported as string[] | null;
+  if (langs && Array.isArray(langs) && langs.length > 0) {
+    quality += 5;
+    if (langs.length >= 2) quality += 5;
+  }
+
+  // ===== SERVICE FORMAT (max 5 points) =====
+  if (service.serviceFormat?.trim()) {
+    quality += 5;
+  }
+
+  return quality; // Max ~200 points
+}
+
 // ============= IN-MEMORY SERVICES CACHE =============
 interface ServicesCache {
   services: Service[];
@@ -687,9 +780,10 @@ function preFilterServices(
       const clickCount = (service as any).clickCount || 0;
       score += Math.min(clickCount * 2, 30);
 
-      // Data completeness boost (prefer services with more info)
-      const missingFields = countMissingFields(service);
-      score += (5 - missingFields) * 5; // +25 for complete, +0 for 5 missing
+      // Data quality boost (prefer services with more complete, higher quality info)
+      // This is a major ranking factor for location-only queries
+      const qualityScore = calculateQualityScore(service);
+      score += qualityScore;
 
       locationResults.push({ service, score });
     }
@@ -827,6 +921,12 @@ function preFilterServices(
     const clickCount = (service as any).clickCount || 0;
     const popularityBoost = Math.min(clickCount * 2, 30); // Max +30 from clicks
     score += popularityBoost;
+
+    // ========== DATA QUALITY BOOSTING (significant factor) ==========
+    // Services with more complete, higher quality information rank higher
+    // This is a major ranking factor - can add up to 200 points
+    const qualityScore = calculateQualityScore(service);
+    score += qualityScore;
 
     // ========== QUERY INTENT ADJUSTMENTS ==========
     // Adjust scoring based on query intent
