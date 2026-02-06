@@ -997,14 +997,19 @@ def enrich_from_informalberta(
         return None
 
 
-def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog):
+def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog, overwrite: bool = True):
     """Phase 5: Enrich existing services with InformAlberta data.
 
     Searches informalberta.ca for each existing service and enriches
-    sparse fields with found information. Does NOT add new services.
+    fields with found information. Does NOT add new services.
     Prioritizes services that are missing key data fields.
+
+    Args:
+        overwrite: If True, overwrites existing data with InformAlberta data.
+                   If False, only fills empty fields.
     """
     logger.info("═══ Phase 5: InformAlberta Enrichment ═══")
+    logger.info(f"Overwrite mode: {'ENABLED - will update existing data' if overwrite else 'DISABLED - only fill empty fields'}")
     if not client:
         logger.warning("OpenAI client unavailable — skipping InformAlberta enrichment")
         return
@@ -1042,65 +1047,99 @@ def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog):
 
             updated = False
             updated_fields = []
+            overwritten_fields = []
 
-            # Update sparse fields only (don't overwrite existing data)
-            if updates.get("description") and not service.description:
+            # Helper to check if we should update a field
+            def should_update(new_val, current_val):
+                """Returns True if we have new data and either overwrite is enabled or field is empty."""
+                if not new_val:
+                    return False
+                if overwrite:
+                    return True
+                return not current_val
+
+            # Update fields - overwrite if enabled, otherwise only fill empty
+            if should_update(updates.get("description"), service.description):
+                if service.description:
+                    overwritten_fields.append("description")
                 service.description = updates["description"]
                 updated = True
                 updated_fields.append("description")
 
-            if updates.get("hours_of_operation") and not service.hours_of_operation:
+            if should_update(updates.get("hours_of_operation"), service.hours_of_operation):
+                if service.hours_of_operation:
+                    overwritten_fields.append("hours_of_operation")
                 service.hours_of_operation = safe_string(updates["hours_of_operation"], 500)
                 updated = True
                 updated_fields.append("hours_of_operation")
 
-            if updates.get("eligibility") and not service.eligibility:
+            if should_update(updates.get("eligibility"), service.eligibility):
+                if service.eligibility:
+                    overwritten_fields.append("eligibility")
                 service.eligibility = safe_string(updates["eligibility"])
                 updated = True
                 updated_fields.append("eligibility")
 
-            if updates.get("website_url") and not service.website_url:
+            if should_update(updates.get("website_url"), service.website_url):
+                if service.website_url:
+                    overwritten_fields.append("website_url")
                 service.website_url = updates["website_url"]
                 updated = True
                 updated_fields.append("website_url")
 
-            if updates.get("contact") and not service.contact:
+            if should_update(updates.get("contact"), service.contact):
+                if service.contact:
+                    overwritten_fields.append("contact")
                 service.contact = safe_string(updates["contact"])
                 updated = True
                 updated_fields.append("contact")
 
-            if updates.get("tags") and not service.tags:
+            if should_update(updates.get("tags"), service.tags):
+                if service.tags:
+                    overwritten_fields.append("tags")
                 service.tags = updates["tags"]
                 updated = True
                 updated_fields.append("tags")
 
-            if updates.get("process_steps") and not service.process_steps:
+            if should_update(updates.get("process_steps"), service.process_steps):
+                if service.process_steps:
+                    overwritten_fields.append("process_steps")
                 service.process_steps = updates["process_steps"]
                 updated = True
                 updated_fields.append("process_steps")
 
-            if updates.get("required_docs") and not service.required_docs:
+            if should_update(updates.get("required_docs"), service.required_docs):
+                if service.required_docs:
+                    overwritten_fields.append("required_docs")
                 service.required_docs = updates["required_docs"]
                 updated = True
                 updated_fields.append("required_docs")
 
-            if updates.get("languages_supported") and not service.languages_supported:
+            if should_update(updates.get("languages_supported"), service.languages_supported):
+                if service.languages_supported:
+                    overwritten_fields.append("languages_supported")
                 service.languages_supported = updates["languages_supported"]
                 updated = True
                 updated_fields.append("languages_supported")
 
-            if updates.get("service_format") and not service.service_format:
+            if should_update(updates.get("service_format"), service.service_format):
+                if service.service_format:
+                    overwritten_fields.append("service_format")
                 service.service_format = updates["service_format"]
                 updated = True
                 updated_fields.append("service_format")
 
-            if updates.get("booking_url") and not service.booking_url:
+            if should_update(updates.get("booking_url"), service.booking_url):
+                if service.booking_url:
+                    overwritten_fields.append("booking_url")
                 service.booking_url = updates.get("booking_url")
                 updated = True
                 updated_fields.append("booking_url")
 
-            # Store address in notes if available and not already present
-            if updates.get("address") and not service.notes:
+            # Store address in notes - update if we have new data and overwrite enabled
+            if should_update(updates.get("address"), service.notes):
+                if service.notes:
+                    overwritten_fields.append("notes")
                 service.notes = f"Address: {updates['address']}"
                 if updates.get("fees"):
                     service.notes += f" | Fees: {updates['fees']}"
@@ -1115,13 +1154,17 @@ def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog):
                 log.services_updated += 1
                 enriched_count += 1
                 new_missing = count_missing_fields(service)
+                overwrite_info = f", overwritten: {', '.join(overwritten_fields)}" if overwritten_fields else ""
                 logger.info(
                     f"  ✓ Enriched: {service_name} "
-                    f"(fields: {', '.join(updated_fields)}) "
+                    f"(fields: {', '.join(updated_fields)}{overwrite_info}) "
                     f"(missing: {missing_count} → {new_missing})"
                 )
             else:
-                logger.info(f"  No new fields to update for {service_name} (all fields already populated)")
+                if overwrite:
+                    logger.info(f"  No new data found for {service_name}")
+                else:
+                    logger.info(f"  No new fields to update for {service_name} (all fields already populated)")
 
             # Rate limiting - be gentle with web search
             time.sleep(3)
@@ -1336,8 +1379,13 @@ def phase_inactive_recovery(session, client: OpenAIClient, log: ScraperLog):
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def run_scraper(phases: Optional[List[str]] = None):
-    """Run the scraper with the specified phases (or all phases if None)."""
+def run_scraper(phases: Optional[List[str]] = None, overwrite: bool = True):
+    """Run the scraper with the specified phases (or all phases if None).
+
+    Args:
+        phases: List of phases to run, or None for all phases (except recover)
+        overwrite: If True, InformAlberta data overwrites existing data
+    """
     start_time = time.time()
     session = SessionLocal()
 
@@ -1371,7 +1419,7 @@ def run_scraper(phases: Optional[List[str]] = None):
 
         # Phase 5: InformAlberta Enrichment (requires OpenAI)
         if (all_phases or "informalberta" in phase_set) and client:
-            phase_informalberta_enrich(session, client, log)
+            phase_informalberta_enrich(session, client, log, overwrite=overwrite)
 
         # Phase 6: Inactive Service Recovery (requires OpenAI)
         if ("recover" in phase_set) and client:
@@ -1408,5 +1456,18 @@ if __name__ == "__main__":
         nargs="+",
         help="Run specific phase(s). Omit to run all (except recover).",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        default=True,
+        help="Allow InformAlberta data to overwrite existing data (default: True)",
+    )
+    parser.add_argument(
+        "--no-overwrite",
+        action="store_true",
+        help="Only fill empty fields, don't overwrite existing data",
+    )
     args = parser.parse_args()
-    run_scraper(phases=args.phase)
+    # Handle the overwrite flag
+    overwrite = not args.no_overwrite
+    run_scraper(phases=args.phase, overwrite=overwrite)
