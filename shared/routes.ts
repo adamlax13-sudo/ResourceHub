@@ -7,6 +7,7 @@ export const serviceDetailSchema = z.object({
   description: z.string(),
   location: z.string(),
   contact: z.string(),
+  websiteUrl: z.string().optional(),
   eligibility: z.string(),
   process: z.array(z.string()),
   waitTimes: z.string(),

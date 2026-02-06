@@ -5,17 +5,21 @@ Combines reference data sync, 211 Alberta discovery, and website enrichment
 into a single script. Designed to run monthly on the 1st via Render cron job.
 
 Phases:
-  1. Reference Data Sync  — sync hardcoded reference services, scrape websites
-  2. 211 Alberta Discovery — find new services on ab.211.ca via OpenAI web search
-  3. 211 Enrichment        — fill sparse fields from 211 Alberta data
-  4. Website Enrichment    — scrape/re-scrape service websites for updated info
+  1. Reference Data Sync     — sync hardcoded reference services, scrape websites
+  2. 211 Alberta Discovery   — find new services on ab.211.ca via OpenAI web search
+  3. 211 Enrichment          — fill sparse fields from 211 Alberta data
+  4. Website Enrichment      — scrape/re-scrape service websites for updated info
+  5. InformAlberta Enrichment — enrich existing services using informalberta.ca
+  6. Inactive Recovery       — enrich inactive services and reactivate if sufficient data
 
 Usage:
-  python scraper.py                   # Full run (all phases)
-  python scraper.py --phase reference # Only reference data sync
-  python scraper.py --phase 211       # Only 211 discovery + insert
-  python scraper.py --phase enrich    # Only 211 enrichment of sparse services
-  python scraper.py --phase websites  # Only website scraping/enrichment
+  python scraper.py                       # Full run (phases 1-5, excludes recover)
+  python scraper.py --phase reference     # Only reference data sync
+  python scraper.py --phase 211           # Only 211 discovery + insert
+  python scraper.py --phase enrich        # Only 211 enrichment of sparse services
+  python scraper.py --phase websites      # Only website scraping/enrichment
+  python scraper.py --phase informalberta # Only InformAlberta enrichment
+  python scraper.py --phase recover       # Only inactive service recovery
 """
 import argparse
 import json
@@ -885,6 +889,449 @@ def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLo
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# InformAlberta Enrichment (Phase 5)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def enrich_from_informalberta(
+    client: OpenAIClient, service: Service,
+) -> Optional[Dict]:
+    """Search InformAlberta for additional info about an existing service.
+
+    Uses OpenAI web search to find the service on informalberta.ca and
+    extract detailed information like description, contact, hours, eligibility,
+    website URL, and required documents.
+    """
+    try:
+        # Search InformAlberta for this service
+        response = client.responses.create(
+            model="gpt-4o-mini",
+            tools=[{"type": "web_search"}],
+            input=(
+                f'Search informalberta.ca for information about "{service.name}" '
+                f'in {service.location or "Alberta"}. '
+                f"This is a {service.category or 'social service'} organization. "
+                f"Find: detailed description, phone number, website URL, physical address, "
+                f"email address, hours of operation, eligibility criteria, required documents, "
+                f"fees, languages offered, and accessibility information. "
+                f'Look at https://informalberta.ca/showDirectories for directory categories. '
+                f'If this service is not found on InformAlberta, say "NOT_FOUND".'
+            ),
+        )
+        result_text = response.output_text.strip()
+        if "NOT_FOUND" in result_text.upper():
+            return None
+
+        # Parse the found information into structured data
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Extract detailed service information from InformAlberta data. "
+                        "Return a JSON object with ONLY fields that have clear, "
+                        "reliable information. Use null for unknown fields.\n\n"
+                        "Fields to extract:\n"
+                        '- "description": Detailed description of what this service provides (2-4 sentences)\n'
+                        '- "contact": Phone number and/or email address\n'
+                        '- "website_url": Official website URL (must be a valid URL starting with http)\n'
+                        '- "address": Physical street address\n'
+                        '- "hours_of_operation": Operating hours (e.g., "Mon-Fri 9am-5pm")\n'
+                        '- "eligibility": Who can access this service\n'
+                        '- "fees": Cost information (e.g., "Free", "$50/session", "Sliding scale")\n'
+                        '- "languages_supported": Array of languages offered (e.g., ["English", "French"])\n'
+                        '- "accessibility": Accessibility features (e.g., "Wheelchair accessible")\n'
+                        '- "tags": Array of 5-10 relevant search keywords\n'
+                        '- "process_steps": Array of 3-6 steps to access this service\n'
+                        '- "required_docs": Array of documents needed (e.g., ["Photo ID", "Health card"])\n'
+                        '- "service_format": One of "in-person", "virtual", "hybrid", or null\n\n'
+                        "Important rules:\n"
+                        "- Only include data clearly from InformAlberta\n"
+                        "- Validate that website_url is a proper URL format\n"
+                        "- Do NOT fabricate or guess information\n"
+                        "- Be thorough - extract as much reliable data as possible"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        f"Service: {service.name}\n"
+                        f"Category: {service.category or 'Unknown'}\n"
+                        f"Current location: {service.location or 'Alberta'}\n"
+                        f"Current description: {service.description or 'None'}\n\n"
+                        f"InformAlberta data found:\n{result_text[:5000]}"
+                    ),
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+        )
+        result = json.loads(completion.choices[0].message.content)
+
+        # Filter to only valid, non-null fields
+        valid_fields = {
+            "description", "contact", "website_url", "address", "hours_of_operation",
+            "eligibility", "fees", "languages_supported", "accessibility", "tags",
+            "process_steps", "required_docs", "service_format",
+        }
+        updates = {k: v for k, v in result.items() if v and k in valid_fields}
+
+        # Validate website_url format
+        if updates.get("website_url"):
+            url = updates["website_url"]
+            if not url.startswith("http"):
+                updates["website_url"] = f"https://{url}"
+            # Basic URL validation
+            try:
+                parsed = urlparse(updates["website_url"])
+                if not parsed.netloc:
+                    del updates["website_url"]
+            except Exception:
+                del updates["website_url"]
+
+        return updates if updates else None
+
+    except Exception as e:
+        logger.error(f"Failed to enrich {service.name} from InformAlberta: {e}")
+        return None
+
+
+def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog):
+    """Phase 5: Enrich existing services with InformAlberta data.
+
+    Searches informalberta.ca for each existing service and enriches
+    sparse fields with found information. Does NOT add new services.
+    Prioritizes services that are missing key data fields.
+    """
+    logger.info("═══ Phase 5: InformAlberta Enrichment ═══")
+    if not client:
+        logger.warning("OpenAI client unavailable — skipping InformAlberta enrichment")
+        return
+
+    # Get all active services, prioritizing those with sparse data
+    all_services = session.query(Service).filter(Service.is_active == True).all()
+
+    # Sort by number of missing fields (most sparse first)
+    services_with_missing = [(s, count_missing_fields(s)) for s in all_services]
+    services_with_missing.sort(key=lambda x: -x[1])  # Most missing first
+
+    # Process all services but log different priorities
+    sparse_services = [s for s, missing in services_with_missing if missing >= 2]
+    complete_services = [s for s, missing in services_with_missing if missing < 2]
+
+    logger.info(f"Found {len(sparse_services)} sparse services (missing 2+ fields)")
+    logger.info(f"Found {len(complete_services)} relatively complete services")
+    logger.info(f"Will enrich all {len(all_services)} active services")
+
+    enriched_count = 0
+    not_found_count = 0
+
+    for i, (service, missing_count) in enumerate(services_with_missing):
+        service_name = service.name
+        priority = "HIGH" if missing_count >= 2 else "LOW"
+        logger.info(f"[{i+1}/{len(all_services)}] [{priority}] Enriching: {service_name}")
+
+        try:
+            updates = enrich_from_informalberta(client, service)
+            if not updates:
+                not_found_count += 1
+                logger.info(f"  Not found on InformAlberta: {service_name}")
+                time.sleep(2)
+                continue
+
+            updated = False
+            updated_fields = []
+
+            # Update sparse fields only (don't overwrite existing data)
+            if updates.get("description") and not service.description:
+                service.description = updates["description"]
+                updated = True
+                updated_fields.append("description")
+
+            if updates.get("hours_of_operation") and not service.hours_of_operation:
+                service.hours_of_operation = safe_string(updates["hours_of_operation"], 500)
+                updated = True
+                updated_fields.append("hours_of_operation")
+
+            if updates.get("eligibility") and not service.eligibility:
+                service.eligibility = safe_string(updates["eligibility"])
+                updated = True
+                updated_fields.append("eligibility")
+
+            if updates.get("website_url") and not service.website_url:
+                service.website_url = updates["website_url"]
+                updated = True
+                updated_fields.append("website_url")
+
+            if updates.get("contact") and not service.contact:
+                service.contact = safe_string(updates["contact"])
+                updated = True
+                updated_fields.append("contact")
+
+            if updates.get("tags") and not service.tags:
+                service.tags = updates["tags"]
+                updated = True
+                updated_fields.append("tags")
+
+            if updates.get("process_steps") and not service.process_steps:
+                service.process_steps = updates["process_steps"]
+                updated = True
+                updated_fields.append("process_steps")
+
+            if updates.get("required_docs") and not service.required_docs:
+                service.required_docs = updates["required_docs"]
+                updated = True
+                updated_fields.append("required_docs")
+
+            if updates.get("languages_supported") and not service.languages_supported:
+                service.languages_supported = updates["languages_supported"]
+                updated = True
+                updated_fields.append("languages_supported")
+
+            if updates.get("service_format") and not service.service_format:
+                service.service_format = updates["service_format"]
+                updated = True
+                updated_fields.append("service_format")
+
+            if updates.get("booking_url") and not service.booking_url:
+                service.booking_url = updates.get("booking_url")
+                updated = True
+                updated_fields.append("booking_url")
+
+            # Store address in notes if available and not already present
+            if updates.get("address") and not service.notes:
+                service.notes = f"Address: {updates['address']}"
+                if updates.get("fees"):
+                    service.notes += f" | Fees: {updates['fees']}"
+                if updates.get("accessibility"):
+                    service.notes += f" | Accessibility: {updates['accessibility']}"
+                updated = True
+                updated_fields.append("notes")
+
+            if updated:
+                service.last_updated = datetime.now()
+                session.commit()
+                log.services_updated += 1
+                enriched_count += 1
+                new_missing = count_missing_fields(service)
+                logger.info(
+                    f"  ✓ Enriched: {service_name} "
+                    f"(fields: {', '.join(updated_fields)}) "
+                    f"(missing: {missing_count} → {new_missing})"
+                )
+            else:
+                logger.info(f"  No new fields to update for {service_name} (all fields already populated)")
+
+            # Rate limiting - be gentle with web search
+            time.sleep(3)
+
+        except Exception as e:
+            session.rollback()
+            logger.error(f"  ✗ Failed to enrich {service_name}: {e}")
+
+    # Log final stats
+    remaining_sparse = len([s for s in all_services if count_missing_fields(s) >= 2])
+    logger.info(
+        f"InformAlberta enrichment complete. "
+        f"Enriched: {enriched_count}, Not found: {not_found_count}, "
+        f"Services still missing 2+ fields: {remaining_sparse}"
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Inactive Service Recovery (Phase 6)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def check_reactivation_criteria(service: Service) -> Tuple[bool, List[str]]:
+    """Check if a service has enough data to be reactivated.
+
+    Criteria for reactivation:
+    - Must have: name (always present), description, contact
+    - Plus at least ONE of: website_url, eligibility, process_steps, hours_of_operation
+
+    Returns (can_reactivate, list_of_missing_required_fields)
+    """
+    missing = []
+
+    # Required fields
+    if not service.description or service.description.strip() == "":
+        missing.append("description")
+    if not service.contact or service.contact.strip() == "":
+        missing.append("contact")
+
+    # Check for at least one supplementary field
+    has_supplementary = any([
+        service.website_url and service.website_url.strip(),
+        service.eligibility and service.eligibility.strip(),
+        service.process_steps and len(service.process_steps) > 0,
+        service.hours_of_operation and service.hours_of_operation.strip(),
+    ])
+
+    if not has_supplementary:
+        missing.append("supplementary (website/eligibility/process/hours)")
+
+    can_reactivate = len(missing) == 0
+    return can_reactivate, missing
+
+
+def phase_inactive_recovery(session, client: OpenAIClient, log: ScraperLog):
+    """Phase 6: Attempt to recover inactive services.
+
+    Searches InformAlberta and 211 Alberta for inactive services,
+    enriches them with found data, and reactivates services that
+    meet the minimum data requirements.
+    """
+    logger.info("═══ Phase 6: Inactive Service Recovery ═══")
+    if not client:
+        logger.warning("OpenAI client unavailable — skipping inactive recovery")
+        return
+
+    # Get all inactive services
+    inactive_services = session.query(Service).filter(Service.is_active == False).all()
+
+    if not inactive_services:
+        logger.info("No inactive services found")
+        return
+
+    logger.info(f"Found {len(inactive_services)} inactive services to process")
+
+    recovered_count = 0
+    enriched_count = 0
+    not_found_count = 0
+
+    for i, service in enumerate(inactive_services):
+        service_name = service.name
+        logger.info(f"[{i+1}/{len(inactive_services)}] Processing inactive: {service_name}")
+
+        try:
+            # First, check current state
+            can_reactivate_before, missing_before = check_reactivation_criteria(service)
+
+            if can_reactivate_before:
+                # Already has enough data, just reactivate
+                service.is_active = True
+                service.last_updated = datetime.now()
+                session.commit()
+                recovered_count += 1
+                logger.info(f"  ✓ Reactivated (already had sufficient data): {service_name}")
+                continue
+
+            logger.info(f"  Missing: {', '.join(missing_before)}")
+
+            # Try to enrich from InformAlberta
+            updates = enrich_from_informalberta(client, service)
+
+            if not updates:
+                # Try 211 Alberta as fallback
+                updates = enrich_existing_service_from_211(client, service)
+
+            if not updates:
+                not_found_count += 1
+                logger.info(f"  Not found on InformAlberta or 211: {service_name}")
+                time.sleep(2)
+                continue
+
+            # Apply updates
+            updated = False
+            updated_fields = []
+
+            if updates.get("description") and not service.description:
+                service.description = updates["description"]
+                updated = True
+                updated_fields.append("description")
+
+            if updates.get("contact") and not service.contact:
+                service.contact = safe_string(updates["contact"])
+                updated = True
+                updated_fields.append("contact")
+
+            if updates.get("website_url") and not service.website_url:
+                service.website_url = updates["website_url"]
+                updated = True
+                updated_fields.append("website_url")
+
+            if updates.get("eligibility") and not service.eligibility:
+                service.eligibility = safe_string(updates["eligibility"])
+                updated = True
+                updated_fields.append("eligibility")
+
+            if updates.get("hours_of_operation") and not service.hours_of_operation:
+                service.hours_of_operation = safe_string(updates["hours_of_operation"], 500)
+                updated = True
+                updated_fields.append("hours_of_operation")
+
+            if updates.get("process_steps") and not service.process_steps:
+                service.process_steps = updates["process_steps"]
+                updated = True
+                updated_fields.append("process_steps")
+
+            if updates.get("required_docs") and not service.required_docs:
+                service.required_docs = updates["required_docs"]
+                updated = True
+                updated_fields.append("required_docs")
+
+            if updates.get("tags") and not service.tags:
+                service.tags = updates["tags"]
+                updated = True
+                updated_fields.append("tags")
+
+            if updates.get("languages_supported") and not service.languages_supported:
+                service.languages_supported = updates["languages_supported"]
+                updated = True
+                updated_fields.append("languages_supported")
+
+            if updates.get("service_format") and not service.service_format:
+                service.service_format = updates["service_format"]
+                updated = True
+                updated_fields.append("service_format")
+
+            # Store address/fees/accessibility in notes
+            if updates.get("address") and not service.notes:
+                service.notes = f"Address: {updates['address']}"
+                if updates.get("fees"):
+                    service.notes += f" | Fees: {updates['fees']}"
+                if updates.get("accessibility"):
+                    service.notes += f" | Accessibility: {updates['accessibility']}"
+                updated = True
+                updated_fields.append("notes")
+
+            if updated:
+                service.last_updated = datetime.now()
+                enriched_count += 1
+                log.services_updated += 1
+                logger.info(f"  Enriched: {service_name} (fields: {', '.join(updated_fields)})")
+
+            # Check if we can now reactivate
+            can_reactivate_after, missing_after = check_reactivation_criteria(service)
+
+            if can_reactivate_after:
+                service.is_active = True
+                session.commit()
+                recovered_count += 1
+                logger.info(f"  ✓ REACTIVATED: {service_name}")
+            else:
+                session.commit()
+                logger.info(f"  Still missing for reactivation: {', '.join(missing_after)}")
+
+            # Rate limiting
+            time.sleep(3)
+
+        except Exception as e:
+            session.rollback()
+            logger.error(f"  ✗ Failed to process {service_name}: {e}")
+
+    logger.info(
+        f"Inactive recovery complete. "
+        f"Processed: {len(inactive_services)}, "
+        f"Enriched: {enriched_count}, "
+        f"Reactivated: {recovered_count}, "
+        f"Not found: {not_found_count}"
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -922,6 +1369,14 @@ def run_scraper(phases: Optional[List[str]] = None):
         if all_phases or "websites" in phase_set:
             phase_website_enrich(session, client, log)
 
+        # Phase 5: InformAlberta Enrichment (requires OpenAI)
+        if (all_phases or "informalberta" in phase_set) and client:
+            phase_informalberta_enrich(session, client, log)
+
+        # Phase 6: Inactive Service Recovery (requires OpenAI)
+        if ("recover" in phase_set) and client:
+            phase_inactive_recovery(session, client, log)
+
         # Finalize log
         log.status = "completed"
         log.completed_at = datetime.now()
@@ -949,9 +1404,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Alberta Service Scraper")
     parser.add_argument(
         "--phase",
-        choices=["reference", "211", "enrich", "websites"],
+        choices=["reference", "211", "enrich", "websites", "informalberta", "recover"],
         nargs="+",
-        help="Run specific phase(s). Omit to run all.",
+        help="Run specific phase(s). Omit to run all (except recover).",
     )
     args = parser.parse_args()
     run_scraper(phases=args.phase)

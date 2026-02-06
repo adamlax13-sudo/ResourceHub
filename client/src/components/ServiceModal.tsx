@@ -173,6 +173,21 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
   if (!service) return null;
 
   const parsed = parseContactInfo(service.contact);
+
+  // Add websiteUrl from the dedicated field if available and not already in parsed
+  if (service.websiteUrl && service.websiteUrl.trim()) {
+    const url = service.websiteUrl.trim();
+    // Only add if not already present in parsed websites
+    const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
+    const alreadyExists = parsed.websites.some(w => {
+      const normalizedExisting = w.startsWith('http') ? w : `https://${w}`;
+      return normalizedExisting.toLowerCase() === normalizedUrl.toLowerCase();
+    });
+    if (!alreadyExists && isSafeUrl(normalizedUrl)) {
+      parsed.websites.unshift(url); // Add at beginning as primary website
+    }
+  }
+
   const serviceUrl = getServiceUrl(parsed);
   const hasWebsite = parsed.websites.length > 0;
 

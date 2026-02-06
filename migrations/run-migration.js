@@ -26,6 +26,7 @@ async function runMigration() {
       'create_searches_feedback_tables.sql',
       'add_ai_service_enrichments.sql',
       'add_search_improvements.sql',
+      'add_normalized_contact_fields.sql',
     ];
 
     for (const file of migrationFiles) {

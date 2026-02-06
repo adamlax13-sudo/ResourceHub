@@ -25,8 +25,13 @@ class Service(Base):
     # Core information
     description = Column(Text)
     location = Column(String(500))
-    contact = Column(Text)  # Phone, email, website
+    contact = Column(Text)  # Phone, email, website (combined for display)
     eligibility = Column(Text)
+
+    # Normalized contact fields (extracted from contact for search)
+    phone = Column(String(100))  # Primary phone number
+    email = Column(String(255))  # Primary email address
+    address = Column(Text)  # Physical address
 
     # Process and requirements
     process_steps = Column(JSON)  # Array of process steps
@@ -55,6 +60,9 @@ class Service(Base):
     # Metadata
     tags = Column(JSON)  # Array of tags for search
     notes = Column(Text)  # Admin notes
+
+    # Search optimization
+    search_text = Column(Text)  # Concatenated searchable text
 
     # Indexes for common queries
     __table_args__ = (

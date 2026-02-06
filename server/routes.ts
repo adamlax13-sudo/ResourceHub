@@ -142,7 +142,7 @@ function extractLocationContext(query: string): LocationContext {
   }
 
   // Check for known Alberta locations
-  for (const location of ALBERTA_LOCATIONS) {
+  for (const location of Array.from(ALBERTA_LOCATIONS)) {
     if (queryLower.includes(location)) {
       return { specifiedLocation: location, isProvinceWide };
     }
@@ -431,6 +431,8 @@ interface ServicesCache {
   formattedString: string;
   hash: string;
   lastFetched: number;
+  aliasToServiceId: Map<string, string>; // alias -> serviceId lookup
+  serviceIdToAliases: Map<string, string[]>; // serviceId -> aliases lookup
 }
 
 let servicesCache: ServicesCache | null = null;
@@ -456,13 +458,16 @@ function formatServicesForAI(servicesList: Service[]): string {
     const categoryServices = categories.get(category)!;
     formatted += `## ${category.toUpperCase()}\n`;
     for (const service of categoryServices) {
+      const serviceId = service.serviceId;
+      const location = service.location || 'Alberta';
       const contact = service.contact || 'N/A';
+      const website = service.websiteUrl ? ` [Website: ${service.websiteUrl}]` : '';
       const description = service.description || 'Service information available upon contact';
       const tags = Array.isArray(service.tags) && (service.tags as string[]).length > 0
         ? ` [Tags: ${(service.tags as string[]).join(', ')}]`
         : '';
       const elig = service.eligibility ? ` [Eligibility: ${service.eligibility}]` : '';
-      formatted += `- ${service.name}: ${contact} - ${description}${tags}${elig}\n`;
+      formatted += `- [ID: ${serviceId}] ${service.name} (${location}): ${contact}${website} - ${description}${tags}${elig}\n`;
     }
     formatted += '\n';
   }
@@ -527,6 +532,8 @@ async function getCachedServices(): Promise<{
   completeServices: Service[];
   formatted: string;
   hash: string;
+  aliasToServiceId: Map<string, string>;
+  serviceIdToAliases: Map<string, string[]>;
 }> {
   const now = Date.now();
   if (servicesCache && (now - servicesCache.lastFetched) < SERVICES_CACHE_TTL) {
@@ -535,6 +542,8 @@ async function getCachedServices(): Promise<{
       completeServices: servicesCache.completeServices,
       formatted: servicesCache.formattedString,
       hash: servicesCache.hash,
+      aliasToServiceId: servicesCache.aliasToServiceId,
+      serviceIdToAliases: servicesCache.serviceIdToAliases,
     };
   }
 
@@ -550,10 +559,27 @@ async function getCachedServices(): Promise<{
     .digest('hex')
     .slice(0, 8);
 
-  console.log(`Services cache: ${allServices.length} total, ${completeServices.length} with sufficient data (${allServices.length - completeServices.length} filtered)`);
+  // Load service aliases for better matching
+  const serviceIdToAliases = await storage.getAliasesForServices();
+  const aliasToServiceId = new Map<string, string>();
+  Array.from(serviceIdToAliases.entries()).forEach(([serviceId, aliases]) => {
+    aliases.forEach(alias => {
+      aliasToServiceId.set(alias.toLowerCase(), serviceId);
+    });
+  });
 
-  servicesCache = { services: allServices, completeServices, formattedString: formatted, hash, lastFetched: now };
-  return { services: allServices, completeServices, formatted, hash };
+  console.log(`Services cache: ${allServices.length} total, ${completeServices.length} with sufficient data, ${aliasToServiceId.size} aliases loaded`);
+
+  servicesCache = {
+    services: allServices,
+    completeServices,
+    formattedString: formatted,
+    hash,
+    lastFetched: now,
+    aliasToServiceId,
+    serviceIdToAliases,
+  };
+  return { services: allServices, completeServices, formatted, hash, aliasToServiceId, serviceIdToAliases };
 }
 
 // Pre-filter services based on query keywords for smaller OpenAI context
@@ -562,7 +588,12 @@ interface ScoredService {
   score: number;
 }
 
-function preFilterServices(query: string, allServices: Service[]): ScoredService[] {
+function preFilterServices(
+  query: string,
+  allServices: Service[],
+  aliasToServiceId?: Map<string, string>,
+  serviceIdToAliases?: Map<string, string[]>
+): ScoredService[] {
   // ========== TYPO CORRECTION ==========
   // Correct common misspellings before processing
   const { corrected: correctedQuery, corrections } = correctTypos(query);
@@ -573,6 +604,31 @@ function preFilterServices(query: string, allServices: Service[]): ScoredService
   const queryLower = normalizeForCache(correctedQuery);
   const baseKeywords = extractKeywords(correctedQuery);
   const keywords = expandKeywords(baseKeywords);
+
+  // ========== ALIAS MATCHING ==========
+  // Check if any keyword matches a service alias (e.g., "CMHA", "AA", "NA")
+  const aliasMatchedServiceIds = new Set<string>();
+  if (aliasToServiceId) {
+    for (const kw of baseKeywords) {
+      const matchedServiceId = aliasToServiceId.get(kw.toLowerCase());
+      if (matchedServiceId) {
+        aliasMatchedServiceIds.add(matchedServiceId);
+        console.log(`Alias match: "${kw}" → service ID "${matchedServiceId}"`);
+      }
+    }
+    // Also check the full query for multi-word aliases
+    const queryWords = queryLower.split(/\s+/);
+    for (let i = 0; i < queryWords.length; i++) {
+      for (let j = i + 1; j <= Math.min(i + 3, queryWords.length); j++) {
+        const phrase = queryWords.slice(i, j).join(' ');
+        const matchedServiceId = aliasToServiceId.get(phrase);
+        if (matchedServiceId) {
+          aliasMatchedServiceIds.add(matchedServiceId);
+          console.log(`Alias match (phrase): "${phrase}" → service ID "${matchedServiceId}"`);
+        }
+      }
+    }
+  }
 
   // ========== STEMMING ==========
   // Add stemmed versions of keywords for broader matching
@@ -659,6 +715,23 @@ function preFilterServices(query: string, allServices: Service[]): ScoredService
     const tagsArray: string[] = Array.isArray(service.tags)
       ? (service.tags as string[]).map(t => String(t).toLowerCase())
       : [];
+
+    // ========== ALIAS MATCHING BOOST (highest priority) ==========
+    // If user searched for an alias (like "CMHA", "AA"), give huge boost to that service
+    if (aliasMatchedServiceIds.has(service.serviceId)) {
+      score += 500; // Very strong boost for alias match
+    }
+
+    // Also check if any query keyword matches this service's aliases
+    if (serviceIdToAliases) {
+      const serviceAliases = serviceIdToAliases.get(service.serviceId) || [];
+      for (const alias of serviceAliases) {
+        if (queryLower.includes(alias.toLowerCase())) {
+          score += 300; // Strong boost for alias mention in query
+          break;
+        }
+      }
+    }
 
     // ========== LOCATION FILTERING (critical for location-specific queries) ==========
     let locationMatch: 'exact' | 'province-wide' | 'none' = 'none';
@@ -826,6 +899,7 @@ function composeFromEnrichments(
         description: enrichment.aiDescription,
         location: enrichment.aiLocation || service.location || '',
         contact: enrichment.aiContact || service.contact || '',
+        websiteUrl: service.websiteUrl || '',
         eligibility: enrichment.aiEligibility || service.eligibility || '',
         process: mode === 'fast' ? processSteps.slice(0, 4) : processSteps,
         waitTimes: enrichment.aiWaitTimes || service.waitTimes || '',
@@ -841,6 +915,7 @@ function composeFromEnrichments(
       description: service.description || '',
       location: service.location || '',
       contact: service.contact || '',
+      websiteUrl: service.websiteUrl || '',
       eligibility: service.eligibility || '',
       process: (service.processSteps as string[]) || [],
       waitTimes: service.waitTimes || '',
@@ -978,6 +1053,7 @@ export async function registerRoutes(
   });
 
   app.post(api.search.query.path, strictLimiter, async (req: Request, res: Response) => {
+    const startTime = Date.now();
     let dbServices: Service[] = [];
     try {
       const input = api.search.query.input.parse(req.body);
@@ -992,7 +1068,14 @@ export async function registerRoutes(
       // OPTIMIZATION 1: In-memory services cache
       // Eliminates DB round-trip for service data on every request
       // Uses completeServices (services with sufficient data) for search
-      const { services: allCachedServices, completeServices, formatted: servicesReference, hash: DATABASE_HASH } = await getCachedServices();
+      const {
+        services: allCachedServices,
+        completeServices,
+        formatted: servicesReference,
+        hash: DATABASE_HASH,
+        aliasToServiceId,
+        serviceIdToAliases
+      } = await getCachedServices();
       dbServices = allCachedServices;
       // Use only services with sufficient data for search results
       const cachedServices = completeServices;
@@ -1001,15 +1084,19 @@ export async function registerRoutes(
       const normalizedQueryText = normalizeForCache(input.query);
       const normalizedQuery = `${DATABASE_HASH}:${mode}:${normalizedQueryText}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
-      if (cached) return res.json(cached.results);
+      if (cached) {
+        const searchTimeMs = Date.now() - startTime;
+        const cachedResults = cached.results as Record<string, unknown>;
+        return res.json({ ...cachedResults, searchTimeMs, cached: true });
+      }
 
       // Detect suicide/crisis-related queries for special prioritization
       const suicideKeywords = ['suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'dont want to live', "don't want to live", 'self harm', 'self-harm'];
       const queryLower = input.query.toLowerCase();
       const isCrisisQuery = suicideKeywords.some(keyword => queryLower.includes(keyword));
 
-      // OPTIMIZATION 2: Pre-filter services based on query keywords
-      const preFiltered = preFilterServices(input.query, cachedServices);
+      // OPTIMIZATION 2: Pre-filter services based on query keywords (with alias support)
+      const preFiltered = preFilterServices(input.query, cachedServices, aliasToServiceId, serviceIdToAliases);
 
       // OPTIMIZATION 3: Try enrichment-based fast path
       // If we have cached AI enrichments for all relevant services, compose the
@@ -1046,7 +1133,8 @@ export async function registerRoutes(
           // All top services have cached enrichments - compose locally (skip OpenAI)
           const results = composeFromEnrichments(topServices, enrichments, mode, input.query, isCrisisQuery);
           await storage.createSearch({ query: normalizedQuery, results });
-          return res.json(results);
+          const searchTimeMs = Date.now() - startTime;
+          return res.json({ ...results, searchTimeMs, cached: false });
         }
       }
 
@@ -1123,25 +1211,29 @@ ${mode === 'fast' ? fastModeInstructions : comprehensiveModeInstructions}
 
 REQUIREMENTS:
 - Every service MUST be a REAL Alberta organization from the reference database below
+- Use the EXACT service ID from [ID: ...] - this is critical for matching
 - Match services by name, description, category, AND tags (tags are shown in [Tags: ...] brackets)
 - If the user's query matches a service's tags, that service MUST be included in results
 - Use ONLY URLs, phone numbers, and addresses EXACTLY as listed in the database
-- DO NOT invent URLs - if not in database, use the phone number instead
+- For websiteUrl: copy the EXACT URL from [Website: ...] - do NOT put URLs in the contact field
+- For contact: include phone numbers and email addresses only (NOT website URLs)
+- DO NOT invent URLs - if no [Website: ...] exists for a service, leave websiteUrl empty
 - Never return generic categories - only real named organizations
 - Interpret user intent even with typos or misspellings
-- RESPECT LOCATION: If user specifies a city, return services from that city + province-wide services ONLY
+- RESPECT LOCATION: Use the location shown in parentheses (e.g., "Calgary" or "Alberta"). Only include services from the user's city + province-wide services
 
 ${filteredReference}
 
 Return JSON:
 {
   "services": [{
-    "id": "string",
+    "id": "string (EXACT ID from [ID: ...] in the database)",
     "name": "string (exact org name from database)",
     "category": "string",
     "description": "string",
-    "location": "string",
-    "contact": "string (real phone/email/website from database)",
+    "location": "string (from database)",
+    "contact": "string (phone/email ONLY - no URLs)",
+    "websiteUrl": "string (EXACT URL from [Website: ...] or empty string if none)",
     "eligibility": "string",
     "process": ["${mode === 'fast' ? '3-4' : '4-8'} actionable steps with real contact info"],
     "waitTimes": "string",
@@ -1164,6 +1256,62 @@ Return JSON:
       });
 
       const results = JSON.parse(completion.choices[0].message.content!);
+
+      // ========== POST-PROCESSING: Enhance AI results with database data ==========
+      // Match AI results to actual database services and fill in missing fields
+      if (results.services && Array.isArray(results.services)) {
+        // Build a lookup map of database services by ID and normalized name
+        const serviceById = new Map<string, Service>();
+        const serviceByName = new Map<string, Service>();
+        for (const s of allCachedServices) {
+          serviceById.set(s.serviceId.toLowerCase(), s);
+          serviceByName.set(s.name.toLowerCase().trim(), s);
+        }
+
+        results.services = results.services.map((aiService: any) => {
+          // Try to match by ID first, then by name
+          let dbService: Service | undefined;
+          if (aiService.id) {
+            dbService = serviceById.get(aiService.id.toLowerCase());
+          }
+          if (!dbService && aiService.name) {
+            dbService = serviceByName.get(aiService.name.toLowerCase().trim());
+          }
+
+          if (dbService) {
+            // Use database ID (ensures exact match)
+            aiService.id = dbService.serviceId;
+
+            // Fill in websiteUrl from database if AI didn't return it
+            if (!aiService.websiteUrl && dbService.websiteUrl) {
+              aiService.websiteUrl = dbService.websiteUrl;
+            }
+
+            // If AI put a URL in contact, extract it to websiteUrl
+            if (aiService.contact) {
+              const urlMatch = aiService.contact.match(/https?:\/\/[^\s,;]+/i);
+              if (urlMatch && !aiService.websiteUrl) {
+                aiService.websiteUrl = urlMatch[0].replace(/[.)]+$/, '');
+                aiService.contact = aiService.contact.replace(urlMatch[0], '').trim().replace(/^[,;|\s]+|[,;|\s]+$/g, '');
+              }
+            }
+
+            // Fill in location from database if missing
+            if (!aiService.location && dbService.location) {
+              aiService.location = dbService.location;
+            }
+          }
+
+          // Ensure websiteUrl is a string (not undefined/null)
+          aiService.websiteUrl = aiService.websiteUrl || '';
+
+          // Ensure arrays are properly formatted
+          if (!Array.isArray(aiService.process)) aiService.process = [];
+          if (!Array.isArray(aiService.requiredDocs)) aiService.requiredDocs = [];
+
+          return aiService;
+        });
+      }
 
       // For crisis queries, ensure 988 is ALWAYS the first result
       if (isCrisisQuery && results.services) {
@@ -1203,7 +1351,8 @@ Return JSON:
       });
 
       await storage.createSearch({ query: normalizedQuery, results });
-      res.json(results);
+      const searchTimeMs = Date.now() - startTime;
+      res.json({ ...results, searchTimeMs, cached: false });
     } catch (err) {
       // Log detailed error information for debugging
       console.error("=== Search Error ===");

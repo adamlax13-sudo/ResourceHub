@@ -27,6 +27,10 @@ export const services = pgTable("services", {
   location: varchar("location", { length: 500 }),
   contact: text("contact"),
   eligibility: text("eligibility"),
+  // Normalized contact fields (extracted for better search)
+  phone: varchar("phone", { length: 100 }),
+  email: varchar("email", { length: 255 }),
+  address: text("address"),
   processSteps: jsonb("process_steps"),
   waitTimes: varchar("wait_times", { length: 255 }),
   requiredDocs: jsonb("required_docs"),
@@ -46,6 +50,8 @@ export const services = pgTable("services", {
   // Search improvement columns (added by add_search_improvements.sql)
   popularityScore: integer("popularity_score").default(0),
   clickCount: integer("click_count").default(0),
+  // Full-text search optimization
+  searchText: text("search_text"),
 });
 
 // Search analytics - tracks user searches and clicks for improving results
@@ -108,6 +114,7 @@ export interface ServiceDetail {
   description: string;
   location: string;
   contact: string;
+  websiteUrl?: string;
   eligibility: string;
   process: string[];
   waitTimes: string;
