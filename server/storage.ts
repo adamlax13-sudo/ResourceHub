@@ -501,10 +501,11 @@ export class DatabaseStorage implements IStorage {
   async getEnrichmentsBatch(serviceIds: string[]): Promise<Map<string, EnrichmentData>> {
     if (serviceIds.length === 0) return new Map();
 
-    // Convert array to PostgreSQL array literal format
-    const pgArray = `{${serviceIds.map(id => `"${id.replace(/"/g, '\\"')}"`).join(',')}}`;
+    // Use IN clause with properly escaped values
+    // Escape single quotes in service IDs to prevent SQL injection
+    const escapedIds = serviceIds.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
 
-    const result = await db.execute(sql`
+    const result = await db.execute(sql.raw(`
       SELECT
         service_id,
         service_name,
@@ -517,8 +518,8 @@ export class DatabaseStorage implements IStorage {
         ai_location,
         ai_contact
       FROM ai_service_enrichments
-      WHERE service_id = ANY(${pgArray}::varchar[])
-    `);
+      WHERE service_id IN (${escapedIds})
+    `));
 
     const map = new Map<string, EnrichmentData>();
     for (const row of result.rows as any[]) {
