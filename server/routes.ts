@@ -127,7 +127,7 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
 interface TwoStageSearchResult {
   services: any[];
   summary: string;
-  searchType: 'sql' | 'sql+enrichment' | 'openai';
+  searchType: 'sql' | 'sql+enrichment' | 'sql+semantic' | 'openai';
 }
 
 async function twoStageSearch(
@@ -803,21 +803,22 @@ export async function registerRoutes(
       const queryLower = input.query.toLowerCase();
       const isCrisisQuery = suicideKeywords.some(keyword => queryLower.includes(keyword));
 
+      // Extract location context (used by both SQL and semantic search)
+      const locationContext = extractLocationContext(input.query);
+      const baseKeywords = extractKeywords(input.query);
+      const nonLocationKeywords = baseKeywords.filter(kw =>
+        !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
+      );
+      // Use user-selected location (dropdown) if provided, else query-extracted location
+      const effectiveLocation = userSelectedLocation || locationContext.specifiedLocation || null;
+      const isLocationOnlyQuery = !!(effectiveLocation && nonLocationKeywords.length === 0);
+
       // ============= FAST MODE: TWO-STAGE SQL SEARCH (NO AI CALL) =============
       // Stage 1: Fast SQL search using indexes (< 50ms)
       // Stage 2: Apply cached AI enrichments (no API call)
       // This is the fastest path - no OpenAI API calls at all
       if (mode === 'fast') {
         try {
-          // Extract location context for SQL filtering
-          const locationContext = extractLocationContext(input.query);
-          const baseKeywords = extractKeywords(input.query);
-          const nonLocationKeywords = baseKeywords.filter(kw =>
-            !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
-          );
-          // Use user-selected location (dropdown) if provided, else query-extracted location
-          const effectiveLocation = userSelectedLocation || locationContext.specifiedLocation || null;
-          const isLocationOnlyQuery = !!(effectiveLocation && nonLocationKeywords.length === 0);
 
           // Use two-stage SQL search
           const sqlSearchResult = await twoStageSearch(
@@ -828,23 +829,87 @@ export async function registerRoutes(
             50 // Get more results for pagination
           );
 
-          if (sqlSearchResult.services.length > 0) {
+          // HYBRID SEARCH: Combine SQL and semantic results for better coverage
+          // If SQL returns few results (< 8), supplement with semantic search
+          const MIN_RESULTS_THRESHOLD = 8;
+          let combinedServices = sqlSearchResult.services;
+          let searchType = sqlSearchResult.searchType;
+
+          if (sqlSearchResult.services.length < MIN_RESULTS_THRESHOLD && await checkEmbeddingsAvailable()) {
+            try {
+              console.log(`[Search] SQL returned ${sqlSearchResult.services.length} results, supplementing with semantic search`);
+              const queryEmbedding = await generateQueryEmbedding(input.query);
+              const semanticResults = await storage.semanticSearch(
+                queryEmbedding,
+                0.2, // Lower threshold for more results
+                50
+              );
+
+              if (semanticResults.length > 0) {
+                // Get enrichments for semantic results
+                const semanticIds = semanticResults.map(r => r.serviceId);
+                const semanticEnrichments = await storage.getEnrichmentsByServiceIds(semanticIds);
+
+                // Convert semantic results to LiteService format
+                const semanticServices: LiteService[] = semanticResults.map(sr => {
+                  const enrichment = semanticEnrichments.get(sr.serviceId);
+                  return toLiteService({
+                    id: sr.serviceId,
+                    name: sr.name,
+                    category: enrichment?.aiCategory || sr.category,
+                    description: enrichment?.aiDescription || sr.description || '',
+                    location: enrichment?.aiLocation || sr.location || '',
+                    waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
+                  });
+                });
+
+                // Filter semantic results by location if specified
+                let filteredSemantic = semanticServices;
+                if (effectiveLocation) {
+                  const locLower = effectiveLocation.toLowerCase();
+                  filteredSemantic = semanticServices.filter(s => {
+                    const svcLoc = (s.location || '').toLowerCase();
+                    return svcLoc.includes(locLower) ||
+                           svcLoc.includes('alberta') ||
+                           svcLoc.includes('province') ||
+                           svcLoc === '';
+                  });
+                }
+
+                // Merge: SQL results first, then semantic results (deduplicated)
+                const existingIds = new Set(combinedServices.map(s => s.id));
+                for (const svc of filteredSemantic) {
+                  if (!existingIds.has(svc.id)) {
+                    combinedServices.push(svc);
+                    existingIds.add(svc.id);
+                  }
+                }
+                searchType = 'sql+semantic';
+                console.log(`[Search] Combined: ${combinedServices.length} total results`);
+              }
+            } catch (embErr) {
+              console.warn('[Search] Semantic supplement failed:', embErr);
+              // Continue with SQL results only
+            }
+          }
+
+          if (combinedServices.length > 0) {
             // Apply pagination
-            const totalResults = sqlSearchResult.services.length;
+            const totalResults = combinedServices.length;
             const totalPages = Math.ceil(totalResults / pageSize);
             const startIndex = (page - 1) * pageSize;
-            const paginatedServices = sqlSearchResult.services.slice(startIndex, startIndex + pageSize);
+            const paginatedServices = combinedServices.slice(startIndex, startIndex + pageSize);
 
             // Cache the full results
             await storage.createSearch({
               query: normalizedQuery,
-              results: { services: sqlSearchResult.services, summary: sqlSearchResult.summary }
+              results: { services: combinedServices, summary: `Found ${totalResults} services` }
             });
 
             const searchTimeMs = Date.now() - startTime;
             return res.json({
               services: paginatedServices,
-              summary: sqlSearchResult.summary,
+              summary: `Found ${totalResults} service${totalResults === 1 ? '' : 's'} matching "${input.query}"`,
               pagination: {
                 page,
                 pageSize,
@@ -855,11 +920,11 @@ export async function registerRoutes(
               },
               searchTimeMs,
               cached: false,
-              searchType: sqlSearchResult.searchType,
+              searchType,
             });
           }
-          // If SQL search returns no results, fall through to embedding/OpenAI search
-          console.log('[Search] SQL search returned no results, trying fallback');
+          // If still no results, fall through to pure embedding search
+          console.log('[Search] Combined search returned no results, trying pure embedding fallback');
         } catch (sqlError) {
           console.error('[Search] SQL search failed, falling back:', sqlError);
           // Fall through to embedding search
@@ -867,7 +932,7 @@ export async function registerRoutes(
       }
 
       // ============= EMBEDDING-BASED SEARCH (FALLBACK FOR FAST MODE) =============
-      // Uses semantic similarity when SQL search fails or returns no results
+      // Uses semantic similarity when SQL+hybrid search fails or returns no results
       // Requires one small API call for query embedding
       if (mode === 'fast' && await checkEmbeddingsAvailable()) {
         try {
@@ -877,7 +942,7 @@ export async function registerRoutes(
           // Find semantically similar services using pgvector
           const semanticResults = await storage.semanticSearch(
             queryEmbedding,
-            0.25, // Lower threshold to get more candidates
+            0.2, // Lower threshold to get more candidates
             50    // Get up to 50 matches, we'll paginate
           );
 
@@ -899,6 +964,18 @@ export async function registerRoutes(
                 waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
               });
             });
+
+            // Filter by location if specified
+            if (effectiveLocation) {
+              const locLower = effectiveLocation.toLowerCase();
+              resultServices = resultServices.filter(s => {
+                const svcLoc = (s.location || '').toLowerCase();
+                return svcLoc.includes(locLower) ||
+                       svcLoc.includes('alberta') ||
+                       svcLoc.includes('province') ||
+                       svcLoc === '';
+              });
+            }
 
             // For crisis queries, ensure 988 is first
             if (isCrisisQuery) {
