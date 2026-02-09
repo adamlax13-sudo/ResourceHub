@@ -88,23 +88,23 @@ RETURNS TABLE (
   contact TEXT,
   website_url TEXT,
   eligibility TEXT,
-  process_steps JSONB,
+  process_steps JSON,
   wait_times VARCHAR(255),
-  required_docs JSONB,
+  required_docs JSON,
   phone VARCHAR(100),
   email VARCHAR(255),
   address TEXT,
-  tags JSONB,
+  tags JSON,
   relevance_score FLOAT
 ) AS $$
 DECLARE
   query_tsquery tsquery;
   query_lower TEXT;
-  location_lower TEXT;
+  loc_filter TEXT;
 BEGIN
   -- Normalize inputs
   query_lower := lower(trim(search_query));
-  location_lower := lower(trim(COALESCE(location_filter, '')));
+  loc_filter := lower(trim(COALESCE(location_filter, '')));
 
   -- Build tsquery for full-text search (handles multi-word queries)
   query_tsquery := plainto_tsquery('english', search_query);
@@ -145,9 +145,9 @@ BEGIN
 
         -- Location match bonus
         CASE
-          WHEN location_lower != '' AND s.location_lower LIKE '%' || location_lower || '%' THEN 60
-          WHEN location_lower != '' AND (s.location_lower LIKE '%alberta%' OR s.location_lower LIKE '%province%') THEN 30
-          WHEN location_lower != '' THEN -100  -- Penalty for wrong location
+          WHEN loc_filter != '' AND s.location_lower LIKE '%' || loc_filter || '%' THEN 60
+          WHEN loc_filter != '' AND (s.location_lower LIKE '%alberta%' OR s.location_lower LIKE '%province%') THEN 30
+          WHEN loc_filter != '' THEN -100  -- Penalty for wrong location
           ELSE 0
         END +
 
@@ -213,19 +213,19 @@ RETURNS TABLE (
   contact TEXT,
   website_url TEXT,
   eligibility TEXT,
-  process_steps JSONB,
+  process_steps JSON,
   wait_times VARCHAR(255),
-  required_docs JSONB,
+  required_docs JSON,
   phone VARCHAR(100),
   email VARCHAR(255),
   address TEXT,
-  tags JSONB,
+  tags JSON,
   relevance_score FLOAT
 ) AS $$
 DECLARE
-  location_lower TEXT;
+  loc_query TEXT;
 BEGIN
-  location_lower := lower(trim(location_query));
+  loc_query := lower(trim(location_query));
 
   RETURN QUERY
   SELECT
@@ -247,7 +247,7 @@ BEGIN
     (
       -- Location match score
       CASE
-        WHEN s.location_lower LIKE '%' || location_lower || '%' THEN 100
+        WHEN s.location_lower LIKE '%' || loc_query || '%' THEN 100
         WHEN s.location_lower LIKE '%alberta%' OR s.location_lower LIKE '%province%' THEN 50
         ELSE 0
       END +
@@ -262,11 +262,11 @@ BEGIN
       CASE WHEN s.description IS NOT NULL AND length(s.description) > 50 THEN 20 ELSE 0 END +
       CASE WHEN s.website_url IS NOT NULL AND s.website_url != '' THEN 15 ELSE 0 END +
       CASE WHEN s.phone IS NOT NULL AND s.phone != '' THEN 10 ELSE 0 END +
-      CASE WHEN s.process_steps IS NOT NULL AND jsonb_array_length(s.process_steps) > 0 THEN 10 ELSE 0 END
+      CASE WHEN s.process_steps IS NOT NULL AND json_array_length(s.process_steps) > 0 THEN 10 ELSE 0 END
     )::FLOAT as relevance_score
   FROM mv_service_search s
   WHERE
-    s.location_lower LIKE '%' || location_lower || '%'
+    s.location_lower LIKE '%' || loc_query || '%'
     OR s.location_lower LIKE '%alberta%'
     OR s.location_lower LIKE '%province%'
   ORDER BY relevance_score DESC
@@ -289,13 +289,13 @@ RETURNS TABLE (
   contact TEXT,
   website_url TEXT,
   eligibility TEXT,
-  process_steps JSONB,
+  process_steps JSON,
   wait_times VARCHAR(255),
-  required_docs JSONB,
+  required_docs JSON,
   phone VARCHAR(100),
   email VARCHAR(255),
   address TEXT,
-  tags JSONB,
+  tags JSON,
   relevance_score FLOAT
 ) AS $$
 BEGIN
@@ -341,13 +341,13 @@ RETURNS TABLE (
   contact TEXT,
   website_url TEXT,
   eligibility TEXT,
-  process_steps JSONB,
+  process_steps JSON,
   wait_times VARCHAR(255),
-  required_docs JSONB,
+  required_docs JSON,
   phone VARCHAR(100),
   email VARCHAR(255),
   address TEXT,
-  tags JSONB,
+  tags JSON,
   relevance_score FLOAT
 ) AS $$
 BEGIN
