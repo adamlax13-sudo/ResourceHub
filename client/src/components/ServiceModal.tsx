@@ -419,30 +419,6 @@ export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) 
                       </div>
                     )}
 
-                    {/* Websites */}
-                    {parsed.websites.length > 0 && (
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                          <Globe className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.website')}</div>
-                          <div className="space-y-1 mt-0.5">
-                            {parsed.websites.map((site, idx) => {
-                              const href = site.startsWith('http') ? site : `https://${site}`;
-                              return (
-                                <div key={idx}>
-                                  <a href={href} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline break-all">
-                                    {site}
-                                  </a>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Emails */}
                     {parsed.emails.length > 0 && (
                       <div className="flex items-start gap-3 min-w-0">
