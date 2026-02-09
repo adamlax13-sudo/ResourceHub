@@ -1317,49 +1317,27 @@ Return JSON:
         serviceProcessStepsType: typeof service.processSteps,
       });
 
-      // Ensure process steps are arrays (handle string JSON if needed)
-      let processSteps: string[] = [];
-      if (enrichment?.aiProcessSteps) {
-        if (Array.isArray(enrichment.aiProcessSteps)) {
-          processSteps = enrichment.aiProcessSteps;
-        } else if (typeof enrichment.aiProcessSteps === 'string') {
+      // Helper to parse JSON array fields (handles array, string JSON, or null)
+      const parseArrayField = (value: unknown): string[] => {
+        if (Array.isArray(value) && value.length > 0) return value;
+        if (typeof value === 'string') {
           try {
-            const parsed = JSON.parse(enrichment.aiProcessSteps);
-            processSteps = Array.isArray(parsed) ? parsed : [];
+            const parsed = JSON.parse(value);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
           } catch { /* ignore */ }
         }
-      } else if (service.processSteps) {
-        if (Array.isArray(service.processSteps)) {
-          processSteps = service.processSteps as string[];
-        } else if (typeof service.processSteps === 'string') {
-          try {
-            const parsed = JSON.parse(service.processSteps);
-            processSteps = Array.isArray(parsed) ? parsed : [];
-          } catch { /* ignore */ }
-        }
-      }
+        return [];
+      };
 
-      // Ensure required docs are arrays (handle string JSON if needed)
-      let requiredDocs: string[] = [];
-      if (enrichment?.aiRequiredDocs) {
-        if (Array.isArray(enrichment.aiRequiredDocs)) {
-          requiredDocs = enrichment.aiRequiredDocs;
-        } else if (typeof enrichment.aiRequiredDocs === 'string') {
-          try {
-            const parsed = JSON.parse(enrichment.aiRequiredDocs);
-            requiredDocs = Array.isArray(parsed) ? parsed : [];
-          } catch { /* ignore */ }
-        }
-      } else if (service.requiredDocs) {
-        if (Array.isArray(service.requiredDocs)) {
-          requiredDocs = service.requiredDocs as string[];
-        } else if (typeof service.requiredDocs === 'string') {
-          try {
-            const parsed = JSON.parse(service.requiredDocs);
-            requiredDocs = Array.isArray(parsed) ? parsed : [];
-          } catch { /* ignore */ }
-        }
-      }
+      // Use enrichment data if it has content, otherwise fall back to service data
+      // IMPORTANT: Check .length > 0 because empty arrays are truthy in JS
+      const enrichmentSteps = parseArrayField(enrichment?.aiProcessSteps);
+      const serviceSteps = parseArrayField(service.processSteps);
+      const processSteps = enrichmentSteps.length > 0 ? enrichmentSteps : serviceSteps;
+
+      const enrichmentDocs = parseArrayField(enrichment?.aiRequiredDocs);
+      const serviceDocs = parseArrayField(service.requiredDocs);
+      const requiredDocs = enrichmentDocs.length > 0 ? enrichmentDocs : serviceDocs;
 
       // Compose full service detail response
       const fullService = {
