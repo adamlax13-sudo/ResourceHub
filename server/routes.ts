@@ -770,8 +770,10 @@ export async function registerRoutes(
       const cachedServices = completeServices;
 
       // Normalize query and check exact cache match
+      // Include location in cache key so different locations get different results
       const normalizedQueryText = normalizeForCache(input.query);
-      const normalizedQuery = `${DATABASE_HASH}:${mode}:${normalizedQueryText}`;
+      const locationKey = userSelectedLocation ? `:loc:${userSelectedLocation}` : '';
+      const normalizedQuery = `${DATABASE_HASH}:${mode}:${normalizedQueryText}${locationKey}`;
       const cached = await storage.getSearchByQuery(normalizedQuery);
       if (cached) {
         const searchTimeMs = Date.now() - startTime;
@@ -835,15 +837,19 @@ export async function registerRoutes(
           let combinedServices = sqlSearchResult.services;
           let searchType = sqlSearchResult.searchType;
 
-          if (sqlSearchResult.services.length < MIN_RESULTS_THRESHOLD && await checkEmbeddingsAvailable()) {
+          const embeddingsAvailable = await checkEmbeddingsAvailable();
+          console.log(`[Search] SQL returned ${sqlSearchResult.services.length} results, embeddingsAvailable: ${embeddingsAvailable}`);
+
+          if (sqlSearchResult.services.length < MIN_RESULTS_THRESHOLD && embeddingsAvailable) {
             try {
-              console.log(`[Search] SQL returned ${sqlSearchResult.services.length} results, supplementing with semantic search`);
+              console.log(`[Search] Supplementing with semantic search...`);
               const queryEmbedding = await generateQueryEmbedding(input.query);
               const semanticResults = await storage.semanticSearch(
                 queryEmbedding,
-                0.2, // Lower threshold for more results
+                0.15, // Very low threshold for maximum coverage
                 50
               );
+              console.log(`[Search] Semantic search returned ${semanticResults.length} raw results`);
 
               if (semanticResults.length > 0) {
                 // Get enrichments for semantic results
@@ -874,18 +880,21 @@ export async function registerRoutes(
                            svcLoc.includes('province') ||
                            svcLoc === '';
                   });
+                  console.log(`[Search] After location filter (${effectiveLocation}): ${filteredSemantic.length} of ${semanticServices.length}`);
                 }
 
                 // Merge: SQL results first, then semantic results (deduplicated)
                 const existingIds = new Set(combinedServices.map(s => s.id));
+                let addedCount = 0;
                 for (const svc of filteredSemantic) {
                   if (!existingIds.has(svc.id)) {
                     combinedServices.push(svc);
                     existingIds.add(svc.id);
+                    addedCount++;
                   }
                 }
                 searchType = 'sql+semantic';
-                console.log(`[Search] Combined: ${combinedServices.length} total results`);
+                console.log(`[Search] Added ${addedCount} semantic results. Combined total: ${combinedServices.length}`);
               }
             } catch (embErr) {
               console.warn('[Search] Semantic supplement failed:', embErr);
