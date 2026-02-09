@@ -1309,6 +1309,58 @@ Return JSON:
         return res.status(404).json({ message: "Service not found" });
       }
 
+      // Debug: log process steps data
+      console.log(`[ServiceDetail] ${service.name}:`, {
+        enrichmentProcessSteps: enrichment?.aiProcessSteps,
+        enrichmentProcessStepsType: typeof enrichment?.aiProcessSteps,
+        serviceProcessSteps: service.processSteps,
+        serviceProcessStepsType: typeof service.processSteps,
+      });
+
+      // Ensure process steps are arrays (handle string JSON if needed)
+      let processSteps: string[] = [];
+      if (enrichment?.aiProcessSteps) {
+        if (Array.isArray(enrichment.aiProcessSteps)) {
+          processSteps = enrichment.aiProcessSteps;
+        } else if (typeof enrichment.aiProcessSteps === 'string') {
+          try {
+            const parsed = JSON.parse(enrichment.aiProcessSteps);
+            processSteps = Array.isArray(parsed) ? parsed : [];
+          } catch { /* ignore */ }
+        }
+      } else if (service.processSteps) {
+        if (Array.isArray(service.processSteps)) {
+          processSteps = service.processSteps as string[];
+        } else if (typeof service.processSteps === 'string') {
+          try {
+            const parsed = JSON.parse(service.processSteps);
+            processSteps = Array.isArray(parsed) ? parsed : [];
+          } catch { /* ignore */ }
+        }
+      }
+
+      // Ensure required docs are arrays (handle string JSON if needed)
+      let requiredDocs: string[] = [];
+      if (enrichment?.aiRequiredDocs) {
+        if (Array.isArray(enrichment.aiRequiredDocs)) {
+          requiredDocs = enrichment.aiRequiredDocs;
+        } else if (typeof enrichment.aiRequiredDocs === 'string') {
+          try {
+            const parsed = JSON.parse(enrichment.aiRequiredDocs);
+            requiredDocs = Array.isArray(parsed) ? parsed : [];
+          } catch { /* ignore */ }
+        }
+      } else if (service.requiredDocs) {
+        if (Array.isArray(service.requiredDocs)) {
+          requiredDocs = service.requiredDocs as string[];
+        } else if (typeof service.requiredDocs === 'string') {
+          try {
+            const parsed = JSON.parse(service.requiredDocs);
+            requiredDocs = Array.isArray(parsed) ? parsed : [];
+          } catch { /* ignore */ }
+        }
+      }
+
       // Compose full service detail response
       const fullService = {
         id: service.serviceId,
@@ -1319,9 +1371,9 @@ Return JSON:
         contact: enrichment?.aiContact || service.contact || '',
         websiteUrl: service.websiteUrl || '',
         eligibility: enrichment?.aiEligibility || service.eligibility || '',
-        process: (enrichment?.aiProcessSteps as string[]) || (service.processSteps as string[]) || [],
+        process: processSteps,
         waitTimes: enrichment?.aiWaitTimes || service.waitTimes || '',
-        requiredDocs: (enrichment?.aiRequiredDocs as string[]) || (service.requiredDocs as string[]) || [],
+        requiredDocs: requiredDocs,
         phone: service.phone || '',
         email: service.email || '',
         address: service.address || '',
