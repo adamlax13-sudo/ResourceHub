@@ -127,7 +127,7 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
 interface TwoStageSearchResult {
   services: any[];
   summary: string;
-  searchType: 'sql' | 'sql+enrichment' | 'sql+semantic' | 'openai';
+  searchType: 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai';
 }
 
 async function twoStageSearch(
@@ -815,93 +815,98 @@ export async function registerRoutes(
       const effectiveLocation = userSelectedLocation || locationContext.specifiedLocation || null;
       const isLocationOnlyQuery = !!(effectiveLocation && nonLocationKeywords.length === 0);
 
-      // ============= FAST MODE: TWO-STAGE SQL SEARCH (NO AI CALL) =============
-      // Stage 1: Fast SQL search using indexes (< 50ms)
-      // Stage 2: Apply cached AI enrichments (no API call)
-      // This is the fastest path - no OpenAI API calls at all
+      // ============= FAST MODE: HYBRID SQL + SEMANTIC SEARCH =============
+      // Always combines SQL full-text search with semantic (embedding) search
+      // for maximum coverage and relevance
       if (mode === 'fast') {
         try {
+          const embeddingsAvailable = await checkEmbeddingsAvailable();
+          console.log(`[Search] Fast mode - embeddingsAvailable: ${embeddingsAvailable}`);
 
-          // Use two-stage SQL search
-          const sqlSearchResult = await twoStageSearch(
+          // Run SQL and semantic search in parallel for better performance
+          const sqlPromise = twoStageSearch(
             input.query,
             effectiveLocation,
             isLocationOnlyQuery,
             isCrisisQuery,
-            50 // Get more results for pagination
+            50
           );
 
-          // HYBRID SEARCH: Combine SQL and semantic results for better coverage
-          // If SQL returns few results (< 8), supplement with semantic search
-          const MIN_RESULTS_THRESHOLD = 8;
-          let combinedServices = sqlSearchResult.services;
+          // Always run semantic search if embeddings are available
+          const semanticPromise = embeddingsAvailable
+            ? (async () => {
+                try {
+                  const queryEmbedding = await generateQueryEmbedding(input.query);
+                  return await storage.semanticSearch(
+                    queryEmbedding,
+                    0.15, // Low threshold for maximum coverage
+                    50
+                  );
+                } catch (err) {
+                  console.warn('[Search] Semantic search failed:', err);
+                  return [];
+                }
+              })()
+            : Promise.resolve([]);
+
+          // Wait for both searches to complete
+          const [sqlSearchResult, semanticResults] = await Promise.all([sqlPromise, semanticPromise]);
+
+          console.log(`[Search] SQL returned ${sqlSearchResult.services.length} results`);
+          console.log(`[Search] Semantic returned ${semanticResults.length} results`);
+
+          let combinedServices = [...sqlSearchResult.services];
           let searchType = sqlSearchResult.searchType;
 
-          const embeddingsAvailable = await checkEmbeddingsAvailable();
-          console.log(`[Search] SQL returned ${sqlSearchResult.services.length} results, embeddingsAvailable: ${embeddingsAvailable}`);
+          // Process semantic results if we have any
+          if (semanticResults.length > 0) {
+            // Get enrichments for semantic results
+            const semanticIds = semanticResults.map(r => r.serviceId);
+            const semanticEnrichments = await storage.getEnrichmentsByServiceIds(semanticIds);
 
-          if (sqlSearchResult.services.length < MIN_RESULTS_THRESHOLD && embeddingsAvailable) {
-            try {
-              console.log(`[Search] Supplementing with semantic search...`);
-              const queryEmbedding = await generateQueryEmbedding(input.query);
-              const semanticResults = await storage.semanticSearch(
-                queryEmbedding,
-                0.15, // Very low threshold for maximum coverage
-                50
-              );
-              console.log(`[Search] Semantic search returned ${semanticResults.length} raw results`);
+            // Convert semantic results to LiteService format
+            const semanticServices: LiteService[] = semanticResults.map(sr => {
+              const enrichment = semanticEnrichments.get(sr.serviceId);
+              return toLiteService({
+                id: sr.serviceId,
+                name: sr.name,
+                category: enrichment?.aiCategory || sr.category,
+                description: enrichment?.aiDescription || sr.description || '',
+                location: enrichment?.aiLocation || sr.location || '',
+                waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
+              });
+            });
 
-              if (semanticResults.length > 0) {
-                // Get enrichments for semantic results
-                const semanticIds = semanticResults.map(r => r.serviceId);
-                const semanticEnrichments = await storage.getEnrichmentsByServiceIds(semanticIds);
+            // Sort semantic results by location relevance (prioritize, don't filter out)
+            let sortedSemantic = semanticServices;
+            if (effectiveLocation) {
+              const locLower = effectiveLocation.toLowerCase();
+              sortedSemantic = [...semanticServices].sort((a, b) => {
+                const aLoc = (a.location || '').toLowerCase();
+                const bLoc = (b.location || '').toLowerCase();
+                const scoreLocation = (loc: string) => {
+                  if (loc.includes(locLower)) return 3;
+                  if (loc.includes('alberta') || loc.includes('province') || loc === '') return 2;
+                  return 1;
+                };
+                return scoreLocation(bLoc) - scoreLocation(aLoc);
+              });
+            }
 
-                // Convert semantic results to LiteService format
-                const semanticServices: LiteService[] = semanticResults.map(sr => {
-                  const enrichment = semanticEnrichments.get(sr.serviceId);
-                  return toLiteService({
-                    id: sr.serviceId,
-                    name: sr.name,
-                    category: enrichment?.aiCategory || sr.category,
-                    description: enrichment?.aiDescription || sr.description || '',
-                    location: enrichment?.aiLocation || sr.location || '',
-                    waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
-                  });
-                });
-
-                // Sort semantic results by location relevance (prioritize, don't filter out)
-                let sortedSemantic = semanticServices;
-                if (effectiveLocation) {
-                  const locLower = effectiveLocation.toLowerCase();
-                  sortedSemantic = [...semanticServices].sort((a, b) => {
-                    const aLoc = (a.location || '').toLowerCase();
-                    const bLoc = (b.location || '').toLowerCase();
-                    const scoreLocation = (loc: string) => {
-                      if (loc.includes(locLower)) return 3;
-                      if (loc.includes('alberta') || loc.includes('province') || loc === '') return 2;
-                      return 1;
-                    };
-                    return scoreLocation(bLoc) - scoreLocation(aLoc);
-                  });
-                  console.log(`[Search] Sorted ${semanticServices.length} semantic results by location relevance`);
-                }
-
-                // Merge: SQL results first, then semantic results (deduplicated)
-                const existingIds = new Set(combinedServices.map(s => s.id));
-                let addedCount = 0;
-                for (const svc of sortedSemantic) {
-                  if (!existingIds.has(svc.id)) {
-                    combinedServices.push(svc);
-                    existingIds.add(svc.id);
-                    addedCount++;
-                  }
-                }
-                searchType = 'sql+semantic';
-                console.log(`[Search] Added ${addedCount} semantic results. Combined total: ${combinedServices.length}`);
+            // Merge: SQL results first, then semantic results (deduplicated)
+            const existingIds = new Set(combinedServices.map(s => s.id));
+            let addedCount = 0;
+            for (const svc of sortedSemantic) {
+              if (!existingIds.has(svc.id)) {
+                combinedServices.push(svc);
+                existingIds.add(svc.id);
+                addedCount++;
               }
-            } catch (embErr) {
-              console.warn('[Search] Semantic supplement failed:', embErr);
-              // Continue with SQL results only
+            }
+
+            if (addedCount > 0) {
+              searchType = sqlSearchResult.services.length > 0 ? 'sql+semantic' : 'semantic';
+              console.log(`[Search] Added ${addedCount} semantic results. Combined total: ${combinedServices.length}`);
             }
           }
 
@@ -935,11 +940,11 @@ export async function registerRoutes(
               searchType,
             });
           }
-          // If still no results, fall through to pure embedding search
-          console.log('[Search] Combined search returned no results, trying pure embedding fallback');
+          // If still no results, fall through to pure embedding search with wider params
+          console.log('[Search] Combined search returned no results, trying wider semantic search');
         } catch (sqlError) {
-          console.error('[Search] SQL search failed, falling back:', sqlError);
-          // Fall through to embedding search
+          console.error('[Search] Hybrid search failed, falling back:', sqlError);
+          // Fall through to embedding-only search
         }
       }
 
