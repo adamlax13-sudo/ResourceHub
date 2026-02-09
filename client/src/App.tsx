@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
 import { SearchProvider } from "@/contexts/SearchContext";
+import { ErrorBoundary, RouteErrorBoundary } from "@/components/ErrorBoundary";
 import './lib/i18n';
 
 const Home = lazy(() => import("@/pages/Home"));
@@ -21,25 +22,29 @@ function PageLoader() {
 
 function Router() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+    <RouteErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <SearchProvider>
-          <Toaster />
-          <Router />
-        </SearchProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <SearchProvider>
+            <Toaster />
+            <Router />
+          </SearchProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

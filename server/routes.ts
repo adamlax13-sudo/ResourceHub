@@ -8,513 +8,180 @@ import OpenAI from "openai";
 import { strictLimiter, feedbackLimiter } from "./middleware/rateLimiter";
 import type { Service, AiServiceEnrichment } from "@shared/schema";
 
+// Import shared utilities from helpers (DRY)
+import {
+  ALBERTA_LOCATIONS,
+  LOCATION_ALIASES,
+  extractLocationContext,
+  matchesLocation,
+  formatLocationName,
+} from "./helpers/locations";
+import {
+  correctTypos,
+  stem,
+  normalizeForCache,
+  extractKeywords,
+  expandKeywords,
+  classifyQueryIntent,
+} from "./helpers/keywords";
+import { hasMinimumData, calculateQualityScore } from "./helpers/scoring";
+import { scrubPii } from "./helpers/pii";
+
+// ============= CRISIS SERVICE CONSTANT =============
+// 988 Suicide Crisis Helpline - used for crisis query prioritization
+const CRISIS_988_SERVICE = {
+  id: "988-suicide-crisis-helpline",
+  name: "988 Suicide Crisis Helpline",
+  category: "24/7 Crisis Line",
+  description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.",
+  location: "Canada-wide (available in Alberta)",
+  contact: "Call or text 988",
+  websiteUrl: "",
+  eligibility: "Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis",
+  process: [
+    "Call or text 988 from any phone - available 24/7",
+    "You will be connected to a trained crisis counselor",
+    "Share what you're going through at your own pace",
+    "The counselor will provide immediate support and safety planning",
+    "You may be connected to local resources for ongoing support",
+  ],
+  waitTimes: "Immediate - 24/7 availability",
+  requiredDocs: ["None - anonymous and confidential"],
+  phone: "988",
+  email: "",
+  address: "",
+};
+
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
-// ============= PII SCRUBBING =============
-// Strips potential PII (phone numbers, full addresses) from a search query
-// before it is forwarded to the LLM API.
-function scrubPii(query: string): string {
-  let scrubbed = query;
-  // Alberta phone numbers: (780) 123-4567, 780-123-4567, 780.123.4567, +1 780 123 4567, etc.
-  scrubbed = scrubbed.replace(/(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, '[PHONE]');
-  // Numeric street addresses: "123 Main Street", "4567 12 Ave NW"
-  scrubbed = scrubbed.replace(/\b\d{1,5}\s+\d{0,4}\s*(?:street|st|avenue|ave|road|rd|drive|dr|boulevard|blvd|crescent|cres|place|pl|way|lane|ln|court|ct|terrace|trail|park)\b/gi, '[ADDRESS]');
-  // Postal codes: T2P 1A1
-  scrubbed = scrubbed.replace(/\b[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d\b/g, '[POSTAL]');
-  // Email addresses
-  scrubbed = scrubbed.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]');
-  return scrubbed;
+// ============= EMBEDDING CONFIGURATION =============
+const EMBEDDING_MODEL = "text-embedding-3-small"; // 1536 dimensions
+
+// Cache to track if embeddings are available (checked once at startup)
+let embeddingsAvailable: boolean | null = null;
+
+async function checkEmbeddingsAvailable(): Promise<boolean> {
+  if (embeddingsAvailable !== null) return embeddingsAvailable;
+  try {
+    embeddingsAvailable = await storage.hasEmbeddings();
+    console.log(`[Embeddings] Available: ${embeddingsAvailable}`);
+  } catch (err) {
+    console.log('[Embeddings] Check failed, assuming not available');
+    embeddingsAvailable = false;
+  }
+  return embeddingsAvailable;
 }
 
-// ============= STOP WORDS (excluded from keyword extraction) =============
-const STOP_WORDS = new Set([
-  'i', 'me', 'my', 'we', 'our', 'you', 'your', 'need', 'help', 'want',
-  'find', 'get', 'for', 'with', 'in', 'the', 'a', 'an', 'and', 'or',
-  'to', 'of', 'is', 'are', 'am', 'do', 'does', 'can', 'how', 'where',
-  'what', 'near', 'around', 'some', 'any', 'please', 'looking', 'search',
-  'services', 'service', 'resources', 'resource', 'about', 'have', 'has',
-  'been', 'being', 'was', 'were', 'will', 'would', 'could', 'should',
-  'there', 'here', 'this', 'that', 'these', 'those', 'it', 'its',
-  'on', 'at', 'by', 'from', 'up', 'out', 'off', 'over', 'under',
-  'again', 'further', 'then', 'once', 'both', 'each', 'all', 'most',
-  'other', 'not', 'no', 'nor', 'but', 'if', 'so', 'too', 'very',
-  'just', 'also', 'like', 'know', 'go', 'going', 'make', 'see',
-]);
-
-// ============= ALBERTA LOCATIONS =============
-// Known Alberta cities/regions for location-based filtering
-const ALBERTA_LOCATIONS = new Set([
-  'calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat',
-  'grande prairie', 'airdrie', 'spruce grove', 'leduc', 'fort mcmurray',
-  'fort saskatchewan', 'lloydminster', 'camrose', 'brooks', 'cold lake',
-  'wetaskiwin', 'okotoks', 'cochrane', 'chestermere', 'beaumont',
-  'stony plain', 'sylvan lake', 'high river', 'hinton', 'canmore', 'banff',
-  'drumheller', 'ponoka', 'taber', 'edson', 'peace river', 'slave lake',
-  'st. albert', 'st albert', 'sherwood park', 'strathmore', 'lacombe',
-  'innisfail', 'olds', 'didsbury', 'high level', 'whitecourt', 'drayton valley',
-]);
-
-// Variations and abbreviations that map to canonical location names
-const LOCATION_ALIASES: Record<string, string> = {
-  // Airport codes
-  'yyc': 'calgary',
-  'yeg': 'edmonton',
-  'yqf': 'red deer',
-  'yql': 'lethbridge',
-  'ymm': 'fort mcmurray',
-  'ygp': 'grande prairie',
-  'yxh': 'medicine hat',
-  'yqd': 'lloydminster',
-  'yod': 'cold lake',
-
-  // Fort McMurray variations
-  'fort mac': 'fort mcmurray',
-  'fortmac': 'fort mcmurray',
-  'ft mac': 'fort mcmurray',
-  'ft. mac': 'fort mcmurray',
-  'ft mcmurray': 'fort mcmurray',
-  'ft. mcmurray': 'fort mcmurray',
-  'wood buffalo': 'fort mcmurray',
-
-  // Fort Saskatchewan variations
-  'fort sask': 'fort saskatchewan',
-  'ft sask': 'fort saskatchewan',
-  'ft. sask': 'fort saskatchewan',
-  'ft saskatchewan': 'fort saskatchewan',
-  'ft. saskatchewan': 'fort saskatchewan',
-
-  // Medicine Hat variations
-  'med hat': 'medicine hat',
-  'medhat': 'medicine hat',
-  'the hat': 'medicine hat',
-
-  // St. Albert variations
-  'st. albert': 'st albert',
-  'stalbert': 'st albert',
-  'saint albert': 'st albert',
-
-  // Red Deer variations
-  'rdeer': 'red deer',
-  'r deer': 'red deer',
-
-  // Grande Prairie variations
-  'gp': 'grande prairie',
-  'grand prairie': 'grande prairie',
-
-  // Common short forms
-  'sherwood': 'sherwood park',
-  'spruce': 'spruce grove',
-  'stony': 'stony plain',
-  'sylvan': 'sylvan lake',
-  'cold lk': 'cold lake',
-  'high rv': 'high river',
-  'slave lk': 'slave lake',
-  'peace rv': 'peace river',
-  'drayton': 'drayton valley',
-};
-
-// Province-wide indicators
-const PROVINCE_WIDE_TERMS = [
-  'alberta', 'province-wide', 'province wide', 'provincial', 'ab',
-  'across alberta', 'all of alberta', 'anywhere in alberta',
-];
-
-interface LocationContext {
-  specifiedLocation: string | null;  // The location user specified (e.g., "calgary")
-  isProvinceWide: boolean;           // Whether user asked for province-wide
-}
-
-// Extract location context from a search query
-function extractLocationContext(query: string): LocationContext {
-  const queryLower = query.toLowerCase();
-
-  // Check for province-wide terms
-  const isProvinceWide = PROVINCE_WIDE_TERMS.some(term => queryLower.includes(term));
-
-  // Check for location aliases first
-  for (const [alias, canonical] of Object.entries(LOCATION_ALIASES)) {
-    if (queryLower.includes(alias)) {
-      return { specifiedLocation: canonical, isProvinceWide };
-    }
-  }
-
-  // Check for known Alberta locations
-  for (const location of Array.from(ALBERTA_LOCATIONS)) {
-    if (queryLower.includes(location)) {
-      return { specifiedLocation: location, isProvinceWide };
-    }
-  }
-
-  return { specifiedLocation: null, isProvinceWide };
-}
-
-// Check if a service's location matches the specified location or is province-wide
-function matchesLocation(serviceLocation: string, specifiedLocation: string): 'exact' | 'province-wide' | 'none' {
-  const locLower = serviceLocation.toLowerCase();
-
-  // Check for province-wide services (should always be included)
-  if (PROVINCE_WIDE_TERMS.some(term => locLower.includes(term)) ||
-      locLower.includes('canada-wide') ||
-      locLower.includes('nationwide') ||
-      locLower.includes('all regions')) {
-    return 'province-wide';
-  }
-
-  // Check for exact location match
-  if (locLower.includes(specifiedLocation)) {
-    return 'exact';
-  }
-
-  // Check location aliases
-  const canonical = LOCATION_ALIASES[specifiedLocation];
-  if (canonical && locLower.includes(canonical)) {
-    return 'exact';
-  }
-
-  return 'none';
-}
-
-// ============= KEYWORD EXPANSION MAP =============
-// Maps search terms to related terms for better pre-filtering
-const KEYWORD_EXPANSIONS: Record<string, string[]> = {
-  'addiction': ['substance', 'drug', 'alcohol', 'opioid', 'detox', 'recovery', 'sober', 'rehab', 'withdrawal'],
-  'alcohol': ['drinking', 'alcoholism', 'sobriety', 'addiction'],
-  'drug': ['narcotics', 'substance', 'opioid', 'fentanyl', 'meth', 'cocaine'],
-  'mental': ['psychological', 'psychiatric', 'therapy', 'counselling', 'emotional'],
-  'shelter': ['housing', 'homeless', 'unhoused', 'accommodation', 'transitional', 'beds'],
-  'crisis': ['emergency', 'urgent', 'helpline', 'hotline', 'distress'],
-  'youth': ['teen', 'adolescent', 'young', 'child', 'gen-z'],
-  'family': ['parenting', 'children', 'domestic'],
-  'indigenous': ['first nations', 'metis', 'inuit', 'aboriginal', 'native'],
-  'women': ['female', 'woman', 'gender', 'maternal'],
-  'counselling': ['therapy', 'therapist', 'counselor', 'psychologist', 'psychotherapy'],
-  'food': ['meal', 'nutrition', 'hungry', 'groceries', 'foodbank'],
-  'employment': ['job', 'work', 'career', 'training'],
-  'anxiety': ['anxious', 'worry', 'panic', 'stress'],
-  'depression': ['depressed', 'sad', 'mood', 'hopeless'],
-  'trauma': ['ptsd', 'abuse', 'violence', 'assault'],
-  'recovery': ['rehabilitation', 'rehab', 'treatment', 'sober'],
-  'harm': ['reduction', 'needle', 'injection', 'naloxone'],
-  'detox': ['withdrawal', 'detoxification', 'medically'],
-  'rehab': ['rehabilitation', 'residential', 'inpatient', 'treatment'],
-  'homeless': ['houseless', 'unhoused', 'shelter', 'street'],
-  'domestic': ['violence', 'abuse', 'intimate', 'partner'],
-  'gambling': ['gaming', 'betting'],
-  'grief': ['bereavement', 'loss', 'mourning'],
-};
-
-// ============= TYPO CORRECTION =============
-// Common misspellings mapped to correct terms
-const COMMON_MISSPELLINGS: Record<string, string> = {
-  'addicton': 'addiction',
-  'addiciton': 'addiction',
-  'addction': 'addiction',
-  'alcahol': 'alcohol',
-  'alchohol': 'alcohol',
-  'alchohal': 'alcohol',
-  'councelling': 'counselling',
-  'counceling': 'counselling',
-  'counsling': 'counselling',
-  'counsilling': 'counselling',
-  'sheltar': 'shelter',
-  'shleter': 'shelter',
-  'sheler': 'shelter',
-  'mentol': 'mental',
-  'mentla': 'mental',
-  'anxeity': 'anxiety',
-  'anxity': 'anxiety',
-  'anixety': 'anxiety',
-  'depresion': 'depression',
-  'depressin': 'depression',
-  'deppression': 'depression',
-  'suicde': 'suicide',
-  'suiside': 'suicide',
-  'suicidal': 'suicide',
-  'homless': 'homeless',
-  'houising': 'housing',
-  'houseing': 'housing',
-  'theropy': 'therapy',
-  'theraphy': 'therapy',
-  'detocs': 'detox',
-  'withdrawl': 'withdrawal',
-  'withdrawel': 'withdrawal',
-  'opiods': 'opioid',
-  'opoids': 'opioid',
-  'fentanyl': 'fentanyl',
-  'fentinal': 'fentanyl',
-  'methadone': 'methadone',
-  'methadoan': 'methadone',
-  'nalaxone': 'naloxone',
-  'naxolone': 'naloxone',
-  'indiginous': 'indigenous',
-  'indegenous': 'indigenous',
-  'aborignal': 'aboriginal',
-  'aborginal': 'aboriginal',
-};
-
-// Levenshtein distance for fuzzy matching (handles typos not in dictionary)
-function levenshteinDistance(a: string, b: string): number {
-  const matrix: number[][] = [];
-  for (let i = 0; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-  for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1,     // insertion
-          matrix[i - 1][j] + 1      // deletion
-        );
-      }
-    }
-  }
-  return matrix[b.length][a.length];
-}
-
-// Find closest matching keyword using Levenshtein distance
-function findClosestKeyword(input: string, maxDistance: number = 2): string | null {
-  const inputLower = input.toLowerCase();
-
-  // First check exact misspellings dictionary
-  if (COMMON_MISSPELLINGS[inputLower]) {
-    return COMMON_MISSPELLINGS[inputLower];
-  }
-
-  // Then try fuzzy matching against known keywords
-  const knownKeywords = Object.keys(KEYWORD_EXPANSIONS);
-  let bestMatch: string | null = null;
-  let bestDistance = maxDistance + 1;
-
-  for (const keyword of knownKeywords) {
-    const distance = levenshteinDistance(inputLower, keyword);
-    if (distance <= maxDistance && distance < bestDistance) {
-      bestDistance = distance;
-      bestMatch = keyword;
-    }
-  }
-  return bestMatch;
-}
-
-// Correct typos in a query
-function correctTypos(query: string): { corrected: string; corrections: string[] } {
-  const words = query.toLowerCase().split(/\s+/);
-  const corrections: string[] = [];
-  const correctedWords = words.map(word => {
-    // Skip short words and stop words
-    if (word.length < 4 || STOP_WORDS.has(word)) return word;
-
-    // Check misspellings dictionary first
-    if (COMMON_MISSPELLINGS[word]) {
-      corrections.push(`${word} → ${COMMON_MISSPELLINGS[word]}`);
-      return COMMON_MISSPELLINGS[word];
-    }
-
-    // Try fuzzy matching
-    const closest = findClosestKeyword(word);
-    if (closest && closest !== word) {
-      corrections.push(`${word} → ${closest}`);
-      return closest;
-    }
-
-    return word;
+async function generateQueryEmbedding(query: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: EMBEDDING_MODEL,
+    input: query,
   });
-  return { corrected: correctedWords.join(' '), corrections };
+  return response.data[0].embedding;
 }
 
-// ============= QUERY INTENT CLASSIFICATION =============
-type QueryIntent = 'crisis' | 'specific_service' | 'category_browse' | 'location_search' | 'general';
+// ============= TWO-STAGE OPTIMIZED SEARCH =============
+// Stage 1: Fast SQL search using indexes (no AI call)
+// Stage 2: Enrich top results with cached AI data (no AI call if cached)
 
-function classifyQueryIntent(query: string): QueryIntent {
-  const q = query.toLowerCase();
-
-  // Crisis indicators (highest priority)
-  if (/\b(suicide|suicidal|kill myself|end my life|crisis|emergency|overdose|od['']?d|dying|help me)\b/.test(q)) {
-    return 'crisis';
-  }
-
-  // Specific service lookup (looking for a named organization by acronym or name)
-  if (/\b(cmha|211|988|aa|na|smart recovery|distress centre|salvation army|mustard seed|inn from the cold)\b/i.test(q)) {
-    return 'specific_service';
-  }
-
-  // Category browsing (user wants a list)
-  if (/\b(list of|all|show me|what are the|find all|every)\b/.test(q)) {
-    return 'category_browse';
-  }
-
-  // Location-focused (short query with just location + topic)
-  const locContext = extractLocationContext(q);
-  if (locContext.specifiedLocation && q.split(' ').length <= 4) {
-    return 'location_search';
-  }
-
-  return 'general';
+interface TwoStageSearchResult {
+  services: any[];
+  summary: string;
+  searchType: 'sql' | 'sql+enrichment' | 'openai';
 }
 
-// ============= STEMMING =============
-// Simple stemming rules for common recovery-related terms
-const STEM_RULES: [RegExp, string][] = [
-  [/tion$/, ''],           // addiction → addic
-  [/sion$/, ''],           // depression → depres
-  [/ment$/, ''],           // treatment → treat
-  [/ness$/, ''],           // homelessness → homeless
-  [/ing$/, ''],            // housing → hous, counselling → counsell
-  [/ed$/, ''],             // addicted → addict
-  [/er$/, ''],             // counseller → counsell
-  [/or$/, ''],             // counselor → counsel
-  [/ies$/, 'y'],           // families → family
-  [/ive$/, ''],            // supportive → support
-  [/ous$/, ''],            // anxious → anxi
-  [/al$/, ''],             //mental → ment
-  [/s$/, ''],              // services → service
-];
+async function twoStageSearch(
+  query: string,
+  location: string | null,
+  isLocationOnly: boolean,
+  isCrisisQuery: boolean,
+  limit: number = 50
+): Promise<TwoStageSearchResult> {
+  const startTime = Date.now();
 
-function stem(word: string): string {
-  if (word.length <= 4) return word; // Don't stem short words
+  // ========== STAGE 1: Fast SQL Search ==========
+  // Uses indexed queries - typically < 50ms
+  const sqlResults = await storage.fastSearch(query, location, isLocationOnly, limit);
 
-  let stemmed = word.toLowerCase();
-  for (const [pattern, replacement] of STEM_RULES) {
-    if (pattern.test(stemmed) && stemmed.replace(pattern, replacement).length >= 3) {
-      stemmed = stemmed.replace(pattern, replacement);
-      break; // Only apply one rule
+  if (sqlResults.length === 0) {
+    return {
+      services: [],
+      summary: `No services found matching "${query}"`,
+      searchType: 'sql',
+    };
+  }
+
+  console.log(`[Search] Stage 1 (SQL): ${sqlResults.length} results in ${Date.now() - startTime}ms`);
+
+  // ========== STAGE 2: Batch Enrichment ==========
+  // Single query to get all enrichments (no N+1)
+  const serviceIds = sqlResults.map(r => r.serviceId);
+  const enrichments = await storage.getEnrichmentsBatch(serviceIds);
+
+  console.log(`[Search] Stage 2 (Enrichment): ${enrichments.size}/${serviceIds.length} cached in ${Date.now() - startTime}ms`);
+
+  // ========== Compose Results ==========
+  let resultServices = sqlResults.map(sr => {
+    const enrichment = enrichments.get(sr.serviceId);
+
+    if (enrichment) {
+      // Use AI-enriched data
+      const processSteps = (enrichment.aiProcessSteps as string[]) || [];
+      return {
+        id: sr.serviceId,
+        name: sr.name,
+        category: enrichment.aiCategory || sr.category,
+        description: enrichment.aiDescription || sr.description || '',
+        location: enrichment.aiLocation || sr.location || '',
+        contact: enrichment.aiContact || sr.contact || '',
+        websiteUrl: sr.websiteUrl || '',
+        eligibility: enrichment.aiEligibility || sr.eligibility || '',
+        process: processSteps.slice(0, 4),
+        waitTimes: enrichment.aiWaitTimes || sr.waitTimes || '',
+        requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
+        phone: sr.phone || '',
+        email: sr.email || '',
+        address: sr.address || '',
+      };
     }
-  }
-  return stemmed;
-}
 
-// ============= DATA COMPLETENESS CHECK =============
-// Key fields that determine if a service has sufficient data for display
-// Services missing 2+ of these fields are filtered from search results
-const KEY_DATA_FIELDS = ['description', 'contact', 'websiteUrl', 'processSteps', 'requiredDocs'] as const;
+    // Fallback to raw DB data
+    return {
+      id: sr.serviceId,
+      name: sr.name,
+      category: sr.category,
+      description: sr.description || '',
+      location: sr.location || '',
+      contact: sr.contact || '',
+      websiteUrl: sr.websiteUrl || '',
+      eligibility: sr.eligibility || '',
+      process: (sr.processSteps as string[]) || [],
+      waitTimes: sr.waitTimes || '',
+      requiredDocs: (sr.requiredDocs as string[]) || [],
+      phone: sr.phone || '',
+      email: sr.email || '',
+      address: sr.address || '',
+    };
+  });
 
-function countMissingFields(service: Service): number {
-  let missing = 0;
-
-  // Check description
-  if (!service.description || service.description.trim() === '') missing++;
-
-  // Check contact
-  if (!service.contact || service.contact.trim() === '') missing++;
-
-  // Check websiteUrl
-  if (!service.websiteUrl || service.websiteUrl.trim() === '') missing++;
-
-  // Check processSteps (JSONB array)
-  const steps = service.processSteps as string[] | null;
-  if (!steps || !Array.isArray(steps) || steps.length === 0) missing++;
-
-  // Check requiredDocs (JSONB array)
-  const docs = service.requiredDocs as string[] | null;
-  if (!docs || !Array.isArray(docs) || docs.length === 0) missing++;
-
-  return missing;
-}
-
-function hasMinimumData(service: Service): boolean {
-  // Allow services with at most 1 missing field (i.e., filter out those missing 2+)
-  return countMissingFields(service) < 2;
-}
-
-// ============= DATA QUALITY SCORING =============
-// Calculates a comprehensive quality score based on data completeness and content quality
-// Higher score = more complete and higher quality information
-// Max score: ~200 points
-function calculateQualityScore(service: Service): number {
-  let quality = 0;
-
-  // ===== DESCRIPTION (max 40 points) =====
-  const desc = service.description?.trim() || '';
-  if (desc) {
-    quality += 15; // Has description
-    // Bonus for longer, more detailed descriptions
-    if (desc.length > 100) quality += 5;
-    if (desc.length > 250) quality += 10;
-    if (desc.length > 500) quality += 10;
+  // For crisis queries, ensure 988 is first
+  if (isCrisisQuery) {
+    resultServices = resultServices.filter((s: any) =>
+      !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
+    );
+    resultServices.unshift(CRISIS_988_SERVICE);
   }
 
-  // ===== CONTACT INFO (max 30 points) =====
-  const contact = service.contact?.trim() || '';
-  if (contact) {
-    quality += 10; // Has contact info
-    // Check for phone number pattern
-    if (/\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(contact) || /1[-.\s]?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(contact)) {
-      quality += 10; // Has phone number
-    }
-    // Check for email
-    if (/@/.test(contact)) {
-      quality += 10; // Has email
-    }
-  }
+  const summary = `Found ${resultServices.length} service${resultServices.length === 1 ? '' : 's'} matching "${query}"`;
 
-  // ===== WEBSITE URL (max 15 points) =====
-  if (service.websiteUrl?.trim()) {
-    quality += 15;
-  }
-
-  // ===== HOURS OF OPERATION (max 15 points) =====
-  if (service.hoursOfOperation?.trim()) {
-    quality += 15;
-  }
-
-  // ===== ELIGIBILITY (max 20 points) =====
-  const elig = service.eligibility?.trim() || '';
-  if (elig) {
-    quality += 10;
-    if (elig.length > 50) quality += 5;
-    if (elig.length > 150) quality += 5;
-  }
-
-  // ===== PROCESS STEPS (max 20 points) =====
-  const steps = service.processSteps as string[] | null;
-  if (steps && Array.isArray(steps) && steps.length > 0) {
-    quality += 10;
-    if (steps.length >= 2) quality += 5;
-    if (steps.length >= 4) quality += 5;
-  }
-
-  // ===== REQUIRED DOCS (max 15 points) =====
-  const docs = service.requiredDocs as string[] | null;
-  if (docs && Array.isArray(docs) && docs.length > 0) {
-    quality += 10;
-    if (docs.length >= 2) quality += 5;
-  }
-
-  // ===== TAGS (max 20 points) =====
-  const tags = service.tags as string[] | null;
-  if (tags && Array.isArray(tags) && tags.length > 0) {
-    quality += 5;
-    if (tags.length >= 3) quality += 5;
-    if (tags.length >= 6) quality += 5;
-    if (tags.length >= 10) quality += 5;
-  }
-
-  // ===== LOCATION (max 10 points) =====
-  if (service.location?.trim()) {
-    quality += 10;
-  }
-
-  // ===== LANGUAGES (max 10 points) =====
-  const langs = service.languagesSupported as string[] | null;
-  if (langs && Array.isArray(langs) && langs.length > 0) {
-    quality += 5;
-    if (langs.length >= 2) quality += 5;
-  }
-
-  // ===== SERVICE FORMAT (max 5 points) =====
-  if (service.serviceFormat?.trim()) {
-    quality += 5;
-  }
-
-  return quality; // Max ~200 points
+  return {
+    services: resultServices,
+    summary,
+    searchType: enrichments.size > 0 ? 'sql+enrichment' : 'sql',
+  };
 }
 
 // ============= IN-MEMORY SERVICES CACHE =============
@@ -566,57 +233,6 @@ function formatServicesForAI(servicesList: Service[]): string {
   }
 
   return formatted;
-}
-
-// Normalize query for better cache hits
-function normalizeForCache(q: string): string {
-  return q
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, ' ')
-    .replace(/['']/g, "'")
-    .replace(/[""]/g, '"')
-    .replace(/counc[ei]l+ing/g, 'counselling')
-    .replace(/addic[it]+on/g, 'addiction')
-    .replace(/ment[ae]l/g, 'mental')
-    .replace(/he[al]+th/g, 'health')
-    .replace(/anxi[ei]ty/g, 'anxiety')
-    .replace(/depress?i?on/g, 'depression')
-    .replace(/indigen[io]+us/g, 'indigenous')
-    .replace(/homel?e?ss/g, 'homeless')
-    .replace(/sheltt?er/g, 'shelter')
-    .replace(/emerg[ae]n[cs]y/g, 'emergency')
-    .replace(/supp?orr?t/g, 'support')
-    .replace(/trea?t?ment/g, 'treatment')
-    .replace(/alc[oa]h?ol/g, 'alcohol')
-    .replace(/re[ha]+b/g, 'rehab');
-}
-
-// Extract meaningful keywords from a search query
-function extractKeywords(query: string): string[] {
-  const normalized = normalizeForCache(query);
-  return normalized
-    .split(/\s+/)
-    .filter(word => word.length > 2 && !STOP_WORDS.has(word));
-}
-
-// Expand keywords with related terms for broader pre-filtering
-function expandKeywords(keywords: string[]): string[] {
-  const expanded = new Set(keywords);
-  for (const kw of keywords) {
-    if (KEYWORD_EXPANSIONS[kw]) {
-      for (const synonym of KEYWORD_EXPANSIONS[kw]) {
-        expanded.add(synonym);
-      }
-    }
-    // Reverse expansion: if this keyword is a synonym of another term, include that term
-    for (const [key, synonyms] of Object.entries(KEYWORD_EXPANSIONS)) {
-      if (synonyms.includes(kw)) {
-        expanded.add(key);
-      }
-    }
-  }
-  return Array.from(expanded);
 }
 
 // Get services with in-memory caching (avoids DB round-trip on every request)
@@ -1004,6 +620,10 @@ function composeFromEnrichments(
         process: mode === 'fast' ? processSteps.slice(0, 4) : processSteps,
         waitTimes: enrichment.aiWaitTimes || service.waitTimes || '',
         requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
+        // Normalized contact fields from dedicated DB columns
+        phone: service.phone || '',
+        email: service.email || '',
+        address: service.address || '',
       };
     }
 
@@ -1020,34 +640,19 @@ function composeFromEnrichments(
       process: (service.processSteps as string[]) || [],
       waitTimes: service.waitTimes || '',
       requiredDocs: (service.requiredDocs as string[]) || [],
+      // Normalized contact fields from dedicated DB columns
+      phone: service.phone || '',
+      email: service.email || '',
+      address: service.address || '',
     };
   });
 
   // For crisis queries, ensure 988 is first
   if (isCrisisQuery) {
-    const crisis988Service = {
-      id: "988-suicide-crisis-helpline",
-      name: "988 Suicide Crisis Helpline",
-      category: "24/7 Crisis Line",
-      description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.",
-      location: "Canada-wide (available in Alberta)",
-      contact: "Call or text 988",
-      eligibility: "Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis",
-      process: [
-        "Call or text 988 from any phone - available 24/7",
-        "You will be connected to a trained crisis counselor",
-        "Share what you're going through at your own pace",
-        "The counselor will provide immediate support and safety planning",
-        "You may be connected to local resources for ongoing support"
-      ],
-      waitTimes: "Immediate - 24/7 availability",
-      requiredDocs: ["None - anonymous and confidential"]
-    };
-
     const filtered = resultServices.filter((s: any) =>
       !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
     );
-    return { services: [crisis988Service, ...filtered], summary: buildSummary(filtered.length + 1, query) };
+    return { services: [CRISIS_988_SERVICE, ...filtered], summary: buildSummary(filtered.length + 1, query) };
   }
 
   return { services: resultServices, summary: buildSummary(resultServices.length, query) };
@@ -1165,6 +770,10 @@ export async function registerRoutes(
 
       const mode = input.mode || 'fast';
 
+      // Pagination defaults
+      const page = input.page ?? 1;
+      const pageSize = input.pageSize ?? 15;
+
       // OPTIMIZATION 1: In-memory services cache
       // Eliminates DB round-trip for service data on every request
       // Uses completeServices (services with sufficient data) for search
@@ -1187,13 +796,202 @@ export async function registerRoutes(
       if (cached) {
         const searchTimeMs = Date.now() - startTime;
         const cachedResults = cached.results as Record<string, unknown>;
-        return res.json({ ...cachedResults, searchTimeMs, cached: true });
+        // Apply pagination to cached results
+        const cachedServices = (cachedResults.services as unknown[]) || [];
+        const totalResults = cachedServices.length;
+        const totalPages = Math.ceil(totalResults / pageSize);
+        const startIndex = (page - 1) * pageSize;
+        const paginatedServices = cachedServices.slice(startIndex, startIndex + pageSize);
+        return res.json({
+          services: paginatedServices,
+          summary: cachedResults.summary,
+          pagination: {
+            page,
+            pageSize,
+            totalResults,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+          },
+          searchTimeMs,
+          cached: true
+        });
       }
 
       // Detect suicide/crisis-related queries for special prioritization
       const suicideKeywords = ['suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'dont want to live', "don't want to live", 'self harm', 'self-harm'];
       const queryLower = input.query.toLowerCase();
       const isCrisisQuery = suicideKeywords.some(keyword => queryLower.includes(keyword));
+
+      // ============= FAST MODE: TWO-STAGE SQL SEARCH (NO AI CALL) =============
+      // Stage 1: Fast SQL search using indexes (< 50ms)
+      // Stage 2: Apply cached AI enrichments (no API call)
+      // This is the fastest path - no OpenAI API calls at all
+      if (mode === 'fast') {
+        try {
+          // Extract location context for SQL filtering
+          const locationContext = extractLocationContext(input.query);
+          const baseKeywords = extractKeywords(input.query);
+          const nonLocationKeywords = baseKeywords.filter(kw =>
+            !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
+          );
+          const isLocationOnlyQuery = !!(locationContext.specifiedLocation && nonLocationKeywords.length === 0);
+
+          // Use two-stage SQL search
+          const sqlSearchResult = await twoStageSearch(
+            input.query,
+            locationContext.specifiedLocation || null,
+            isLocationOnlyQuery,
+            isCrisisQuery,
+            50 // Get more results for pagination
+          );
+
+          if (sqlSearchResult.services.length > 0) {
+            // Apply pagination
+            const totalResults = sqlSearchResult.services.length;
+            const totalPages = Math.ceil(totalResults / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const paginatedServices = sqlSearchResult.services.slice(startIndex, startIndex + pageSize);
+
+            // Cache the full results
+            await storage.createSearch({
+              query: normalizedQuery,
+              results: { services: sqlSearchResult.services, summary: sqlSearchResult.summary }
+            });
+
+            const searchTimeMs = Date.now() - startTime;
+            return res.json({
+              services: paginatedServices,
+              summary: sqlSearchResult.summary,
+              pagination: {
+                page,
+                pageSize,
+                totalResults,
+                totalPages,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
+              },
+              searchTimeMs,
+              cached: false,
+              searchType: sqlSearchResult.searchType,
+            });
+          }
+          // If SQL search returns no results, fall through to embedding/OpenAI search
+          console.log('[Search] SQL search returned no results, trying fallback');
+        } catch (sqlError) {
+          console.error('[Search] SQL search failed, falling back:', sqlError);
+          // Fall through to embedding search
+        }
+      }
+
+      // ============= EMBEDDING-BASED SEARCH (FALLBACK FOR FAST MODE) =============
+      // Uses semantic similarity when SQL search fails or returns no results
+      // Requires one small API call for query embedding
+      if (mode === 'fast' && await checkEmbeddingsAvailable()) {
+        try {
+          // Generate embedding for the query (one small API call)
+          const queryEmbedding = await generateQueryEmbedding(input.query);
+
+          // Find semantically similar services using pgvector
+          const semanticResults = await storage.semanticSearch(
+            queryEmbedding,
+            0.25, // Lower threshold to get more candidates
+            50    // Get up to 50 matches, we'll paginate
+          );
+
+          if (semanticResults.length > 0) {
+            // Get enrichments for the matched services
+            const serviceIds = semanticResults.map(r => r.serviceId);
+            const enrichments = await storage.getEnrichmentsByServiceIds(serviceIds);
+
+            // Build response from semantic results
+            let resultServices = semanticResults.map(sr => {
+              const enrichment = enrichments.get(sr.serviceId);
+
+              if (enrichment) {
+                const processSteps = (enrichment.aiProcessSteps as string[]) || [];
+                return {
+                  id: sr.serviceId,
+                  name: sr.name,
+                  category: enrichment.aiCategory || sr.category,
+                  description: enrichment.aiDescription,
+                  location: enrichment.aiLocation || sr.location || '',
+                  contact: enrichment.aiContact || sr.contact || '',
+                  websiteUrl: sr.websiteUrl || '',
+                  eligibility: enrichment.aiEligibility || sr.eligibility || '',
+                  process: processSteps.slice(0, 4),
+                  waitTimes: enrichment.aiWaitTimes || sr.waitTimes || '',
+                  requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
+                  phone: sr.phone || '',
+                  email: sr.email || '',
+                  address: sr.address || '',
+                };
+              }
+
+              // Fallback to raw DB data
+              return {
+                id: sr.serviceId,
+                name: sr.name,
+                category: sr.category,
+                description: sr.description || '',
+                location: sr.location || '',
+                contact: sr.contact || '',
+                websiteUrl: sr.websiteUrl || '',
+                eligibility: sr.eligibility || '',
+                process: (sr.processSteps as string[]) || [],
+                waitTimes: sr.waitTimes || '',
+                requiredDocs: (sr.requiredDocs as string[]) || [],
+                phone: sr.phone || '',
+                email: sr.email || '',
+                address: sr.address || '',
+              };
+            });
+
+            // For crisis queries, ensure 988 is first
+            if (isCrisisQuery) {
+              resultServices = resultServices.filter((s: any) =>
+                !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
+              );
+              resultServices.unshift(CRISIS_988_SERVICE);
+            }
+
+            // Apply pagination
+            const totalResults = resultServices.length;
+            const totalPages = Math.ceil(totalResults / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const paginatedServices = resultServices.slice(startIndex, startIndex + pageSize);
+
+            const summary = `Found ${totalResults} service${totalResults === 1 ? '' : 's'} matching "${input.query}"`;
+
+            // Cache the full results (without pagination) for future requests
+            await storage.createSearch({
+              query: normalizedQuery,
+              results: { services: resultServices, summary }
+            });
+
+            const searchTimeMs = Date.now() - startTime;
+            return res.json({
+              services: paginatedServices,
+              summary,
+              pagination: {
+                page,
+                pageSize,
+                totalResults,
+                totalPages,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
+              },
+              searchTimeMs,
+              cached: false,
+              searchType: 'embedding', // For debugging/analytics
+            });
+          }
+          // If no semantic results, fall through to keyword-based search
+        } catch (embeddingError) {
+          console.error('[Embedding Search] Failed, falling back to OpenAI:', embeddingError);
+          // Fall through to traditional search
+        }
+      }
 
       // OPTIMIZATION 2: Pre-filter services based on query keywords (with alias support)
       const preFiltered = preFilterServices(input.query, cachedServices, aliasToServiceId, serviceIdToAliases);
@@ -1232,9 +1030,27 @@ export async function registerRoutes(
         if (enrichedCount >= Math.ceil(serviceIds.length * enrichmentThreshold)) {
           // All top services have cached enrichments - compose locally (skip OpenAI)
           const results = composeFromEnrichments(topServices, enrichments, mode, input.query, isCrisisQuery);
+          // Apply pagination to enrichment results
+          const enrichedServices = results.services || [];
+          const totalResults = enrichedServices.length;
+          const totalPages = Math.ceil(totalResults / pageSize);
+          const startIndex = (page - 1) * pageSize;
+          const paginatedServices = enrichedServices.slice(startIndex, startIndex + pageSize);
+          const paginatedResults = {
+            services: paginatedServices,
+            summary: results.summary,
+            pagination: {
+              page,
+              pageSize,
+              totalResults,
+              totalPages,
+              hasNextPage: page < totalPages,
+              hasPreviousPage: page > 1,
+            },
+          };
           await storage.createSearch({ query: normalizedQuery, results });
           const searchTimeMs = Date.now() - startTime;
-          return res.json({ ...results, searchTimeMs, cached: false });
+          return res.json({ ...paginatedResults, searchTimeMs, cached: false });
         }
       }
 
@@ -1400,6 +1216,16 @@ Return JSON:
             if (!aiService.location && dbService.location) {
               aiService.location = dbService.location;
             }
+
+            // Add normalized contact fields from dedicated DB columns
+            aiService.phone = dbService.phone || '';
+            aiService.email = dbService.email || '';
+            aiService.address = dbService.address || '';
+          } else {
+            // No DB match - ensure normalized fields exist as empty strings
+            aiService.phone = aiService.phone || '';
+            aiService.email = aiService.email || '';
+            aiService.address = aiService.address || '';
           }
 
           // Ensure websiteUrl is a string (not undefined/null)
@@ -1415,32 +1241,12 @@ Return JSON:
 
       // For crisis queries, ensure 988 is ALWAYS the first result
       if (isCrisisQuery && results.services) {
-        const crisis988Service = {
-          id: "988-suicide-crisis-helpline",
-          name: "988 Suicide Crisis Helpline",
-          category: "24/7 Crisis Line",
-          description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.",
-          location: "Canada-wide (available in Alberta)",
-          contact: "Call or text 988",
-          eligibility: "Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis",
-          process: [
-            "Call or text 988 from any phone - available 24/7",
-            "You will be connected to a trained crisis counselor",
-            "Share what you're going through at your own pace",
-            "The counselor will provide immediate support and safety planning",
-            "You may be connected to local resources for ongoing support"
-          ],
-          waitTimes: "Immediate - 24/7 availability",
-          requiredDocs: ["None - anonymous and confidential"]
-        };
-
         // Remove any existing 988 entry to avoid duplicates
         results.services = results.services.filter((s: any) =>
           !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
         );
-
         // Prepend 988 as the first result
-        results.services.unshift(crisis988Service);
+        results.services.unshift(CRISIS_988_SERVICE);
       }
 
       // OPTIMIZATION 5: Save per-service enrichments asynchronously
@@ -1450,9 +1256,30 @@ Return JSON:
         console.error('Failed to save enrichments:', err);
       });
 
+      // Apply pagination to results
+      const allServices = results.services || [];
+      const totalResults = allServices.length;
+      const totalPages = Math.ceil(totalResults / pageSize);
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedServices = allServices.slice(startIndex, endIndex);
+
+      const paginatedResults = {
+        services: paginatedServices,
+        summary: results.summary,
+        pagination: {
+          page,
+          pageSize,
+          totalResults,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1,
+        },
+      };
+
       await storage.createSearch({ query: normalizedQuery, results });
       const searchTimeMs = Date.now() - startTime;
-      res.json({ ...results, searchTimeMs, cached: false });
+      res.json({ ...paginatedResults, searchTimeMs, cached: false });
     } catch (err) {
       // Log detailed error information for debugging
       console.error("=== Search Error ===");

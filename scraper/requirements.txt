@@ -6,6 +6,7 @@ lxml>=5.1.0
 # Database
 SQLAlchemy>=2.0.0
 psycopg2-binary>=2.9.9
+pgvector>=0.2.0
 
 # OpenAI API
 openai>=1.30.0

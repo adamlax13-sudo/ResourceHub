@@ -15,7 +15,21 @@ vite.config.ts.*
 __pycache__/
 *.pyc
 scraper/venv/
+*.egg-info/
 
 # Replit files (legacy)
 .replit
 replit.nix
+
+# Debug/temp files
+*.csv
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Pip install output (accidental)
+=*

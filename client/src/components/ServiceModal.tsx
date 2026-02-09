@@ -188,6 +188,26 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
     }
   }
 
+  // Add phone from dedicated field if available and not already in parsed
+  if (service.phone && service.phone.trim()) {
+    const phone = service.phone.trim();
+    const alreadyExists = parsed.phones.some(p =>
+      p.replace(/\D/g, '') === phone.replace(/\D/g, '')
+    );
+    if (!alreadyExists) {
+      parsed.phones.unshift(phone); // Add at beginning as primary phone
+    }
+  }
+
+  // Add email from dedicated field if available and not already in parsed
+  if (service.email && service.email.trim()) {
+    const email = service.email.trim().toLowerCase();
+    const alreadyExists = parsed.emails.some(e => e.toLowerCase() === email);
+    if (!alreadyExists) {
+      parsed.emails.unshift(service.email.trim()); // Add at beginning as primary email
+    }
+  }
+
   const serviceUrl = getServiceUrl(parsed);
   const hasWebsite = parsed.websites.length > 0;
 
@@ -276,7 +296,9 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
-                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.location)}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">
+                          {linkifyText(service.address?.trim() || service.location)}
+                        </div>
                       </div>
                     </div>
 
@@ -349,18 +371,6 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                       </div>
                     )}
 
-                    {/* Remaining contact info (address or other text) */}
-                    {parsed.other && (
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <MapPin className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.address')}</div>
-                          <div className="font-medium text-foreground mt-0.5 break-words">{parsed.other}</div>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Fallback: if parsing yielded nothing, show the raw contact string */}
                     {parsed.phones.length === 0 && parsed.websites.length === 0 && parsed.emails.length === 0 && !parsed.other && (

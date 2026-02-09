@@ -6,7 +6,14 @@ import { fileURLToPath } from 'url';
 const { Client } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const DATABASE_URL = 'postgresql://db_resourcenavigator_user:sjZnkniL7937GHPmR3mNfACf2wTp4wz6@dpg-d5juaqffte5s738u3qng-a.oregon-postgres.render.com/db_resourcenavigator';
+// IMPORTANT: Set DATABASE_URL environment variable before running
+// Example: DATABASE_URL=postgresql://user:pass@host:5432/db node run-migration.js
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL environment variable is required');
+  console.error('Usage: DATABASE_URL=postgresql://user:pass@host:5432/db node run-migration.js');
+  process.exit(1);
+}
 
 async function runMigration() {
   const client = new Client({
@@ -27,6 +34,8 @@ async function runMigration() {
       'add_ai_service_enrichments.sql',
       'add_search_improvements.sql',
       'add_normalized_contact_fields.sql',
+      'add_vector_embeddings.sql',
+      'add_optimized_search.sql',
     ];
 
     for (const file of migrationFiles) {
