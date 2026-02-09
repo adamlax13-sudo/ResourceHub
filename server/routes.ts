@@ -29,7 +29,8 @@ import { scrubPii } from "./helpers/pii";
 
 // ============= CRISIS SERVICE CONSTANT =============
 // 988 Suicide Crisis Helpline - used for crisis query prioritization
-const CRISIS_988_SERVICE = {
+// Full version (for detail endpoint)
+const CRISIS_988_SERVICE_FULL = {
   id: "988-suicide-crisis-helpline",
   name: "988 Suicide Crisis Helpline",
   category: "24/7 Crisis Line",
@@ -51,6 +52,42 @@ const CRISIS_988_SERVICE = {
   email: "",
   address: "",
 };
+
+// Lite version for search results (card display only)
+const CRISIS_988_SERVICE_LITE = {
+  id: "988-suicide-crisis-helpline",
+  name: "988 Suicide Crisis Helpline",
+  category: "24/7 Crisis Line",
+  description: "Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988.",
+  location: "Canada-wide (available in Alberta)",
+  waitTimes: "Immediate - 24/7 availability",
+};
+
+// ============= SERVICE RESPONSE HELPERS =============
+// Convert full service data to lite format for fast search responses
+interface LiteService {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  location: string;
+  waitTimes: string;
+}
+
+function toLiteService(service: any): LiteService {
+  // Truncate description to ~150 chars for card display
+  const desc = service.description || '';
+  const truncatedDesc = desc.length > 150 ? desc.slice(0, 147) + '...' : desc;
+
+  return {
+    id: service.id || service.serviceId,
+    name: service.name,
+    category: service.category,
+    description: truncatedDesc,
+    location: service.location || '',
+    waitTimes: service.waitTimes || '',
+  };
+}
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -123,56 +160,27 @@ async function twoStageSearch(
 
   console.log(`[Search] Stage 2 (Enrichment): ${enrichments.size}/${serviceIds.length} cached in ${Date.now() - startTime}ms`);
 
-  // ========== Compose Results ==========
-  let resultServices = sqlResults.map(sr => {
+  // ========== Compose Lite Results (for fast card display) ==========
+  let resultServices: LiteService[] = sqlResults.map(sr => {
     const enrichment = enrichments.get(sr.serviceId);
-
-    if (enrichment) {
-      // Use AI-enriched data
-      const processSteps = (enrichment.aiProcessSteps as string[]) || [];
-      return {
-        id: sr.serviceId,
-        name: sr.name,
-        category: enrichment.aiCategory || sr.category,
-        description: enrichment.aiDescription || sr.description || '',
-        location: enrichment.aiLocation || sr.location || '',
-        contact: enrichment.aiContact || sr.contact || '',
-        websiteUrl: sr.websiteUrl || '',
-        eligibility: enrichment.aiEligibility || sr.eligibility || '',
-        process: processSteps.slice(0, 4),
-        waitTimes: enrichment.aiWaitTimes || sr.waitTimes || '',
-        requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
-        phone: sr.phone || '',
-        email: sr.email || '',
-        address: sr.address || '',
-      };
-    }
-
-    // Fallback to raw DB data
-    return {
+    // Use enriched data if available, otherwise raw DB data
+    const desc = enrichment?.aiDescription || sr.description || '';
+    return toLiteService({
       id: sr.serviceId,
       name: sr.name,
-      category: sr.category,
-      description: sr.description || '',
-      location: sr.location || '',
-      contact: sr.contact || '',
-      websiteUrl: sr.websiteUrl || '',
-      eligibility: sr.eligibility || '',
-      process: (sr.processSteps as string[]) || [],
-      waitTimes: sr.waitTimes || '',
-      requiredDocs: (sr.requiredDocs as string[]) || [],
-      phone: sr.phone || '',
-      email: sr.email || '',
-      address: sr.address || '',
-    };
+      category: enrichment?.aiCategory || sr.category,
+      description: desc,
+      location: enrichment?.aiLocation || sr.location || '',
+      waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
+    });
   });
 
   // For crisis queries, ensure 988 is first
   if (isCrisisQuery) {
-    resultServices = resultServices.filter((s: any) =>
+    resultServices = resultServices.filter((s) =>
       !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
     );
-    resultServices.unshift(CRISIS_988_SERVICE);
+    resultServices.unshift(CRISIS_988_SERVICE_LITE);
   }
 
   const summary = `Found ${resultServices.length} service${resultServices.length === 1 ? '' : 's'} matching "${query}"`;
@@ -603,56 +611,26 @@ function composeFromEnrichments(
 
   const selected = scoredServices.slice(0, limit);
 
-  const resultServices = selected.map(({ service }) => {
+  // Build lite responses for fast card display
+  const resultServices: LiteService[] = selected.map(({ service }) => {
     const enrichment = enrichments.get(service.serviceId);
-
-    if (enrichment) {
-      const processSteps = (enrichment.aiProcessSteps as string[]) || [];
-      return {
-        id: service.serviceId,
-        name: service.name,
-        category: enrichment.aiCategory || service.category,
-        description: enrichment.aiDescription,
-        location: enrichment.aiLocation || service.location || '',
-        contact: enrichment.aiContact || service.contact || '',
-        websiteUrl: service.websiteUrl || '',
-        eligibility: enrichment.aiEligibility || service.eligibility || '',
-        process: mode === 'fast' ? processSteps.slice(0, 4) : processSteps,
-        waitTimes: enrichment.aiWaitTimes || service.waitTimes || '',
-        requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
-        // Normalized contact fields from dedicated DB columns
-        phone: service.phone || '',
-        email: service.email || '',
-        address: service.address || '',
-      };
-    }
-
-    // Fallback to raw DB data when enrichment is missing
-    return {
+    const desc = enrichment?.aiDescription || service.description || '';
+    return toLiteService({
       id: service.serviceId,
       name: service.name,
-      category: service.category,
-      description: service.description || '',
-      location: service.location || '',
-      contact: service.contact || '',
-      websiteUrl: service.websiteUrl || '',
-      eligibility: service.eligibility || '',
-      process: (service.processSteps as string[]) || [],
-      waitTimes: service.waitTimes || '',
-      requiredDocs: (service.requiredDocs as string[]) || [],
-      // Normalized contact fields from dedicated DB columns
-      phone: service.phone || '',
-      email: service.email || '',
-      address: service.address || '',
-    };
+      category: enrichment?.aiCategory || service.category,
+      description: desc,
+      location: enrichment?.aiLocation || service.location || '',
+      waitTimes: enrichment?.aiWaitTimes || service.waitTimes || '',
+    });
   });
 
   // For crisis queries, ensure 988 is first
   if (isCrisisQuery) {
-    const filtered = resultServices.filter((s: any) =>
+    const filtered = resultServices.filter((s) =>
       !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
     );
-    return { services: [CRISIS_988_SERVICE, ...filtered], summary: buildSummary(filtered.length + 1, query) };
+    return { services: [CRISIS_988_SERVICE_LITE, ...filtered], summary: buildSummary(filtered.length + 1, query) };
   }
 
   return { services: resultServices, summary: buildSummary(resultServices.length, query) };
@@ -904,55 +882,26 @@ export async function registerRoutes(
             const serviceIds = semanticResults.map(r => r.serviceId);
             const enrichments = await storage.getEnrichmentsByServiceIds(serviceIds);
 
-            // Build response from semantic results
-            let resultServices = semanticResults.map(sr => {
+            // Build lite response from semantic results (for fast card display)
+            let resultServices: LiteService[] = semanticResults.map(sr => {
               const enrichment = enrichments.get(sr.serviceId);
-
-              if (enrichment) {
-                const processSteps = (enrichment.aiProcessSteps as string[]) || [];
-                return {
-                  id: sr.serviceId,
-                  name: sr.name,
-                  category: enrichment.aiCategory || sr.category,
-                  description: enrichment.aiDescription,
-                  location: enrichment.aiLocation || sr.location || '',
-                  contact: enrichment.aiContact || sr.contact || '',
-                  websiteUrl: sr.websiteUrl || '',
-                  eligibility: enrichment.aiEligibility || sr.eligibility || '',
-                  process: processSteps.slice(0, 4),
-                  waitTimes: enrichment.aiWaitTimes || sr.waitTimes || '',
-                  requiredDocs: (enrichment.aiRequiredDocs as string[]) || [],
-                  phone: sr.phone || '',
-                  email: sr.email || '',
-                  address: sr.address || '',
-                };
-              }
-
-              // Fallback to raw DB data
-              return {
+              const desc = enrichment?.aiDescription || sr.description || '';
+              return toLiteService({
                 id: sr.serviceId,
                 name: sr.name,
-                category: sr.category,
-                description: sr.description || '',
-                location: sr.location || '',
-                contact: sr.contact || '',
-                websiteUrl: sr.websiteUrl || '',
-                eligibility: sr.eligibility || '',
-                process: (sr.processSteps as string[]) || [],
-                waitTimes: sr.waitTimes || '',
-                requiredDocs: (sr.requiredDocs as string[]) || [],
-                phone: sr.phone || '',
-                email: sr.email || '',
-                address: sr.address || '',
-              };
+                category: enrichment?.aiCategory || sr.category,
+                description: desc,
+                location: enrichment?.aiLocation || sr.location || '',
+                waitTimes: enrichment?.aiWaitTimes || sr.waitTimes || '',
+              });
             });
 
             // For crisis queries, ensure 988 is first
             if (isCrisisQuery) {
-              resultServices = resultServices.filter((s: any) =>
+              resultServices = resultServices.filter((s) =>
                 !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
               );
-              resultServices.unshift(CRISIS_988_SERVICE);
+              resultServices.unshift(CRISIS_988_SERVICE_LITE);
             }
 
             // Apply pagination
@@ -1246,7 +1195,12 @@ Return JSON:
           !s.id?.includes('988') && !s.name?.toLowerCase().includes('988')
         );
         // Prepend 988 as the first result
-        results.services.unshift(CRISIS_988_SERVICE);
+        results.services.unshift(CRISIS_988_SERVICE_LITE);
+      }
+
+      // Convert to lite format for fast response (full details loaded on demand)
+      if (results.services) {
+        results.services = results.services.map((s: any) => toLiteService(s));
       }
 
       // OPTIMIZATION 5: Save per-service enrichments asynchronously
@@ -1333,6 +1287,48 @@ Return JSON:
       } else {
         res.status(500).json({ message: "Failed to submit feedback" });
       }
+    }
+  });
+
+  // ============= SERVICE DETAIL ENDPOINT =============
+  // Get full service details by ID (loaded when user expands a card)
+  app.get("/api/services/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      // Handle special case: 988 crisis service
+      if (id === "988-suicide-crisis-helpline") {
+        return res.json(CRISIS_988_SERVICE_FULL);
+      }
+
+      const { service, enrichment } = await storage.getServiceById(id);
+
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+
+      // Compose full service detail response
+      const fullService = {
+        id: service.serviceId,
+        name: service.name,
+        category: enrichment?.aiCategory || service.category,
+        description: enrichment?.aiDescription || service.description || '',
+        location: enrichment?.aiLocation || service.location || '',
+        contact: enrichment?.aiContact || service.contact || '',
+        websiteUrl: service.websiteUrl || '',
+        eligibility: enrichment?.aiEligibility || service.eligibility || '',
+        process: (enrichment?.aiProcessSteps as string[]) || (service.processSteps as string[]) || [],
+        waitTimes: enrichment?.aiWaitTimes || service.waitTimes || '',
+        requiredDocs: (enrichment?.aiRequiredDocs as string[]) || (service.requiredDocs as string[]) || [],
+        phone: service.phone || '',
+        email: service.email || '',
+        address: service.address || '',
+      };
+
+      res.json(fullService);
+    } catch (err) {
+      console.error("Service detail error:", err);
+      res.status(500).json({ message: "Failed to fetch service details" });
     }
   });
 

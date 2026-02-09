@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Phone, Clock } from "lucide-react";
-import { type ServiceDetail } from "@shared/schema";
+import { ArrowRight, MapPin, Clock } from "lucide-react";
+import { type ServiceSummary } from "@shared/routes";
 import { Badge } from "@/components/ui/badge";
 
 interface ServiceCardProps {
-  service: ServiceDetail;
+  service: ServiceSummary;
   onClick: () => void;
   index: number;
 }

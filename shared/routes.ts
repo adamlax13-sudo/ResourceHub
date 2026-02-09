@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+// Lite schema for search results (card display only) - FAST
+export const serviceSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  category: z.string(),
+  description: z.string(),  // Truncated for card display
+  location: z.string(),
+  waitTimes: z.string(),
+});
+
+// Full schema with all details (loaded on demand when user expands)
 export const serviceDetailSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -42,13 +53,24 @@ export const api = {
         pageSize: z.number().int().min(1).max(50).optional(),
       }),
       responses: {
+        // Now returns lite summaries for fast display
         200: z.object({
-          services: z.array(serviceDetailSchema),
+          services: z.array(serviceSummarySchema),
           summary: z.string(),
-          // Pagination metadata (optional for backward compatibility)
           pagination: paginationSchema.optional(),
         }),
         400: z.object({ message: z.string() }),
+      },
+    },
+  },
+  services: {
+    // Get full service details by ID (loaded when user clicks to expand)
+    getById: {
+      method: 'GET' as const,
+      path: '/api/services/:id',
+      responses: {
+        200: serviceDetailSchema,
+        404: z.object({ message: z.string() }),
       },
     },
   },
@@ -65,5 +87,6 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
 }
 
 export type SearchResponse = z.infer<typeof api.search.query.responses[200]>;
+export type ServiceSummary = z.infer<typeof serviceSummarySchema>;
 export type ServiceDetail = z.infer<typeof serviceDetailSchema>;
 export type Pagination = z.infer<typeof paginationSchema>;

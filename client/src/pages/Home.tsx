@@ -4,7 +4,7 @@ import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
-import { type ServiceDetail } from "@shared/routes";
+import { type ServiceSummary } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
@@ -72,7 +72,7 @@ function FlipCard({ frontContent, backContent, index }: {
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
   const { searchState, setSearchResults } = useSearchContext();
-  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -142,7 +142,7 @@ export default function Home() {
                     key={service.id}
                     service={service}
                     index={index}
-                    onClick={() => setSelectedService(service)}
+                    onClick={() => setSelectedServiceId(service.id)}
                   />
                 ))}
               </div>
@@ -216,9 +216,9 @@ export default function Home() {
       {/* Service Details Modal */}
       <Suspense fallback={null}>
         <ServiceModal
-          service={selectedService}
-          isOpen={!!selectedService}
-          onClose={() => setSelectedService(null)}
+          serviceId={selectedServiceId}
+          isOpen={!!selectedServiceId}
+          onClose={() => setSelectedServiceId(null)}
         />
       </Suspense>
 

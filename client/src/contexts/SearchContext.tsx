@@ -1,16 +1,16 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
-import type { ServiceDetail } from "@shared/routes";
+import type { ServiceSummary } from "@shared/routes";
 
 interface SearchState {
   query: string;
   mode: 'fast' | 'comprehensive';
-  services: ServiceDetail[];
+  services: ServiceSummary[];
   hasSearched: boolean;
 }
 
 interface SearchContextType {
   searchState: SearchState;
-  setSearchResults: (query: string, mode: 'fast' | 'comprehensive', services: ServiceDetail[]) => void;
+  setSearchResults: (query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[]) => void;
   clearSearch: () => void;
 }
 
@@ -44,7 +44,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, [searchState]);
 
-  const setSearchResults = useCallback((query: string, mode: 'fast' | 'comprehensive', services: ServiceDetail[]) => {
+  const setSearchResults = useCallback((query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[]) => {
     setSearchState({
       query,
       mode,

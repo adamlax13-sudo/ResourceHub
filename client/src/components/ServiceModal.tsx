@@ -1,14 +1,15 @@
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { type ServiceDetail } from "@shared/routes";
 import { ProcessTimeline } from "./ProcessTimeline";
-import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail } from "lucide-react";
+import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 
 interface ServiceModalProps {
-  service: ServiceDetail | null;
+  serviceId: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -165,12 +166,104 @@ function linkifyText(text: string): React.ReactNode {
   return parts.length > 0 ? parts : text;
 }
 
-// ============= COMPONENT =============
+// ============= LOADING SKELETON =============
 
-export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
+function ServiceModalSkeleton() {
   const { t } = useTranslation();
 
-  if (!service) return null;
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0">
+        <div className="flex flex-col gap-2 pr-8 md:pr-10">
+          <div className="h-5 w-24 bg-muted animate-pulse rounded" />
+          <div className="h-7 w-3/4 bg-muted animate-pulse rounded" />
+          <div className="h-4 w-full bg-muted animate-pulse rounded mt-1" />
+        </div>
+      </div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-muted-foreground text-sm">{t('service.loading')}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============= COMPONENT =============
+
+export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) {
+  const { t } = useTranslation();
+  const [service, setService] = useState<ServiceDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch service details when modal opens
+  useEffect(() => {
+    if (!serviceId || !isOpen) {
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
+
+    fetch(`/api/services/${encodeURIComponent(serviceId)}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(res.status === 404 ? 'Service not found' : 'Failed to load service');
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!cancelled) {
+          setService(data);
+          setIsLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err.message);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [serviceId, isOpen]);
+
+  // Clear service data when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      // Small delay to allow close animation
+      const timeout = setTimeout(() => {
+        setService(null);
+        setError(null);
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isOpen]);
+
+  if (!serviceId) return null;
+
+  // Show loading or error states
+  if (isLoading || error || !service) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl w-[95vw] md:w-full h-[85vh] md:h-[90vh] max-h-[85vh] md:max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-xl md:rounded-3xl">
+          {error ? (
+            <div className="flex flex-col h-full items-center justify-center gap-3">
+              <p className="text-destructive">{error}</p>
+              <Button variant="outline" onClick={onClose}>{t('common.close')}</Button>
+            </div>
+          ) : (
+            <ServiceModalSkeleton />
+          )}
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const parsed = parseContactInfo(service.contact);
 

@@ -102,6 +102,12 @@ export interface IStorage {
   getAliasesForServices(): Promise<Map<string, string[]>>;
   findServiceByAlias(alias: string): Promise<string | null>;
 
+  // Get full service details by ID (for lazy loading expanded view)
+  getServiceById(serviceId: string): Promise<{
+    service: Service | null;
+    enrichment: AiServiceEnrichment | null;
+  }>;
+
   // ============= OPTIMIZED TWO-STAGE SEARCH =============
   // Stage 1: Fast SQL-based search (uses indexes)
   fastSearch(query: string, location?: string | null, isLocationOnly?: boolean, limit?: number): Promise<FastSearchResult[]>;
@@ -163,6 +169,23 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(services.lastChecked));
+  }
+
+  // Get full service details by ID (for lazy loading modal/expanded view)
+  async getServiceById(serviceId: string): Promise<{
+    service: Service | null;
+    enrichment: AiServiceEnrichment | null;
+  }> {
+    // Fetch service and enrichment in parallel
+    const [serviceResult, enrichmentResult] = await Promise.all([
+      db.select().from(services).where(eq(services.serviceId, serviceId)).limit(1),
+      db.select().from(aiServiceEnrichments).where(eq(aiServiceEnrichments.serviceId, serviceId)).limit(1),
+    ]);
+
+    return {
+      service: serviceResult[0] || null,
+      enrichment: enrichmentResult[0] || null,
+    };
   }
 
   // ============= SEMANTIC (EMBEDDING) SEARCH =============

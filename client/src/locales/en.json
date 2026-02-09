@@ -39,7 +39,11 @@
     "save": "Save",
     "saved": "Saved",
     "steps": "steps",
-    "clickDetails": "Click for full details"
+    "clickDetails": "Click for full details",
+    "loading": "Loading service details..."
+  },
+  "common": {
+    "close": "Close"
   },
   "myResources": {
     "title": "My Resources",
