@@ -869,24 +869,27 @@ export async function registerRoutes(
                   });
                 });
 
-                // Filter semantic results by location if specified
-                let filteredSemantic = semanticServices;
+                // Sort semantic results by location relevance (prioritize, don't filter out)
+                let sortedSemantic = semanticServices;
                 if (effectiveLocation) {
                   const locLower = effectiveLocation.toLowerCase();
-                  filteredSemantic = semanticServices.filter(s => {
-                    const svcLoc = (s.location || '').toLowerCase();
-                    return svcLoc.includes(locLower) ||
-                           svcLoc.includes('alberta') ||
-                           svcLoc.includes('province') ||
-                           svcLoc === '';
+                  sortedSemantic = [...semanticServices].sort((a, b) => {
+                    const aLoc = (a.location || '').toLowerCase();
+                    const bLoc = (b.location || '').toLowerCase();
+                    const scoreLocation = (loc: string) => {
+                      if (loc.includes(locLower)) return 3;
+                      if (loc.includes('alberta') || loc.includes('province') || loc === '') return 2;
+                      return 1;
+                    };
+                    return scoreLocation(bLoc) - scoreLocation(aLoc);
                   });
-                  console.log(`[Search] After location filter (${effectiveLocation}): ${filteredSemantic.length} of ${semanticServices.length}`);
+                  console.log(`[Search] Sorted ${semanticServices.length} semantic results by location relevance`);
                 }
 
                 // Merge: SQL results first, then semantic results (deduplicated)
                 const existingIds = new Set(combinedServices.map(s => s.id));
                 let addedCount = 0;
-                for (const svc of filteredSemantic) {
+                for (const svc of sortedSemantic) {
                   if (!existingIds.has(svc.id)) {
                     combinedServices.push(svc);
                     existingIds.add(svc.id);
