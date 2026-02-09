@@ -826,8 +826,8 @@ def phase_generate_embeddings(session, client: Optional[OpenAIClient], log: Scra
     # Check if embedding column exists
     try:
         session.execute(text("SELECT embedding FROM services LIMIT 1"))
-    except Exception:
-        logger.warning("Embedding column not found - run migrations first")
+    except Exception as e:
+        logger.warning(f"Embedding column not found - run migrations first. Error: {e}")
         return
 
     # Get services needing embeddings
@@ -867,10 +867,10 @@ def phase_generate_embeddings(session, client: Optional[OpenAIClient], log: Scra
         if svc.get("tags") and isinstance(svc["tags"], list):
             parts.append(f"Tags: {', '.join(svc['tags'])}")
 
-        text = "\n".join(parts)[:30000]
+        embed_text = "\n".join(parts)[:30000]
 
         try:
-            response = client.embeddings.create(model=EMBEDDING_MODEL, input=text)
+            response = client.embeddings.create(model=EMBEDDING_MODEL, input=embed_text)
             embedding = response.data[0].embedding
             batch.append((svc["service_id"], embedding))
 
@@ -878,7 +878,7 @@ def phase_generate_embeddings(session, client: Optional[OpenAIClient], log: Scra
                 # Save batch
                 for sid, emb in batch:
                     session.execute(text(
-                        "UPDATE services SET embedding = :emb::vector, embedding_updated_at = NOW() "
+                        "UPDATE services SET embedding = CAST(:emb AS vector), embedding_updated_at = NOW() "
                         "WHERE service_id = :sid"
                     ), {"emb": f"[{','.join(map(str, emb))}]", "sid": sid})
                 session.commit()
@@ -893,7 +893,7 @@ def phase_generate_embeddings(session, client: Optional[OpenAIClient], log: Scra
     if batch:
         for sid, emb in batch:
             session.execute(text(
-                "UPDATE services SET embedding = :emb::vector, embedding_updated_at = NOW() "
+                "UPDATE services SET embedding = CAST(:emb AS vector), embedding_updated_at = NOW() "
                 "WHERE service_id = :sid"
             ), {"emb": f"[{','.join(map(str, emb))}]", "sid": sid})
         session.commit()
