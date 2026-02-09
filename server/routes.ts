@@ -758,7 +758,6 @@ export async function registerRoutes(
       const {
         services: allCachedServices,
         completeServices,
-        formatted: servicesReference,
         hash: DATABASE_HASH,
         aliasToServiceId,
         serviceIdToAliases
@@ -1006,14 +1005,13 @@ export async function registerRoutes(
       // OPTIMIZATION 4: Send only pre-filtered services to OpenAI
       // Instead of sending all services, send only the relevant ones
       // This dramatically reduces token count and response latency
-      const maxPreFilter = mode === 'fast' ? 60 : 150;
+      // gpt-4.1 has 30k TPM limit, so cap at 80 services for comprehensive mode
+      const maxPreFilter = mode === 'fast' ? 60 : 80;
       const usePreFiltered = preFiltered.length >= 5;
       const relevantServices = usePreFiltered
         ? preFiltered.slice(0, maxPreFilter).map(s => s.service)
-        : cachedServices;
-      const filteredReference = usePreFiltered
-        ? formatServicesForAI(relevantServices)
-        : servicesReference;
+        : cachedServices.slice(0, maxPreFilter); // Also limit fallback
+      const filteredReference = formatServicesForAI(relevantServices);
 
       // Crisis prioritization instructions
       const crisisInstructions = isCrisisQuery ? `
