@@ -752,6 +752,9 @@ export async function registerRoutes(
       const page = input.page ?? 1;
       const pageSize = input.pageSize ?? 15;
 
+      // Location: prefer explicit dropdown selection, then extract from query text
+      const userSelectedLocation = input.location?.trim().toLowerCase() || null;
+
       // OPTIMIZATION 1: In-memory services cache
       // Eliminates DB round-trip for service data on every request
       // Uses completeServices (services with sufficient data) for search
@@ -812,12 +815,14 @@ export async function registerRoutes(
           const nonLocationKeywords = baseKeywords.filter(kw =>
             !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
           );
-          const isLocationOnlyQuery = !!(locationContext.specifiedLocation && nonLocationKeywords.length === 0);
+          // Use user-selected location (dropdown) if provided, else query-extracted location
+          const effectiveLocation = userSelectedLocation || locationContext.specifiedLocation || null;
+          const isLocationOnlyQuery = !!(effectiveLocation && nonLocationKeywords.length === 0);
 
           // Use two-stage SQL search
           const sqlSearchResult = await twoStageSearch(
             input.query,
-            locationContext.specifiedLocation || null,
+            effectiveLocation,
             isLocationOnlyQuery,
             isCrisisQuery,
             50 // Get more results for pagination
@@ -955,7 +960,9 @@ export async function registerRoutes(
       const queryNonLocationKeywords = queryBaseKeywords.filter(kw =>
         !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
       );
-      const isLocationOnlySearch = queryLocationContext.specifiedLocation && queryNonLocationKeywords.length === 0;
+      // Use user-selected location (dropdown) if provided, else query-extracted location
+      const locationForAI = userSelectedLocation || queryLocationContext.specifiedLocation || null;
+      const isLocationOnlySearch = locationForAI && queryNonLocationKeywords.length === 0;
 
       if (preFiltered.length >= 3) {
         // For location-only queries, include all matching services (up to 50)
@@ -1043,13 +1050,10 @@ COMPREHENSIVE MODE - Return ALL relevant services (CRITICAL):
 5. Include real contact info and 4-8 process steps per service
 6. When in doubt about relevance, INCLUDE the service`;
 
-      // Detect location context for OpenAI prompt
-      const locationContext = extractLocationContext(input.query);
-
       // Location-only query instructions (user just typed a city name)
-      const locationOnlyInstructions = isLocationOnlySearch && locationContext.specifiedLocation ? `
-LOCATION-ONLY QUERY DETECTED: User wants ALL services available in "${locationContext.specifiedLocation.toUpperCase()}"
-- Return EVERY service from the database that serves ${locationContext.specifiedLocation}
+      const locationOnlyInstructions = isLocationOnlySearch && locationForAI ? `
+LOCATION-ONLY QUERY DETECTED: User wants ALL services available in "${locationForAI.toUpperCase()}"
+- Return EVERY service from the database that serves ${locationForAI}
 - ALSO return ALL province-wide services (marked as "Alberta", "province-wide", "provincial", etc.)
 - Include ALL categories: crisis lines, shelters, addiction, mental health, housing, counselling, support groups, etc.
 - DO NOT limit results - if 30 services match, return all 30
@@ -1057,13 +1061,13 @@ LOCATION-ONLY QUERY DETECTED: User wants ALL services available in "${locationCo
 - Order by category for easy browsing (crisis first, then by alphabetical category)
 ` : '';
 
-      const locationInstructions = (!isLocationOnlySearch && locationContext.specifiedLocation) ? `
-LOCATION-SPECIFIC QUERY DETECTED: User is looking for services in "${locationContext.specifiedLocation.toUpperCase()}"
-- PRIORITIZE services located in or serving ${locationContext.specifiedLocation}
+      const locationInstructions = (!isLocationOnlySearch && locationForAI) ? `
+LOCATION-SPECIFIC QUERY DETECTED: User is looking for services in "${locationForAI.toUpperCase()}"
+- PRIORITIZE services located in or serving ${locationForAI}
 - ALSO INCLUDE province-wide services (marked as "Alberta", "province-wide", "provincial", etc.)
 - DO NOT include services from other cities unless they are province-wide
-- If a service's location field contains "${locationContext.specifiedLocation}" or "Alberta province-wide", include it
-- Services in other cities like ${locationContext.specifiedLocation === 'calgary' ? 'Edmonton, Red Deer, Lethbridge' : 'Calgary, Red Deer, Lethbridge'} should be EXCLUDED unless province-wide
+- If a service's location field contains "${locationForAI}" or "Alberta province-wide", include it
+- Services in other cities like ${locationForAI === 'calgary' ? 'Edmonton, Red Deer, Lethbridge' : 'Calgary, Red Deer, Lethbridge'} should be EXCLUDED unless province-wide
 ` : '';
 
       const systemPrompt = `You are a helpful assistant for "Recovery on Campus Resource Hub" in Alberta.

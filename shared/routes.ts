@@ -47,6 +47,7 @@ export const api = {
       input: z.object({
         query: z.string().min(1, "Please enter what you're looking for").max(200, "Search query is too long (200 characters max)"),
         mode: z.enum(['fast', 'comprehensive']).optional().default('fast'),
+        location: z.string().optional(), // User's selected location for filtering
         hp: z.string().max(0).optional(),
         // Pagination parameters (defaults applied server-side)
         page: z.number().int().min(1).optional(),

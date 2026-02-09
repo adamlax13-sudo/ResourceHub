@@ -4,19 +4,22 @@ import type { ServiceSummary } from "@shared/routes";
 interface SearchState {
   query: string;
   mode: 'fast' | 'comprehensive';
+  location: string;
   services: ServiceSummary[];
   hasSearched: boolean;
 }
 
 interface SearchContextType {
   searchState: SearchState;
-  setSearchResults: (query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[]) => void;
+  setSearchResults: (query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[], location?: string) => void;
+  setLocation: (location: string) => void;
   clearSearch: () => void;
 }
 
 const defaultState: SearchState = {
   query: '',
   mode: 'fast',
+  location: '',
   services: [],
   hasSearched: false,
 };
@@ -24,14 +27,18 @@ const defaultState: SearchState = {
 const SearchContext = createContext<SearchContextType | null>(null);
 
 const STORAGE_KEY = 'roc_search_state';
+const LOCATION_KEY = 'roc_selected_location';
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchState, setSearchState] = useState<SearchState>(() => {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
+      const savedLocation = localStorage.getItem(LOCATION_KEY) || '';
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        return { ...parsed, location: savedLocation };
       }
+      return { ...defaultState, location: savedLocation };
     } catch (e) {
     }
     return defaultState;
@@ -44,17 +51,26 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, [searchState]);
 
-  const setSearchResults = useCallback((query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[]) => {
-    setSearchState({
+  const setSearchResults = useCallback((query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[], location?: string) => {
+    setSearchState(prev => ({
       query,
       mode,
+      location: location ?? prev.location,
       services,
       hasSearched: true,
-    });
+    }));
+  }, []);
+
+  const setLocation = useCallback((location: string) => {
+    setSearchState(prev => ({ ...prev, location }));
+    try {
+      localStorage.setItem(LOCATION_KEY, location);
+    } catch (e) {
+    }
   }, []);
 
   const clearSearch = useCallback(() => {
-    setSearchState(defaultState);
+    setSearchState(prev => ({ ...defaultState, location: prev.location }));
     try {
       sessionStorage.removeItem(STORAGE_KEY);
     } catch (e) {
@@ -62,7 +78,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SearchContext.Provider value={{ searchState, setSearchResults, clearSearch }}>
+    <SearchContext.Provider value={{ searchState, setSearchResults, setLocation, clearSearch }}>
       {children}
     </SearchContext.Provider>
   );

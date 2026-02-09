@@ -71,21 +71,21 @@ function FlipCard({ frontContent, backContent, index }: {
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults } = useSearchContext();
+  const { searchState, setSearchResults, setLocation } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (data && data.services) {
-      setSearchResults(data.query, data.mode, data.services);
+      setSearchResults(data.query, data.mode, data.services, searchState.location);
     }
-  }, [data, setSearchResults]);
+  }, [data, setSearchResults, searchState.location]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = (query: string, mode: 'fast' | 'comprehensive', hp?: string) => {
-    search({ query, mode, ...(hp ? { hp } : {}) });
+  const handleSearch = (query: string, mode: 'fast' | 'comprehensive', location: string, hp?: string) => {
+    search({ query, mode, location: location || undefined, ...(hp ? { hp } : {}) });
   };
 
   return (
@@ -93,7 +93,13 @@ export default function Home() {
       <Suspense fallback={null}>
         <WelcomeModal />
       </Suspense>
-      <Hero onSearch={handleSearch} isLoading={isPending} initialQuery={searchState.query} />
+      <Hero
+        onSearch={handleSearch}
+        isLoading={isPending}
+        initialQuery={searchState.query}
+        location={searchState.location}
+        onLocationChange={setLocation}
+      />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
         <AnimatePresence mode="wait">
