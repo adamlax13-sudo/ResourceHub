@@ -6,25 +6,15 @@
  */
 
 export const SEARCH_CONFIG = {
-  // === MODE-SPECIFIC SETTINGS ===
-  modes: {
-    fast: {
-      maxResults: 50,
-      paginationDefault: 15,
-      useEmbeddings: false,      // NO external API calls in fast mode
-      useOpenAI: false,          // NO external API calls in fast mode
-      enrichmentThreshold: 0.7,  // 70% of results must have cached enrichments
-      preFilterLimit: 60,        // Max services to consider
-    },
-    comprehensive: {
-      maxResults: 100,
-      paginationDefault: 20,
-      useEmbeddings: true,       // Can generate query embeddings
-      useOpenAI: true,           // Can call OpenAI chat completion
-      enrichmentThreshold: 0.9,  // 90% of results must have cached enrichments
-      minResultsBeforeOpenAI: 3, // Only call OpenAI if < 3 results
-      preFilterLimit: 80,        // Max services to consider
-    },
+  // === SEARCH SETTINGS ===
+  search: {
+    maxResults: 100,
+    paginationDefault: 20,
+    useEmbeddings: true,       // Can generate query embeddings
+    useOpenAI: true,           // Can call OpenAI chat completion
+    enrichmentThreshold: 0.9,  // 90% of results must have cached enrichments
+    minResultsBeforeOpenAI: 3, // Only call OpenAI if < 3 results
+    preFilterLimit: 80,        // Max services to consider
   },
 
   // === SEMANTIC SEARCH SETTINGS ===
@@ -195,7 +185,6 @@ export const SEARCH_CONFIG = {
 } as const;
 
 // Type exports for type safety
-export type SearchMode = 'fast' | 'comprehensive';
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
 export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'general';
 

@@ -78,14 +78,14 @@ export default function Home() {
 
   useEffect(() => {
     if (data && data.services) {
-      setSearchResults(data.query, data.mode, data.services, searchState.location);
+      setSearchResults(data.query, data.services, searchState.location);
     }
   }, [data, setSearchResults, searchState.location]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = (query: string, mode: 'fast' | 'comprehensive', location: string, hp?: string) => {
-    search({ query, mode, location: location || undefined, ...(hp ? { hp } : {}) });
+  const handleSearch = (query: string, location: string, hp?: string) => {
+    search({ query, location: location || undefined, ...(hp ? { hp } : {}) });
   };
 
   return (

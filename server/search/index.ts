@@ -14,16 +14,14 @@ import type {
   SearchType,
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
-import { FastSearchStrategy } from './strategies/fast';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
 
-// Strategies are singletons
-const fastStrategy = new FastSearchStrategy();
-const comprehensiveStrategy = new ComprehensiveSearchStrategy();
+// Single search strategy - comprehensive mode only
+const searchStrategy = new ComprehensiveSearchStrategy();
 
 // In-memory services cache for generating database hash
 interface ServicesCacheData {
@@ -69,16 +67,15 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${analysis.intent}, Location: ${analysis.location.specified || 'none'}`);
 
   // Check cache
-  const cacheKey = buildCacheKey(analysis, input.mode, databaseHash);
+  const cacheKey = buildCacheKey(analysis, 'comprehensive', databaseHash);
   const cached = await storage.getSearchByQuery(cacheKey);
   if (cached) {
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
     return formatResponse(cachedResults.services, cachedResults.summary, input, startTime, true);
   }
 
-  // Select and execute strategy
-  const strategy = input.mode === 'fast' ? fastStrategy : comprehensiveStrategy;
-  const result = await strategy.search(analysis, input);
+  // Execute search
+  const result = await searchStrategy.search(analysis, input);
 
   // Apply crisis pinning if needed (single place!)
   if (analysis.isCrisis) {

@@ -24,7 +24,6 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   // ============= SEARCH ENDPOINT =============
-  // Uses the new SearchOrchestrator for both fast and comprehensive modes
   app.post(api.search.query.path, strictLimiter, async (req: Request, res: Response) => {
     try {
       const input = api.search.query.input.parse(req.body);
@@ -37,10 +36,9 @@ export async function registerRoutes(
       // Call the search orchestrator
       const result = await search({
         query: input.query,
-        mode: input.mode || 'fast',
         location: input.location,
         page: input.page ?? 1,
-        pageSize: input.pageSize ?? 15,
+        pageSize: input.pageSize ?? 20,
       });
 
       res.json(result);

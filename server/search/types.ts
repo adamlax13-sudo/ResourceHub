@@ -4,16 +4,15 @@
  * Shared TypeScript interfaces for the search module.
  */
 
-import type { SearchMode, SearchType, QueryIntent } from './config';
+import type { SearchType, QueryIntent } from './config';
 
 // Re-export types from config for convenience
-export type { SearchMode, SearchType, QueryIntent };
+export type { SearchType, QueryIntent };
 
 // === INPUT TYPES ===
 
 export interface SearchInput {
   query: string;
-  mode: SearchMode;
   location?: string;
   page: number;
   pageSize: number;
@@ -151,7 +150,6 @@ export interface SearchStrategy {
 /** Cache key components */
 export interface CacheKeyComponents {
   databaseHash: string;
-  mode: SearchMode;
   normalizedQuery: string;
   location: string | null;
 }

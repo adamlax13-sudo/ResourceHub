@@ -6,7 +6,6 @@ type SearchInput = z.infer<typeof api.search.query.input>;
 
 interface ExtendedSearchResponse extends SearchResponse {
   query: string;
-  mode: 'fast' | 'comprehensive';
 }
 
 export function useSearch() {
@@ -27,7 +26,6 @@ export function useSearch() {
       return {
         ...response,
         query: data.query,
-        mode: data.mode || 'fast',
       };
     },
   });

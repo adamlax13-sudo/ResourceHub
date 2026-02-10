@@ -3,7 +3,6 @@ import type { ServiceSummary } from "@shared/routes";
 
 interface SearchState {
   query: string;
-  mode: 'fast' | 'comprehensive';
   location: string;
   services: ServiceSummary[];
   hasSearched: boolean;
@@ -11,14 +10,13 @@ interface SearchState {
 
 interface SearchContextType {
   searchState: SearchState;
-  setSearchResults: (query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[], location?: string) => void;
+  setSearchResults: (query: string, services: ServiceSummary[], location?: string) => void;
   setLocation: (location: string) => void;
   clearSearch: () => void;
 }
 
 const defaultState: SearchState = {
   query: '',
-  mode: 'fast',
   location: '',
   services: [],
   hasSearched: false,
@@ -51,10 +49,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, [searchState]);
 
-  const setSearchResults = useCallback((query: string, mode: 'fast' | 'comprehensive', services: ServiceSummary[], location?: string) => {
+  const setSearchResults = useCallback((query: string, services: ServiceSummary[], location?: string) => {
     setSearchState(prev => ({
       query,
-      mode,
       location: location ?? prev.location,
       services,
       hasSearched: true,

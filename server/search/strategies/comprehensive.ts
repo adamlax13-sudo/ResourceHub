@@ -186,7 +186,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
   readonly name = 'comprehensive';
 
   async search(analysis: QueryAnalysis, input: SearchInput): Promise<SearchResult> {
-    const config = SEARCH_CONFIG.modes.comprehensive;
+    const config = SEARCH_CONFIG.search;
     const startTime = Date.now();
 
     // Check if this is a domain-specific intent that needs OpenAI query enhancement
