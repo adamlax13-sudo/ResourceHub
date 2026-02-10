@@ -453,13 +453,26 @@ def count_missing_fields(service: Service) -> int:
     return missing
 
 
+def safe_lower(val) -> str:
+    """Convert value to lowercase string, handling non-string types."""
+    if val is None:
+        return ""
+    if isinstance(val, str):
+        return val.lower()
+    if isinstance(val, dict):
+        return str(val).lower()
+    if isinstance(val, list):
+        return " ".join(str(x).lower() for x in val)
+    return str(val).lower()
+
+
 def infer_service_metadata(service_data: Dict) -> Dict:
     """Infer service metadata from description, eligibility, and hours."""
-    desc = (service_data.get("description") or "").lower()
-    elig = (service_data.get("eligibility") or "").lower()
-    hours = (service_data.get("hours_of_operation") or "").lower()
-    category = (service_data.get("category") or "").lower()
-    name = (service_data.get("name") or "").lower()
+    desc = safe_lower(service_data.get("description"))
+    elig = safe_lower(service_data.get("eligibility"))
+    hours = safe_lower(service_data.get("hours_of_operation"))
+    category = safe_lower(service_data.get("category"))
+    name = safe_lower(service_data.get("name"))
 
     metadata = {
         "service_type": service_data.get("service_type"),
