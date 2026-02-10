@@ -24,7 +24,7 @@ export const services = pgTable("services", {
   name: varchar("name", { length: 500 }).notNull(),
   category: varchar("category", { length: 255 }).notNull(),
   description: text("description"),
-  location: varchar("location", { length: 500 }),
+  location: varchar("location", { length: 500 }).default("Alberta"),
   contact: text("contact"),
   eligibility: text("eligibility"),
   // Normalized contact fields (extracted for better search)
@@ -38,29 +38,41 @@ export const services = pgTable("services", {
   languagesSupported: jsonb("languages_supported"),
   serviceFormat: varchar("service_format", { length: 100 }),
   websiteUrl: text("website_url"),
-  bookingUrl: text("booking_url"),
-  dataSource: varchar("data_source", { length: 255 }),
   confidenceScore: integer("confidence_score").default(100),
   isActive: boolean("is_active").default(true),
-  firstSeen: timestamp("first_seen").defaultNow(),
   lastChecked: timestamp("last_checked").defaultNow(),
   lastUpdated: timestamp("last_updated").defaultNow(),
   tags: jsonb("tags"),
-  notes: text("notes"),
   // Search improvement columns (added by add_search_improvements.sql)
   popularityScore: integer("popularity_score").default(0),
   clickCount: integer("click_count").default(0),
-  // Full-text search optimization
-  searchText: text("search_text"),
-  // Category improvement columns (added by add_category_improvements.sql)
-  serviceType: varchar("service_type", { length: 100 }), // crisis_line, emergency_shelter, mental_health, addiction_recovery, etc.
-  eligibilityTags: jsonb("eligibility_tags").default([]), // Array of eligibility criteria
-  demographicTags: jsonb("demographic_tags").default([]), // Array: women, youth, indigenous, seniors, lgbtq, families, men
+  // Category columns still in use
   genderRestriction: varchar("gender_restriction", { length: 50 }), // women_only, men_only, all
-  ageRestriction: varchar("age_restriction", { length: 100 }), // youth_12_24, adult_18+, senior_55+, all
   is24_7: boolean("is_24_7").default(false),
+});
+
+// Archive table for feature columns (created by archive_feature_columns.sql)
+export const serviceFeatureArchive = pgTable("service_feature_archive", {
+  id: serial("id").primaryKey(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  serviceType: varchar("service_type", { length: 100 }),
+  eligibilityTags: jsonb("eligibility_tags").default([]),
+  demographicTags: jsonb("demographic_tags").default([]),
+  ageRestriction: varchar("age_restriction", { length: 100 }),
   isWalkIn: boolean("is_walk_in").default(false),
   requiresReferral: boolean("requires_referral").default(false),
+  archivedAt: timestamp("archived_at").defaultNow(),
+});
+
+// Deduplication log table (created by handle_duplicates.sql)
+export const deduplicationLog = pgTable("deduplication_log", {
+  id: serial("id").primaryKey(),
+  keptServiceId: varchar("kept_service_id", { length: 255 }).notNull(),
+  removedServiceId: varchar("removed_service_id", { length: 255 }).notNull(),
+  duplicateType: varchar("duplicate_type", { length: 50 }).notNull(),
+  matchValue: text("match_value"),
+  reason: text("reason"),
+  deduplicatedAt: timestamp("deduplicated_at").defaultNow(),
 });
 
 // Search analytics - tracks user searches and clicks for improving results

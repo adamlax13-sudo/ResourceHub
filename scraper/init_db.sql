@@ -8,9 +8,12 @@ CREATE TABLE IF NOT EXISTS services (
     name VARCHAR(500) NOT NULL,
     category VARCHAR(255) NOT NULL,
     description TEXT,
-    location VARCHAR(500),
+    location VARCHAR(500) DEFAULT 'Alberta',
     contact TEXT,
     eligibility TEXT,
+    phone VARCHAR(100),
+    email VARCHAR(255),
+    address TEXT,
     process_steps JSONB,
     wait_times VARCHAR(255),
     required_docs JSONB,
@@ -18,15 +21,13 @@ CREATE TABLE IF NOT EXISTS services (
     languages_supported JSONB,
     service_format VARCHAR(100),
     website_url TEXT,
-    booking_url TEXT,
-    data_source VARCHAR(255),
     confidence_score INTEGER DEFAULT 100,
     is_active BOOLEAN DEFAULT TRUE,
-    first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     tags JSONB,
-    notes TEXT
+    gender_restriction VARCHAR(50),
+    is_24_7 BOOLEAN DEFAULT FALSE
 );
 
 -- Service history table (change tracking)
@@ -46,11 +47,9 @@ CREATE TABLE IF NOT EXISTS service_history (
     languages_supported JSONB,
     service_format VARCHAR(100),
     website_url TEXT,
-    booking_url TEXT,
     changed_fields JSONB,
     change_type VARCHAR(50),
     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_source VARCHAR(255),
     confidence_score INTEGER DEFAULT 100
 );
 

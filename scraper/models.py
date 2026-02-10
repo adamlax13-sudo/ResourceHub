@@ -24,7 +24,7 @@ class Service(Base):
 
     # Core information
     description = Column(Text)
-    location = Column(String(500))
+    location = Column(String(500), default='Alberta')
     contact = Column(Text)  # Phone, email, website (combined for display)
     eligibility = Column(Text)
 
@@ -45,41 +45,27 @@ class Service(Base):
 
     # URLs and external links
     website_url = Column(Text)
-    booking_url = Column(Text)
 
     # Data quality
-    data_source = Column(String(255))  # URL where data was scraped from
     confidence_score = Column(Integer, default=100)  # 0-100, data reliability
 
     # Tracking
     is_active = Column(Boolean, default=True)
-    first_seen = Column(DateTime, default=func.now())
     last_checked = Column(DateTime, default=func.now(), onupdate=func.now())
     last_updated = Column(DateTime, default=func.now())
 
     # Metadata
     tags = Column(JSON)  # Array of tags for search
-    notes = Column(Text)  # Admin notes
 
-    # Search optimization
-    search_text = Column(Text)  # Concatenated searchable text
-
-    # Category improvement columns
-    service_type = Column(String(100))  # crisis_line, emergency_shelter, mental_health, addiction_recovery, etc.
-    eligibility_tags = Column(JSON, default=[])  # Array of eligibility criteria
-    demographic_tags = Column(JSON, default=[])  # Array: women, youth, indigenous, seniors, lgbtq, families, men
+    # Category columns still in use
     gender_restriction = Column(String(50))  # women_only, men_only, all
-    age_restriction = Column(String(100))  # youth_12_24, adult_18+, senior_55+, all
     is_24_7 = Column(Boolean, default=False)
-    is_walk_in = Column(Boolean, default=False)
-    requires_referral = Column(Boolean, default=False)
 
     # Indexes for common queries
     __table_args__ = (
         Index('idx_service_category', 'category'),
         Index('idx_service_active', 'is_active'),
         Index('idx_service_last_checked', 'last_checked'),
-        Index('idx_service_type', 'service_type'),
         Index('idx_gender_restriction', 'gender_restriction'),
         Index('idx_is_24_7', 'is_24_7'),
     )
@@ -106,7 +92,6 @@ class ServiceHistory(Base):
     languages_supported = Column(JSON)
     service_format = Column(String(100))
     website_url = Column(Text)
-    booking_url = Column(Text)
 
     # Change tracking
     changed_fields = Column(JSON)  # Array of field names that changed
@@ -114,7 +99,6 @@ class ServiceHistory(Base):
 
     # Metadata
     recorded_at = Column(DateTime, default=func.now(), index=True)
-    data_source = Column(String(255))
     confidence_score = Column(Integer, default=100)
 
     __table_args__ = (

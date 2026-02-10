@@ -5,6 +5,7 @@
  * Usage: npx tsx scripts/run-migration.ts migrations/add_category_improvements.sql
  */
 
+import 'dotenv/config';
 import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
@@ -77,7 +78,6 @@ async function runMigration(migrationFile: string) {
     const result = await pool.query(`
       SELECT
         COUNT(*) as total_services,
-        COUNT(service_type) as with_service_type,
         COUNT(gender_restriction) as with_gender_restriction,
         SUM(CASE WHEN is_24_7 THEN 1 ELSE 0 END) as is_24_7_count
       FROM services
@@ -86,25 +86,8 @@ async function runMigration(migrationFile: string) {
 
     const row = result.rows[0];
     console.log(`  Total active services: ${row.total_services}`);
-    console.log(`  With service_type: ${row.with_service_type}`);
     console.log(`  With gender_restriction: ${row.with_gender_restriction}`);
     console.log(`  24/7 services: ${row.is_24_7_count}`);
-
-    // Service types distribution
-    const typeResult = await pool.query(`
-      SELECT service_type, COUNT(*) as count
-      FROM services
-      WHERE is_active = true AND service_type IS NOT NULL
-      GROUP BY service_type
-      ORDER BY count DESC
-    `);
-
-    if (typeResult.rows.length > 0) {
-      console.log('\n📊 Service types:');
-      for (const r of typeResult.rows) {
-        console.log(`  ${r.service_type}: ${r.count}`);
-      }
-    }
 
     // Gender restrictions
     const genderResult = await pool.query(`
