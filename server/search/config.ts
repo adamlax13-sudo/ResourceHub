@@ -148,12 +148,32 @@ export const SEARCH_CONFIG = {
     locationOnlyResultLimit: 50,       // Max results for location-only queries
     minResultsThreshold: 8,            // Supplement with semantic if SQL < this
   },
+
+  // === DOMAIN INTENT PATTERNS ===
+  // Used by analyzer.ts to detect specific query intents
+  domainPatterns: {
+    substance_abuse: [
+      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict)/i,
+      /(?:drinking|alcohol|drug|addict).*(?:problem|issue|help|recovery)/i,
+      /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
+    ],
+    mental_health: [
+      /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless)/i,
+      /(?:anxiety|depression|panic|stress).*(?:attack|help|support|treatment)/i,
+      /(?:can'?t|cannot).*(?:cope|function|sleep|eat|get out of bed)/i,
+    ],
+    housing_urgent: [
+      /(?:need|nowhere|no).*(?:sleep|shelter|housing|place|bed|stay)/i,
+      /(?:homeless|evict|kicked out|on the street)/i,
+      /(?:emergency|urgent).*(?:housing|shelter|bed)/i,
+    ],
+  },
 } as const;
 
 // Type exports for type safety
 export type SearchMode = 'fast' | 'comprehensive';
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'substance_abuse' | 'mental_health' | 'housing_urgent' | 'general';
 
 // Re-export the config type
 export type SearchConfigType = typeof SEARCH_CONFIG;

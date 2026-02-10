@@ -59,7 +59,7 @@ export function analyzeQuery(
   const aliasMatch = findAliasMatch(rawKeywords);
 
   // Determine query intent
-  const intent = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch);
+  const intent = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
 
   return {
     raw: query,
@@ -109,13 +109,48 @@ function findAliasMatch(keywords: string[]): string | null {
 }
 
 /**
+ * Detect domain-specific intent from query patterns
+ * Returns null if no specific domain intent detected
+ */
+function detectDomainIntent(query: string): QueryIntent | null {
+  const patterns = SEARCH_CONFIG.domainPatterns;
+
+  // Check substance abuse patterns
+  for (const pattern of patterns.substance_abuse) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: substance_abuse`);
+      return 'substance_abuse';
+    }
+  }
+
+  // Check mental health patterns
+  for (const pattern of patterns.mental_health) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: mental_health`);
+      return 'mental_health';
+    }
+  }
+
+  // Check housing urgent patterns
+  for (const pattern of patterns.housing_urgent) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent`);
+      return 'housing_urgent';
+    }
+  }
+
+  return null;
+}
+
+/**
  * Determine the intent behind a query
  */
 function determineIntent(
   keywords: string[],
   location: string | null,
   isCrisis: boolean,
-  aliasMatch: string | null
+  aliasMatch: string | null,
+  rawQuery: string
 ): QueryIntent {
   // Crisis is highest priority
   if (isCrisis) {
@@ -125,6 +160,12 @@ function determineIntent(
   // Direct alias lookup (user searching for specific service)
   if (aliasMatch) {
     return 'alias';
+  }
+
+  // Check for domain-specific intents (substance abuse, mental health, housing)
+  const domainIntent = detectDomainIntent(rawQuery);
+  if (domainIntent) {
+    return domainIntent;
   }
 
   // Location-only query (no topic keywords, just a city name)
