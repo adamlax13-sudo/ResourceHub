@@ -115,6 +115,14 @@ function findAliasMatch(keywords: string[]): string | null {
 function detectDomainIntent(query: string): QueryIntent | null {
   const patterns = SEARCH_CONFIG.domainPatterns;
 
+  // Check housing urgent FIRST (more urgent, prevents misclassification)
+  for (const pattern of patterns.housing_urgent) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent`);
+      return 'housing_urgent';
+    }
+  }
+
   // Check substance abuse patterns
   for (const pattern of patterns.substance_abuse) {
     if (pattern.test(query)) {
@@ -128,14 +136,6 @@ function detectDomainIntent(query: string): QueryIntent | null {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: mental_health`);
       return 'mental_health';
-    }
-  }
-
-  // Check housing urgent patterns
-  for (const pattern of patterns.housing_urgent) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent`);
-      return 'housing_urgent';
     }
   }
 

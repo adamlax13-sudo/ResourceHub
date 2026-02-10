@@ -160,13 +160,15 @@ export const SEARCH_CONFIG = {
     mental_health: [
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless)/i,
       /(?:anxiety|depression|panic|stress).*(?:attack|help|support|treatment)/i,
-      /(?:can'?t|cannot).*(?:cope|function|sleep|eat|get out of bed)/i,
+      /(?:can'?t|cannot).*(?:cope|function|eat|get out of bed)/i,
+      /(?:can'?t|cannot).*(?:fall asleep|sleep at night|sleeping)/i,
       /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
     ],
     housing_urgent: [
-      /(?:need|nowhere|no).*(?:sleep|shelter|housing|place|bed|stay)/i,
+      /(?:need|nowhere|no|can'?t find).*(?:sleep|shelter|housing|place|bed|stay)/i,
       /(?:homeless|evict|kicked out|on the street)/i,
       /(?:emergency|urgent).*(?:housing|shelter|bed)/i,
+      /(?:place|somewhere).*(?:to sleep|to stay)/i,
     ],
   },
 } as const;
