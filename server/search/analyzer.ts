@@ -44,6 +44,7 @@ export function analyzeQuery(
   const locationContext = extractLocationContext(corrected);
 
   // Effective location: user-selected takes precedence over query-extracted
+  // Handle comma-separated multiple locations
   const effectiveLocation = userSelectedLocation?.trim().toLowerCase() ||
     locationContext.specifiedLocation;
 

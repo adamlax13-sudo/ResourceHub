@@ -198,16 +198,31 @@ export class DatabaseStorage implements IStorage {
     // Convert embedding array to PostgreSQL vector format
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
 
-    // Build location filter - include matching location, province-wide, and empty locations
-    const locationFilter = location
-      ? sql`AND (
-          location ILIKE ${'%' + location + '%'}
+    // Build location filter - handle comma-separated multiple locations
+    let locationFilter = sql``;
+    if (location) {
+      const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
+      if (locations.length === 1) {
+        // Single location - original logic
+        locationFilter = sql`AND (
+          location ILIKE ${'%' + locations[0] + '%'}
           OR location ILIKE '%alberta%'
           OR location ILIKE '%province%'
           OR location IS NULL
           OR location = ''
-        )`
-      : sql``;
+        )`;
+      } else if (locations.length > 1) {
+        // Multiple locations - match any of them
+        const locationConditions = locations.map(l => `location ILIKE '%${l}%'`).join(' OR ');
+        locationFilter = sql`AND (
+          ${sql.raw(locationConditions)}
+          OR location ILIKE '%alberta%'
+          OR location ILIKE '%province%'
+          OR location IS NULL
+          OR location = ''
+        )`;
+      }
+    }
 
     const result = await db.execute(sql`
       SELECT
@@ -448,7 +463,18 @@ export class DatabaseStorage implements IStorage {
     limit: number
   ): Promise<FastSearchResult[]> {
     const queryLower = `%${query.toLowerCase()}%`;
-    const locationLower = location ? `%${location.toLowerCase()}%` : null;
+
+    // Build location filter for multiple comma-separated locations
+    let locationFilter = sql``;
+    if (location) {
+      const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
+      if (locations.length === 1) {
+        locationFilter = sql`AND (lower(location) LIKE ${'%' + locations[0] + '%'} OR lower(location) LIKE '%alberta%')`;
+      } else if (locations.length > 1) {
+        const locationConditions = locations.map(l => `lower(location) LIKE '%${l}%'`).join(' OR ');
+        locationFilter = sql`AND (${sql.raw(locationConditions)} OR lower(location) LIKE '%alberta%')`;
+      }
+    }
 
     const result = await db.execute(sql`
       SELECT
@@ -482,7 +508,7 @@ export class DatabaseStorage implements IStorage {
           OR lower(description) LIKE ${queryLower}
           OR tags::text ILIKE ${queryLower}
         )
-        ${locationLower ? sql`AND (lower(location) LIKE ${locationLower} OR lower(location) LIKE '%alberta%')` : sql``}
+        ${locationFilter}
       ORDER BY relevance_score DESC
       LIMIT ${limit}
     `);

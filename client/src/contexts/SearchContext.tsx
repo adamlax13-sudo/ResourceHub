@@ -3,21 +3,22 @@ import type { ServiceSummary } from "@shared/routes";
 
 interface SearchState {
   query: string;
-  location: string;
+  locations: string[]; // Changed from single location to array
   services: ServiceSummary[];
   hasSearched: boolean;
 }
 
 interface SearchContextType {
   searchState: SearchState;
-  setSearchResults: (query: string, services: ServiceSummary[], location?: string) => void;
-  setLocation: (location: string) => void;
+  setSearchResults: (query: string, services: ServiceSummary[], locations?: string[]) => void;
+  setLocations: (locations: string[]) => void;
+  toggleLocation: (location: string) => void;
   clearSearch: () => void;
 }
 
 const defaultState: SearchState = {
   query: '',
-  location: '',
+  locations: [],
   services: [],
   hasSearched: false,
 };
@@ -25,18 +26,19 @@ const defaultState: SearchState = {
 const SearchContext = createContext<SearchContextType | null>(null);
 
 const STORAGE_KEY = 'roc_search_state';
-const LOCATION_KEY = 'roc_selected_location';
+const LOCATION_KEY = 'roc_selected_locations';
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchState, setSearchState] = useState<SearchState>(() => {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
-      const savedLocation = localStorage.getItem(LOCATION_KEY) || '';
+      const savedLocations = localStorage.getItem(LOCATION_KEY);
+      const parsedLocations = savedLocations ? JSON.parse(savedLocations) : [];
       if (stored) {
         const parsed = JSON.parse(stored);
-        return { ...parsed, location: savedLocation };
+        return { ...parsed, locations: parsedLocations };
       }
-      return { ...defaultState, location: savedLocation };
+      return { ...defaultState, locations: parsedLocations };
     } catch (e) {
     }
     return defaultState;
@@ -49,25 +51,38 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, [searchState]);
 
-  const setSearchResults = useCallback((query: string, services: ServiceSummary[], location?: string) => {
+  const setSearchResults = useCallback((query: string, services: ServiceSummary[], locations?: string[]) => {
     setSearchState(prev => ({
       query,
-      location: location ?? prev.location,
+      locations: locations ?? prev.locations,
       services,
       hasSearched: true,
     }));
   }, []);
 
-  const setLocation = useCallback((location: string) => {
-    setSearchState(prev => ({ ...prev, location }));
+  const setLocations = useCallback((locations: string[]) => {
+    setSearchState(prev => ({ ...prev, locations }));
     try {
-      localStorage.setItem(LOCATION_KEY, location);
+      localStorage.setItem(LOCATION_KEY, JSON.stringify(locations));
     } catch (e) {
     }
   }, []);
 
+  const toggleLocation = useCallback((location: string) => {
+    setSearchState(prev => {
+      const newLocations = prev.locations.includes(location)
+        ? prev.locations.filter(l => l !== location)
+        : [...prev.locations, location];
+      try {
+        localStorage.setItem(LOCATION_KEY, JSON.stringify(newLocations));
+      } catch (e) {
+      }
+      return { ...prev, locations: newLocations };
+    });
+  }, []);
+
   const clearSearch = useCallback(() => {
-    setSearchState(prev => ({ ...defaultState, location: prev.location }));
+    setSearchState(prev => ({ ...defaultState, locations: prev.locations }));
     try {
       sessionStorage.removeItem(STORAGE_KEY);
     } catch (e) {
@@ -75,7 +90,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SearchContext.Provider value={{ searchState, setSearchResults, setLocation, clearSearch }}>
+    <SearchContext.Provider value={{ searchState, setSearchResults, setLocations, toggleLocation, clearSearch }}>
       {children}
     </SearchContext.Provider>
   );

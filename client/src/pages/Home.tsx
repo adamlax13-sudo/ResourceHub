@@ -71,21 +71,23 @@ function FlipCard({ frontContent, backContent, index }: {
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults, setLocation } = useSearchContext();
+  const { searchState, setSearchResults, toggleLocation } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (data && data.services) {
-      setSearchResults(data.query, data.services, searchState.location);
+      setSearchResults(data.query, data.services, searchState.locations);
     }
-  }, [data, setSearchResults, searchState.location]);
+  }, [data, setSearchResults, searchState.locations]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = (query: string, location: string, hp?: string) => {
-    search({ query, location: location || undefined, ...(hp ? { hp } : {}) });
+  const handleSearch = (query: string, locations: string[], hp?: string) => {
+    // Join multiple locations with comma for the API
+    const locationParam = locations.length > 0 ? locations.join(',') : undefined;
+    search({ query, location: locationParam, ...(hp ? { hp } : {}) });
   };
 
   return (
@@ -97,8 +99,8 @@ export default function Home() {
         onSearch={handleSearch}
         isLoading={isPending}
         initialQuery={searchState.query}
-        location={searchState.location}
-        onLocationChange={setLocation}
+        locations={searchState.locations}
+        onToggleLocation={toggleLocation}
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">

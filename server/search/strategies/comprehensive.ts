@@ -577,11 +577,13 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Sort semantic results by location relevance if location specified
     let sortedSemantic = semanticServices;
     if (analysis.location.specified) {
-      const locLower = analysis.location.specified.toLowerCase();
+      // Handle comma-separated multiple locations
+      const selectedLocations = analysis.location.specified.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       sortedSemantic = [...semanticServices].sort((a, b) => {
         const scoreLocation = (loc: string) => {
           const l = loc.toLowerCase();
-          if (l.includes(locLower)) return 3;
+          // Check if matches any selected location
+          if (selectedLocations.some(sel => l.includes(sel))) return 3;
           if (l.includes('alberta') || l.includes('province') || l === '') return 2;
           return 1;
         };
