@@ -1,13 +1,13 @@
-import { Search, MapPin, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { Search, MapPin, ChevronDown, Check } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
 // Alberta locations for the dropdown
 const ALBERTA_LOCATIONS = [
-  { value: '', label: 'All of Alberta' },
+  { value: '', label: 'All of Alberta', isDefault: true },
   { value: 'calgary', label: 'Calgary' },
   { value: 'edmonton', label: 'Edmonton' },
   { value: 'red deer', label: 'Red Deer' },
@@ -39,6 +39,154 @@ interface HeroProps {
   onLocationChange: (location: string) => void;
 }
 
+// Custom Location Dropdown Component
+function LocationDropdown({
+  value,
+  onChange
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = ALBERTA_LOCATIONS.find(loc => loc.value === value) || ALBERTA_LOCATIONS[0];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close on escape key
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsOpen(false);
+    }
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  return (
+    <div ref={dropdownRef} className="relative inline-block">
+      {/* Trigger Button */}
+      <motion.button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`
+          inline-flex items-center gap-2.5 px-5 py-2.5
+          bg-white/10 backdrop-blur-md
+          border border-white/20 rounded-full
+          text-white font-medium text-sm
+          hover:bg-white/20 hover:border-white/40
+          focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-transparent
+          transition-all duration-200 cursor-pointer
+          shadow-lg shadow-black/10
+          ${isOpen ? 'bg-white/20 border-white/40' : ''}
+        `}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+      >
+        <MapPin className="w-4 h-4 text-white/80" />
+        <span className="min-w-[100px] text-left">{selectedOption.label}</span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-4 h-4 text-white/60" />
+        </motion.div>
+      </motion.button>
+
+      {/* Dropdown Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute z-50 mt-2 left-1/2 -translate-x-1/2 min-w-[220px]"
+          >
+            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/20 border border-white/50 overflow-hidden">
+              {/* Header */}
+              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-purple-500/5">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Location</p>
+              </div>
+
+              {/* Options */}
+              <div
+                className="max-h-[280px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
+                role="listbox"
+              >
+                {ALBERTA_LOCATIONS.map((location, index) => {
+                  const isSelected = location.value === value;
+                  return (
+                    <motion.button
+                      key={location.value}
+                      type="button"
+                      onClick={() => {
+                        onChange(location.value);
+                        setIsOpen(false);
+                      }}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.02 }}
+                      whileHover={{ backgroundColor: 'rgba(139, 92, 246, 0.08)' }}
+                      className={`
+                        w-full px-4 py-2.5 flex items-center gap-3 text-left
+                        transition-colors duration-150
+                        ${isSelected
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-gray-700 hover:text-gray-900'
+                        }
+                        ${location.isDefault ? 'border-b border-gray-100 mb-1' : ''}
+                      `}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      <div className={`
+                        w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                        transition-all duration-200
+                        ${isSelected
+                          ? 'border-primary bg-primary'
+                          : 'border-gray-300'
+                        }
+                      `}>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          >
+                            <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                          </motion.div>
+                        )}
+                      </div>
+                      <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>
+                        {location.label}
+                      </span>
+                      {location.isDefault && (
+                        <span className="ml-auto text-xs text-gray-400 font-normal">Default</span>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
@@ -58,10 +206,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
     if (query.trim()) {
       onSearch(query, locations, hp);
     }
-  };
-
-  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onLocationChange(e.target.value);
   };
 
   return (
@@ -268,34 +412,17 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             <input id="website-url" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
           </div>
 
-          {/* Location Dropdown */}
+          {/* Custom Location Dropdown */}
           <motion.div
-            className="mb-4"
+            className="mb-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="flex items-center justify-center gap-2">
-              <MapPin className="w-4 h-4 text-white/70" />
-              <label htmlFor="location-select" className="text-sm text-white/70 font-medium">
-                Location:
-              </label>
-              <div className="relative">
-                <select
-                  id="location-select"
-                  value={selectedLocation}
-                  onChange={handleLocationChange}
-                  className="appearance-none bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 pr-10 text-sm font-medium hover:bg-white/20 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all cursor-pointer"
-                >
-                  {ALBERTA_LOCATIONS.map((loc) => (
-                    <option key={loc.value} value={loc.value} className="bg-primary text-white">
-                      {loc.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
-              </div>
-            </div>
+            <LocationDropdown
+              value={selectedLocation}
+              onChange={onLocationChange}
+            />
           </motion.div>
 
           <div className="relative group">
