@@ -52,7 +52,7 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
           </div>
           <div className="flex items-start text-sm text-slate-600">
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
-            <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes}</span>
+            <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || "Contact service provider for wait time"}</span>
           </div>
         </div>
 

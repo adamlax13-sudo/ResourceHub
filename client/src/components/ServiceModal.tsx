@@ -369,7 +369,7 @@ export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) 
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
-                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes)}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes || "Contact service provider for wait time")}</div>
                       </div>
                     </div>
 
