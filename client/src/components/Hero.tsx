@@ -1,12 +1,13 @@
-import { Search, MapPin, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 
-// Alberta locations for the chips
+// Alberta locations for the dropdown
 const ALBERTA_LOCATIONS = [
+  { value: '', label: 'All of Alberta' },
   { value: 'calgary', label: 'Calgary' },
   { value: 'edmonton', label: 'Edmonton' },
   { value: 'red deer', label: 'Red Deer' },
@@ -30,22 +31,21 @@ const ALBERTA_LOCATIONS = [
   { value: 'banff', label: 'Banff' },
 ];
 
-// Popular locations shown by default
-const POPULAR_LOCATIONS = ['calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat', 'grande prairie'];
-
 interface HeroProps {
   onSearch: (query: string, locations: string[], hp?: string) => void;
   isLoading: boolean;
   initialQuery?: string;
   locations: string[];
-  onToggleLocation: (location: string) => void;
+  onLocationChange: (location: string) => void;
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onToggleLocation }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
-  const [showAllLocations, setShowAllLocations] = useState(false);
   const { t } = useTranslation();
+
+  // Get current selected location (first in array or empty for "All of Alberta")
+  const selectedLocation = locations.length > 0 ? locations[0] : '';
 
   useEffect(() => {
     if (initialQuery !== query) {
@@ -60,12 +60,9 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onTogg
     }
   };
 
-  // Determine which locations to show
-  const visibleLocations = showAllLocations
-    ? ALBERTA_LOCATIONS
-    : ALBERTA_LOCATIONS.filter(loc => POPULAR_LOCATIONS.includes(loc.value) || locations.includes(loc.value));
-
-  const hiddenSelectedCount = locations.filter(l => !POPULAR_LOCATIONS.includes(l)).length;
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onLocationChange(e.target.value);
+  };
 
   return (
     <div className="relative w-screen max-w-full overflow-hidden bg-primary text-primary-foreground pt-20 pb-32 md:pt-28 md:pb-48 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
@@ -271,84 +268,33 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onTogg
             <input id="website-url" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
           </div>
 
-          {/* Location Chips */}
+          {/* Location Dropdown */}
           <motion.div
             className="mb-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="flex items-center justify-center gap-2">
               <MapPin className="w-4 h-4 text-white/70" />
-              <span className="text-sm text-white/70 font-medium">
-                {locations.length === 0 ? 'All of Alberta' : `${locations.length} location${locations.length > 1 ? 's' : ''} selected`}
-              </span>
-              {locations.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    locations.forEach(loc => onToggleLocation(loc));
-                  }}
-                  className="text-xs text-white/60 hover:text-white/90 underline transition-colors"
+              <label htmlFor="location-select" className="text-sm text-white/70 font-medium">
+                Location:
+              </label>
+              <div className="relative">
+                <select
+                  id="location-select"
+                  value={selectedLocation}
+                  onChange={handleLocationChange}
+                  className="appearance-none bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 pr-10 text-sm font-medium hover:bg-white/20 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all cursor-pointer"
                 >
-                  Clear all
-                </button>
-              )}
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-2">
-              <AnimatePresence mode="popLayout">
-                {visibleLocations.map((loc) => {
-                  const isSelected = locations.includes(loc.value);
-                  return (
-                    <motion.button
-                      key={loc.value}
-                      type="button"
-                      onClick={() => onToggleLocation(loc.value)}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`
-                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium
-                        transition-all duration-200 border
-                        ${isSelected
-                          ? 'bg-white text-primary border-white shadow-lg'
-                          : 'bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30'
-                        }
-                      `}
-                      aria-pressed={isSelected}
-                    >
-                      <span>{loc.label}</span>
-                      {isSelected && (
-                        <X className="w-3.5 h-3.5" />
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-
-              {/* Show more/less button */}
-              <motion.button
-                type="button"
-                onClick={() => setShowAllLocations(!showAllLocations)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white transition-all"
-              >
-                {showAllLocations ? (
-                  <>
-                    <span>Show less</span>
-                    <ChevronUp className="w-3.5 h-3.5" />
-                  </>
-                ) : (
-                  <>
-                    <span>{hiddenSelectedCount > 0 && !showAllLocations ? `+${ALBERTA_LOCATIONS.length - POPULAR_LOCATIONS.length} more` : `+${ALBERTA_LOCATIONS.length - POPULAR_LOCATIONS.length} more`}</span>
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </>
-                )}
-              </motion.button>
+                  {ALBERTA_LOCATIONS.map((loc) => (
+                    <option key={loc.value} value={loc.value} className="bg-primary text-white">
+                      {loc.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
+              </div>
             </div>
           </motion.div>
 

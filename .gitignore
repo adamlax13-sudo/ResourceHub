@@ -11,6 +11,9 @@ vite.config.ts.*
 .env.production
 .env.development
 
+# MCP config (may contain database credentials)
+.mcp.json
+
 # Python
 __pycache__/
 *.pyc

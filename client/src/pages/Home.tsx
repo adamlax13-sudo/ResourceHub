@@ -71,7 +71,7 @@ function FlipCard({ frontContent, backContent, index }: {
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults, toggleLocation } = useSearchContext();
+  const { searchState, setSearchResults, setLocations } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
@@ -85,9 +85,14 @@ export default function Home() {
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
   const handleSearch = (query: string, locations: string[], hp?: string) => {
-    // Join multiple locations with comma for the API
-    const locationParam = locations.length > 0 ? locations.join(',') : undefined;
+    // Single location from dropdown (or empty for "All of Alberta")
+    const locationParam = locations.length > 0 ? locations[0] : undefined;
     search({ query, location: locationParam, ...(hp ? { hp } : {}) });
+  };
+
+  const handleLocationChange = (location: string) => {
+    // Set single location (empty string = "All of Alberta" = empty array)
+    setLocations(location ? [location] : []);
   };
 
   return (
@@ -100,7 +105,7 @@ export default function Home() {
         isLoading={isPending}
         initialQuery={searchState.query}
         locations={searchState.locations}
-        onToggleLocation={toggleLocation}
+        onLocationChange={handleLocationChange}
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
