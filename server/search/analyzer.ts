@@ -115,11 +115,27 @@ function findAliasMatch(keywords: string[]): string | null {
 function detectDomainIntent(query: string): QueryIntent | null {
   const patterns = SEARCH_CONFIG.domainPatterns;
 
-  // Check housing urgent FIRST (more urgent, prevents misclassification)
+  // Check domestic violence FIRST (safety priority)
+  for (const pattern of patterns.domestic_violence) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: domestic_violence`);
+      return 'domestic_violence';
+    }
+  }
+
+  // Check housing urgent (urgent need)
   for (const pattern of patterns.housing_urgent) {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent`);
       return 'housing_urgent';
+    }
+  }
+
+  // Check food insecurity (basic need)
+  for (const pattern of patterns.food_insecurity) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity`);
+      return 'food_insecurity';
     }
   }
 

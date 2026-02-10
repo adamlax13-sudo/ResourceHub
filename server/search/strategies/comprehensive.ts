@@ -110,9 +110,11 @@ Examples:
  */
 function boostByIntent(services: LiteService[], intent: QueryIntent): LiteService[] {
   const boostPatterns: Partial<Record<QueryIntent, RegExp>> = {
+    'domestic_violence': /domestic|violence|abuse|women'?s.*shelter|safe.*house|crisis.*line|victim|assault/i,
+    'food_insecurity': /food.*bank|pantry|meals|groceries|hunger|nutrition|hamper/i,
+    'housing_urgent': /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in/i,
     'substance_abuse': /addiction|recovery|alcohol|drug|detox|rehab|sober|AA|NA|AADAC|peer support|treatment/i,
     'mental_health': /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog/i,
-    'housing_urgent': /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in/i,
   };
 
   const pattern = boostPatterns[intent];
@@ -140,7 +142,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const startTime = Date.now();
 
     // Check if this is a domain-specific intent that needs OpenAI query enhancement
-    const isDomainIntent = ['substance_abuse', 'mental_health', 'housing_urgent'].includes(analysis.intent);
+    const isDomainIntent = ['domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse', 'mental_health'].includes(analysis.intent);
 
     // For domain intents, use OpenAI to get better search terms
     let enhancedQuery: EnhancedQuery | null = null;

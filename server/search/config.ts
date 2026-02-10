@@ -151,24 +151,45 @@ export const SEARCH_CONFIG = {
 
   // === DOMAIN INTENT PATTERNS ===
   // Used by analyzer.ts to detect specific query intents
+  // Order matters: more urgent/specific patterns should be checked first in analyzer.ts
   domainPatterns: {
-    substance_abuse: [
-      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict)/i,
-      /(?:drinking|alcohol|drug|addict).*(?:problem|issue|help|recovery)/i,
-      /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
+    domestic_violence: [
+      /(?:partner|husband|wife|boyfriend|girlfriend|spouse).*(?:hit|hurt|abuse|violent|attack)/i,
+      /(?:being|getting|am).*(?:abused|beaten|hurt|hit)/i,
+      /(?:domestic|family).*(?:violence|abuse)/i,
+      /(?:scared|afraid).*(?:of|for).*(?:my|partner|husband|wife|life|safety)/i,
+      /(?:escape|leave|flee).*(?:relationship|partner|husband|wife|abuser)/i,
+      /(?:women'?s|woman'?s).*(?:shelter|safe)/i,
     ],
-    mental_health: [
-      /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless)/i,
-      /(?:anxiety|depression|panic|stress).*(?:attack|help|support|treatment)/i,
-      /(?:can'?t|cannot).*(?:cope|function|eat|get out of bed)/i,
-      /(?:can'?t|cannot).*(?:fall asleep|sleep at night|sleeping)/i,
-      /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
+    food_insecurity: [
+      /(?:hungry|starving).*(?:no food|can'?t eat|nothing to eat)/i,
+      /(?:need|looking for|where).*(?:food|groceries|meals)/i,
+      /(?:can'?t|cannot).*(?:afford|buy).*(?:food|groceries|eat)/i,
+      /(?:food bank|food pantry|free food|free meals)/i,
+      /(?:no food|out of food|nothing to eat)/i,
     ],
     housing_urgent: [
       /(?:need|nowhere|no|can'?t find).*(?:sleep|shelter|housing|place|bed|stay)/i,
       /(?:homeless|evict|kicked out|on the street)/i,
       /(?:emergency|urgent).*(?:housing|shelter|bed)/i,
       /(?:place|somewhere).*(?:to sleep|to stay)/i,
+      /(?:about to|going to).*(?:lose|be evicted|kicked out)/i,
+      /(?:can'?t|cannot).*(?:pay|afford).*(?:rent|mortgage)/i,
+    ],
+    substance_abuse: [
+      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict)/i,
+      /(?:drinking|alcohol|drug|addict).*(?:problem|issue|help|recovery)/i,
+      /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
+      /(?:addicted|hooked).*(?:to|on)/i,
+    ],
+    mental_health: [
+      /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless|overwhelmed|lost)/i,
+      /(?:anxiety|depression|panic|stress|trauma|ptsd).*(?:attack|help|support|treatment)/i,
+      /(?:can'?t|cannot).*(?:cope|function|eat|get out of bed)/i,
+      /(?:can'?t|cannot).*(?:fall asleep|sleep at night|sleeping)/i,
+      /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
+      /(?:no one|nobody).*(?:to talk|who cares|understands)/i,
+      /(?:isolated|lonely|loneliness)/i,
     ],
   },
 } as const;
@@ -176,7 +197,7 @@ export const SEARCH_CONFIG = {
 // Type exports for type safety
 export type SearchMode = 'fast' | 'comprehensive';
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'substance_abuse' | 'mental_health' | 'housing_urgent' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'general';
 
 // Re-export the config type
 export type SearchConfigType = typeof SEARCH_CONFIG;
