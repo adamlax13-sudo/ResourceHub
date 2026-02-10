@@ -161,12 +161,15 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
   const serviceDocs = parseArrayField(service.requiredDocs);
   const requiredDocs = enrichmentDocs.length > 0 ? enrichmentDocs : serviceDocs;
 
+  // Prefer address over location for more complete info
+  const displayLocation = service.address || enrichment?.aiLocation || service.location || '';
+
   return {
     id: service.serviceId,
     name: service.name,
     category: enrichment?.aiCategory || service.category,
     description: enrichment?.aiDescription || service.description || '',
-    location: enrichment?.aiLocation || service.location || '',
+    location: displayLocation,
     contact: enrichment?.aiContact || service.contact || '',
     websiteUrl: service.websiteUrl || '',
     eligibility: enrichment?.aiEligibility || service.eligibility || '',
@@ -175,7 +178,7 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
     requiredDocs: requiredDocs,
     phone: service.phone || '',
     email: service.email || '',
-    address: service.address || '',
+    address: displayLocation,
   };
 }
 

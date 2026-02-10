@@ -551,6 +551,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const enrichments = await storage.getEnrichmentsBatch(Array.from(allServiceIds));
 
     // Convert SQL results to lite services
+    // Prefer address over location for more complete info on cards
     const sqlServices: LiteService[] = sqlResults.map(sr => ({
       id: sr.serviceId,
       name: sr.name,
@@ -558,11 +559,12 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       description: this.truncateDescription(
         enrichments.get(sr.serviceId)?.aiDescription || sr.description
       ),
-      location: enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
+      location: sr.address || enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
       waitTimes: enrichments.get(sr.serviceId)?.aiWaitTimes || sr.waitTimes || '',
     }));
 
     // Convert semantic results to lite services
+    // Prefer address over location for more complete info on cards
     const semanticServices: LiteService[] = semanticResults.map(sr => ({
       id: sr.serviceId,
       name: sr.name,
@@ -570,7 +572,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       description: this.truncateDescription(
         enrichments.get(sr.serviceId)?.aiDescription || sr.description
       ),
-      location: enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
+      location: sr.address || enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
       waitTimes: enrichments.get(sr.serviceId)?.aiWaitTimes || sr.waitTimes || '',
     }));
 
