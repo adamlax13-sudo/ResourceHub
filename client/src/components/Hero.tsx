@@ -1,5 +1,6 @@
 import { Search, MapPin, ChevronDown, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -39,7 +40,7 @@ interface HeroProps {
   onLocationChange: (location: string) => void;
 }
 
-// Custom Location Dropdown Component
+// Custom Location Dropdown Component with Portal
 function LocationDropdown({
   value,
   onChange
@@ -48,14 +49,31 @@ function LocationDropdown({
   onChange: (value: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = ALBERTA_LOCATIONS.find(loc => loc.value === value) || ALBERTA_LOCATIONS[0];
 
+  // Update dropdown position when opened
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  }, [isOpen]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     }
@@ -72,10 +90,109 @@ function LocationDropdown({
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // Close on scroll
+  useEffect(() => {
+    if (isOpen) {
+      const handleScroll = () => setIsOpen(false);
+      window.addEventListener('scroll', handleScroll, true);
+      return () => window.removeEventListener('scroll', handleScroll, true);
+    }
+  }, [isOpen]);
+
+  const dropdownMenu = (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          ref={dropdownRef}
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          style={{
+            position: 'fixed',
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+          }}
+          className="min-w-[220px]"
+        >
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/20 border border-white/50 overflow-hidden">
+            {/* Header */}
+            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-purple-500/5">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Location</p>
+            </div>
+
+            {/* Options */}
+            <div
+              className="max-h-[280px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
+              role="listbox"
+            >
+              {ALBERTA_LOCATIONS.map((location, index) => {
+                const isSelected = location.value === value;
+                return (
+                  <motion.button
+                    key={location.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(location.value);
+                      setIsOpen(false);
+                    }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.02 }}
+                    whileHover={{ backgroundColor: 'rgba(139, 92, 246, 0.08)' }}
+                    className={`
+                      w-full px-4 py-2.5 flex items-center gap-3 text-left
+                      transition-colors duration-150
+                      ${isSelected
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-gray-700 hover:text-gray-900'
+                      }
+                      ${location.isDefault ? 'border-b border-gray-100 mb-1' : ''}
+                    `}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className={`
+                      w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                      transition-all duration-200
+                      ${isSelected
+                        ? 'border-primary bg-primary'
+                        : 'border-gray-300'
+                      }
+                    `}>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        >
+                          <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                        </motion.div>
+                      )}
+                    </div>
+                    <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>
+                      {location.label}
+                    </span>
+                    {location.isDefault && (
+                      <span className="ml-auto text-xs text-gray-400 font-normal">Default</span>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
-    <div ref={dropdownRef} className="relative inline-block">
+    <div className="relative inline-block">
       {/* Trigger Button */}
       <motion.button
+        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.02 }}
@@ -104,85 +221,8 @@ function LocationDropdown({
         </motion.div>
       </motion.button>
 
-      {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute z-50 mt-2 left-1/2 -translate-x-1/2 min-w-[220px]"
-          >
-            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/20 border border-white/50 overflow-hidden">
-              {/* Header */}
-              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Location</p>
-              </div>
-
-              {/* Options */}
-              <div
-                className="max-h-[280px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
-                role="listbox"
-              >
-                {ALBERTA_LOCATIONS.map((location, index) => {
-                  const isSelected = location.value === value;
-                  return (
-                    <motion.button
-                      key={location.value}
-                      type="button"
-                      onClick={() => {
-                        onChange(location.value);
-                        setIsOpen(false);
-                      }}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.02 }}
-                      whileHover={{ backgroundColor: 'rgba(139, 92, 246, 0.08)' }}
-                      className={`
-                        w-full px-4 py-2.5 flex items-center gap-3 text-left
-                        transition-colors duration-150
-                        ${isSelected
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-gray-700 hover:text-gray-900'
-                        }
-                        ${location.isDefault ? 'border-b border-gray-100 mb-1' : ''}
-                      `}
-                      role="option"
-                      aria-selected={isSelected}
-                    >
-                      <div className={`
-                        w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                        transition-all duration-200
-                        ${isSelected
-                          ? 'border-primary bg-primary'
-                          : 'border-gray-300'
-                        }
-                      `}>
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          >
-                            <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                          </motion.div>
-                        )}
-                      </div>
-                      <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>
-                        {location.label}
-                      </span>
-                      {location.isDefault && (
-                        <span className="ml-auto text-xs text-gray-400 font-normal">Default</span>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Render dropdown via portal to avoid clipping */}
+      {typeof document !== 'undefined' && createPortal(dropdownMenu, document.body)}
     </div>
   );
 }
