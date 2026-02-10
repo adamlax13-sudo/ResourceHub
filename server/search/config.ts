@@ -161,6 +161,7 @@ export const SEARCH_CONFIG = {
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless)/i,
       /(?:anxiety|depression|panic|stress).*(?:attack|help|support|treatment)/i,
       /(?:can'?t|cannot).*(?:cope|function|sleep|eat|get out of bed)/i,
+      /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
     ],
     housing_urgent: [
       /(?:need|nowhere|no).*(?:sleep|shelter|housing|place|bed|stay)/i,

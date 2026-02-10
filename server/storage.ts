@@ -67,7 +67,7 @@ export interface IStorage {
   searchServices(searchTerm: string): Promise<Service[]>;
 
   // Semantic (embedding) search
-  semanticSearch(queryEmbedding: number[], matchThreshold?: number, matchCount?: number): Promise<SemanticSearchResult[]>;
+  semanticSearch(queryEmbedding: number[], matchThreshold?: number, matchCount?: number, location?: string | null): Promise<SemanticSearchResult[]>;
   hasEmbeddings(): Promise<boolean>;
 
   // AI enrichment cache
@@ -192,10 +192,22 @@ export class DatabaseStorage implements IStorage {
   async semanticSearch(
     queryEmbedding: number[],
     matchThreshold: number = 0.3,
-    matchCount: number = 20
+    matchCount: number = 20,
+    location: string | null = null
   ): Promise<SemanticSearchResult[]> {
     // Convert embedding array to PostgreSQL vector format
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
+
+    // Build location filter - include matching location, province-wide, and empty locations
+    const locationFilter = location
+      ? sql`AND (
+          location ILIKE ${'%' + location + '%'}
+          OR location ILIKE '%alberta%'
+          OR location ILIKE '%province%'
+          OR location IS NULL
+          OR location = ''
+        )`
+      : sql``;
 
     const result = await db.execute(sql`
       SELECT
@@ -218,6 +230,7 @@ export class DatabaseStorage implements IStorage {
       WHERE is_active = true
         AND embedding IS NOT NULL
         AND 1 - (embedding <=> ${embeddingStr}::vector) > ${matchThreshold}
+        ${locationFilter}
       ORDER BY embedding <=> ${embeddingStr}::vector
       LIMIT ${matchCount}
     `);

@@ -169,7 +169,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // For semantic search, use the rewritten query if available (more natural language)
     const semanticQuery = enhancedQuery ? enhancedQuery.rewritten : analysis.raw;
     const semanticPromise = hasEmbeddings
-      ? this.runSemanticSearch(semanticQuery)
+      ? this.runSemanticSearch(semanticQuery, analysis.location.specified)
       : Promise.resolve([]);
 
     const [sqlResults, semanticResults] = await Promise.all([sqlPromise, semanticPromise]);
@@ -204,13 +204,14 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     };
   }
 
-  private async runSemanticSearch(query: string): Promise<SemanticSearchResult[]> {
+  private async runSemanticSearch(query: string, location: string | null): Promise<SemanticSearchResult[]> {
     try {
       const embedding = await generateQueryEmbedding(query);
       return await storage.semanticSearch(
         embedding,
         SEARCH_CONFIG.semantic.matchThresholdPrimary,
-        SEARCH_CONFIG.semantic.maxCandidates
+        SEARCH_CONFIG.semantic.maxCandidates,
+        location
       );
     } catch (err) {
       console.warn('[ComprehensiveSearch] Semantic search failed:', err);
