@@ -150,6 +150,7 @@ export const SEARCH_CONFIG = {
       /(?:scared|afraid).*(?:of|for).*(?:my|partner|husband|wife|life|safety)/i,
       /(?:escape|leave|flee).*(?:relationship|partner|husband|wife|abuser)/i,
       /(?:women'?s|woman'?s).*(?:shelter|safe)/i,
+      /(?:he|she).*(?:threatens|threatening|controls|controlling)/i,
     ],
     food_insecurity: [
       /(?:hungry|starving).*(?:no food|can'?t eat|nothing to eat)/i,
@@ -157,6 +158,11 @@ export const SEARCH_CONFIG = {
       /(?:can'?t|cannot).*(?:afford|buy).*(?:food|groceries|eat)/i,
       /(?:food bank|food pantry|free food|free meals)/i,
       /(?:no food|out of food|nothing to eat)/i,
+      // Expanded food patterns
+      /(?:haven'?t|have not).*(?:eaten|eat)/i,
+      /(?:skipping|skip).*(?:meals?|eating)/i,
+      /(?:kids?|children).*(?:are|is).*hungry/i,
+      /(?:choosing|choose).*between.*(?:food|rent|bills)/i,
     ],
     housing_urgent: [
       /(?:need|nowhere|no|can'?t find).*(?:sleep|shelter|housing|place|bed|stay)/i,
@@ -165,6 +171,11 @@ export const SEARCH_CONFIG = {
       /(?:place|somewhere).*(?:to sleep|to stay)/i,
       /(?:about to|going to).*(?:lose|be evicted|kicked out)/i,
       /(?:can'?t|cannot).*(?:pay|afford).*(?:rent|mortgage)/i,
+      // Expanded housing patterns
+      /(?:sleeping|living).*(?:in my car|in car|in vehicle|in my vehicle)/i,
+      /(?:couch surfing|staying with friends|no permanent)/i,
+      /(?:about to be|getting|facing).*(?:evicted|kicked out)/i,
+      /(?:nowhere to go|no where to go|no place to go)/i,
     ],
     substance_abuse: [
       /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict)/i,
@@ -180,6 +191,11 @@ export const SEARCH_CONFIG = {
       /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
       /(?:no one|nobody).*(?:to talk|who cares|understands)/i,
       /(?:isolated|lonely|loneliness)/i,
+      // Expanded emotional distress patterns
+      /(?:scared|terrified|trapped|helpless|stuck)/i,
+      /(?:can'?t cope|breaking down|falling apart|at my wit'?s end)/i,
+      /(?:completely alone|nobody understands|no one to talk)/i,
+      /(?:don'?t know what to do|at a loss|losing it)/i,
     ],
   },
 } as const;

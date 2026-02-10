@@ -142,6 +142,123 @@ function detectGenderPreference(query: string): 'women_only' | 'men_only' | null
 }
 
 /**
+ * Detect age group preference from query text
+ * Returns 'youth', 'senior', or null
+ */
+function detectAgeGroup(query: string): 'youth' | 'senior' | null {
+  const q = query.toLowerCase();
+
+  // Youth patterns
+  const youthPatterns = [
+    /\b(teenager|teen|adolescent|youth|young adult)\b/,
+    /\b(high school|university|college|student)\b/,
+    /\b(under 18|under 25|under18|under25)\b/,
+    /\b(1[3-9]|2[0-4])\s*(year|yr)s?\s*old\b/,
+    /\bmy\s+(son|daughter|kid|child)\b/,
+    /\b(child|children|kids)\b/,
+    /\b(young|juvenile|minor)\b/,
+  ];
+
+  // Senior patterns
+  const seniorPatterns = [
+    /\b(elderly|senior|aging|aged|older adult)\b/,
+    /\b(65\+|70\+|over 65|over 60)\b/,
+    /\b([6-9][0-9]|100)\s*(year|yr)s?\s*old\b/,
+    /\b(retirement|retired|pension)\b/,
+    /\b(dementia|alzheimer|mobility issues?|arthritis)\b/,
+    /\b(grandparent|grandmother|grandfather|grandma|grandpa)\b/,
+  ];
+
+  if (youthPatterns.some(p => p.test(q))) return 'youth';
+  if (seniorPatterns.some(p => p.test(q))) return 'senior';
+  return null;
+}
+
+/**
+ * Detect urgency level from query text
+ * Returns 'immediate' or null
+ */
+function detectUrgency(query: string): 'immediate' | null {
+  const q = query.toLowerCase();
+
+  // Immediate urgency patterns
+  const immediatePatterns = [
+    /\b(right now|tonight|this minute|immediately|asap)\b/,
+    /\bneed\s+.{0,20}\s*now\b/,
+    /\bhelp\s+.{0,20}\s*now\b/,
+    /\b(this evening|this morning)\b/,
+    /\b(emergency|urgent|crisis)\b/,
+    /\b(about to|going to|will)\s+(be|become|get)\s+(evicted|kicked out|homeless)\b/,
+    /\b(nowhere to go|no place to stay|no where to sleep)\b/,
+    /\b(today|same day)\b/,
+  ];
+
+  if (immediatePatterns.some(p => p.test(q))) return 'immediate';
+  return null;
+}
+
+/**
+ * Detect family situation from query text
+ * Returns array of detected situations
+ */
+function detectFamilySituation(query: string): string[] {
+  const q = query.toLowerCase();
+  const situations: string[] = [];
+
+  // Single parent patterns
+  if (/\b(single\s+(parent|mom|dad|mother|father)|raising\s+.{0,10}\s*alone|sole custody|only parent)\b/.test(q)) {
+    situations.push('single_parent');
+  }
+
+  // Custody/divorce patterns
+  if (/\b(custody|divorce|separation|visitation|family court|child access|co-parenting)\b/.test(q)) {
+    situations.push('family_legal');
+  }
+
+  // Pregnancy/newborn patterns
+  if (/\b(pregnant|pregnancy|expecting|newborn|infant|baby|postpartum|prenatal|maternity)\b/.test(q)) {
+    situations.push('pregnancy');
+  }
+
+  // Parent with children general
+  if (/\b(with\s+(my\s+)?(kids?|children|child)|parent(ing)?|family)\b/.test(q) && situations.length === 0) {
+    situations.push('family_general');
+  }
+
+  return situations;
+}
+
+/**
+ * Detect community/cultural preference from query text
+ * Returns community identifier or null
+ */
+function detectCommunityPreference(query: string): string | null {
+  const q = query.toLowerCase();
+
+  // Indigenous patterns
+  if (/\b(indigenous|first nations?|metis|m[eé]tis|inuit|aboriginal|native|fnmi)\b/.test(q)) {
+    return 'indigenous';
+  }
+
+  // Newcomer/immigrant patterns
+  if (/\b(newcomer|refugee|immigrant|asylum|visa|settlement|new to canada|esl)\b/.test(q)) {
+    return 'newcomer';
+  }
+
+  // LGBTQ2S+ patterns
+  if (/\b(lgbtq|lgbt|gay|lesbian|trans|transgender|queer|2slgbtq|2s|two-spirit|bisexual|non-?binary)\b/.test(q)) {
+    return 'lgbtq';
+  }
+
+  // Veteran patterns
+  if (/\b(veteran|military|armed forces|ex-military|former military|canadian forces)\b/.test(q)) {
+    return 'veteran';
+  }
+
+  return null;
+}
+
+/**
  * Map query intent to expected service types and boost patterns
  */
 const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
@@ -173,15 +290,28 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
 };
 
 /**
- * Boost services that match the detected intent and gender preference
+ * Boost services that match the detected intent, gender, age, urgency, family, and community preferences
  * Uses both service_type field (if available) and text pattern matching
  */
 function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: string): LiteService[] {
   const intentConfig = INTENT_SERVICE_MAP[intent];
-  const genderPref = detectGenderPreference(rawQuery);
 
-  if (genderPref) {
-    console.log(`[ComprehensiveSearch] Detected gender preference: ${genderPref} from query`);
+  // Detect all preferences from query
+  const genderPref = detectGenderPreference(rawQuery);
+  const ageGroup = detectAgeGroup(rawQuery);
+  const urgency = detectUrgency(rawQuery);
+  const familySituations = detectFamilySituation(rawQuery);
+  const communityPref = detectCommunityPreference(rawQuery);
+
+  // Log detected preferences
+  const detections: string[] = [];
+  if (genderPref) detections.push(`gender:${genderPref}`);
+  if (ageGroup) detections.push(`age:${ageGroup}`);
+  if (urgency) detections.push(`urgency:${urgency}`);
+  if (familySituations.length > 0) detections.push(`family:${familySituations.join(',')}`);
+  if (communityPref) detections.push(`community:${communityPref}`);
+  if (detections.length > 0) {
+    console.log(`[ComprehensiveSearch] Detected preferences: ${detections.join(', ')}`);
   }
 
   // Create a scored copy with multi-factor boosting
@@ -209,32 +339,93 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
-    // Gender-based boosting (applies to all queries with detected gender)
+    // Gender-based boosting
     if (genderPref) {
       const isWomensService = /women|woman|female|mother|girl|domestic violence|yw\s|ywca/i.test(textLower);
       const isMensService = /\bmen\b|male|father|\bmen'?s\b/i.test(textLower) && !isWomensService;
-
-      // Check for explicit gender restrictions in the text
       const menOnlyIndicator = /men'?s.*shelter|men only|males only|for men\b/i.test(textLower);
       const womenOnlyIndicator = /women'?s.*shelter|women only|females only|for women\b/i.test(textLower);
 
       if (genderPref === 'women_only') {
-        // Boost women's services
-        if (isWomensService || womenOnlyIndicator) {
-          boost += 8;
-        }
-        // Penalize men-only services significantly
-        if (menOnlyIndicator) {
-          boost -= 15;
-        }
+        if (isWomensService || womenOnlyIndicator) boost += 8;
+        if (menOnlyIndicator) boost -= 15;
       } else if (genderPref === 'men_only') {
-        // Boost men's services
-        if (isMensService || menOnlyIndicator) {
-          boost += 8;
+        if (isMensService || menOnlyIndicator) boost += 8;
+        if (womenOnlyIndicator) boost -= 15;
+      }
+    }
+
+    // Age group boosting
+    if (ageGroup) {
+      const isYouthService = /youth|teen|adolescent|young|student|under 25|child|kids?|juvenile|minor|school/i.test(textLower);
+      const isSeniorService = /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer/i.test(textLower);
+
+      if (ageGroup === 'youth') {
+        if (isYouthService) boost += 8;
+        if (isSeniorService) boost -= 10;
+      } else if (ageGroup === 'senior') {
+        if (isSeniorService) boost += 8;
+        if (isYouthService && /only|exclusive/i.test(textLower)) boost -= 10;
+      }
+    }
+
+    // Urgency boosting - prioritize immediate access services
+    if (urgency === 'immediate') {
+      if (/24\/7|24 hour|walk-?in|emergency|crisis|immediate|no appointment|same day|drop-?in|open now/i.test(textLower)) {
+        boost += 10;
+      }
+      // Slight penalty for services that require appointments/intake
+      if (/appointment required|waitlist|intake process|wait time|waiting list/i.test(textLower)) {
+        boost -= 3;
+      }
+    }
+
+    // Family situation boosting
+    if (familySituations.length > 0) {
+      for (const situation of familySituations) {
+        if (situation === 'single_parent') {
+          if (/single parent|single mom|single dad|sole parent|family|child|parenting/i.test(textLower)) {
+            boost += 6;
+          }
         }
-        // Penalize women-only services significantly
-        if (womenOnlyIndicator) {
-          boost -= 15;
+        if (situation === 'family_legal') {
+          if (/legal|court|mediation|family services|custody|divorce|lawyer|law/i.test(textLower)) {
+            boost += 8;
+          }
+        }
+        if (situation === 'pregnancy') {
+          if (/prenatal|maternity|infant|baby|parenting|newborn|pregnancy|pregnant|postpartum|maternal/i.test(textLower)) {
+            boost += 8;
+          }
+        }
+        if (situation === 'family_general') {
+          if (/family|families|parent|child|kids/i.test(textLower)) {
+            boost += 4;
+          }
+        }
+      }
+    }
+
+    // Community preference boosting
+    if (communityPref) {
+      if (communityPref === 'indigenous') {
+        if (/indigenous|first nations?|aboriginal|native|metis|m[eé]tis|inuit|fnmi/i.test(textLower)) {
+          boost += 10;
+        }
+      }
+      if (communityPref === 'newcomer') {
+        if (/immigrant|refugee|newcomer|settlement|new canadian|esl|language|citizenship/i.test(textLower)) {
+          boost += 10;
+        }
+      }
+      if (communityPref === 'lgbtq') {
+        if (/lgbtq|lgbt|pride|queer|trans|gay|lesbian|2slgbtq|two-spirit|non-?binary/i.test(textLower)) {
+          boost += 10;
+        }
+      }
+      if (communityPref === 'veteran') {
+        if (/veteran|military|armed forces|canadian forces|vac\b|legion/i.test(textLower)) {
+          boost += 10;
         }
       }
     }
@@ -303,10 +494,15 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       analysis
     );
 
-    // Apply intent-based boosting for domain intents
-    // Also apply gender preference boosting even for general queries
+    // Apply intent-based boosting for domain intents or when any preference is detected
     const hasGenderPreference = detectGenderPreference(analysis.raw) !== null;
-    if (isDomainIntent || hasGenderPreference) {
+    const hasAgeGroup = detectAgeGroup(analysis.raw) !== null;
+    const hasUrgency = detectUrgency(analysis.raw) !== null;
+    const hasFamilySituation = detectFamilySituation(analysis.raw).length > 0;
+    const hasCommunityPref = detectCommunityPreference(analysis.raw) !== null;
+    const hasAnyPreference = hasGenderPreference || hasAgeGroup || hasUrgency || hasFamilySituation || hasCommunityPref;
+
+    if (isDomainIntent || hasAnyPreference) {
       services = boostByIntent(services, analysis.intent, analysis.raw);
     }
 
