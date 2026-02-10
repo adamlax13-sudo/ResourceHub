@@ -90,10 +90,16 @@ function LocationDropdown({
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
-  // Close on scroll
+  // Close on scroll (but not when scrolling inside the dropdown)
   useEffect(() => {
     if (isOpen) {
-      const handleScroll = () => setIsOpen(false);
+      const handleScroll = (e: Event) => {
+        // Don't close if scrolling inside the dropdown
+        if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) {
+          return;
+        }
+        setIsOpen(false);
+      };
       window.addEventListener('scroll', handleScroll, true);
       return () => window.removeEventListener('scroll', handleScroll, true);
     }
