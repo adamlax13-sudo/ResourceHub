@@ -1,0 +1,162 @@
+{
+  "app": {
+    "name": "Centre de Récupération",
+    "title": "Centre de Ressources de Récupération sur le Campus",
+    "subtitle": "Trouvez le soutien dont vous avez besoin. Santé mentale, aide financière, logement et plus encore. Nous vous guiderons étape par étape.",
+    "searchPlaceholder": "De quel type de soutien avez-vous besoin aujourd'hui?",
+    "searchHint": "Essayez \"soutien en santé mentale\" ou \"aide aux frais de scolarité\"",
+    "footer": "© 2025 Centre de Ressources de Récupération sur le Campus. Informations fournies à titre indicatif uniquement."
+  },
+  "nav": {
+    "myResources": "Mes Ressources",
+    "signIn": "Se Connecter",
+    "signInHint": "Email ou connexion sociale",
+    "logout": "Déconnexion"
+  },
+  "search": {
+    "summary": "Résumé",
+    "noResults": "Aucun service trouvé correspondant à vos critères. Essayez un autre terme de recherche.",
+    "error": "Impossible de terminer la recherche"
+  },
+  "service": {
+    "accessProcess": "Processus d'Accès",
+    "requiredDocs": "Documents Requis",
+    "noDocsListed": "Aucun document spécifique listé. Veuillez contacter le fournisseur pour confirmer.",
+    "keyInfo": "Informations Clés",
+    "waitTime": "Temps d'Attente Estimé",
+    "eligibility": "Éligibilité",
+    "location": "Emplacement",
+    "contact": "Contact",
+    "phone": "Téléphone",
+    "website": "Site Web",
+    "email": "Courriel",
+    "address": "Adresse",
+    "visitWebpage": "Visiter le site",
+    "callProvider": "Appeler le fournisseur",
+    "noWebpage": "Aucun site web disponible",
+    "externalLink": "Le lien externe s'ouvre dans un nouvel onglet",
+    "save": "Sauvegarder",
+    "saved": "Sauvegardé"
+  },
+  "myResources": {
+    "title": "Mes Ressources",
+    "all": "Tous",
+    "inProgress": "En Cours",
+    "startProcess": "Démarrer le Processus",
+    "markSaved": "Marquer comme Sauvegardé",
+    "trackProgress": "Suivez Votre Progression",
+    "empty": "Aucune ressource sauvegardée pour l'instant",
+    "emptyDesc": "Recherchez des ressources et sauvegardez-les ici pour un accès facile.",
+    "findResources": "Trouver des Ressources"
+  },
+  "steps": {
+    "step1": "Rassembler les documents requis",
+    "step2": "Soumettre la demande",
+    "step3": "Attendre la confirmation",
+    "step4": "Assister au rendez-vous/admission"
+  },
+  "howItWorks": {
+    "step1Title": "Rechercher",
+    "step1Desc": "Dites-nous quel type de soutien vous avez besoin en français simple.",
+    "step2Title": "Examiner",
+    "step2Desc": "Nous trouverons les services pertinents du campus et d'Alberta.",
+    "step3Title": "Connecter",
+    "step3Desc": "Obtenez des étapes claires, des coordonnées et suivez votre progression."
+  },
+  "auth": {
+    "signInRequired": "Connexion requise",
+    "signInToSave": "Veuillez vous connecter pour sauvegarder des ressources dans votre centre.",
+    "stayLoggedIn": "Rester connecté pendant 30 jours",
+    "easyLogin": "Rapide et facile - utilisez votre email ou un compte social"
+  },
+  "toast": {
+    "saved": "Sauvegardé!",
+    "resourceAdded": "Ressource ajoutée à Mes Ressources.",
+    "viewResources": "Voir"
+  },
+  "language": {
+    "select": "Langue"
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "welcomeTitle": "Bienvenue au Centre de Rétablissement",
+    "welcomeDesc": "Configurons votre profil pour trouver les meilleures ressources pour vous.",
+    "demographicsTitle": "Parlez-nous de Vous",
+    "demographicsDesc": "Aidez-nous à trouver les meilleures ressources pour vous. Tous les champs sont optionnels - partagez uniquement ce avec lequel vous êtes à l'aise.",
+    "age": "Tranche d'Âge",
+    "ageDesc": "Votre âge nous aide à trouver des services appropriés à votre âge.",
+    "gender": "Identité de Genre",
+    "genderDesc": "Nous aide à suggérer des ressources qui affirment le genre lorsque pertinent.",
+    "race": "Race/Ethnicité",
+    "raceDesc": "Nous aide à trouver des services de soutien spécifiques à la culture.",
+    "sexuality": "Orientation Sexuelle",
+    "sexualityDesc": "Nous aide à recommander des services accueillants pour la communauté LGBTQ2S+.",
+    "education": "Niveau d'Éducation",
+    "educationDesc": "Nous aide à trouver des ressources spécifiques aux étudiants.",
+    "religion": "Religion/Spiritualité",
+    "religionDesc": "Nous aide à trouver le soutien basé sur la foi si nécessaire.",
+    "inAddiction": "État de Rétablissement",
+    "inAddictionDesc": "Nous aide à vous connecter avec des ressources en matière de dépendance et de rétablissement.",
+    "university": "Université/Collège",
+    "universityDesc": "Nous aide à trouver des ressources spécifiques au campus près de chez vous.",
+    "location": "Emplacement",
+    "locationDesc": "Nous aide à trouver des services dans votre région.",
+    "customLocation": "Votre Ville",
+    "customLocationPlaceholder": "Entrez le nom de votre ville",
+    "customLocationDesc": "Entrez le nom de votre ville en Alberta.",
+    "disability": "Statut de Handicap",
+    "disabilityDesc": "Nous aide à trouver des services accessibles et des aménagements.",
+    "serviceFormat": "Préférence de Format de Service",
+    "serviceFormatDesc": "Préférez-vous les services virtuels/en ligne ou les rendez-vous en personne?",
+    "supportStyle": "Préférence de Style de Soutien",
+    "supportStyleDesc": "Préférez-vous le soutien individuel ou les groupes de pairs?",
+    "selectPlaceholder": "Sélectionnez une option (optionnel)",
+    "saveButton": "Enregistrer le Profil",
+    "clearButton": "Tout Effacer",
+    "skipButton": "Ignorer pour l'Instant",
+    "continueButton": "Continuer",
+    "saved": "Profil Mis à Jour",
+    "savedDesc": "Vos préférences ont été enregistrées.",
+    "error": "Erreur",
+    "errorDesc": "Impossible d'enregistrer votre profil. Veuillez réessayer.",
+    "privacyTitle": "Votre Confidentialité",
+    "privacyDesc": "Ces informations sont entièrement optionnelles et sont uniquement utilisées pour vous fournir des recommandations plus personnalisées. Nous ne partageons jamais vos informations démographiques avec des tiers."
+  },
+  "recommended": {
+    "title": "Recommandé pour Moi",
+    "loading": "Recherche de recommandations personnalisées...",
+    "error": "Impossible de charger les recommandations. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "emptyTitle": "Pas de Recommandations Encore",
+    "emptyDesc": "Ajoutez des informations à votre profil ou enregistrez certains services pour obtenir des recommandations personnalisées.",
+    "addInfo": "Ajouter les Informations du Profil",
+    "searchServices": "Rechercher des Services",
+    "editProfile": "Modifier le Profil",
+    "saveError": "Impossible d'enregistrer la ressource"
+  },
+  "nav2": {
+    "profile": "Profil",
+    "recommended": "Pour Moi"
+  },
+  "feedback": {
+    "link": "Commentaires et Suggestions",
+    "title": "Partagez Vos Commentaires",
+    "description": "Aidez-nous à améliorer! Vos commentaires aident à rendre cette ressource meilleure pour tout le monde.",
+    "name": "Nom (optionnel)",
+    "namePlaceholder": "Votre nom",
+    "email": "Courriel (optionnel)",
+    "emailPlaceholder": "votre@courriel.com",
+    "message": "Vos Commentaires",
+    "messagePlaceholder": "Partagez vos pensées, suggestions ou signalez des problèmes...",
+    "cancel": "Annuler",
+    "submit": "Envoyer",
+    "sending": "Envoi en cours...",
+    "successTitle": "Commentaires Envoyés",
+    "successMessage": "Merci pour vos commentaires! Nous apprécions que vous preniez le temps de nous aider à améliorer.",
+    "errorTitle": "Erreur",
+    "errorMessage": "Impossible d'envoyer les commentaires. Veuillez réessayer.",
+    "thankYou": "Merci!",
+    "thankYouMessage": "Vos commentaires ont été reçus et nous aideront à améliorer la plateforme.",
+    "close": "Fermer"
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "app": {
+    "name": "리커버리 허브",
+    "title": "캠퍼스 회복 리소스 허브",
+    "subtitle": "필요한 지원을 찾으세요. 정신 건강, 재정 지원, 주거 등. 단계별로 안내해 드립니다.",
+    "searchPlaceholder": "오늘 어떤 종류의 지원이 필요하신가요?",
+    "searchHint": "\"정신 건강 지원\" 또는 \"등록금 도움\"을 시도해 보세요",
+    "footer": "© 2025 캠퍼스 회복 리소스 허브. 정보는 안내 목적으로만 제공됩니다."
+  },
+  "nav": {
+    "myResources": "내 리소스",
+    "signIn": "로그인",
+    "signInHint": "이메일 또는 소셜 로그인",
+    "logout": "로그아웃"
+  },
+  "search": {
+    "summary": "요약",
+    "noResults": "조건에 맞는 서비스를 찾을 수 없습니다. 다른 검색어를 시도해 보세요.",
+    "error": "검색을 완료할 수 없습니다"
+  },
+  "service": {
+    "accessProcess": "접근 절차",
+    "requiredDocs": "필수 서류",
+    "noDocsListed": "특정 서류가 나열되지 않았습니다. 확인을 위해 제공자에게 문의하세요.",
+    "keyInfo": "주요 정보",
+    "waitTime": "예상 대기 시간",
+    "eligibility": "자격 조건",
+    "location": "위치",
+    "contact": "연락처",
+    "phone": "전화",
+    "website": "웹사이트",
+    "email": "이메일",
+    "address": "주소",
+    "contactProvider": "서비스 제공자에게 연락",
+    "visitWebpage": "웹페이지 방문",
+    "callProvider": "제공자에게 전화",
+    "noWebpage": "웹페이지 정보 없음",
+    "externalLink": "외부 링크가 새 탭에서 열립니다",
+    "save": "저장",
+    "saved": "저장됨"
+  },
+  "myResources": {
+    "title": "내 리소스",
+    "all": "전체",
+    "inProgress": "진행 중",
+    "startProcess": "프로세스 시작",
+    "markSaved": "저장됨으로 표시",
+    "trackProgress": "진행 상황 추적",
+    "empty": "저장된 리소스가 없습니다",
+    "emptyDesc": "리소스를 검색하고 쉽게 접근할 수 있도록 여기에 저장하세요.",
+    "findResources": "리소스 찾기"
+  },
+  "steps": {
+    "step1": "필수 서류 수집",
+    "step2": "신청서 제출",
+    "step3": "확인 대기",
+    "step4": "예약/입회 참석"
+  },
+  "howItWorks": {
+    "step1Title": "검색",
+    "step1Desc": "필요한 지원 유형을 간단한 언어로 알려주세요.",
+    "step2Title": "검토",
+    "step2Desc": "캠퍼스와 앨버타 관련 서비스를 찾아드립니다.",
+    "step3Title": "연결",
+    "step3Desc": "명확한 단계, 연락처 정보를 받고 진행 상황을 추적하세요."
+  },
+  "auth": {
+    "signInRequired": "로그인 필요",
+    "signInToSave": "허브에 리소스를 저장하려면 로그인하세요.",
+    "stayLoggedIn": "30일간 로그인 유지",
+    "easyLogin": "빠르고 간편하게 - 이메일 또는 소셜 계정 사용"
+  },
+  "toast": {
+    "saved": "저장됨!",
+    "resourceAdded": "내 리소스에 추가되었습니다.",
+    "viewResources": "보기"
+  },
+  "language": {
+    "select": "언어"
+  },
+  "profile": {
+    "title": "내 프로필",
+    "welcomeTitle": "리커버리 허브에 오신 것을 환영합니다",
+    "welcomeDesc": "프로필을 설정하여 당신을 위한 최고의 리소스를 찾아보겠습니다.",
+    "demographicsTitle": "자신에 대해 말씀해주세요",
+    "demographicsDesc": "당신을 위한 최고의 리소스를 찾는 데 도움을 주세요. 모든 필드는 선택사항입니다 - 편하신 것만 공유해주세요.",
+    "age": "나이 범위",
+    "ageDesc": "당신의 나이는 연령에 적합한 서비스를 찾는 데 도움이 됩니다.",
+    "gender": "성별 정체성",
+    "genderDesc": "관련성이 있을 때 성별을 긍정하는 리소스를 제안하는 데 도움이 됩니다.",
+    "race": "인종/민족",
+    "raceDesc": "문화적으로 특정한 지원 서비스를 찾는 데 도움이 됩니다.",
+    "sexuality": "성적 지향",
+    "sexualityDesc": "LGBTQ2S+ 친화적 서비스를 추천하는 데 도움이 됩니다.",
+    "education": "교육 수준",
+    "educationDesc": "학생별 특정 리소스를 찾는 데 도움이 됩니다.",
+    "religion": "종교/영성",
+    "religionDesc": "필요시 신앙 기반 지원을 찾는 데 도움이 됩니다.",
+    "inAddiction": "회복 상태",
+    "inAddictionDesc": "중독 및 회복 리소스와 당신을 연결하는 데 도움이 됩니다.",
+    "university": "대학교/칼리지",
+    "universityDesc": "당신 근처의 캠퍼스별 리소스를 찾는 데 도움이 됩니다.",
+    "selectPlaceholder": "옵션을 선택하세요 (선택사항)",
+    "saveButton": "프로필 저장",
+    "clearButton": "모두 지우기",
+    "skipButton": "지금은 건너뛰기",
+    "continueButton": "계속",
+    "saved": "프로필이 업데이트됨",
+    "savedDesc": "당신의 선호도가 저장되었습니다.",
+    "error": "오류",
+    "errorDesc": "프로필을 저장하지 못했습니다. 다시 시도하세요.",
+    "privacyTitle": "당신의 개인정보 보호",
+    "privacyDesc": "이 정보는 완전히 선택사항이며 더욱 개인화된 추천을 제공하기 위해서만 사용됩니다. 당신의 인구통계 정보를 제3자와 공유하지 않습니다."
+  },
+  "recommended": {
+    "title": "나를 위한 추천",
+    "loading": "개인화된 추천을 찾는 중...",
+    "error": "추천을 로드할 수 없습니다. 다시 시도하세요.",
+    "retry": "다시 시도",
+    "emptyTitle": "아직 추천이 없습니다",
+    "emptyDesc": "프로필에 정보를 추가하거나 일부 서비스를 저장하여 개인화된 추천을 받으세요.",
+    "addInfo": "프로필 정보 추가",
+    "searchServices": "서비스 검색",
+    "editProfile": "프로필 편집",
+    "saveError": "리소스를 저장하지 못했습니다"
+  },
+  "nav2": {
+    "profile": "프로필",
+    "recommended": "나를 위해"
+  }
+}

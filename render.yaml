@@ -1,0 +1,43 @@
+services:
+  # Web service for the application
+  - type: web
+    name: recovery-hub
+    runtime: node
+    plan: free  # Change to 'starter' or higher for production
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: recovery-hub-db
+          property: connectionString
+      - key: AI_INTEGRATIONS_OPENAI_API_KEY
+        sync: false  # Set this in Render dashboard
+      - key: AI_INTEGRATIONS_OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+
+  # Monthly scraper cron job — runs on the 1st of each month at 2 AM UTC
+  - type: cron
+    name: service-scraper
+    runtime: python
+    schedule: "0 2 1 * *"
+    buildCommand: cd scraper && pip install -r requirements.txt
+    startCommand: cd scraper && python scraper.py
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: recovery-hub-db
+          property: connectionString
+      - key: AI_INTEGRATIONS_OPENAI_API_KEY
+        sync: false
+
+  # PostgreSQL database
+databases:
+  - name: recovery-hub-db
+    databaseName: recovery_hub
+    plan: free  # Change to 'starter' or higher for production
