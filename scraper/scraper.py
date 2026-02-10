@@ -453,10 +453,88 @@ def count_missing_fields(service: Service) -> int:
     return missing
 
 
+def infer_service_metadata(service_data: Dict) -> Dict:
+    """Infer service metadata from description, eligibility, and hours."""
+    desc = (service_data.get("description") or "").lower()
+    elig = (service_data.get("eligibility") or "").lower()
+    hours = (service_data.get("hours_of_operation") or "").lower()
+    category = (service_data.get("category") or "").lower()
+    name = (service_data.get("name") or "").lower()
+
+    metadata = {
+        "service_type": service_data.get("service_type"),
+        "gender_restriction": service_data.get("gender_restriction"),
+        "age_restriction": service_data.get("age_restriction"),
+        "is_24_7": "24/7" in hours or "24/7" in desc or "24 hour" in hours,
+        "is_walk_in": "walk-in" in desc or "walk in" in desc or "drop-in" in desc,
+        "requires_referral": "referral" in elig and "no referral" not in elig and "self-referral" not in elig,
+        "demographic_tags": [],
+    }
+
+    # Infer service_type from category if not provided
+    if not metadata["service_type"]:
+        if "crisis" in category or "24/7" in category:
+            metadata["service_type"] = "crisis_line"
+        elif "shelter" in category or "homeless" in category:
+            metadata["service_type"] = "emergency_shelter"
+        elif "mental health" in category:
+            metadata["service_type"] = "mental_health"
+        elif "addiction" in category or "recovery" in category or "detox" in category:
+            metadata["service_type"] = "addiction_recovery"
+        elif "counselling" in category:
+            metadata["service_type"] = "counselling"
+        elif "treatment" in category or "residential" in category:
+            metadata["service_type"] = "residential_treatment"
+        elif "food" in category:
+            metadata["service_type"] = "food_resources"
+        elif "indigenous" in category:
+            metadata["service_type"] = "indigenous_services"
+        elif "youth" in category:
+            metadata["service_type"] = "youth_services"
+        elif "lgbtq" in category or "2s" in category:
+            metadata["service_type"] = "lgbtq_services"
+        elif "domestic" in category or "violence" in category:
+            metadata["service_type"] = "domestic_violence"
+
+    # Infer gender_restriction if not provided
+    if not metadata["gender_restriction"]:
+        if "women only" in desc or "women only" in elig or "women experiencing" in elig or "women fleeing" in elig:
+            metadata["gender_restriction"] = "women_only"
+        elif "mens shelter" in desc or "men experiencing" in elig or "men only" in desc:
+            metadata["gender_restriction"] = "men_only"
+
+    # Infer demographic tags
+    if "women" in elig or "women" in name:
+        metadata["demographic_tags"].append("women")
+    if "youth" in elig or "15-24" in elig or "18-24" in elig or "youth" in name:
+        metadata["demographic_tags"].append("youth")
+    if "indigenous" in elig or "first nation" in elig or "indigenous" in name:
+        metadata["demographic_tags"].append("indigenous")
+    if "senior" in elig or "60+" in elig or "55+" in elig:
+        metadata["demographic_tags"].append("seniors")
+    if "lgbtq" in elig or "2slgbtq" in elig or "lgbtq" in desc:
+        metadata["demographic_tags"].append("lgbtq")
+    if "family" in elig or "children" in elig or "family" in name:
+        metadata["demographic_tags"].append("families")
+    if "men" in elig and "women" not in elig:
+        metadata["demographic_tags"].append("men")
+
+    # Infer age_restriction
+    if "youth" in elig or "15-24" in elig or "18-24" in elig:
+        metadata["age_restriction"] = "youth_12_24"
+    elif "senior" in elig or "60+" in elig or "55+" in elig:
+        metadata["age_restriction"] = "senior_55+"
+
+    return metadata
+
+
 def sync_service_data(service_data: Dict, session, log: ScraperLog) -> str:
     """Sync service dict to database. Returns 'created', 'updated', or 'unchanged'."""
     service_id = generate_service_id(service_data["name"], service_data.get("location", ""))
     existing = session.query(Service).filter_by(service_id=service_id).first()
+
+    # Infer metadata from service data
+    metadata = infer_service_metadata(service_data)
 
     if not existing:
         new_svc = Service(
@@ -477,6 +555,14 @@ def sync_service_data(service_data: Dict, session, log: ScraperLog) -> str:
             languages_supported=service_data.get("languages_supported"),
             tags=service_data.get("tags"),
             data_source=service_data.get("data_source", "manual"),
+            # New category improvement fields
+            service_type=metadata["service_type"],
+            gender_restriction=metadata["gender_restriction"],
+            age_restriction=metadata["age_restriction"],
+            is_24_7=metadata["is_24_7"],
+            is_walk_in=metadata["is_walk_in"],
+            requires_referral=metadata["requires_referral"],
+            demographic_tags=metadata["demographic_tags"],
         )
         session.add(new_svc)
         session.add(ServiceHistory(

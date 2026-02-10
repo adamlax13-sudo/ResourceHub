@@ -64,11 +64,24 @@ class Service(Base):
     # Search optimization
     search_text = Column(Text)  # Concatenated searchable text
 
+    # Category improvement columns
+    service_type = Column(String(100))  # crisis_line, emergency_shelter, mental_health, addiction_recovery, etc.
+    eligibility_tags = Column(JSON, default=[])  # Array of eligibility criteria
+    demographic_tags = Column(JSON, default=[])  # Array: women, youth, indigenous, seniors, lgbtq, families, men
+    gender_restriction = Column(String(50))  # women_only, men_only, all
+    age_restriction = Column(String(100))  # youth_12_24, adult_18+, senior_55+, all
+    is_24_7 = Column(Boolean, default=False)
+    is_walk_in = Column(Boolean, default=False)
+    requires_referral = Column(Boolean, default=False)
+
     # Indexes for common queries
     __table_args__ = (
         Index('idx_service_category', 'category'),
         Index('idx_service_active', 'is_active'),
         Index('idx_service_last_checked', 'last_checked'),
+        Index('idx_service_type', 'service_type'),
+        Index('idx_gender_restriction', 'gender_restriction'),
+        Index('idx_is_24_7', 'is_24_7'),
     )
 
 

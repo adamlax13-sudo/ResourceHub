@@ -507,10 +507,11 @@ def load_alberta_services() -> List[Dict]:
             'hours_of_operation': 'Residential program'
         },
         {
-            'name': 'Calgary Drop-In Centre',
+            'name': 'Calgary Drop-In Centre - Withdrawal Management',
             'category': 'Calgary Mental Health & Addiction',
             'contact': '1 Dermot Baldwin Way SE, 403-266-3600, calgarydropin.ca',
-            'description': '24/7 emergency shelter, withdrawal management, meals, housing support',
+            'description': '24/7 withdrawal management and detox services with housing support',
+            'service_type': 'addiction_recovery',
             'process': ['Walk in to 1 Dermot Baldwin Way SE', 'Check in at front desk', 'Access shelter, meals, or withdrawal management', 'Connect with support services'],
             'waitTimes': 'Immediate access',
             'requiredDocs': [],
@@ -644,10 +645,11 @@ def load_alberta_services() -> List[Dict]:
     # ==================== CALGARY EMERGENCY SHELTERS & HOMELESS SERVICES ====================
     calgary_shelters = [
         {
-            'name': 'Calgary Drop-In Centre',
+            'name': 'Calgary Drop-In Centre - Emergency Shelter',
             'category': 'Calgary Emergency Shelters & Homeless Services',
             'contact': '1 Dermot Baldwin Way SE, 403-266-3600, calgarydropin.ca',
-            'description': '24/7 low-barrier shelter, 1000+ beds',
+            'description': '24/7 low-barrier emergency shelter with 1000+ beds',
+            'service_type': 'emergency_shelter',
             'process': ['Walk in to 1 Dermot Baldwin Way SE anytime', 'Check in at reception', 'Access shelter bed', 'Receive meals and support services', 'Connect with case management if desired'],
             'waitTimes': 'Immediate access, low-barrier',
             'requiredDocs': [],
@@ -659,25 +661,29 @@ def load_alberta_services() -> List[Dict]:
             'name': 'Alpha House Shelter',
             'category': 'Calgary Emergency Shelters & Homeless Services',
             'contact': '203-15 Ave SE, 403-234-7388, alphahousecalgary.com',
-            'description': 'Mens shelter, substance use support',
+            'description': 'Mens shelter with substance use support - men only',
             'process': ['Walk in to 203-15 Ave SE or call 403-234-7388', 'Speak with intake staff', 'Access shelter bed', 'Connect with substance use support services'],
             'waitTimes': 'Same-day access',
             'requiredDocs': [],
             'location': 'Calgary - 203-15 Ave SE',
             'eligibility': 'Men experiencing homelessness',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'men_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'Salvation Army Centre of Hope',
             'category': 'Calgary Emergency Shelters & Homeless Services',
             'contact': '420 9 Ave SE, 403-410-1111, salvationarmycalgary.org',
-            'description': 'Mens emergency shelter',
+            'description': 'Mens emergency shelter - men only',
             'process': ['Walk in to 420 9 Ave SE', 'Complete intake', 'Receive shelter bed', 'Access meals and programs'],
             'waitTimes': 'Same-day access',
             'requiredDocs': [],
             'location': 'Calgary - 420 9 Ave SE',
             'eligibility': 'Men experiencing homelessness',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'men_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'Mustard Seed Foothills',
@@ -693,27 +699,31 @@ def load_alberta_services() -> List[Dict]:
         },
         {
             'name': 'Mustard Seed Womens',
-            'category': 'Calgary Emergency Shelters & Homeless Services',
+            'category': 'Domestic Violence & Womens Shelters',
             'contact': '110 11 Ave SE, 587-447-1345',
-            'description': 'Womens shelter',
+            'description': 'Womens emergency shelter - women only',
             'process': ['Walk in to 110 11 Ave SE or call 587-447-1345', 'Complete intake', 'Access shelter bed', 'Receive support services'],
             'waitTimes': 'Same-day access',
             'requiredDocs': [],
             'location': 'Calgary - 110 11 Ave SE',
             'eligibility': 'Women experiencing homelessness',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'women_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'YW Calgary Emergency Shelter',
-            'category': 'Calgary Emergency Shelters & Homeless Services',
+            'category': 'Domestic Violence & Womens Shelters',
             'contact': '1715 17 Ave SE, 403-705-0315',
-            'description': 'Womens emergency services',
+            'description': 'Womens emergency shelter and crisis services',
             'process': ['Call 403-705-0315 or walk in to 1715 17 Ave SE', 'Speak with intake worker', 'Access emergency shelter', 'Receive crisis support'],
             'waitTimes': 'Immediate access',
             'requiredDocs': [],
             'location': 'Calgary - 1715 17 Ave SE',
             'eligibility': 'Women in crisis',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'women_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'Inn from the Cold',
@@ -1570,27 +1580,31 @@ def load_alberta_services() -> List[Dict]:
         },
         {
             'name': 'WIN House Edmonton',
-            'category': 'Edmonton Services',
+            'category': 'Domestic Violence & Womens Shelters',
             'contact': '780-479-0058, winhouse.org',
-            'description': 'Womens emergency shelter (3 locations)',
+            'description': 'Womens emergency shelter - 3 locations serving Edmonton',
             'process': ['Call 780-479-0058', 'Speak with crisis worker', 'Access emergency shelter', 'Receive safety planning', 'Connect with ongoing support'],
             'waitTimes': 'Immediate for emergency',
             'requiredDocs': [],
             'location': 'Edmonton - 3 locations',
             'eligibility': 'Women fleeing domestic violence',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'women_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'Lurana Shelter',
-            'category': 'Edmonton Services',
+            'category': 'Domestic Violence & Womens Shelters',
             'contact': '780-424-5875, cssalberta.ca',
-            'description': '24/7 domestic violence shelter',
+            'description': '24/7 domestic violence shelter for women and children',
             'process': ['Call 780-424-5875', 'Speak with intake worker', 'Access emergency shelter', 'Receive meals and transport', 'Get child support services'],
             'waitTimes': 'Immediate access',
             'requiredDocs': [],
             'location': 'Edmonton',
             'eligibility': 'Women and children fleeing violence',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'women_only',
+            'service_type': 'emergency_shelter'
         },
     ]
     services.extend(edmonton_services)
@@ -1683,15 +1697,17 @@ def load_alberta_services() -> List[Dict]:
         },
         {
             'name': 'Central Alberta Womens Emergency Shelter',
-            'category': 'Lethbridge Services',
+            'category': 'Domestic Violence & Womens Shelters',
             'contact': '1-888-346-5643, cawes.com',
-            'description': '24/7 domestic violence',
+            'description': '24/7 domestic violence shelter serving Red Deer and Central Alberta',
             'process': ['Call 1-888-346-5643', 'Speak with crisis worker', 'Access emergency shelter', 'Receive safety planning', 'Connect with support services'],
             'waitTimes': 'Immediate for emergency',
             'requiredDocs': [],
-            'location': 'Central Alberta',
+            'location': 'Red Deer / Central Alberta',
             'eligibility': 'Women fleeing domestic violence',
-            'hours_of_operation': '24/7'
+            'hours_of_operation': '24/7',
+            'gender_restriction': 'women_only',
+            'service_type': 'emergency_shelter'
         },
         {
             'name': 'Iikaisskini Indigenous Services',

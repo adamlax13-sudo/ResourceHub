@@ -106,31 +106,79 @@ Examples:
 }
 
 /**
+ * Map query intent to expected service types and boost patterns
+ */
+const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
+  serviceTypes: string[];
+  categoryPatterns: RegExp;
+  genderPreference?: 'women_only' | 'men_only';
+}>> = {
+  'domestic_violence': {
+    serviceTypes: ['domestic_violence', 'emergency_shelter', 'crisis_line'],
+    categoryPatterns: /domestic|violence|abuse|women'?s.*shelter|safe.*house|crisis.*line|victim|assault/i,
+    genderPreference: 'women_only',
+  },
+  'food_insecurity': {
+    serviceTypes: ['food_resources'],
+    categoryPatterns: /food.*bank|pantry|meals|groceries|hunger|nutrition|hamper/i,
+  },
+  'housing_urgent': {
+    serviceTypes: ['emergency_shelter'],
+    categoryPatterns: /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in/i,
+  },
+  'substance_abuse': {
+    serviceTypes: ['addiction_recovery', 'residential_treatment'],
+    categoryPatterns: /addiction|recovery|alcohol|drug|detox|rehab|sober|AA|NA|AADAC|peer support|treatment/i,
+  },
+  'mental_health': {
+    serviceTypes: ['mental_health', 'counselling', 'crisis_line'],
+    categoryPatterns: /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog/i,
+  },
+};
+
+/**
  * Boost services that match the detected intent
+ * Uses both service_type field (if available) and text pattern matching
  */
 function boostByIntent(services: LiteService[], intent: QueryIntent): LiteService[] {
-  const boostPatterns: Partial<Record<QueryIntent, RegExp>> = {
-    'domestic_violence': /domestic|violence|abuse|women'?s.*shelter|safe.*house|crisis.*line|victim|assault/i,
-    'food_insecurity': /food.*bank|pantry|meals|groceries|hunger|nutrition|hamper/i,
-    'housing_urgent': /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in/i,
-    'substance_abuse': /addiction|recovery|alcohol|drug|detox|rehab|sober|AA|NA|AADAC|peer support|treatment/i,
-    'mental_health': /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog/i,
-  };
+  const intentConfig = INTENT_SERVICE_MAP[intent];
+  if (!intentConfig) return services;
 
-  const pattern = boostPatterns[intent];
-  if (!pattern) return services;
-
-  // Create a scored copy
+  // Create a scored copy with multi-factor boosting
   const scored = services.map(svc => {
+    let boost = 0;
     const text = `${svc.name} ${svc.category} ${svc.description}`;
-    const matches = pattern.test(text);
-    return { svc, boost: matches ? 1 : 0 };
+
+    // Boost 1: Text pattern matching (primary)
+    if (intentConfig.categoryPatterns.test(text)) {
+      boost += 10;
+    }
+
+    // Boost 2: Category name contains relevant keywords
+    const category = svc.category.toLowerCase();
+    if (intentConfig.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
+      boost += 5;
+    }
+
+    // Boost 3: For domestic_violence, prefer women's services
+    if (intent === 'domestic_violence' && /women|woman/i.test(text)) {
+      boost += 3;
+    }
+
+    // Boost 4: 24/7 services get small boost for urgent intents
+    if (['housing_urgent', 'domestic_violence'].includes(intent) && /24\/7|24 hour/i.test(text)) {
+      boost += 2;
+    }
+
+    return { svc, boost };
   });
 
-  // Sort by boost (matching services first) while preserving relative order
+  // Sort by boost (highest first) while preserving relative order for equal scores
   scored.sort((a, b) => b.boost - a.boost);
 
-  console.log(`[ComprehensiveSearch] Intent boosting for ${intent}: ${scored.filter(s => s.boost > 0).length} services boosted`);
+  const boostedCount = scored.filter(s => s.boost > 0).length;
+  console.log(`[ComprehensiveSearch] Intent boosting for ${intent}: ${boostedCount} services boosted`);
+
   return scored.map(s => s.svc);
 }
 

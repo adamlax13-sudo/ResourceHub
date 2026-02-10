@@ -52,6 +52,15 @@ export const services = pgTable("services", {
   clickCount: integer("click_count").default(0),
   // Full-text search optimization
   searchText: text("search_text"),
+  // Category improvement columns (added by add_category_improvements.sql)
+  serviceType: varchar("service_type", { length: 100 }), // crisis_line, emergency_shelter, mental_health, addiction_recovery, etc.
+  eligibilityTags: jsonb("eligibility_tags").default([]), // Array of eligibility criteria
+  demographicTags: jsonb("demographic_tags").default([]), // Array: women, youth, indigenous, seniors, lgbtq, families, men
+  genderRestriction: varchar("gender_restriction", { length: 50 }), // women_only, men_only, all
+  ageRestriction: varchar("age_restriction", { length: 100 }), // youth_12_24, adult_18+, senior_55+, all
+  is24_7: boolean("is_24_7").default(false),
+  isWalkIn: boolean("is_walk_in").default(false),
+  requiresReferral: boolean("requires_referral").default(false),
 });
 
 // Search analytics - tracks user searches and clicks for improving results
