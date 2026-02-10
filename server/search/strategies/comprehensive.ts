@@ -106,6 +106,42 @@ Examples:
 }
 
 /**
+ * Detect gender preference from query text
+ * Returns 'women_only', 'men_only', or null
+ */
+function detectGenderPreference(query: string): 'women_only' | 'men_only' | null {
+  const q = query.toLowerCase();
+
+  // Female-associated terms
+  const femalePatterns = [
+    /\b(mother|mom|mum|mama|mommy)\b/,
+    /\b(pregnant|pregnancy|expecting)\b/,
+    /\b(daughter|sister|wife|girlfriend)\b/,
+    /\b(woman|women|female|girl)\b/,
+    /\bi am a (mother|mom|woman|female)\b/,
+    /\bas a (mother|mom|woman|female)\b/,
+    /\b(postpartum|maternity|maternal)\b/,
+  ];
+
+  // Male-associated terms
+  const malePatterns = [
+    /\b(father|dad|daddy|papa)\b/,
+    /\b(son|brother|husband|boyfriend)\b/,
+    /\b(man|men|male|guy)\b/,
+    /\bi am a (father|dad|man|male)\b/,
+    /\bas a (father|dad|man|male)\b/,
+  ];
+
+  const isFemale = femalePatterns.some(p => p.test(q));
+  const isMale = malePatterns.some(p => p.test(q));
+
+  // If both or neither, no preference
+  if (isFemale && !isMale) return 'women_only';
+  if (isMale && !isFemale) return 'men_only';
+  return null;
+}
+
+/**
  * Map query intent to expected service types and boost patterns
  */
 const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
@@ -137,37 +173,70 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
 };
 
 /**
- * Boost services that match the detected intent
+ * Boost services that match the detected intent and gender preference
  * Uses both service_type field (if available) and text pattern matching
  */
-function boostByIntent(services: LiteService[], intent: QueryIntent): LiteService[] {
+function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: string): LiteService[] {
   const intentConfig = INTENT_SERVICE_MAP[intent];
-  if (!intentConfig) return services;
+  const genderPref = detectGenderPreference(rawQuery);
+
+  if (genderPref) {
+    console.log(`[ComprehensiveSearch] Detected gender preference: ${genderPref} from query`);
+  }
 
   // Create a scored copy with multi-factor boosting
   const scored = services.map(svc => {
     let boost = 0;
     const text = `${svc.name} ${svc.category} ${svc.description}`;
+    const textLower = text.toLowerCase();
 
-    // Boost 1: Text pattern matching (primary)
-    if (intentConfig.categoryPatterns.test(text)) {
-      boost += 10;
+    // Intent-based boosting (if applicable)
+    if (intentConfig) {
+      // Boost 1: Text pattern matching (primary)
+      if (intentConfig.categoryPatterns.test(text)) {
+        boost += 10;
+      }
+
+      // Boost 2: Category name contains relevant keywords
+      const category = svc.category.toLowerCase();
+      if (intentConfig.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
+        boost += 5;
+      }
+
+      // Boost 3: 24/7 services get small boost for urgent intents
+      if (['housing_urgent', 'domestic_violence'].includes(intent) && /24\/7|24 hour/i.test(text)) {
+        boost += 2;
+      }
     }
 
-    // Boost 2: Category name contains relevant keywords
-    const category = svc.category.toLowerCase();
-    if (intentConfig.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
-      boost += 5;
-    }
+    // Gender-based boosting (applies to all queries with detected gender)
+    if (genderPref) {
+      const isWomensService = /women|woman|female|mother|girl|domestic violence|yw\s|ywca/i.test(textLower);
+      const isMensService = /\bmen\b|male|father|\bmen'?s\b/i.test(textLower) && !isWomensService;
 
-    // Boost 3: For domestic_violence, prefer women's services
-    if (intent === 'domestic_violence' && /women|woman/i.test(text)) {
-      boost += 3;
-    }
+      // Check for explicit gender restrictions in the text
+      const menOnlyIndicator = /men'?s.*shelter|men only|males only|for men\b/i.test(textLower);
+      const womenOnlyIndicator = /women'?s.*shelter|women only|females only|for women\b/i.test(textLower);
 
-    // Boost 4: 24/7 services get small boost for urgent intents
-    if (['housing_urgent', 'domestic_violence'].includes(intent) && /24\/7|24 hour/i.test(text)) {
-      boost += 2;
+      if (genderPref === 'women_only') {
+        // Boost women's services
+        if (isWomensService || womenOnlyIndicator) {
+          boost += 8;
+        }
+        // Penalize men-only services significantly
+        if (menOnlyIndicator) {
+          boost -= 15;
+        }
+      } else if (genderPref === 'men_only') {
+        // Boost men's services
+        if (isMensService || menOnlyIndicator) {
+          boost += 8;
+        }
+        // Penalize women-only services significantly
+        if (womenOnlyIndicator) {
+          boost -= 15;
+        }
+      }
     }
 
     return { svc, boost };
@@ -177,7 +246,8 @@ function boostByIntent(services: LiteService[], intent: QueryIntent): LiteServic
   scored.sort((a, b) => b.boost - a.boost);
 
   const boostedCount = scored.filter(s => s.boost > 0).length;
-  console.log(`[ComprehensiveSearch] Intent boosting for ${intent}: ${boostedCount} services boosted`);
+  const penalizedCount = scored.filter(s => s.boost < 0).length;
+  console.log(`[ComprehensiveSearch] Intent boosting for ${intent}: ${boostedCount} boosted, ${penalizedCount} penalized`);
 
   return scored.map(s => s.svc);
 }
@@ -234,8 +304,10 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     );
 
     // Apply intent-based boosting for domain intents
-    if (isDomainIntent) {
-      services = boostByIntent(services, analysis.intent);
+    // Also apply gender preference boosting even for general queries
+    const hasGenderPreference = detectGenderPreference(analysis.raw) !== null;
+    if (isDomainIntent || hasGenderPreference) {
+      services = boostByIntent(services, analysis.intent, analysis.raw);
     }
 
     // Check if we need additional OpenAI enhancement (very few results)
