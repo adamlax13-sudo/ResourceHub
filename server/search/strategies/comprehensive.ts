@@ -452,28 +452,37 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     }
 
     // Substance-specific boosting (for substance_abuse intent)
+    // Boost values must be LARGE (50-100+) to overcome SQL scores of 100-150
     if (intent === 'substance_abuse' && analysis?.substanceType) {
       const querySubstance = analysis.substanceType;
       const serviceSubstance = detectServiceSubstanceType(svc.name, svc.description, svc.category);
 
+      // Log for debugging
+      if (serviceSubstance) {
+        console.log(`[SubstanceBoost] "${svc.name.substring(0, 40)}" → ${serviceSubstance}, query wants: ${querySubstance}`);
+      }
+
       if (querySubstance && serviceSubstance) {
-        // Exact substance match: highest boost
+        // Exact substance match: LARGE boost to overcome SQL scores
         if (querySubstance === serviceSubstance) {
-          boost += 12;
-          // Extra boost for peer support (AA, NA, etc.) over residential
+          boost += 80;
+          // Extra boost for peer support (AA, NA, GA, etc.) over residential
           if (/peer|support|anonymous|12.?step|meeting/i.test(textLower)) {
-            boost += 4;
+            boost += 40;
           }
         }
-        // Query is specific but service is general (residential, SMART, etc.): small boost
+        // Query is specific (e.g., alcohol) but service is general (residential, detox): PENALTY
         else if (serviceSubstance === 'general' && querySubstance !== 'general') {
-          boost += 3;
+          boost -= 30;
         }
         // Query is general but service is specific: moderate boost (still relevant)
         else if (querySubstance === 'general' && serviceSubstance !== 'general') {
-          boost += 5;
+          boost += 20;
         }
-        // Mismatch: no penalty, just no boost (they're still addiction services)
+        // Mismatch between specific types: small penalty
+        else if (querySubstance !== serviceSubstance) {
+          boost -= 15;
+        }
       }
     }
 

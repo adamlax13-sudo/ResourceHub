@@ -225,13 +225,16 @@ export const SEARCH_CONFIG = {
 
   // === SERVICE SUBSTANCE INDICATORS ===
   // Patterns to identify substance-specific services from their name/description
+  // Order matters: more specific patterns should be checked BEFORE general
   serviceSubstanceIndicators: {
-    alcohol: /\b(AA\b|alcoholics\s*anonymous|alcohol|alcoholism|al-?anon)\b/i,
-    opioid: /\b(opioid|opiate|methadone|suboxone|needle exchange|naloxone|harm reduction)\b/i,
-    stimulant: /\b(meth|cocaine|CMA|stimulant)\b/i,
-    cannabis: /\b(cannabis|marijuana)\b/i,
-    gambling: /\b(gambl|GA\b|gamblers anonymous)\b/i,
-    general: /\b(NA\b|narcotics\s*anonymous|SMART\s*recovery|addiction|recovery|detox|rehab|treatment|12-?step)\b/i,
+    alcohol: /\b(AA\b|alcoholics?\s*anonymous|alcohol|alcoholism|alcoholic|al-?anon|drinking|sober\s*living|sobriety)\b/i,
+    opioid: /\b(opioid|opiate|methadone|suboxone|buprenorphine|needle exchange|naloxone|harm reduction|safe\s*injection|overdose prevention)\b/i,
+    stimulant: /\b(meth|methamphetamine|cocaine|crack|CMA|crystal|stimulant)\b/i,
+    cannabis: /\b(cannabis|marijuana|weed)\b/i,
+    gambling: /\b(gambl|GA\b|gamblers?\s*anonymous|betting|problem gambling)\b/i,
+    // General catches addiction services that don't specify a substance
+    // These should rank LOWER than substance-specific services for substance-specific queries
+    general: /\b(NA\b|narcotics\s*anonymous|SMART\s*recovery|addiction(?!\s*(to\s+)?(alcohol|drinking))|recovery|detox|rehab|treatment|12-?step|residential)\b/i,
   },
 } as const;
 
