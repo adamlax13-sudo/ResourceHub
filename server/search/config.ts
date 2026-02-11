@@ -187,6 +187,10 @@ export const SEARCH_CONFIG = {
       /(?:gambling|betting|casino).*(?:addiction|problem|help|support)/i,
       /(?:lost|losing).*(?:money|everything).*(?:gambling|betting|casino)/i,
       /(?:gambler|gambling addict)/i,
+      // Financial ruin from gambling
+      /(?:lost|blew|spent|wasted).*(?:money|savings|paycheck|rent).*(?:on|to|at)/i,
+      /(?:in debt|owe money).*(?:because|from|due to)/i,
+      /(?:ruined|destroyed).*(?:finances|life|family).*(?:gambling|betting)/i,
     ],
     mental_health: [
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless|overwhelmed|lost)/i,
@@ -231,6 +235,63 @@ export const SEARCH_CONFIG = {
       /\b(vlt|vlts|scratch\s*tickets?|lottery|lotto)\b/i,
     ],
   },
+
+  // === CATEGORY INDICATORS ===
+  // Used for fallback intent detection when explicit patterns don't match
+  // If a category indicator + distress indicator is found, we can infer the intent
+  categoryIndicators: {
+    // Housing-related terms (situations, not just services)
+    housing: [
+      /\b(homeless|evicted|eviction|kicked out|no.*place|nowhere.*stay|shelter|housing)\b/i,
+      /\b(sleeping.*(?:car|street|outside|rough)|couch.*surf|no.*bed|no.*roof)\b/i,
+      /\b(landlord|lease|rent|mortgage|tenant|apartment|room)\b/i,
+      /\b(motel|hotel|hostel|rooming house)\b/i,
+    ],
+    // Food-related terms
+    food: [
+      /\b(hungry|starving|food|groceries|meals?|eat|eating|fed)\b/i,
+      /\b(food.*bank|pantry|hamper|soup.*kitchen)\b/i,
+      /\b(breakfast|lunch|dinner|snacks?)\b/i,
+    ],
+    // Mental health terms (symptoms, conditions, medications)
+    mental_health: [
+      /\b(depress|anxiety|anxious|panic|ptsd|trauma|bipolar|schizo|ocd)\b/i,
+      /\b(therapist|therapy|counsell?or|counsell?ing|psychiatr|psycholog)\b/i,
+      /\b(antidepressant|ssri|zoloft|prozac|lexapro|wellbutrin|seroquel|lithium)\b/i,
+      /\b(hopeless|worthless|empty|numb|crying|overwhelmed|stressed)\b/i,
+      /\b(sleep.*(?:problem|issue|can'?t)|insomnia|nightmare)\b/i,
+    ],
+    // Domestic violence terms
+    domestic_violence: [
+      /\b(abus(?:e|ed|ive|er)|violen(?:t|ce)|assault|attack|hit|beat|hurt)\b/i,
+      /\b(partner|husband|wife|boyfriend|girlfriend|spouse|ex)\b/i,
+      /\b(safe.*(?:house|place)|women'?s.*shelter|escape|flee|protect)\b/i,
+      /\b(threaten|control|stalk|harass|intimidate|isolate)\b/i,
+      /\b(restraining.*order|protection.*order)\b/i,
+    ],
+    // Financial/employment terms
+    financial: [
+      /\b(broke|poor|debt|owe|bills?|money|income|unemploy|job.*(?:lost|fired|laid off))\b/i,
+      /\b(EI|employment.*insurance|welfare|AISH|income.*support)\b/i,
+      /\b(bankrupt|creditor|collection|payday.*loan)\b/i,
+    ],
+    // Legal terms
+    legal: [
+      /\b(lawyer|attorney|legal.*(?:aid|help)|court|judge|charges?|arrested)\b/i,
+      /\b(custody|divorce|separation|child.*support|family.*court)\b/i,
+      /\b(immigration|visa|refugee|asylum|deporta)\b/i,
+    ],
+    // Healthcare terms
+    healthcare: [
+      /\b(doctor|physician|clinic|hospital|prescription|medication|medicine)\b/i,
+      /\b(sick|illness|disease|condition|symptom|diagnosis)\b/i,
+      /\b(no.*(?:insurance|coverage)|uninsured|can'?t.*afford.*(?:doctor|medication))\b/i,
+    ],
+  },
+
+  // === DISTRESS/NEED INDICATORS ===
+  // General patterns that indicate someone needs help (used with category indicators)
+  distressIndicators: /\b(need|help|can'?t|cannot|struggling|lost|losing|problem|issue|crisis|emergency|urgent|desperate|scared|afraid|worried|stuck|trapped|don'?t know what to do|nowhere to turn|no one to talk|at my wit'?s end|breaking down|falling apart|ruined|destroyed|can'?t cope|can'?t take it|out of options|running out of)\b/i,
 
   // === SERVICE SUBSTANCE INDICATORS ===
   // Patterns to identify substance-specific services from their name/description

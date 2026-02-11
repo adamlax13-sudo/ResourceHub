@@ -122,6 +122,7 @@ function findAliasMatch(keywords: string[]): string | null {
  */
 function detectDomainIntent(query: string): QueryIntent | null {
   const patterns = SEARCH_CONFIG.domainPatterns;
+  const substancePatterns = SEARCH_CONFIG.substancePatterns;
 
   // Check domestic violence FIRST (safety priority)
   for (const pattern of patterns.domestic_violence) {
@@ -161,6 +162,54 @@ function detectDomainIntent(query: string): QueryIntent | null {
       console.log(`[QueryAnalyzer] Domain intent detected: mental_health`);
       return 'mental_health';
     }
+  }
+
+  // === FALLBACK: Category indicators + distress detection ===
+  // If explicit patterns didn't match, check for category terms + distress signals
+  const q = query.toLowerCase();
+  const categoryIndicators = SEARCH_CONFIG.categoryIndicators;
+  const distressPattern = SEARCH_CONFIG.distressIndicators;
+  const hasDistress = distressPattern.test(q);
+
+  // Check substance/gambling indicators (betting sites, drug names, etc.)
+  const hasSubstanceIndicator =
+    substancePatterns.alcohol.some(p => p.test(q)) ||
+    substancePatterns.opioid.some(p => p.test(q)) ||
+    substancePatterns.stimulant.some(p => p.test(q)) ||
+    substancePatterns.cannabis.some(p => p.test(q)) ||
+    substancePatterns.gambling.some(p => p.test(q));
+
+  if (hasSubstanceIndicator && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: substance_abuse (via substance + distress)`);
+    return 'substance_abuse';
+  }
+
+  // Check housing indicators
+  if (categoryIndicators.housing.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent (via housing + distress)`);
+    return 'housing_urgent';
+  }
+
+  // Check food indicators
+  if (categoryIndicators.food.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity (via food + distress)`);
+    return 'food_insecurity';
+  }
+
+  // Check mental health indicators (even without explicit distress - symptoms are distress)
+  if (categoryIndicators.mental_health.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via mental health indicator)`);
+    return 'mental_health';
+  }
+
+  // Check domestic violence indicators
+  const hasDVIndicator = categoryIndicators.domestic_violence.some(p => p.test(q));
+  // DV needs both relationship terms AND violence/safety terms
+  const hasRelationship = /\b(partner|husband|wife|boyfriend|girlfriend|spouse|ex|he|she)\b/i.test(q);
+  const hasViolence = /\b(hit|hurt|abuse|violent|attack|threat|scar|afraid|escape|safe)\b/i.test(q);
+  if (hasDVIndicator && (hasRelationship && hasViolence)) {
+    console.log(`[QueryAnalyzer] Domain intent detected: domestic_violence (via DV indicator)`);
+    return 'domestic_violence';
   }
 
   return null;
