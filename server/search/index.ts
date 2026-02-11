@@ -167,11 +167,17 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
   // Prefer address over location for more complete info
   const displayLocation = service.address || enrichment?.aiLocation || service.location || '';
 
+  // For expanded view, prefer original description (full text) over AI summary
+  // Only use AI description if original is missing/empty
+  const originalDesc = service.description || '';
+  const aiDesc = enrichment?.aiDescription || '';
+  const description = originalDesc.length > 0 ? originalDesc : aiDesc;
+
   return {
     id: service.serviceId,
     name: service.name,
     category: enrichment?.aiCategory || service.category,
-    description: enrichment?.aiDescription || service.description || '',
+    description,
     location: displayLocation,
     contact: enrichment?.aiContact || service.contact || '',
     websiteUrl: service.websiteUrl || '',
