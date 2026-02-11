@@ -74,6 +74,7 @@ export const SEARCH_CONFIG = {
 
   // === CRISIS DETECTION ===
   crisis: {
+    // Explicit crisis keywords
     keywords: [
       'suicide',
       'suicidal',
@@ -85,6 +86,19 @@ export const SEARCH_CONFIG = {
       'self harm',
       'self-harm',
       'overdose',
+    ],
+    // Implicit crisis patterns - subtle expressions of suicidal ideation
+    implicitPatterns: [
+      /\b(don'?t|do not)\s+want\s+to\s+(be here|exist|wake up|live)\b/i,
+      /\b(no point|what'?s the point|pointless)\s+(in|to|of)?\s*(living|life|going on|continuing)?\b/i,
+      /\b(can'?t|cannot)\s+(go on|take it|do this)\s*(anymore|any more)?\b/i,
+      /\b(better off|world.*better)\s+(without me|if i.*gone|dead)\b/i,
+      /\b(hopeless|worthless|burden)\s+(to everyone|to my family|on)?\b/i,
+      /\b(end(ing)?|final(ly)?)\s+(it|peace|solution|way out)\b/i,
+      /\b(nobody|no one)\s+(would|will)\s+(care|notice|miss me)\b/i,
+      /\b(give up|giving up)\s+(on life|on everything|completely)?\b/i,
+      /\b(tired of|done with)\s+(living|life|fighting|everything)\b/i,
+      /\b(permanent)\s+(solution|escape|way out)\b/i,
     ],
     pinnedServiceId: '988-suicide-crisis-helpline',
     pinnedServiceLite: {
@@ -210,31 +224,53 @@ export const SEARCH_CONFIG = {
 
   // === SUBSTANCE-SPECIFIC PATTERNS ===
   // Used by analyzer.ts to detect specific substances mentioned in queries
+  // Includes street names, slang, and colloquial terms
   substancePatterns: {
     alcohol: [
       /\b(drink|drinking|drunk|drank|alcoholic|alcoholism|beer|wine|liquor|booze|sober|sobriety)\b/i,
       /\b(can'?t|cannot|stop|quit).*drinking\b/i,
       /\balcohol\b/i,
+      // Colloquial/slang terms
+      /\b(wasted|hammered|plastered|smashed|trashed|blacked out|black out)\b/i,
+      /\b(shakes|tremors|DTs|withdrawal|detoxing)\b/i,
+      /\b(hair of the dog|liquid courage|falling off the wagon)\b/i,
+      /\b(binge|bender|on a bender)\b/i,
     ],
     opioid: [
-      /\b(heroin|fentanyl|opioid|opiate|morphine|oxycontin|methadone|suboxone)\b/i,
+      /\b(heroin|fentanyl|opioid|opiate|morphine|oxycontin|methadone|suboxone|buprenorphine)\b/i,
       /\b(painkiller|pain\s*pill).*addict/i,
       /\b(needle|inject|shooting up)\b/i,
+      // Street names and slang
+      /\b(oxy|percs?|roxies?|blues|dope|smack|junk|horse|china white|tar)\b/i,
+      /\b(nodding|on the nod|pinned|dopesick|kicking|cold turkey)\b/i,
+      /\b(chasing|chasing the dragon)\b/i,
+      /\b(dilaudid|hydromorphone|codeine|tramadol|norco|vicodin)\b/i,
     ],
     stimulant: [
       /\b(meth|methamphetamine|crystal|cocaine|coke|crack)\b/i,
       // Prescription stimulants (commonly abused)
       /\b(adderall|ritalin|vyvanse|concerta|dexedrine|amphetamine|dextroamphetamine|methylphenidate)\b/i,
+      // Street names and slang
+      /\b(blow|snow|yayo|white|powder|rails?|lines?|8-?ball)\b/i,
+      /\b(ice|glass|tina|speed|crank|tweak|tweaking|geeked|gacked)\b/i,
+      /\b(crashing|coming down|stayed up \d+ days?|haven'?t slept)\b/i,
+      /\b(uppers|stims|study drugs?)\b/i,
     ],
     cannabis: [
-      /\b(weed|pot|marijuana|cannabis|thc)\b/i,
+      /\b(weed|pot|marijuana|cannabis|thc|dab|dabs)\b/i,
+      // Colloquial terms
+      /\b(bud|flower|edibles?|gummies|vape|vaping|cart|cartridge)\b/i,
+      /\b(stoned|high all the time|wake and bake|smoking every day)\b/i,
     ],
     gambling: [
       /\b(gambling|gamble|gambler|betting|bet|casino|slots|poker|blackjack|roulette)\b/i,
       /\b(sports\s*betting|sports\s*gambling|online\s*betting|online\s*gambling)\b/i,
       // Popular betting sites/apps
-      /\b(rainbet|bet365|fanduel|draftkings|betway|888|pokerstars|partypoker|bovada|pinnacle|unibet|betfair|william\s*hill|proline|playalberta)\b/i,
+      /\b(rainbet|bet365|fanduel|draftkings|betway|888|pokerstars|partypoker|bovada|pinnacle|unibet|betfair|william\s*hill|proline|playalberta|stake|rollbit|duelbits)\b/i,
       /\b(vlt|vlts|scratch\s*tickets?|lottery|lotto)\b/i,
+      // Gambling behavior patterns
+      /\b(chasing losses|can'?t stop betting|lost everything gambling|in the hole|down bad)\b/i,
+      /\b(bookies?|bookie|parlay|accumulator|over.?under|spread|handicap)\b/i,
     ],
   },
 
@@ -302,6 +338,64 @@ export const SEARCH_CONFIG = {
   // === DISTRESS/NEED INDICATORS ===
   // General patterns that indicate someone needs help (used with category indicators)
   distressIndicators: /\b(need|help|can'?t|cannot|struggling|lost|losing|problem|issue|crisis|emergency|urgent|desperate|scared|afraid|worried|stuck|trapped|don'?t know what to do|nowhere to turn|no one to talk|at my wit'?s end|breaking down|falling apart|ruined|destroyed|can'?t cope|can'?t take it|out of options|running out of)\b/i,
+
+  // === FAMILY/LOVED ONE CONTEXT PATTERNS ===
+  // Detect when someone is searching on behalf of a family member
+  familyContextPatterns: {
+    // Direct family relationships
+    immediateFamily: [
+      /\b(my|our)\s+(son|daughter|kid|child|spouse|partner|husband|wife|parent|mom|dad|mother|father|brother|sister)\b/i,
+      /\b(my|our)\s+(teenager|teen|toddler|baby|infant|newborn)\b/i,
+    ],
+    // Extended family and loved ones
+    extendedFamily: [
+      /\b(my|our)\s+(uncle|aunt|cousin|nephew|niece|grandparent|grandmother|grandfather|grandma|grandpa|in-law)\b/i,
+      /\b(loved one|family member|someone I (know|care about|love))\b/i,
+      /\b(friend|roommate|coworker|colleague)\s+(is|has|needs|who)\b/i,
+    ],
+    // Concerned person indicators
+    concernedPerson: [
+      /\b(watching|seeing)\s+(them|him|her)\b/i,
+      /\b(worried|concerned|scared)\s+(about|for)\s+(my|a|the|their)\b/i,
+      /\b(help(ing)?|support(ing)?)\s+(someone|a friend|my|a family)\b/i,
+      /\b(how (do|can) I help)\b/i,
+      /\b(intervention|confront|talk to them about)\b/i,
+    ],
+  },
+
+  // === LANGUAGE PREFERENCE PATTERNS ===
+  // Detect when users need services in specific languages
+  languagePatterns: {
+    spanish: /\b(spanish|español|habla español|en español|hispanohablante)\b/i,
+    french: /\b(french|français|en français|francophone|francais)\b/i,
+    arabic: /\b(arabic|عربي|arabe)\b/i,
+    mandarin: /\b(mandarin|chinese|中文|cantonese|普通话|粤语)\b/i,
+    punjabi: /\b(punjabi|ਪੰਜਾਬੀ)\b/i,
+    tagalog: /\b(tagalog|filipino|pilipino)\b/i,
+    vietnamese: /\b(vietnamese|tiếng việt|viet)\b/i,
+    ukrainian: /\b(ukrainian|українська|ukrain)\b/i,
+    hindi: /\b(hindi|हिन्दी)\b/i,
+    urdu: /\b(urdu|اردو)\b/i,
+    korean: /\b(korean|한국어|hangul)\b/i,
+    // General non-English indicator
+    nonEnglish: /\b(non-?english|another language|interpreter|translation|my language|speak.*english.*not|english.*not.*good|limited english)\b/i,
+  },
+
+  // === NEGATIVE/EXCLUSION SIGNAL PATTERNS ===
+  // Detect when users want to exclude certain types of services
+  exclusionPatterns: {
+    // Religious exclusions
+    secular: /\b(not religious|non-?religious|secular|no.*religion|no.*faith|no.*church|no.*god|atheist|agnostic)\b/i,
+    // 12-step exclusions (some prefer non-12-step programs)
+    non12Step: /\b(not.*12.*step|no.*12.*step|non.*12.*step|alternative to AA|alternative to NA|no AA|no NA)\b/i,
+    // Gender exclusions
+    notMenOnly: /\b(not.*men only|no.*men|not just men|not.*male only)\b/i,
+    notWomenOnly: /\b(not.*women only|no.*women|not just women|not.*female only)\b/i,
+    // Cost exclusions
+    freeOnly: /\b(free only|must be free|can'?t afford|no money|no insurance|uninsured|low income|sliding scale)\b/i,
+    // Wait time exclusions
+    noWaitlist: /\b(no wait|immediate|right away|can'?t wait|urgent|asap|today|tonight|now)\b/i,
+  },
 
   // === SERVICE SUBSTANCE INDICATORS ===
   // Patterns to identify substance-specific services from their name/description

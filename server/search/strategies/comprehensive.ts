@@ -290,6 +290,65 @@ function detectCommunityPreference(query: string): string | null {
 }
 
 /**
+ * Detect language preference from query text
+ * Returns language code or null
+ */
+function detectLanguagePreference(query: string): string | null {
+  const langPatterns = SEARCH_CONFIG.languagePatterns;
+
+  for (const [lang, pattern] of Object.entries(langPatterns)) {
+    if (pattern.test(query)) {
+      return lang;
+    }
+  }
+  return null;
+}
+
+/**
+ * Detect family/loved one context - searching on behalf of someone else
+ * Returns type of relationship or null
+ */
+function detectFamilyContext(query: string): 'immediate' | 'extended' | 'concerned' | null {
+  const q = query.toLowerCase();
+  const patterns = SEARCH_CONFIG.familyContextPatterns;
+
+  // Check immediate family first (highest priority)
+  if (patterns.immediateFamily.some(p => p.test(q))) {
+    return 'immediate';
+  }
+
+  // Check extended family/loved ones
+  if (patterns.extendedFamily.some(p => p.test(q))) {
+    return 'extended';
+  }
+
+  // Check concerned person patterns
+  if (patterns.concernedPerson.some(p => p.test(q))) {
+    return 'concerned';
+  }
+
+  return null;
+}
+
+/**
+ * Detect exclusion signals - things the user wants to avoid
+ * Returns array of exclusion types
+ */
+function detectExclusions(query: string): string[] {
+  const exclusions: string[] = [];
+  const patterns = SEARCH_CONFIG.exclusionPatterns;
+
+  if (patterns.secular.test(query)) exclusions.push('religious');
+  if (patterns.non12Step.test(query)) exclusions.push('12step');
+  if (patterns.notMenOnly.test(query)) exclusions.push('men_only');
+  if (patterns.notWomenOnly.test(query)) exclusions.push('women_only');
+  if (patterns.freeOnly.test(query)) exclusions.push('paid');
+  if (patterns.noWaitlist.test(query)) exclusions.push('waitlist');
+
+  return exclusions;
+}
+
+/**
  * Map query intent to expected service types and boost patterns
  */
 const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
@@ -355,6 +414,9 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   const familySituations = detectFamilySituation(rawQuery);
   const communityPref = detectCommunityPreference(rawQuery);
   const studentContext = detectStudentContext(rawQuery);
+  const languagePref = detectLanguagePreference(rawQuery);
+  const familyContext = detectFamilyContext(rawQuery);
+  const exclusions = detectExclusions(rawQuery);
 
   // Log detected preferences
   const detections: string[] = [];
@@ -364,6 +426,9 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   if (familySituations.length > 0) detections.push(`family:${familySituations.join(',')}`);
   if (communityPref) detections.push(`community:${communityPref}`);
   if (studentContext) detections.push(`student:${studentContext}`);
+  if (languagePref) detections.push(`language:${languagePref}`);
+  if (familyContext) detections.push(`familyContext:${familyContext}`);
+  if (exclusions.length > 0) detections.push(`exclusions:${exclusions.join(',')}`);
   if (detections.length > 0) {
     console.log(`[ComprehensiveSearch] Detected preferences: ${detections.join(', ')}`);
   }
@@ -497,6 +562,70 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
+    // Language preference boosting
+    if (languagePref) {
+      // Check if service mentions the language or multilingual support
+      const langBoostPatterns: Record<string, RegExp> = {
+        spanish: /\b(spanish|español|hispanic|latino|latina)\b/i,
+        french: /\b(french|français|francophone|bilingual)\b/i,
+        arabic: /\b(arabic|arab|muslim)\b/i,
+        mandarin: /\b(mandarin|chinese|cantonese|asian)\b/i,
+        punjabi: /\b(punjabi|sikh|south asian)\b/i,
+        tagalog: /\b(tagalog|filipino|philippines)\b/i,
+        vietnamese: /\b(vietnamese|viet)\b/i,
+        ukrainian: /\b(ukrainian|ukrain)\b/i,
+        hindi: /\b(hindi|indian|south asian)\b/i,
+        urdu: /\b(urdu|pakistan)\b/i,
+        korean: /\b(korean)\b/i,
+        nonEnglish: /\b(multilingual|interpreter|translation|multiple languages)\b/i,
+      };
+
+      const langPattern = langBoostPatterns[languagePref];
+      if (langPattern && langPattern.test(textLower)) {
+        boost += 25;
+        console.log(`[LanguageBoost] "${svc.name.substring(0, 40)}" boosted for ${languagePref}`);
+      }
+      // Also boost services that mention interpreter or multilingual
+      if (/\b(interpreter|multilingual|translation|multiple languages)\b/i.test(textLower)) {
+        boost += 15;
+      }
+    }
+
+    // Family context boosting - boost family support services when searching for loved one
+    if (familyContext) {
+      const isFamilySupportService = /\b(family support|family services|loved ones|concerned persons|al-?anon|nar-?anon|family counsell?ing|parent support|caregiver|coping)\b/i.test(textLower);
+      const isInterventionService = /\b(intervention|family therapy|family program)\b/i.test(textLower);
+
+      if (isFamilySupportService) {
+        boost += 20;
+        console.log(`[FamilyBoost] "${svc.name.substring(0, 40)}" boosted as family support`);
+      }
+      if (isInterventionService) {
+        boost += 15;
+      }
+    }
+
+    // Exclusion signal penalties
+    if (exclusions.length > 0) {
+      for (const exclusion of exclusions) {
+        if (exclusion === 'religious' && /\b(church|faith|christian|religious|god|spiritual|prayer|ministry|bible)\b/i.test(textLower)) {
+          boost -= 30;
+        }
+        if (exclusion === '12step' && /\b(12.?step|twelve.?step|anonymous|AA\b|NA\b|higher power)\b/i.test(textLower)) {
+          boost -= 25;
+        }
+        if (exclusion === 'men_only' && /\b(men only|males only|for men\b|men'?s only)\b/i.test(textLower)) {
+          boost -= 40;
+        }
+        if (exclusion === 'women_only' && /\b(women only|females only|for women\b|women'?s only)\b/i.test(textLower)) {
+          boost -= 40;
+        }
+        if (exclusion === 'waitlist' && /\b(waitlist|wait list|waiting list|wait time.*week|wait time.*month)\b/i.test(textLower)) {
+          boost -= 15;
+        }
+      }
+    }
+
     // Substance-specific boosting (for substance_abuse intent)
     // Boost values must be LARGE (50-100+) to overcome SQL scores of 100-150
     if (intent === 'substance_abuse' && analysis?.substanceType) {
@@ -543,6 +672,81 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   console.log(`[ComprehensiveSearch] Intent boosting for ${intent}: ${boostedCount} boosted, ${penalizedCount} penalized`);
 
   return scored.map(s => s.svc);
+}
+
+/**
+ * Extract organization name from service name
+ * Tries to identify the organization by common patterns
+ */
+function extractOrganization(serviceName: string): string {
+  const name = serviceName.toLowerCase();
+
+  // Common organization patterns in Alberta
+  const orgPatterns = [
+    { pattern: /\bcmha\b|canadian mental health/i, org: 'cmha' },
+    { pattern: /\bywca\b/i, org: 'ywca' },
+    { pattern: /\bymca\b/i, org: 'ymca' },
+    { pattern: /\bsalvation army\b/i, org: 'salvation_army' },
+    { pattern: /\bcalgary.*counselling/i, org: 'calgary_counselling' },
+    { pattern: /\bahs\b|alberta health services/i, org: 'ahs' },
+    { pattern: /\bcatholic.*services|catholic.*charities/i, org: 'catholic_services' },
+    { pattern: /\bunited way\b/i, org: 'united_way' },
+    { pattern: /\bdistress centre\b/i, org: 'distress_centre' },
+    { pattern: /\bwoods homes\b/i, org: 'woods_homes' },
+    { pattern: /\balpha house\b/i, org: 'alpha_house' },
+    { pattern: /\bcalgary urban project society\b|cups\b/i, org: 'cups' },
+    { pattern: /\bdrop-?in.*centre\b|drop-?in.*shelter/i, org: 'drop_in_centre' },
+    { pattern: /\bmustard seed\b/i, org: 'mustard_seed' },
+    { pattern: /\binn from the cold\b/i, org: 'inn_from_cold' },
+  ];
+
+  for (const { pattern, org } of orgPatterns) {
+    if (pattern.test(name)) {
+      return org;
+    }
+  }
+
+  // Fallback: use first 2-3 significant words as org identifier
+  const words = name.split(/\s+/).filter(w => w.length > 2 && !['the', 'and', 'for', 'of'].includes(w));
+  return words.slice(0, 2).join('_') || 'unknown';
+}
+
+/**
+ * Apply organization diversity - prevent too many results from same org in top results
+ * Limits to max 2 services per organization in the top 10 results
+ */
+function applyOrganizationDiversity(services: LiteService[], maxPerOrg: number = 2, topN: number = 10): LiteService[] {
+  if (services.length <= topN) {
+    return services; // No need to diversify small result sets
+  }
+
+  const topResults = services.slice(0, topN);
+  const rest = services.slice(topN);
+
+  // Count organizations in top results
+  const orgCounts = new Map<string, number>();
+  const diversified: LiteService[] = [];
+  const demoted: LiteService[] = [];
+
+  for (const svc of topResults) {
+    const org = extractOrganization(svc.name);
+    const currentCount = orgCounts.get(org) || 0;
+
+    if (currentCount < maxPerOrg) {
+      diversified.push(svc);
+      orgCounts.set(org, currentCount + 1);
+    } else {
+      demoted.push(svc);
+    }
+  }
+
+  // Log if any services were demoted for diversity
+  if (demoted.length > 0) {
+    console.log(`[OrgDiversity] Demoted ${demoted.length} services for organization diversity`);
+  }
+
+  // Return diversified top + demoted + rest
+  return [...diversified, ...demoted, ...rest];
 }
 
 export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
@@ -607,6 +811,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     if (isDomainIntent || hasAnyPreference) {
       services = boostByIntent(services, analysis.intent, analysis.raw, analysis);
     }
+
+    // Apply organization diversity to prevent monopoly in top results
+    services = applyOrganizationDiversity(services);
 
     // Check if we need additional OpenAI enhancement (very few results)
     if (services.length < config.minResultsBeforeOpenAI &&

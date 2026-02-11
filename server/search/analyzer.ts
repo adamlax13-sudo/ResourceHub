@@ -85,12 +85,30 @@ export function analyzeQuery(
 
 /**
  * Detect if query is crisis-related
+ * Checks both explicit keywords AND implicit patterns for suicidal ideation
  */
 function detectCrisis(normalizedQuery: string): boolean {
   const lower = normalizedQuery.toLowerCase();
-  return SEARCH_CONFIG.crisis.keywords.some(keyword =>
+
+  // Check explicit crisis keywords first
+  const hasExplicitCrisis = SEARCH_CONFIG.crisis.keywords.some(keyword =>
     lower.includes(keyword)
   );
+
+  if (hasExplicitCrisis) {
+    return true;
+  }
+
+  // Check implicit crisis patterns (subtle expressions of suicidal ideation)
+  const hasImplicitCrisis = SEARCH_CONFIG.crisis.implicitPatterns.some(pattern =>
+    pattern.test(lower)
+  );
+
+  if (hasImplicitCrisis) {
+    console.log(`[QueryAnalyzer] Implicit crisis detected in query`);
+  }
+
+  return hasImplicitCrisis;
 }
 
 /**
