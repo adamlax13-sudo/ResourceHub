@@ -36,7 +36,7 @@ export abstract class BaseSearchStrategy implements SearchStrategy {
   /**
    * Truncate description to a maximum length for lite results
    */
-  protected truncateDescription(desc: string | null, maxLength: number = 280): string {
+  protected truncateDescription(desc: string | null, maxLength: number = 500): string {
     if (!desc) return '';
     if (desc.length <= maxLength) return desc;
     // Try to break at a word boundary

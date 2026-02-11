@@ -178,10 +178,15 @@ export const SEARCH_CONFIG = {
       /(?:nowhere to go|no where to go|no place to go)/i,
     ],
     substance_abuse: [
-      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict)/i,
-      /(?:drinking|alcohol|drug|addict).*(?:problem|issue|help|recovery)/i,
+      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict|gambling|betting)/i,
+      /(?:drinking|alcohol|drug|addict|gambling|betting).*(?:problem|issue|help|recovery)/i,
       /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
       /(?:addicted|hooked).*(?:to|on)/i,
+      // Gambling-specific patterns
+      /(?:can'?t|cannot|stop|quit|control).*(?:gambling|betting|playing.*(?:slots|poker|casino|bet))/i,
+      /(?:gambling|betting|casino).*(?:addiction|problem|help|support)/i,
+      /(?:lost|losing).*(?:money|everything).*(?:gambling|betting|casino)/i,
+      /(?:gambler|gambling addict)/i,
     ],
     mental_health: [
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless|overwhelmed|lost)/i,
@@ -219,7 +224,11 @@ export const SEARCH_CONFIG = {
       /\b(weed|pot|marijuana|cannabis|thc)\b/i,
     ],
     gambling: [
-      /\b(gambling|gamble|betting|casino|slots|poker)\b/i,
+      /\b(gambling|gamble|gambler|betting|bet|casino|slots|poker|blackjack|roulette)\b/i,
+      /\b(sports\s*betting|sports\s*gambling|online\s*betting|online\s*gambling)\b/i,
+      // Popular betting sites/apps
+      /\b(rainbet|bet365|fanduel|draftkings|betway|888|pokerstars|partypoker|bovada|pinnacle|unibet|betfair|william\s*hill|proline|playalberta)\b/i,
+      /\b(vlt|vlts|scratch\s*tickets?|lottery|lotto)\b/i,
     ],
   },
 
@@ -231,7 +240,7 @@ export const SEARCH_CONFIG = {
     opioid: /\b(opioid|opiate|methadone|suboxone|buprenorphine|needle exchange|naloxone|harm reduction|safe\s*injection|overdose prevention)\b/i,
     stimulant: /\b(meth|methamphetamine|cocaine|crack|CMA|crystal|stimulant)\b/i,
     cannabis: /\b(cannabis|marijuana|weed)\b/i,
-    gambling: /\b(gambl|GA\b|gamblers?\s*anonymous|betting|problem gambling)\b/i,
+    gambling: /\b(gambl|GA\b|gamblers?\s*anonymous|betting|problem gambling|gambling addiction|gambling support)\b/i,
     // General catches addiction services that don't specify a substance
     // These should rank LOWER than substance-specific services for substance-specific queries
     general: /\b(NA\b|narcotics\s*anonymous|SMART\s*recovery|addiction(?!\s*(to\s+)?(alcohol|drinking))|recovery|detox|rehab|treatment|12-?step|residential)\b/i,
