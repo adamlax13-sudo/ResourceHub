@@ -99,6 +99,13 @@ export const SEARCH_CONFIG = {
       /\b(give up|giving up)\s+(on life|on everything|completely)?\b/i,
       /\b(tired of|done with)\s+(living|life|fighting|everything)\b/i,
       /\b(permanent)\s+(solution|escape|way out)\b/i,
+      // Feeling unwanted/uncared for
+      /\b(nobody|no one)\s+(wants|needs|cares about|loves)\s+me\b/i,
+      /\b(nobody|no one)\s+wants\s+me\s+(here|around|anymore)\b/i,
+      /\b(i'?m|i am)\s+(unwanted|unloved|a burden|in the way)\b/i,
+      /\b(everyone|they|the world)\s+(would be|is)\s+better\s+(off\s+)?without\s+me\b/i,
+      /\bwish\s+i\s+(was\s+)?never\s+born\b/i,
+      /\bshouldn'?t\s+(be here|exist|have been born)\b/i,
     ],
     pinnedServiceId: '988-suicide-crisis-helpline',
     pinnedServiceLite: {
