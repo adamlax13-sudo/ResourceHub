@@ -198,11 +198,47 @@ export const SEARCH_CONFIG = {
       /(?:don'?t know what to do|at a loss|losing it)/i,
     ],
   },
+
+  // === SUBSTANCE-SPECIFIC PATTERNS ===
+  // Used by analyzer.ts to detect specific substances mentioned in queries
+  substancePatterns: {
+    alcohol: [
+      /\b(drink|drinking|drunk|drank|alcoholic|alcoholism|beer|wine|liquor|booze|sober|sobriety)\b/i,
+      /\b(can'?t|cannot|stop|quit).*drinking\b/i,
+      /\balcohol\b/i,
+    ],
+    opioid: [
+      /\b(heroin|fentanyl|opioid|opiate|morphine|oxycontin|methadone|suboxone)\b/i,
+      /\b(painkiller|pain\s*pill).*addict/i,
+      /\b(needle|inject|shooting up)\b/i,
+    ],
+    stimulant: [
+      /\b(meth|methamphetamine|crystal|cocaine|coke|crack)\b/i,
+    ],
+    cannabis: [
+      /\b(weed|pot|marijuana|cannabis|thc)\b/i,
+    ],
+    gambling: [
+      /\b(gambling|gamble|betting|casino|slots|poker)\b/i,
+    ],
+  },
+
+  // === SERVICE SUBSTANCE INDICATORS ===
+  // Patterns to identify substance-specific services from their name/description
+  serviceSubstanceIndicators: {
+    alcohol: /\b(AA\b|alcoholics\s*anonymous|alcohol|alcoholism|al-?anon)\b/i,
+    opioid: /\b(opioid|opiate|methadone|suboxone|needle exchange|naloxone|harm reduction)\b/i,
+    stimulant: /\b(meth|cocaine|CMA|stimulant)\b/i,
+    cannabis: /\b(cannabis|marijuana)\b/i,
+    gambling: /\b(gambl|GA\b|gamblers anonymous)\b/i,
+    general: /\b(NA\b|narcotics\s*anonymous|SMART\s*recovery|addiction|recovery|detox|rehab|treatment|12-?step)\b/i,
+  },
 } as const;
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
 export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'general';
+export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type
 export type SearchConfigType = typeof SEARCH_CONFIG;

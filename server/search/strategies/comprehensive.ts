@@ -17,7 +17,7 @@ import type {
 } from '../types';
 import { storage } from '../../storage';
 import OpenAI from 'openai';
-import type { QueryIntent } from '../config';
+import type { QueryIntent, SubstanceType } from '../config';
 
 // Enhanced query result from OpenAI
 interface EnhancedQuery {
@@ -290,10 +290,31 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
 };
 
 /**
+ * Detect what substance a service specializes in based on its name/description/category
+ * Returns 'general' for services that handle all addictions (residential treatment, etc.)
+ */
+function detectServiceSubstanceType(name: string, description: string, category: string): SubstanceType {
+  const text = `${name} ${description} ${category}`.toLowerCase();
+  const indicators = SEARCH_CONFIG.serviceSubstanceIndicators;
+
+  // Check specific substances first (more specific = higher priority)
+  if (indicators.alcohol.test(text)) return 'alcohol';
+  if (indicators.opioid.test(text)) return 'opioid';
+  if (indicators.stimulant.test(text)) return 'stimulant';
+  if (indicators.cannabis.test(text)) return 'cannabis';
+  if (indicators.gambling.test(text)) return 'gambling';
+
+  // Check if it's a general addiction service
+  if (indicators.general.test(text)) return 'general';
+
+  return null;
+}
+
+/**
  * Boost services that match the detected intent, gender, age, urgency, family, and community preferences
  * Uses both service_type field (if available) and text pattern matching
  */
-function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: string): LiteService[] {
+function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: string, analysis?: QueryAnalysis): LiteService[] {
   const intentConfig = INTENT_SERVICE_MAP[intent];
 
   // Detect all preferences from query
@@ -430,6 +451,32 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
+    // Substance-specific boosting (for substance_abuse intent)
+    if (intent === 'substance_abuse' && analysis?.substanceType) {
+      const querySubstance = analysis.substanceType;
+      const serviceSubstance = detectServiceSubstanceType(svc.name, svc.description, svc.category);
+
+      if (querySubstance && serviceSubstance) {
+        // Exact substance match: highest boost
+        if (querySubstance === serviceSubstance) {
+          boost += 12;
+          // Extra boost for peer support (AA, NA, etc.) over residential
+          if (/peer|support|anonymous|12.?step|meeting/i.test(textLower)) {
+            boost += 4;
+          }
+        }
+        // Query is specific but service is general (residential, SMART, etc.): small boost
+        else if (serviceSubstance === 'general' && querySubstance !== 'general') {
+          boost += 3;
+        }
+        // Query is general but service is specific: moderate boost (still relevant)
+        else if (querySubstance === 'general' && serviceSubstance !== 'general') {
+          boost += 5;
+        }
+        // Mismatch: no penalty, just no boost (they're still addiction services)
+      }
+    }
+
     return { svc, boost };
   });
 
@@ -503,7 +550,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const hasAnyPreference = hasGenderPreference || hasAgeGroup || hasUrgency || hasFamilySituation || hasCommunityPref;
 
     if (isDomainIntent || hasAnyPreference) {
-      services = boostByIntent(services, analysis.intent, analysis.raw);
+      services = boostByIntent(services, analysis.intent, analysis.raw, analysis);
     }
 
     // Check if we need additional OpenAI enhancement (very few results)

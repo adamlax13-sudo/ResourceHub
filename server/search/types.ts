@@ -4,10 +4,10 @@
  * Shared TypeScript interfaces for the search module.
  */
 
-import type { SearchType, QueryIntent } from './config';
+import type { SearchType, QueryIntent, SubstanceType } from './config';
 
 // Re-export types from config for convenience
-export type { SearchType, QueryIntent };
+export type { SearchType, QueryIntent, SubstanceType };
 
 // === INPUT TYPES ===
 
@@ -40,6 +40,8 @@ export interface QueryAnalysis {
   isCrisis: boolean;
   /** Matched service alias (e.g., "CMHA" -> serviceId) */
   aliasMatch: string | null;
+  /** Detected specific substance type for substance_abuse intent */
+  substanceType: SubstanceType;
 }
 
 // === SERVICE TYPES ===

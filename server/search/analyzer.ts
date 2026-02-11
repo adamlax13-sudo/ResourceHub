@@ -7,7 +7,7 @@
  */
 
 import { SEARCH_CONFIG } from './config';
-import type { QueryAnalysis, QueryIntent } from './types';
+import type { QueryAnalysis, QueryIntent, SubstanceType } from './types';
 import {
   extractLocationContext,
   ALBERTA_LOCATIONS,
@@ -62,6 +62,12 @@ export function analyzeQuery(
   // Determine query intent
   const intent = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
 
+  // Detect specific substance type for substance_abuse intent
+  const substanceType = intent === 'substance_abuse' ? detectSubstanceType(query) : null;
+  if (substanceType) {
+    console.log(`[QueryAnalyzer] Substance type detected: ${substanceType}`);
+  }
+
   return {
     raw: query,
     normalized,
@@ -73,6 +79,7 @@ export function analyzeQuery(
     },
     isCrisis,
     aliasMatch,
+    substanceType,
   };
 }
 
@@ -160,6 +167,27 @@ function detectDomainIntent(query: string): QueryIntent | null {
 }
 
 /**
+ * Detect specific substance mentioned in query
+ * Returns the most specific substance type found, or 'general' for generic addiction queries
+ */
+function detectSubstanceType(query: string): SubstanceType {
+  const patterns = SEARCH_CONFIG.substancePatterns;
+  const q = query.toLowerCase();
+
+  // Check each substance type in order of specificity
+  if (patterns.alcohol.some(p => p.test(q))) return 'alcohol';
+  if (patterns.opioid.some(p => p.test(q))) return 'opioid';
+  if (patterns.stimulant.some(p => p.test(q))) return 'stimulant';
+  if (patterns.cannabis.some(p => p.test(q))) return 'cannabis';
+  if (patterns.gambling.some(p => p.test(q))) return 'gambling';
+
+  // Check if it's a general addiction query (mentions addiction but no specific substance)
+  if (/\b(addict|addiction|recovery|sober|relapse)\b/i.test(q)) return 'general';
+
+  return null;
+}
+
+/**
  * Determine the intent behind a query
  */
 function determineIntent(
@@ -231,4 +259,4 @@ export function getStemmedKeywords(keywords: string[]): Set<string> {
 }
 
 // Re-export types for convenience
-export type { QueryAnalysis, QueryIntent };
+export type { QueryAnalysis, QueryIntent, SubstanceType };
