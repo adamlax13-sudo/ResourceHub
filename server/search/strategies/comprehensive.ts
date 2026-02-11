@@ -712,13 +712,55 @@ function extractOrganization(serviceName: string): string {
 }
 
 /**
+ * Detect if user is searching specifically for an organization's services
+ * Returns the organization key if detected, null otherwise
+ */
+function detectOrganizationSearch(query: string): string | null {
+  const q = query.toLowerCase();
+
+  // Organization search patterns - when user explicitly wants org's services
+  const orgSearchPatterns = [
+    { pattern: /\b(ahs|alberta health services?)\b.*\b(program|service|clinic|centre|center)s?\b/i, org: 'ahs' },
+    { pattern: /\b(cmha|canadian mental health)\b.*\b(program|service|location)s?\b/i, org: 'cmha' },
+    { pattern: /\bywca\b.*\b(program|service|shelter)s?\b/i, org: 'ywca' },
+    { pattern: /\bymca\b.*\b(program|service|centre)s?\b/i, org: 'ymca' },
+    { pattern: /\bsalvation army\b.*\b(program|service|shelter|location)s?\b/i, org: 'salvation_army' },
+    { pattern: /\bwoods homes\b.*\b(program|service)s?\b/i, org: 'woods_homes' },
+    { pattern: /\bcups\b.*\b(program|service|clinic)s?\b/i, org: 'cups' },
+    { pattern: /\bdistress centre\b.*\b(program|service|line)s?\b/i, org: 'distress_centre' },
+    // Also match when org name is the main search term
+    { pattern: /^(ahs|alberta health services?)\s*(programs?|services?)?$/i, org: 'ahs' },
+    { pattern: /^(cmha|canadian mental health)\s*(programs?|services?)?$/i, org: 'cmha' },
+    { pattern: /^ywca\s*(programs?|services?)?$/i, org: 'ywca' },
+    { pattern: /^ymca\s*(programs?|services?)?$/i, org: 'ymca' },
+    { pattern: /^salvation army\s*(programs?|services?)?$/i, org: 'salvation_army' },
+    { pattern: /^woods homes?\s*(programs?|services?)?$/i, org: 'woods_homes' },
+    { pattern: /^cups\s*(programs?|services?)?$/i, org: 'cups' },
+    { pattern: /^distress centre\s*(programs?|services?)?$/i, org: 'distress_centre' },
+  ];
+
+  for (const { pattern, org } of orgSearchPatterns) {
+    if (pattern.test(q)) {
+      console.log(`[OrgDiversity] Organization search detected: ${org}`);
+      return org;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Apply organization diversity - prevent too many results from same org in top results
  * Limits to max 2 services per organization in the top 10 results
+ * EXCEPTION: If user is searching for a specific organization, don't limit that org
  */
-function applyOrganizationDiversity(services: LiteService[], maxPerOrg: number = 2, topN: number = 10): LiteService[] {
+function applyOrganizationDiversity(services: LiteService[], rawQuery: string, maxPerOrg: number = 2, topN: number = 10): LiteService[] {
   if (services.length <= topN) {
     return services; // No need to diversify small result sets
   }
+
+  // Check if user is searching for a specific organization
+  const targetOrg = detectOrganizationSearch(rawQuery);
 
   const topResults = services.slice(0, topN);
   const rest = services.slice(topN);
@@ -732,7 +774,8 @@ function applyOrganizationDiversity(services: LiteService[], maxPerOrg: number =
     const org = extractOrganization(svc.name);
     const currentCount = orgCounts.get(org) || 0;
 
-    if (currentCount < maxPerOrg) {
+    // Skip diversity limiting if this is the target organization user searched for
+    if (org === targetOrg || currentCount < maxPerOrg) {
       diversified.push(svc);
       orgCounts.set(org, currentCount + 1);
     } else {
@@ -813,7 +856,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     }
 
     // Apply organization diversity to prevent monopoly in top results
-    services = applyOrganizationDiversity(services);
+    // Pass query so we can skip limiting when user searches for specific org
+    services = applyOrganizationDiversity(services, analysis.raw);
 
     // Check if we need additional OpenAI enhancement (very few results)
     if (services.length < config.minResultsBeforeOpenAI &&
