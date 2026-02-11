@@ -175,22 +175,65 @@ function detectAgeGroup(query: string): 'youth' | 'senior' | null {
 }
 
 /**
- * Detect if query mentions student/university context
- * Returns the institution type or null
+ * Student context with optional specific institution
  */
-function detectStudentContext(query: string): 'university' | 'college' | null {
+interface StudentContext {
+  type: 'university' | 'college';
+  institution: string | null; // e.g., 'ucalgary', 'ualberta', 'sait', etc.
+}
+
+/**
+ * Detect if query mentions student/university context
+ * Returns the institution type and specific institution if mentioned
+ */
+function detectStudentContext(query: string): StudentContext | null {
   const q = query.toLowerCase();
 
-  // University patterns (including Alberta institutions)
+  // Specific institution patterns - order matters (most specific first)
+  const institutionPatterns: { pattern: RegExp; institution: string; type: 'university' | 'college' }[] = [
+    // University of Calgary
+    { pattern: /\b(u of c|uofc|ucalgary|university of calgary|u of calgary)\b/, institution: 'ucalgary', type: 'university' },
+    // University of Alberta
+    { pattern: /\b(u of a|uofa|ualberta|university of alberta|u of alberta)\b/, institution: 'ualberta', type: 'university' },
+    // Mount Royal University
+    { pattern: /\b(mount royal|mru|mount royal university)\b/, institution: 'mru', type: 'university' },
+    // University of Lethbridge
+    { pattern: /\b(u of l|uleth|lethbridge university|university of lethbridge)\b/, institution: 'ulethbridge', type: 'university' },
+    // MacEwan University
+    { pattern: /\b(macewan|macewan university)\b/, institution: 'macewan', type: 'university' },
+    // Athabasca University
+    { pattern: /\b(athabasca|athabasca university|au)\b/, institution: 'athabasca', type: 'university' },
+    // SAIT
+    { pattern: /\b(sait|southern alberta institute)\b/, institution: 'sait', type: 'college' },
+    // NAIT
+    { pattern: /\b(nait|northern alberta institute)\b/, institution: 'nait', type: 'college' },
+    // Bow Valley College
+    { pattern: /\b(bow valley|bow valley college)\b/, institution: 'bowvalley', type: 'college' },
+    // NorQuest College
+    { pattern: /\b(norquest|norquest college)\b/, institution: 'norquest', type: 'college' },
+    // Olds College
+    { pattern: /\b(olds college)\b/, institution: 'olds', type: 'college' },
+    // Red Deer Polytechnic
+    { pattern: /\b(red deer|red deer college|red deer polytechnic)\b/, institution: 'reddeer', type: 'college' },
+  ];
+
+  // Check for specific institution first
+  for (const { pattern, institution, type } of institutionPatterns) {
+    if (pattern.test(q)) {
+      return { type, institution };
+    }
+  }
+
+  // General university patterns (no specific institution)
   const universityPatterns = [
-    /\b(university|u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|lethbridge|athabasca|macewan)\b/,
-    /\b(undergrad|graduate|masters|phd|doctoral|eng student|engineering student)\b/,
+    /\b(university|undergrad|graduate|masters|phd|doctoral)\b/,
+    /\b(eng student|engineering student|law student|med student)\b/,
     /\b(campus|dorm|residence|tuition|prof|professor)\b/,
   ];
 
-  // College patterns
+  // General college patterns
   const collegePatterns = [
-    /\b(college|sait|nait|bow valley|olds college|red deer college|norquest)\b/,
+    /\b(college|polytechnic|technical school|trade school)\b/,
   ];
 
   // General student patterns
@@ -198,9 +241,9 @@ function detectStudentContext(query: string): 'university' | 'college' | null {
     /\b(student|studying|enrolled|semester|exams|finals)\b/,
   ];
 
-  if (universityPatterns.some(p => p.test(q))) return 'university';
-  if (collegePatterns.some(p => p.test(q))) return 'college';
-  if (studentPatterns.some(p => p.test(q))) return 'university'; // Default to university for generic student mentions
+  if (universityPatterns.some(p => p.test(q))) return { type: 'university', institution: null };
+  if (collegePatterns.some(p => p.test(q))) return { type: 'college', institution: null };
+  if (studentPatterns.some(p => p.test(q))) return { type: 'university', institution: null };
 
   return null;
 }
@@ -425,7 +468,7 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   if (urgency) detections.push(`urgency:${urgency}`);
   if (familySituations.length > 0) detections.push(`family:${familySituations.join(',')}`);
   if (communityPref) detections.push(`community:${communityPref}`);
-  if (studentContext) detections.push(`student:${studentContext}`);
+  if (studentContext) detections.push(`student:${studentContext.type}${studentContext.institution ? `:${studentContext.institution}` : ''}`);
   if (languagePref) detections.push(`language:${languagePref}`);
   if (familyContext) detections.push(`familyContext:${familyContext}`);
   if (exclusions.length > 0) detections.push(`exclusions:${exclusions.join(',')}`);
@@ -551,11 +594,36 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
 
     // Student/University boosting - LARGE boost to prioritize campus resources
     if (studentContext) {
-      const isStudentService = /student|university|campus|college|ucalgary|u of c|uofc|ucrc|wellness.*centre|counsell?ing.*centre/i.test(textLower);
+      // Institution-specific patterns for matching services to institutions
+      const institutionServicePatterns: Record<string, RegExp> = {
+        ucalgary: /\b(ucalgary|u of c|uofc|ucrc|university of calgary|uc wellness|uc counselling)\b/i,
+        ualberta: /\b(ualberta|u of a|uofa|university of alberta|ua wellness|ua counselling)\b/i,
+        mru: /\b(mount royal|mru)\b/i,
+        ulethbridge: /\b(lethbridge|uleth|u of l)\b/i,
+        macewan: /\b(macewan)\b/i,
+        athabasca: /\b(athabasca)\b/i,
+        sait: /\b(sait|southern alberta institute)\b/i,
+        nait: /\b(nait|northern alberta institute)\b/i,
+        bowvalley: /\b(bow valley)\b/i,
+        norquest: /\b(norquest)\b/i,
+        olds: /\b(olds college)\b/i,
+        reddeer: /\b(red deer)\b/i,
+      };
+
+      const isStudentService = /student|university|campus|college|wellness.*centre|counsell?ing.*centre|student.*services/i.test(textLower);
       const isYouthService = /youth|young adult|18-24|18-25|under 25/i.test(textLower);
 
-      if (isStudentService) {
-        boost += 50; // Large boost for student-specific services
+      // Check if service matches specific institution
+      if (studentContext.institution) {
+        const institutionPattern = institutionServicePatterns[studentContext.institution];
+        if (institutionPattern && institutionPattern.test(textLower)) {
+          boost += 100; // VERY large boost for exact institution match
+          console.log(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted for ${studentContext.institution} (institution match)`);
+        } else if (isStudentService) {
+          boost += 30; // Moderate boost for generic student services when specific institution searched
+        }
+      } else if (isStudentService) {
+        boost += 50; // Large boost for student-specific services when no specific institution
         console.log(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted as student service`);
       } else if (isYouthService) {
         boost += 15; // Moderate boost for youth services
