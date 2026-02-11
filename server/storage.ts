@@ -120,6 +120,9 @@ export interface IStorage {
 
   // Refresh materialized view (call after scraper)
   refreshSearchView(): Promise<void>;
+
+  // Clear search cache (call after service changes)
+  clearSearchCache(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -603,6 +606,19 @@ export class DatabaseStorage implements IStorage {
       console.log('[Search] Materialized view refreshed');
     } catch (err) {
       console.warn('[Search] Failed to refresh materialized view:', err);
+    }
+  }
+
+  /**
+   * Clear the search cache (call after service changes)
+   * Removes all cached search results so fresh queries will be executed
+   */
+  async clearSearchCache(): Promise<void> {
+    try {
+      await db.delete(searches);
+      console.log('[Search] Search cache cleared');
+    } catch (err) {
+      console.warn('[Search] Failed to clear search cache:', err);
     }
   }
 }

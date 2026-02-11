@@ -316,7 +316,7 @@ export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) 
               <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words">
                 {service.name}
               </DialogTitle>
-              <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1 line-clamp-3 md:line-clamp-none">
+              <DialogDescription className="text-sm md:text-base text-muted-foreground mt-1 line-clamp-5 md:line-clamp-none">
                 {service.description}
               </DialogDescription>
             </div>

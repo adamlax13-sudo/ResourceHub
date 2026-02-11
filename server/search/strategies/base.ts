@@ -36,9 +36,14 @@ export abstract class BaseSearchStrategy implements SearchStrategy {
   /**
    * Truncate description to a maximum length for lite results
    */
-  protected truncateDescription(desc: string | null, maxLength: number = 150): string {
+  protected truncateDescription(desc: string | null, maxLength: number = 280): string {
     if (!desc) return '';
-    return desc.length > maxLength ? desc.slice(0, maxLength - 3) + '...' : desc;
+    if (desc.length <= maxLength) return desc;
+    // Try to break at a word boundary
+    const truncated = desc.slice(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    const breakPoint = lastSpace > maxLength - 50 ? lastSpace : maxLength;
+    return desc.slice(0, breakPoint) + '...';
   }
 
   /**

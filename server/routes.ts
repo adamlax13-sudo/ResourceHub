@@ -151,5 +151,24 @@ export async function registerRoutes(
     }
   });
 
+  // ============= ADMIN: REFRESH SEARCH VIEW =============
+  // Refreshes the materialized view and clears search cache
+  // Call this after marking services as inactive or making bulk changes
+  app.post("/api/admin/refresh-search", async (_req: Request, res: Response) => {
+    try {
+      // Refresh the materialized view (removes inactive services)
+      await storage.refreshSearchView();
+
+      // Clear the search cache (old results with inactive services)
+      await storage.clearSearchCache();
+
+      console.log('[Admin] Search view refreshed and cache cleared');
+      res.json({ success: true, message: 'Search view refreshed and cache cleared' });
+    } catch (err) {
+      console.error("Refresh search error:", err);
+      res.status(500).json({ message: "Failed to refresh search view" });
+    }
+  });
+
   return httpServer;
 }
