@@ -223,6 +223,8 @@ export const SEARCH_CONFIG = {
     ],
     stimulant: [
       /\b(meth|methamphetamine|crystal|cocaine|coke|crack)\b/i,
+      // Prescription stimulants (commonly abused)
+      /\b(adderall|ritalin|vyvanse|concerta|dexedrine|amphetamine|dextroamphetamine|methylphenidate)\b/i,
     ],
     cannabis: [
       /\b(weed|pot|marijuana|cannabis|thc)\b/i,
@@ -287,6 +289,14 @@ export const SEARCH_CONFIG = {
       /\b(sick|illness|disease|condition|symptom|diagnosis)\b/i,
       /\b(no.*(?:insurance|coverage)|uninsured|can'?t.*afford.*(?:doctor|medication))\b/i,
     ],
+    // Student/University terms (for boosting campus resources)
+    student: [
+      /\b(student|university|college|campus|undergrad|graduate|masters|phd|doctoral)\b/i,
+      // Alberta universities/colleges
+      /\b(u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|sait|nait|macewan|lethbridge|athabasca)\b/i,
+      /\b(engineering|eng|arts|science|nursing|business|education|med school|law school)\b/i,
+      /\b(dorm|residence|res|roommate|tuition|finals|exams|semester|prof|professor)\b/i,
+    ],
   },
 
   // === DISTRESS/NEED INDICATORS ===
@@ -299,7 +309,7 @@ export const SEARCH_CONFIG = {
   serviceSubstanceIndicators: {
     alcohol: /\b(AA\b|alcoholics?\s*anonymous|alcohol|alcoholism|alcoholic|al-?anon|drinking|sober\s*living|sobriety)\b/i,
     opioid: /\b(opioid|opiate|methadone|suboxone|buprenorphine|needle exchange|naloxone|harm reduction|safe\s*injection|overdose prevention)\b/i,
-    stimulant: /\b(meth|methamphetamine|cocaine|crack|CMA|crystal|stimulant)\b/i,
+    stimulant: /\b(meth|methamphetamine|cocaine|crack|CMA|crystal|stimulant|adderall|ritalin|amphetamine|prescription.*stimulant)\b/i,
     cannabis: /\b(cannabis|marijuana|weed)\b/i,
     gambling: /\b(gambl|GA\b|gamblers?\s*anonymous|betting|problem gambling|gambling addiction|gambling support)\b/i,
     // General catches addiction services that don't specify a substance

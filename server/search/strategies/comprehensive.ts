@@ -175,6 +175,37 @@ function detectAgeGroup(query: string): 'youth' | 'senior' | null {
 }
 
 /**
+ * Detect if query mentions student/university context
+ * Returns the institution type or null
+ */
+function detectStudentContext(query: string): 'university' | 'college' | null {
+  const q = query.toLowerCase();
+
+  // University patterns (including Alberta institutions)
+  const universityPatterns = [
+    /\b(university|u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|lethbridge|athabasca|macewan)\b/,
+    /\b(undergrad|graduate|masters|phd|doctoral|eng student|engineering student)\b/,
+    /\b(campus|dorm|residence|tuition|prof|professor)\b/,
+  ];
+
+  // College patterns
+  const collegePatterns = [
+    /\b(college|sait|nait|bow valley|olds college|red deer college|norquest)\b/,
+  ];
+
+  // General student patterns
+  const studentPatterns = [
+    /\b(student|studying|enrolled|semester|exams|finals)\b/,
+  ];
+
+  if (universityPatterns.some(p => p.test(q))) return 'university';
+  if (collegePatterns.some(p => p.test(q))) return 'college';
+  if (studentPatterns.some(p => p.test(q))) return 'university'; // Default to university for generic student mentions
+
+  return null;
+}
+
+/**
  * Detect urgency level from query text
  * Returns 'immediate' or null
  */
@@ -323,6 +354,7 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   const urgency = detectUrgency(rawQuery);
   const familySituations = detectFamilySituation(rawQuery);
   const communityPref = detectCommunityPreference(rawQuery);
+  const studentContext = detectStudentContext(rawQuery);
 
   // Log detected preferences
   const detections: string[] = [];
@@ -331,6 +363,7 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
   if (urgency) detections.push(`urgency:${urgency}`);
   if (familySituations.length > 0) detections.push(`family:${familySituations.join(',')}`);
   if (communityPref) detections.push(`community:${communityPref}`);
+  if (studentContext) detections.push(`student:${studentContext}`);
   if (detections.length > 0) {
     console.log(`[ComprehensiveSearch] Detected preferences: ${detections.join(', ')}`);
   }
@@ -448,6 +481,19 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
         if (/veteran|military|armed forces|canadian forces|vac\b|legion/i.test(textLower)) {
           boost += 10;
         }
+      }
+    }
+
+    // Student/University boosting - LARGE boost to prioritize campus resources
+    if (studentContext) {
+      const isStudentService = /student|university|campus|college|ucalgary|u of c|uofc|ucrc|wellness.*centre|counsell?ing.*centre/i.test(textLower);
+      const isYouthService = /youth|young adult|18-24|18-25|under 25/i.test(textLower);
+
+      if (isStudentService) {
+        boost += 50; // Large boost for student-specific services
+        console.log(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted as student service`);
+      } else if (isYouthService) {
+        boost += 15; // Moderate boost for youth services
       }
     }
 
