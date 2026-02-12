@@ -511,27 +511,49 @@ export class DatabaseStorage implements IStorage {
   /**
    * Fallback search when optimized SQL functions aren't available
    * Uses basic ILIKE matching (less efficient but works without migrations)
+   * Now splits query into keywords for better matching
    */
   private async fallbackSearch(
     query: string,
     location: string | null,
     limit: number
   ): Promise<FastSearchResult[]> {
-    const queryLower = `%${query.toLowerCase()}%`;
+    // Split query into keywords (filter out short words and common stop words)
+    const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'to', 'of', 'and', 'or', 'in', 'on', 'at', 'for', 'my', 'i', 'me', 'we', 'you', 'he', 'she', 'it', 'they']);
+    const keywords = query.toLowerCase()
+      .split(/\s+/)
+      .filter(w => w.length >= 3 && !stopWords.has(w));
+
+    // If no valid keywords, use the original query
+    const searchTerms = keywords.length > 0 ? keywords : [query.toLowerCase()];
+
+    // Build WHERE conditions for each keyword (OR logic)
+    const keywordConditions = searchTerms.map(term => {
+      const pattern = `%${term}%`;
+      return `(lower(name) LIKE '${pattern}' OR lower(category) LIKE '${pattern}' OR lower(description) LIKE '${pattern}' OR tags::text ILIKE '${pattern}')`;
+    }).join(' OR ');
+
+    // Build scoring for each keyword
+    const keywordScoring = searchTerms.map(term => {
+      const pattern = `%${term}%`;
+      return `(CASE WHEN lower(name) LIKE '${pattern}' THEN 100 ELSE 0 END + CASE WHEN lower(category) LIKE '${pattern}' THEN 50 ELSE 0 END + CASE WHEN lower(description) LIKE '${pattern}' THEN 30 ELSE 0 END + CASE WHEN tags::text ILIKE '${pattern}' THEN 40 ELSE 0 END)`;
+    }).join(' + ');
 
     // Build location filter for multiple comma-separated locations
-    let locationFilter = sql``;
+    let locationFilter = '';
     if (location) {
       const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       if (locations.length === 1) {
-        locationFilter = sql`AND (lower(location) LIKE ${'%' + locations[0] + '%'} OR lower(location) LIKE '%alberta%')`;
+        locationFilter = `AND (lower(location) LIKE '%${locations[0]}%' OR lower(location) LIKE '%alberta%')`;
       } else if (locations.length > 1) {
         const locationConditions = locations.map(l => `lower(location) LIKE '%${l}%'`).join(' OR ');
-        locationFilter = sql`AND (${sql.raw(locationConditions)} OR lower(location) LIKE '%alberta%')`;
+        locationFilter = `AND (${locationConditions} OR lower(location) LIKE '%alberta%')`;
       }
     }
 
-    const result = await db.execute(sql`
+    console.log(`[FallbackSearch] Keywords: ${searchTerms.join(', ')}, Location: ${location || 'Alberta-wide'}`);
+
+    const result = await db.execute(sql.raw(`
       SELECT
         service_id,
         name,
@@ -548,25 +570,14 @@ export class DatabaseStorage implements IStorage {
         email,
         address,
         tags,
-        (
-          CASE WHEN lower(name) LIKE ${queryLower} THEN 100 ELSE 0 END +
-          CASE WHEN lower(category) LIKE ${queryLower} THEN 50 ELSE 0 END +
-          CASE WHEN lower(description) LIKE ${queryLower} THEN 30 ELSE 0 END +
-          CASE WHEN tags::text ILIKE ${queryLower} THEN 40 ELSE 0 END +
-          COALESCE(click_count, 0) * 2
-        ) as relevance_score
+        (${keywordScoring} + COALESCE(click_count, 0) * 2) as relevance_score
       FROM services
       WHERE is_active = true
-        AND (
-          lower(name) LIKE ${queryLower}
-          OR lower(category) LIKE ${queryLower}
-          OR lower(description) LIKE ${queryLower}
-          OR tags::text ILIKE ${queryLower}
-        )
+        AND (${keywordConditions})
         ${locationFilter}
       ORDER BY relevance_score DESC
       LIMIT ${limit}
-    `);
+    `));
 
     return (result.rows as any[]).map(row => ({
       serviceId: row.service_id,
