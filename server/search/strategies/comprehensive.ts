@@ -82,12 +82,13 @@ Given a natural language query, extract search terms to find relevant services.
 Output ONLY valid JSON with:
 - rewritten: a clearer query for keyword search (2-5 words)
 - categories: relevant service categories (1-3 items)
-- keywords: specific search terms to find services (3-6 items)
+- keywords: specific search terms to find services (3-6 items). Include GENERAL terms like "addiction", "treatment", "support" alongside specific ones.
 
 Examples:
-"i cant stop drinking" → {"rewritten":"alcohol addiction recovery services","categories":["addiction","recovery"],"keywords":["AA","alcoholics anonymous","detox","rehab","alcohol","sober living"]}
-"i feel so hopeless" → {"rewritten":"mental health counselling support","categories":["mental health","counselling"],"keywords":["depression","therapy","counsellor","crisis","support group"]}
-"nowhere to sleep tonight" → {"rewritten":"emergency shelter housing","categories":["shelter","housing"],"keywords":["homeless","emergency shelter","beds","accommodation","housing"]}`
+"i cant stop drinking" → {"rewritten":"alcohol addiction recovery services","categories":["addiction","recovery"],"keywords":["AA","alcoholics anonymous","detox","rehab","alcohol","addiction","recovery"]}
+"i feel so hopeless" → {"rewritten":"mental health counselling support","categories":["mental health","counselling"],"keywords":["depression","therapy","counsellor","crisis","support","mental health"]}
+"nowhere to sleep tonight" → {"rewritten":"emergency shelter housing","categories":["shelter","housing"],"keywords":["homeless","emergency shelter","beds","accommodation","housing","shelter"]}
+"my child is addicted to drugs" → {"rewritten":"youth addiction family support","categories":["addiction","youth","family support"],"keywords":["addiction","treatment","youth","family","support","PCHAD","intervention","parent"]}`
       }, {
         role: 'user',
         content: rawQuery
@@ -888,6 +889,10 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     // Run SQL and semantic search in parallel
     // For domain intents, search with enhanced keywords
+    if (enhancedQuery) {
+      console.log(`[ComprehensiveSearch] Enhanced keywords: ${enhancedQuery.keywords.join(', ')}`);
+    }
+
     const sqlPromise = storage.fastSearch(
       searchQuery,
       analysis.location.specified,
@@ -901,9 +906,58 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       ? this.runSemanticSearch(semanticQuery, analysis.location.specified)
       : Promise.resolve([]);
 
-    const [sqlResults, semanticResults] = await Promise.all([sqlPromise, semanticPromise]);
+    let [sqlResults, semanticResults] = await Promise.all([sqlPromise, semanticPromise]);
 
     console.log(`[ComprehensiveSearch] SQL: ${sqlResults.length}, Semantic: ${semanticResults.length} in ${Date.now() - startTime}ms`);
+
+    // FALLBACK: If enhanced query returned 0 results, try with original query
+    if (sqlResults.length === 0 && semanticResults.length === 0 && enhancedQuery && searchQuery !== analysis.raw) {
+      console.log(`[ComprehensiveSearch] Enhanced query returned 0 results, falling back to original query`);
+
+      const fallbackSqlPromise = storage.fastSearch(
+        analysis.raw,
+        analysis.location.specified,
+        analysis.intent === 'location_only',
+        config.maxResults
+      );
+
+      const fallbackSemanticPromise = hasEmbeddings
+        ? this.runSemanticSearch(analysis.raw, analysis.location.specified)
+        : Promise.resolve([]);
+
+      [sqlResults, semanticResults] = await Promise.all([fallbackSqlPromise, fallbackSemanticPromise]);
+      console.log(`[ComprehensiveSearch] Fallback results - SQL: ${sqlResults.length}, Semantic: ${semanticResults.length}`);
+    }
+
+    // FALLBACK 2: If still no results for domain intents, try broad domain terms
+    if (sqlResults.length === 0 && semanticResults.length === 0 && isDomainIntent) {
+      const domainFallbackTerms: Record<string, string> = {
+        'substance_abuse': 'addiction treatment recovery support',
+        'mental_health': 'mental health counselling therapy support',
+        'housing_urgent': 'shelter housing emergency homeless',
+        'food_insecurity': 'food bank meals groceries',
+        'domestic_violence': 'domestic violence shelter women safety',
+      };
+
+      const fallbackTerms = domainFallbackTerms[analysis.intent];
+      if (fallbackTerms) {
+        console.log(`[ComprehensiveSearch] Still 0 results, trying domain fallback: "${fallbackTerms}"`);
+
+        const domainSqlPromise = storage.fastSearch(
+          fallbackTerms,
+          analysis.location.specified,
+          false,
+          config.maxResults
+        );
+
+        const domainSemanticPromise = hasEmbeddings
+          ? this.runSemanticSearch(fallbackTerms, analysis.location.specified)
+          : Promise.resolve([]);
+
+        [sqlResults, semanticResults] = await Promise.all([domainSqlPromise, domainSemanticPromise]);
+        console.log(`[ComprehensiveSearch] Domain fallback results - SQL: ${sqlResults.length}, Semantic: ${semanticResults.length}`);
+      }
+    }
 
     // Merge results with deduplication
     let { services, searchType } = await this.mergeResults(
