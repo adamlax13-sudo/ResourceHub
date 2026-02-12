@@ -18,6 +18,7 @@ import type {
 import { storage } from '../../storage';
 import OpenAI from 'openai';
 import type { QueryIntent, SubstanceType } from '../config';
+import { mergeForLiteView } from '../../helpers/enrichment';
 
 // Enhanced query result from OpenAI
 interface EnhancedQuery {
@@ -972,30 +973,56 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const enrichments = await storage.getEnrichmentsBatch(Array.from(allServiceIds));
 
     // Convert SQL results to lite services
-    // Prefer address over location for more complete info on cards
-    const sqlServices: LiteService[] = sqlResults.map(sr => ({
-      id: sr.serviceId,
-      name: sr.name,
-      category: enrichments.get(sr.serviceId)?.aiCategory || sr.category,
-      description: this.truncateDescription(
-        enrichments.get(sr.serviceId)?.aiDescription || sr.description
-      ),
-      location: sr.address || enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
-      waitTimes: enrichments.get(sr.serviceId)?.aiWaitTimes || sr.waitTimes || '',
-    }));
+    // Use "fill gaps only" logic: service data wins, AI only fills empty fields
+    const sqlServices: LiteService[] = sqlResults.map(sr => {
+      const enrichment = enrichments.get(sr.serviceId);
+      const merged = mergeForLiteView(
+        {
+          serviceId: sr.serviceId,
+          name: sr.name,
+          category: sr.category,
+          description: sr.description,
+          location: sr.location,
+          address: sr.address,
+          waitTimes: sr.waitTimes,
+        },
+        enrichment
+      );
+      return {
+        id: sr.serviceId,
+        name: sr.name,
+        category: merged.category,
+        description: this.truncateDescription(merged.description),
+        location: merged.location,
+        waitTimes: merged.waitTimes,
+      };
+    });
 
     // Convert semantic results to lite services
-    // Prefer address over location for more complete info on cards
-    const semanticServices: LiteService[] = semanticResults.map(sr => ({
-      id: sr.serviceId,
-      name: sr.name,
-      category: enrichments.get(sr.serviceId)?.aiCategory || sr.category,
-      description: this.truncateDescription(
-        enrichments.get(sr.serviceId)?.aiDescription || sr.description
-      ),
-      location: sr.address || enrichments.get(sr.serviceId)?.aiLocation || sr.location || '',
-      waitTimes: enrichments.get(sr.serviceId)?.aiWaitTimes || sr.waitTimes || '',
-    }));
+    // Use "fill gaps only" logic: service data wins, AI only fills empty fields
+    const semanticServices: LiteService[] = semanticResults.map(sr => {
+      const enrichment = enrichments.get(sr.serviceId);
+      const merged = mergeForLiteView(
+        {
+          serviceId: sr.serviceId,
+          name: sr.name,
+          category: sr.category,
+          description: sr.description,
+          location: sr.location,
+          address: sr.address,
+          waitTimes: sr.waitTimes,
+        },
+        enrichment
+      );
+      return {
+        id: sr.serviceId,
+        name: sr.name,
+        category: merged.category,
+        description: this.truncateDescription(merged.description),
+        location: merged.location,
+        waitTimes: merged.waitTimes,
+      };
+    });
 
     // Sort semantic results by location relevance if location specified
     let sortedSemantic = semanticServices;

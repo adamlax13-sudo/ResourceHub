@@ -170,5 +170,42 @@ export async function registerRoutes(
     }
   });
 
+  // Persist AI enrichments to services table (backfill job)
+  // This copies enrichment data to the services table for empty fields only,
+  // reducing future enrichment lookups and API calls
+  app.post("/api/admin/persist-enrichments", async (_req: Request, res: Response) => {
+    try {
+      const enrichments = await storage.getAllEnrichments();
+      let totalFieldsUpdated = 0;
+      let servicesUpdated = 0;
+
+      for (const enrichment of enrichments) {
+        const fieldsUpdated = await storage.persistEnrichmentToService(
+          enrichment.serviceId,
+          enrichment
+        );
+        if (fieldsUpdated > 0) {
+          totalFieldsUpdated += fieldsUpdated;
+          servicesUpdated++;
+        }
+      }
+
+      // Clear cache after updates so new searches reflect the changes
+      await storage.clearSearchCache();
+
+      console.log(`[Admin] Persisted enrichments: ${servicesUpdated} services updated, ${totalFieldsUpdated} total fields`);
+      res.json({
+        success: true,
+        message: `Persisted enrichments to ${servicesUpdated} services (${totalFieldsUpdated} fields total)`,
+        servicesUpdated,
+        totalFieldsUpdated,
+        enrichmentsProcessed: enrichments.length,
+      });
+    } catch (err) {
+      console.error("Persist enrichments error:", err);
+      res.status(500).json({ message: "Failed to persist enrichments" });
+    }
+  });
+
   return httpServer;
 }

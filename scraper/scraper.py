@@ -145,6 +145,42 @@ RATE_LIMIT_DELAY = 0.1
 # Utility Functions
 # =============================================================================
 
+def should_enrich_field(service: Service, field_name: str) -> bool:
+    """
+    Check if a field needs enrichment (is empty/null).
+    Returns True if the field is missing or empty and should be enriched.
+    This prevents overwriting existing data with AI-generated content.
+    """
+    value = getattr(service, field_name, None)
+    if value is None:
+        return True
+    if isinstance(value, str) and not value.strip():
+        return True
+    if isinstance(value, list) and len(value) == 0:
+        return True
+    return False
+
+
+def get_fields_needing_enrichment(service: Service) -> List[str]:
+    """
+    Get list of fields that need enrichment for a service.
+    Returns empty list if all fields are complete.
+    """
+    enrichable_fields = [
+        "description", "contact", "eligibility", "hours_of_operation",
+        "website_url", "process_steps", "required_docs", "tags"
+    ]
+    return [f for f in enrichable_fields if should_enrich_field(service, f)]
+
+
+def is_service_complete(service: Service) -> bool:
+    """
+    Check if a service has all critical fields populated.
+    If complete, no enrichment is needed.
+    """
+    critical_fields = ["description", "eligibility", "process_steps"]
+    return all(not should_enrich_field(service, f) for f in critical_fields)
+
 
 def init_openai() -> Optional[OpenAIClient]:
     """Initialize OpenAI client if available."""
@@ -348,8 +384,17 @@ def parse_discovery_results(client: OpenAIClient, raw_text: str, category: str, 
 
 
 def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
-    """Search 211 Alberta for service details."""
+    """Search 211 Alberta for service details.
+    Only enriches fields that are currently empty in the service."""
     try:
+        # Check which fields need enrichment
+        fields_needed = get_fields_needing_enrichment(service)
+        if not fields_needed:
+            logger.info(f"[Enrichment] Service '{service.name}' already complete, skipping 211 enrichment")
+            return None
+
+        logger.info(f"[Enrichment] Service '{service.name}' needs: {', '.join(fields_needed)}")
+
         response = client.responses.create(
             model="gpt-4o-mini",
             tools=[{"type": "web_search"}],
@@ -373,17 +418,35 @@ def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
             temperature=0.1,
         )
         data = json.loads(completion.choices[0].message.content)
+
+        # Only include fields that are (1) valid, (2) have data, and (3) are needed
         valid_fields = {"description", "contact", "hours_of_operation", "eligibility",
                        "website_url", "tags", "process_steps", "required_docs"}
-        return {k: v for k, v in data.items() if v and k in valid_fields} or None
+        needed_set = set(fields_needed)
+        return {k: v for k, v in data.items() if v and k in valid_fields and k in needed_set} or None
     except Exception as e:
         logger.error(f"Failed to enrich from 211: {e}")
         return None
 
 
 def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optional[Dict]:
-    """Search InformAlberta for service details."""
+    """Search InformAlberta for service details.
+    Only enriches fields that are currently empty in the service."""
     try:
+        # Check which fields need enrichment (extended list for InformAlberta)
+        enrichable_fields = [
+            "description", "contact", "eligibility", "hours_of_operation",
+            "website_url", "process_steps", "required_docs", "tags",
+            "address", "languages_supported", "service_format"
+        ]
+        fields_needed = [f for f in enrichable_fields if should_enrich_field(service, f)]
+
+        if not fields_needed:
+            logger.info(f"[Enrichment] Service '{service.name}' already complete, skipping InformAlberta enrichment")
+            return None
+
+        logger.info(f"[Enrichment] Service '{service.name}' needs from InformAlberta: {', '.join(fields_needed)}")
+
         response = client.responses.create(
             model="gpt-4o-mini",
             tools=[{"type": "web_search"}],
@@ -411,7 +474,10 @@ def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optiona
         valid_fields = {"description", "contact", "website_url", "address", "hours_of_operation",
                        "eligibility", "fees", "languages_supported", "tags", "process_steps",
                        "required_docs", "service_format"}
-        updates = {k: v for k, v in data.items() if v and k in valid_fields}
+        needed_set = set(fields_needed)
+
+        # Only include fields that are (1) valid, (2) have data, and (3) are needed
+        updates = {k: v for k, v in data.items() if v and k in valid_fields and k in needed_set}
 
         # Validate URL
         if updates.get("website_url"):

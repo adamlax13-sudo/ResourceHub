@@ -155,35 +155,58 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
     return [];
   };
 
-  // Use enrichment data if available, otherwise fall back to service data
-  const enrichmentSteps = parseArrayField(enrichment?.aiProcessSteps);
+  // "Fill gaps only" logic: service data wins, AI only fills empty fields
+  // This ensures existing data is NEVER overwritten by AI enrichment
+
+  // Process steps: service data wins
   const serviceSteps = parseArrayField(service.processSteps);
-  const processSteps = enrichmentSteps.length > 0 ? enrichmentSteps : serviceSteps;
+  const enrichmentSteps = parseArrayField(enrichment?.aiProcessSteps);
+  const processSteps = serviceSteps.length > 0 ? serviceSteps : enrichmentSteps;
 
-  const enrichmentDocs = parseArrayField(enrichment?.aiRequiredDocs);
+  // Required docs: service data wins
   const serviceDocs = parseArrayField(service.requiredDocs);
-  const requiredDocs = enrichmentDocs.length > 0 ? enrichmentDocs : serviceDocs;
+  const enrichmentDocs = parseArrayField(enrichment?.aiRequiredDocs);
+  const requiredDocs = serviceDocs.length > 0 ? serviceDocs : enrichmentDocs;
 
-  // Prefer address over location for more complete info
-  const displayLocation = service.address || enrichment?.aiLocation || service.location || '';
+  // Location: prefer address > location > AI location
+  const displayLocation = service.address || service.location || enrichment?.aiLocation || '';
 
-  // For expanded view, prefer original description (full text) over AI summary
-  // Only use AI description if original is missing/empty
+  // Description: service data wins (original full text over AI summary)
   const originalDesc = service.description || '';
   const aiDesc = enrichment?.aiDescription || '';
   const description = originalDesc.length > 0 ? originalDesc : aiDesc;
 
+  // Category: service data wins
+  const category = service.category?.trim()
+    ? service.category
+    : (enrichment?.aiCategory || service.category);
+
+  // Eligibility: service data wins
+  const eligibility = service.eligibility?.trim()
+    ? service.eligibility
+    : (enrichment?.aiEligibility || service.eligibility || '');
+
+  // Wait times: service data wins
+  const waitTimes = service.waitTimes?.trim()
+    ? service.waitTimes
+    : (enrichment?.aiWaitTimes || service.waitTimes || '');
+
+  // Contact: service data wins (phone or contact field)
+  const contact = (service.contact?.trim() || service.phone?.trim())
+    ? (service.contact || '')
+    : (enrichment?.aiContact || service.contact || '');
+
   return {
     id: service.serviceId,
     name: service.name,
-    category: enrichment?.aiCategory || service.category,
+    category,
     description,
     location: displayLocation,
-    contact: enrichment?.aiContact || service.contact || '',
+    contact,
     websiteUrl: service.websiteUrl || '',
-    eligibility: enrichment?.aiEligibility || service.eligibility || '',
+    eligibility,
     process: processSteps,
-    waitTimes: enrichment?.aiWaitTimes || service.waitTimes || '',
+    waitTimes,
     requiredDocs: requiredDocs,
     phone: service.phone || '',
     email: service.email || '',

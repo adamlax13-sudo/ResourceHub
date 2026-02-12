@@ -45,8 +45,17 @@ export function analyzeQuery(
 
   // Effective location: user-selected takes precedence over query-extracted
   // Handle comma-separated multiple locations
-  const effectiveLocation = userSelectedLocation?.trim().toLowerCase() ||
-    locationContext.specifiedLocation;
+  // Ensure we return null (not undefined or empty string) when no location is specified
+  // This makes the search Alberta-wide by default
+  const userLocation = userSelectedLocation?.trim().toLowerCase();
+  const effectiveLocation = (userLocation && userLocation.length > 0)
+    ? userLocation
+    : (locationContext.specifiedLocation || null);
+
+  // Debug log for location handling
+  if (!effectiveLocation) {
+    console.log(`[QueryAnalyzer] No location specified - searching Alberta-wide`);
+  }
 
   // Filter out location terms from keywords
   const keywords = rawKeywords.filter(kw =>

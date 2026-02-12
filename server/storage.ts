@@ -85,6 +85,12 @@ export interface IStorage {
     aiContact?: string | null;
   }): Promise<void>;
 
+  // Persist enrichment data to services table (fills empty fields only)
+  persistEnrichmentToService(serviceId: string, enrichment: AiServiceEnrichment): Promise<number>;
+
+  // Get all enrichments for backfill processing
+  getAllEnrichments(): Promise<AiServiceEnrichment[]>;
+
   // Search analytics and click tracking
   trackSearchClick(data: {
     query: string;
@@ -322,6 +328,52 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date(),
         },
       });
+  }
+
+  /**
+   * Persist enrichment data to the services table for empty fields only.
+   * This reduces future enrichment lookups by making service data complete.
+   * Returns the number of fields that were updated.
+   */
+  async persistEnrichmentToService(
+    serviceId: string,
+    enrichment: AiServiceEnrichment
+  ): Promise<number> {
+    // Import the helper here to avoid circular dependencies
+    const { buildEnrichmentUpdate } = await import('./helpers/enrichment');
+
+    // Fetch current service state
+    const [service] = await db.select().from(services)
+      .where(eq(services.serviceId, serviceId));
+
+    if (!service) {
+      console.warn(`[Enrichment] Service ${serviceId} not found, skipping persist`);
+      return 0;
+    }
+
+    // Build update object with only empty fields
+    const updates = buildEnrichmentUpdate(service, enrichment);
+
+    if (!updates) {
+      return 0;
+    }
+
+    // Update the service with enrichment data
+    await db.update(services)
+      .set({ ...updates, lastUpdated: new Date() })
+      .where(eq(services.serviceId, serviceId));
+
+    const fieldCount = Object.keys(updates).length;
+    console.log(`[Enrichment] Persisted ${fieldCount} fields to service ${serviceId}: ${Object.keys(updates).join(', ')}`);
+
+    return fieldCount;
+  }
+
+  /**
+   * Get all enrichments for backfill processing
+   */
+  async getAllEnrichments(): Promise<AiServiceEnrichment[]> {
+    return await db.select().from(aiServiceEnrichments);
   }
 
   // ============= SEARCH ANALYTICS & CLICK TRACKING =============
