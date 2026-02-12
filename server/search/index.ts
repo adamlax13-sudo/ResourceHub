@@ -5,6 +5,10 @@
  * Coordinates query analysis, strategy selection, and response formatting.
  */
 
+// Cache version - increment this to invalidate all cached search results
+// when making changes that affect search behavior
+const CACHE_VERSION = 'v2';
+
 import { SEARCH_CONFIG } from './config';
 import type {
   SearchInput,
@@ -67,14 +71,24 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   const analysis = analyzeQuery(input.query, input.location);
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${analysis.intent}, Location: ${analysis.location.specified || 'none'}`);
 
-  // Check cache - include substance type in key to bust cache for new boosting logic
+  // Check cache - include version and substance type in key to bust cache for new features
   const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
-  const cacheKey = buildCacheKey(analysis, 'comprehensive', databaseHash) + substanceKey;
+  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}`;
   const cached = await storage.getSearchByQuery(cacheKey);
   if (cached) {
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
-    return formatResponse(cachedResults.services, cachedResults.summary, input, startTime, true);
+    const services = [...cachedResults.services]; // Clone to avoid mutating cache
+
+    // Apply pinning even for cached results
+    if (analysis.isCrisis) {
+      pinCrisisService(services);
+    }
+    if (isPchadQuery(input.query)) {
+      pinPchadService(services);
+    }
+
+    return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
 
