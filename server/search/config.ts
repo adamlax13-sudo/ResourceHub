@@ -140,6 +140,67 @@ export const SEARCH_CONFIG = {
     },
   },
 
+  // === PCHAD (Protection of Children Abusing Drugs) ===
+  // Prioritize PCHAD when parents search for help with their child's addiction
+  pchad: {
+    // Patterns to detect parent/guardian seeking help for child's substance abuse
+    patterns: [
+      // Direct child + addiction patterns
+      /\b(my|our)\s+(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(addict|addiction|addicted|using|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin|pills?|overdose|OD)\b/i,
+      /\b(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(won'?t|will not|can'?t|cannot)\s+(stop|quit)\b.*\b(using|drugs?|drinking|smoking)\b/i,
+      /\b(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(drug|substance|addiction|addict)\b/i,
+      // Reverse order patterns (substance mentioned first)
+      /\b(addict|addiction|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin)\b.*\b(my|our)\s+(child|kid|son|daughter|teen|teenager|adolescent)\b/i,
+      /\b(help|support|treatment|intervention)\b.*\b(my|our)\s+(child|kid|son|daughter|teen|teenager)\b.*\b(addict|drug|substance)\b/i,
+      // PCHAD-specific searches
+      /\bpchad\b/i,
+      /\bprotection of children abusing drugs\b/i,
+      // Parent concern patterns
+      /\b(parent|mom|dad|mother|father|guardian)\b.*\b(help|support)\b.*\b(child|kid|son|daughter|teen)\b.*\b(addict|drug|substance)\b/i,
+      /\b(worried|scared|concerned|desperate)\b.*\b(my|our)\s+(child|kid|son|daughter|teen)\b.*\b(drug|addict|using|substance)\b/i,
+      // Youth intervention patterns
+      /\b(youth|minor|underage)\b.*\b(addict|addiction|drug|substance)\b.*\b(help|intervention|treatment)\b/i,
+      /\b(force|make|get)\b.*\b(my|our)\s+(child|kid|son|daughter|teen)\b.*\b(treatment|rehab|help)\b/i,
+    ],
+    pinnedServiceId: 'pchad-alberta',
+    pinnedServiceLite: {
+      id: 'pchad-alberta',
+      name: 'PCHAD - Protection of Children Abusing Drugs Program',
+      category: 'Youth Addiction Intervention',
+      description: 'Alberta program allowing parents/guardians to get a court order to place their child (under 18) in a protective safe house for up to 5 days for addiction assessment and treatment planning. Available 24/7.',
+      location: 'Alberta-wide',
+      waitTimes: '24/7 availability - Immediate response',
+    },
+    pinnedServiceFull: {
+      id: 'pchad-alberta',
+      name: 'PCHAD - Protection of Children Abusing Drugs Program',
+      category: 'Youth Addiction Intervention',
+      description: 'The Protection of Children Abusing Drugs (PCHAD) Act allows parents or guardians in Alberta to apply for a court order to confine their child (under 18 years old) in a protective safe house for up to 5 days. During this time, the child receives assessment, stabilization, and treatment planning for substance abuse. This program is designed for situations where a child\'s drug use poses a serious threat to their health and safety, and voluntary treatment has not been successful.',
+      location: 'Alberta-wide',
+      contact: 'Call 211 or contact Alberta Health Services',
+      websiteUrl: 'https://www.alberta.ca/protection-of-children-abusing-drugs-act',
+      eligibility: 'Parents or guardians of children under 18 years old who are abusing drugs or alcohol and whose substance use poses a serious risk to their safety',
+      process: [
+        'Contact a PCHAD coordinator through Alberta Health Services or call 211',
+        'Discuss your situation and determine if PCHAD is appropriate',
+        'If eligible, apply for a court order (can be done without the child present)',
+        'Once granted, the child is taken to a protective safe house',
+        'Child receives up to 5 days of assessment and stabilization',
+        'Treatment plan and aftercare recommendations are developed',
+        'Follow-up support and resources are provided to the family',
+      ],
+      waitTimes: '24/7 availability - Emergency applications can be processed quickly',
+      requiredDocs: [
+        'Proof of guardianship or parental status',
+        'Information about the child\'s substance use history',
+        'Any relevant medical or treatment records (if available)',
+      ],
+      phone: '211',
+      email: '',
+      address: 'Alberta-wide service - multiple locations',
+    },
+  },
+
   // === CACHE SETTINGS ===
   cache: {
     servicesCacheTTL: 5 * 60 * 1000,        // 5 minutes for services list

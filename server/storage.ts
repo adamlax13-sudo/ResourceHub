@@ -208,11 +208,14 @@ export class DatabaseStorage implements IStorage {
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
 
     // Build location filter - handle comma-separated multiple locations
-    let locationFilter = sql``;
-    if (location) {
+    // When no location is specified (Alberta-wide), we explicitly include all services
+    // by not adding any location restriction
+    let locationFilter: ReturnType<typeof sql>;
+
+    if (location && location.trim()) {
       const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       if (locations.length === 1) {
-        // Single location - original logic
+        // Single location - include specified location + province-wide services
         locationFilter = sql`AND (
           location ILIKE ${'%' + locations[0] + '%'}
           OR location ILIKE '%alberta%'
@@ -230,7 +233,14 @@ export class DatabaseStorage implements IStorage {
           OR location IS NULL
           OR location = ''
         )`;
+      } else {
+        // Empty locations array after filtering - Alberta-wide search
+        locationFilter = sql`AND TRUE`;
       }
+    } else {
+      // Alberta-wide search: no location restriction
+      // Use explicit AND TRUE to avoid empty SQL fragment issues
+      locationFilter = sql`AND TRUE`;
     }
 
     const result = await db.execute(sql`

@@ -16,6 +16,7 @@ import type {
 import { analyzeQuery, buildCacheKey } from './analyzer';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
+import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
@@ -86,6 +87,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     console.log(`[SearchOrchestrator] Crisis query - 988 pinned to top`);
   }
 
+  // Apply PCHAD pinning for parent/child addiction queries
+  if (isPchadQuery(input.query)) {
+    pinPchadService(result.services);
+    console.log(`[SearchOrchestrator] PCHAD query - Protection of Children Abusing Drugs pinned to top`);
+  }
+
   // Cache the results
   await storage.createSearch({
     query: cacheKey,
@@ -135,6 +142,11 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
   // Handle 988 crisis service specially
   if (isCrisisServiceId(serviceId)) {
     return getCrisisServiceFull();
+  }
+
+  // Handle PCHAD service specially
+  if (isPchadServiceId(serviceId)) {
+    return getPchadServiceFull();
   }
 
   const { service, enrichment } = await storage.getServiceById(serviceId);
@@ -218,4 +230,5 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
 export { SEARCH_CONFIG } from './config';
 export { analyzeQuery } from './analyzer';
 export { pinCrisisService, isCrisisQuery } from './crisis';
+export { pinPchadService, isPchadQuery } from './pchad';
 export type { SearchInput, SearchResponse, LiteService } from './types';
