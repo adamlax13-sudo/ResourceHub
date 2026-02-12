@@ -144,23 +144,24 @@ export const SEARCH_CONFIG = {
   // Prioritize PCHAD when parents search for help with their child's addiction
   pchad: {
     // Patterns to detect parent/guardian seeking help for child's substance abuse
+    // Note: (?:\w+\s+)* allows optional adjectives like "male", "young", "teenage" between my/our and child word
     patterns: [
-      // Direct child + addiction patterns
-      /\b(my|our)\s+(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(addict|addiction|addicted|using|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin|pills?|overdose|OD)\b/i,
+      // Direct child + addiction patterns (allows "my male teen", "my young son", etc.)
+      /\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(addict|addiction|addicted|using|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin|pills?|overdose|OD)\b/i,
       /\b(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(won'?t|will not|can'?t|cannot)\s+(stop|quit)\b.*\b(using|drugs?|drinking|smoking)\b/i,
       /\b(child|kid|son|daughter|teen|teenager|adolescent)\b.*\b(drug|substance|addiction|addict)\b/i,
       // Reverse order patterns (substance mentioned first)
-      /\b(addict|addiction|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin)\b.*\b(my|our)\s+(child|kid|son|daughter|teen|teenager|adolescent)\b/i,
-      /\b(help|support|treatment|intervention)\b.*\b(my|our)\s+(child|kid|son|daughter|teen|teenager)\b.*\b(addict|drug|substance)\b/i,
+      /\b(addict|addiction|drugs?|substance|fent|fentanyl|meth|cocaine|opioid|heroin)\b.*\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen|teenager|adolescent)\b/i,
+      /\b(help|support|treatment|intervention)\b.*\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen|teenager)\b.*\b(addict|drug|substance)\b/i,
       // PCHAD-specific searches
       /\bpchad\b/i,
       /\bprotection of children abusing drugs\b/i,
       // Parent concern patterns
       /\b(parent|mom|dad|mother|father|guardian)\b.*\b(help|support)\b.*\b(child|kid|son|daughter|teen)\b.*\b(addict|drug|substance)\b/i,
-      /\b(worried|scared|concerned|desperate)\b.*\b(my|our)\s+(child|kid|son|daughter|teen)\b.*\b(drug|addict|using|substance)\b/i,
+      /\b(worried|scared|concerned|desperate)\b.*\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen)\b.*\b(drug|addict|using|substance)\b/i,
       // Youth intervention patterns
       /\b(youth|minor|underage)\b.*\b(addict|addiction|drug|substance)\b.*\b(help|intervention|treatment)\b/i,
-      /\b(force|make|get)\b.*\b(my|our)\s+(child|kid|son|daughter|teen)\b.*\b(treatment|rehab|help)\b/i,
+      /\b(force|make|get)\b.*\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen)\b.*\b(treatment|rehab|help)\b/i,
     ],
     pinnedServiceId: 'pchad-alberta',
     pinnedServiceLite: {
