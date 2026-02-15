@@ -229,6 +229,13 @@ function detectDomainIntent(query: string): QueryIntent | null {
     return 'mental_health';
   }
 
+  // Check disability/neurodivergent indicators - route to mental_health for support services
+  // Many disability queries need counselling, support groups, or specialized mental health services
+  if (categoryIndicators.disability?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via disability indicator)`);
+    return 'mental_health';
+  }
+
   // Check domestic violence indicators
   const hasDVIndicator = categoryIndicators.domestic_violence.some(p => p.test(q));
   // DV needs both relationship terms AND violence/safety terms

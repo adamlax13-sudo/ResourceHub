@@ -288,6 +288,14 @@ export const SEARCH_CONFIG = {
       /(?:can'?t cope|breaking down|falling apart|at my wit'?s end)/i,
       /(?:completely alone|nobody understands|no one to talk)/i,
       /(?:don'?t know what to do|at a loss|losing it)/i,
+      // Social isolation and friendship difficulties
+      /(?:can'?t|cannot|don'?t|hard to).*(?:make|keep|have).*(?:friends|friendships|connections)/i,
+      /(?:no friends|have no friends|friendless|alone|no one to talk)/i,
+      /(?:socially|social).*(?:awkward|anxious|isolated|struggling)/i,
+      // Disability and neurodivergent support patterns
+      /\b(?:i'?m|i am|i have|diagnosed with)\s*(?:autistic|autism|ASD|ADHD|ADD|aspergers?)\b/i,
+      /\b(?:autistic|autism|ADHD|ADD|aspergers?)\s*(?:and|support|help|services|therapy|counselling)\b/i,
+      /\b(?:disability|disabled|neurodivergent)\s*(?:support|services|help|resources)\b/i,
     ],
   },
 
@@ -367,6 +375,29 @@ export const SEARCH_CONFIG = {
       /\b(antidepressant|ssri|zoloft|prozac|lexapro|wellbutrin|seroquel|lithium)\b/i,
       /\b(hopeless|worthless|empty|numb|crying|overwhelmed|stressed)\b/i,
       /\b(sleep.*(?:problem|issue|can'?t)|insomnia|nightmare)\b/i,
+      // Social isolation and loneliness
+      /\b(lonely|loneliness|isolated|isolation|no.*friends|can'?t.*make.*friends|socially.*awkward)\b/i,
+      /\b(don'?t.*have.*friends|have.*no.*friends|friendless|no.*social.*(?:life|connections?|skills?))\b/i,
+      /\b(social.*anxiety|social.*phobia|social.*skills|social.*difficulties)\b/i,
+    ],
+    // Disability and neurodivergent conditions (often need specialized support)
+    disability: [
+      // Neurodivergent conditions
+      /\b(autis|autism|autistic|ASD|asperger|aspie|neurodivergent|neurodiverse|on the spectrum)\b/i,
+      /\b(ADHD|ADD|attention deficit|hyperactiv|executive function)\b/i,
+      /\b(dyslexia|dyslexic|dyscalculia|dyspraxia|learning.*disabilit|learning.*disorder)\b/i,
+      /\b(sensory.*processing|sensory.*issues|sensory.*overload|overstimulat)\b/i,
+      // Developmental disabilities
+      /\b(developmental.*delay|developmental.*disabilit|intellectual.*disabilit|down.*syndrome)\b/i,
+      /\b(FASD|fetal.*alcohol|FAS\b)\b/i,
+      // Physical disabilities
+      /\b(disabilit|disabled|handicap|wheelchair|mobility.*issue|mobility.*impair)\b/i,
+      /\b(blind|visually.*impair|deaf|hearing.*impair|hard.*of.*hearing)\b/i,
+      /\b(paralyz|parapleg|quadripleg|amputee|prosthetic)\b/i,
+      // Chronic conditions that affect daily functioning
+      /\b(chronic.*fatigue|fibromyalgia|chronic.*pain|chronic.*illness)\b/i,
+      // Support and services
+      /\b(AISH|PDD|disability.*services|accessibility|accommodations?|adaptive)\b/i,
     ],
     // Domestic violence terms
     domestic_violence: [
