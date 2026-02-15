@@ -19,6 +19,13 @@ import { storage } from '../../storage';
 import OpenAI from 'openai';
 import type { QueryIntent, SubstanceType } from '../config';
 import { mergeForLiteView } from '../../helpers/enrichment';
+import { LRUCache } from 'lru-cache';
+
+// LRU cache for query embeddings - avoids repeated OpenAI API calls
+const embeddingCache = new LRUCache<string, number[]>({
+  max: 500,                      // Max 500 cached embeddings
+  ttl: 1000 * 60 * 60 * 24,      // 24 hour TTL
+});
 
 // Enhanced query result from OpenAI
 interface EnhancedQuery {
@@ -55,12 +62,29 @@ async function checkEmbeddingsAvailable(): Promise<boolean> {
 }
 
 async function generateQueryEmbedding(query: string): Promise<number[]> {
+  // Normalize the query for cache key
+  const cacheKey = query.toLowerCase().trim();
+
+  // Check cache first
+  const cached = embeddingCache.get(cacheKey);
+  if (cached) {
+    console.log(`[Embedding] Cache HIT for: "${cacheKey.substring(0, 40)}..."`);
+    return cached;
+  }
+
+  // Generate new embedding
   const openai = getOpenAI();
   const response = await openai.embeddings.create({
     model: SEARCH_CONFIG.semantic.model,
     input: query,
   });
-  return response.data[0].embedding;
+  const embedding = response.data[0].embedding;
+
+  // Store in cache
+  embeddingCache.set(cacheKey, embedding);
+  console.log(`[Embedding] Cache MISS, stored: "${cacheKey.substring(0, 40)}..."`);
+
+  return embedding;
 }
 
 /**
@@ -875,64 +899,73 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Check if this is a domain-specific intent that needs OpenAI query enhancement
     const isDomainIntent = ['domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse', 'mental_health'].includes(analysis.intent);
 
-    // For domain intents, use OpenAI to get better search terms
-    let enhancedQuery: EnhancedQuery | null = null;
-    let searchQuery = analysis.raw;
-
-    if (isDomainIntent && config.useOpenAI) {
-      enhancedQuery = await enhanceQueryWithOpenAI(analysis.raw);
-      if (enhancedQuery) {
-        // Use the enhanced keywords for search
-        searchQuery = enhancedQuery.keywords.join(' ');
-      }
-    }
-
-    // Check if embeddings are available
+    // Check if embeddings are available (cached after first check)
     const hasEmbeddings = await checkEmbeddingsAvailable();
 
-    // Run SQL and semantic search in parallel
-    // For domain intents, search with enhanced keywords
-    if (enhancedQuery) {
-      console.log(`[ComprehensiveSearch] Enhanced keywords: ${enhancedQuery.keywords.join(', ')}`);
-    }
+    // ============= PARALLEL EXECUTION =============
+    // Run SQL search, semantic search, and OpenAI enhancement ALL IN PARALLEL
+    // This saves 200-500ms compared to waiting for OpenAI before searching
 
     const sqlPromise = storage.fastSearch(
-      searchQuery,
+      analysis.raw,  // Use raw query for initial search
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults
     );
 
-    // For semantic search, use the rewritten query if available (more natural language)
-    const semanticQuery = enhancedQuery ? enhancedQuery.rewritten : analysis.raw;
     const semanticPromise = hasEmbeddings
-      ? this.runSemanticSearch(semanticQuery, analysis.location.specified)
+      ? this.runSemanticSearch(analysis.raw, analysis.location.specified)
       : Promise.resolve([]);
 
-    let [sqlResults, semanticResults] = await Promise.all([sqlPromise, semanticPromise]);
+    // OpenAI enhancement runs in parallel - no longer blocks initial search!
+    const enhancePromise = (isDomainIntent && config.useOpenAI)
+      ? enhanceQueryWithOpenAI(analysis.raw)
+      : Promise.resolve(null);
 
-    console.log(`[ComprehensiveSearch] SQL: ${sqlResults.length}, Semantic: ${semanticResults.length} in ${Date.now() - startTime}ms`);
+    // Wait for all three to complete
+    let [sqlResults, semanticResults, enhancedQuery] = await Promise.all([
+      sqlPromise,
+      semanticPromise,
+      enhancePromise,
+    ]);
 
-    // FALLBACK: If enhanced query returned 0 results, try with original query
-    if (sqlResults.length === 0 && semanticResults.length === 0 && enhancedQuery && searchQuery !== analysis.raw) {
-      console.log(`[ComprehensiveSearch] Enhanced query returned 0 results, falling back to original query`);
+    console.log(`[ComprehensiveSearch] Initial (parallel): SQL=${sqlResults.length}, Semantic=${semanticResults.length} in ${Date.now() - startTime}ms`);
 
-      const fallbackSqlPromise = storage.fastSearch(
-        analysis.raw,
-        analysis.location.specified,
-        analysis.intent === 'location_only',
-        config.maxResults
-      );
-
-      const fallbackSemanticPromise = hasEmbeddings
-        ? this.runSemanticSearch(analysis.raw, analysis.location.specified)
-        : Promise.resolve([]);
-
-      [sqlResults, semanticResults] = await Promise.all([fallbackSqlPromise, fallbackSemanticPromise]);
-      console.log(`[ComprehensiveSearch] Fallback results - SQL: ${sqlResults.length}, Semantic: ${semanticResults.length}`);
+    // Log enhanced keywords if available
+    if (enhancedQuery) {
+      console.log(`[ComprehensiveSearch] Enhanced keywords: ${enhancedQuery.keywords.join(', ')}`);
     }
 
-    // FALLBACK 2: If still no results for domain intents, try broad domain terms
+    // ============= SUPPLEMENTARY SEARCH =============
+    // If initial results are poor AND we have enhanced keywords, do a supplementary search
+    const needsSupplementary = (sqlResults.length < 5 || semanticResults.length < 3) && enhancedQuery;
+
+    if (needsSupplementary && enhancedQuery) {
+      const supplementaryQuery = enhancedQuery.keywords.join(' ');
+      console.log(`[ComprehensiveSearch] Running supplementary search with enhanced keywords`);
+
+      const [extraSql, extraSemantic] = await Promise.all([
+        storage.fastSearch(supplementaryQuery, analysis.location.specified, false, 30),
+        hasEmbeddings ? this.runSemanticSearch(enhancedQuery.rewritten, analysis.location.specified) : Promise.resolve([]),
+      ]);
+
+      // Merge supplementary results (deduplicated)
+      const existingIds = new Set([
+        ...sqlResults.map(r => r.serviceId),
+        ...semanticResults.map(r => r.serviceId)
+      ]);
+
+      const newSql = extraSql.filter(r => !existingIds.has(r.serviceId));
+      const newSemantic = extraSemantic.filter(r => !existingIds.has(r.serviceId));
+
+      sqlResults = [...sqlResults, ...newSql];
+      semanticResults = [...semanticResults, ...newSemantic];
+
+      console.log(`[ComprehensiveSearch] After supplementary: SQL=${sqlResults.length}, Semantic=${semanticResults.length}`);
+    }
+
+    // ============= FALLBACK: Domain-specific terms =============
+    // If still no results for domain intents, try broad domain terms
     if (sqlResults.length === 0 && semanticResults.length === 0 && isDomainIntent) {
       const domainFallbackTerms: Record<string, string> = {
         'substance_abuse': 'addiction treatment recovery support',
@@ -944,21 +977,16 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
       const fallbackTerms = domainFallbackTerms[analysis.intent];
       if (fallbackTerms) {
-        console.log(`[ComprehensiveSearch] Still 0 results, trying domain fallback: "${fallbackTerms}"`);
+        console.log(`[ComprehensiveSearch] Zero results, trying domain fallback: "${fallbackTerms}"`);
 
-        const domainSqlPromise = storage.fastSearch(
-          fallbackTerms,
-          analysis.location.specified,
-          false,
-          config.maxResults
-        );
+        const [domainSql, domainSemantic] = await Promise.all([
+          storage.fastSearch(fallbackTerms, analysis.location.specified, false, config.maxResults),
+          hasEmbeddings ? this.runSemanticSearch(fallbackTerms, analysis.location.specified) : Promise.resolve([]),
+        ]);
 
-        const domainSemanticPromise = hasEmbeddings
-          ? this.runSemanticSearch(fallbackTerms, analysis.location.specified)
-          : Promise.resolve([]);
-
-        [sqlResults, semanticResults] = await Promise.all([domainSqlPromise, domainSemanticPromise]);
-        console.log(`[ComprehensiveSearch] Domain fallback results - SQL: ${sqlResults.length}, Semantic: ${semanticResults.length}`);
+        sqlResults = domainSql;
+        semanticResults = domainSemantic;
+        console.log(`[ComprehensiveSearch] Domain fallback results: SQL=${sqlResults.length}, Semantic=${semanticResults.length}`);
       }
     }
 

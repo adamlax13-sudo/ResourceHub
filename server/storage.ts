@@ -129,6 +129,14 @@ export interface IStorage {
 
   // Clear search cache (call after service changes)
   clearSearchCache(): Promise<void>;
+
+  // ============= PRECOMPUTED SEARCH CACHE =============
+  getPrecomputedSearch(queryNormalized: string): Promise<{ results: any[]; resultCount: number } | null>;
+  savePrecomputedSearch(queryNormalized: string, results: any[], resultCount: number): Promise<void>;
+
+  // ============= FAILED QUERY LOGGING =============
+  logFailedQuery(data: { query: string; queryNormalized: string; intent: string; location?: string | null }): Promise<void>;
+  getTopFailedQueries(limit?: number): Promise<{ query: string; queryNormalized: string; intent: string; location: string | null; count: number; firstSeen: Date; lastSeen: Date }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -406,12 +414,13 @@ export class DatabaseStorage implements IStorage {
       userAgent: data.userAgent || null,
     });
 
-    // If a service was clicked, increment its click count
+    // If a service was clicked, increment its click count and update last_clicked
     if (data.clickedServiceId) {
       await db
         .update(services)
         .set({
           clickCount: sql`COALESCE(${services.clickCount}, 0) + 1`,
+          lastUpdated: new Date(), // Also track when last clicked for recency
         })
         .where(eq(services.serviceId, data.clickedServiceId));
     }
@@ -692,6 +701,112 @@ export class DatabaseStorage implements IStorage {
       console.log('[Search] Search cache cleared');
     } catch (err) {
       console.warn('[Search] Failed to clear search cache:', err);
+    }
+  }
+
+  // ============= PRECOMPUTED SEARCH CACHE =============
+
+  /**
+   * Get precomputed search results for popular queries
+   * Returns null if not found or stale (>24 hours old)
+   */
+  async getPrecomputedSearch(queryNormalized: string): Promise<{ results: any[]; resultCount: number } | null> {
+    try {
+      const result = await db.execute(sql`
+        SELECT results, result_count
+        FROM precomputed_searches
+        WHERE query_normalized = ${queryNormalized.toLowerCase().trim()}
+          AND computed_at > NOW() - INTERVAL '24 hours'
+      `);
+
+      if (result.rows.length === 0) return null;
+
+      const row = result.rows[0] as any;
+      return {
+        results: row.results,
+        resultCount: row.result_count,
+      };
+    } catch {
+      // Table may not exist yet
+      return null;
+    }
+  }
+
+  /**
+   * Save precomputed search results
+   */
+  async savePrecomputedSearch(queryNormalized: string, results: any[], resultCount: number): Promise<void> {
+    try {
+      await db.execute(sql`
+        INSERT INTO precomputed_searches (query_normalized, results, result_count, computed_at)
+        VALUES (${queryNormalized.toLowerCase().trim()}, ${JSON.stringify(results)}, ${resultCount}, NOW())
+        ON CONFLICT (query_normalized) DO UPDATE SET
+          results = EXCLUDED.results,
+          result_count = EXCLUDED.result_count,
+          computed_at = NOW()
+      `);
+    } catch (err) {
+      console.warn('[PrecomputedSearch] Failed to save:', err);
+    }
+  }
+
+  // ============= FAILED QUERY LOGGING =============
+
+  /**
+   * Log a query that returned zero results
+   * Increments count if query already exists
+   */
+  async logFailedQuery(data: {
+    query: string;
+    queryNormalized: string;
+    intent: string;
+    location?: string | null;
+  }): Promise<void> {
+    try {
+      await db.execute(sql`
+        INSERT INTO failed_queries (query, query_normalized, intent, location)
+        VALUES (${data.query}, ${data.queryNormalized}, ${data.intent}, ${data.location || null})
+        ON CONFLICT (query_normalized, COALESCE(location, '')) DO UPDATE SET
+          count = failed_queries.count + 1,
+          last_seen = NOW()
+      `);
+    } catch (err) {
+      // Table may not exist yet - silently fail
+      console.warn('[FailedQuery] Failed to log:', err);
+    }
+  }
+
+  /**
+   * Get top failed queries for analysis
+   */
+  async getTopFailedQueries(limit: number = 50): Promise<{
+    query: string;
+    queryNormalized: string;
+    intent: string;
+    location: string | null;
+    count: number;
+    firstSeen: Date;
+    lastSeen: Date;
+  }[]> {
+    try {
+      const result = await db.execute(sql`
+        SELECT query, query_normalized, intent, location, count, first_seen, last_seen
+        FROM failed_queries
+        ORDER BY count DESC, last_seen DESC
+        LIMIT ${limit}
+      `);
+
+      return (result.rows as any[]).map(row => ({
+        query: row.query,
+        queryNormalized: row.query_normalized,
+        intent: row.intent,
+        location: row.location,
+        count: row.count,
+        firstSeen: row.first_seen,
+        lastSeen: row.last_seen,
+      }));
+    } catch {
+      return [];
     }
   }
 }

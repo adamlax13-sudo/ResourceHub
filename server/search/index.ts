@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -18,6 +18,7 @@ import type {
   SearchType,
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
+import { normalizeForCache } from '../helpers/keywords';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
@@ -64,6 +65,28 @@ async function getDatabaseHash(): Promise<string> {
 export async function search(input: SearchInput): Promise<SearchResponse> {
   const startTime = Date.now();
 
+  // Normalize query for precomputed cache lookup
+  const normalizedQuery = normalizeForCache(input.query);
+
+  // ============= CHECK PRECOMPUTED CACHE FIRST =============
+  // Popular queries have precomputed results for instant response (<10ms)
+  const precomputed = await storage.getPrecomputedSearch(normalizedQuery);
+  if (precomputed && precomputed.results.length > 0) {
+    console.log(`[SearchOrchestrator] Precomputed HIT for: "${normalizedQuery}" (${precomputed.resultCount} results)`);
+    const services = [...precomputed.results] as LiteService[];
+
+    // Still apply pinning for precomputed results
+    const analysis = analyzeQuery(input.query, input.location);
+    if (analysis.isCrisis) {
+      pinCrisisService(services);
+    }
+    if (isPchadQuery(input.query)) {
+      pinPchadService(services);
+    }
+
+    return formatResponse(services, '', input, startTime, true);
+  }
+
   // Get database hash for cache key
   const databaseHash = await getDatabaseHash();
 
@@ -71,7 +94,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   const analysis = analyzeQuery(input.query, input.location);
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${analysis.intent}, Location: ${analysis.location.specified || 'none'}`);
 
-  // Check cache - include version and substance type in key to bust cache for new features
+  // Check regular cache - include version and substance type in key to bust cache for new features
   const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
   const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}`;
   const cached = await storage.getSearchByQuery(cacheKey);
@@ -105,6 +128,18 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (isPchadQuery(input.query)) {
     pinPchadService(result.services);
     console.log(`[SearchOrchestrator] PCHAD query - Protection of Children Abusing Drugs pinned to top`);
+  }
+
+  // ============= LOG FAILED QUERIES =============
+  // Track zero-result queries for analysis and coverage improvement
+  if (result.services.length === 0) {
+    storage.logFailedQuery({
+      query: input.query,
+      queryNormalized: analysis.normalized,
+      intent: analysis.intent,
+      location: input.location,
+    }).catch(() => {}); // Fire and forget, don't block response
+    console.log(`[SearchOrchestrator] Zero results - logged as failed query`);
   }
 
   // Cache the results
