@@ -459,8 +459,16 @@ function detectServiceSubstanceType(name: string, description: string, category:
   const text = `${name} ${description} ${category}`.toLowerCase();
   const indicators = SEARCH_CONFIG.serviceSubstanceIndicators;
 
+  // EXCLUDE family support services from alcohol matching
+  // These help family members of people with addiction, NOT the person seeking help:
+  // - Al-Anon: Support for families/friends of alcoholics
+  // - Adult Children of Alcoholics: Support for people whose parents had alcohol problems
+  // - FASD services: Support for Fetal Alcohol Spectrum Disorder
+  const isFamilySupportService = /\b(al-?anon|adult\s*children\s*of\s*alcoholic|fetal\s*alcohol|fasd\b|family\s*groups?\b.*alcohol)/i.test(text);
+
   // Check specific substances first (more specific = higher priority)
-  if (indicators.alcohol.test(text)) return 'alcohol';
+  // Skip alcohol match if this is a family support service
+  if (!isFamilySupportService && indicators.alcohol.test(text)) return 'alcohol';
   if (indicators.opioid.test(text)) return 'opioid';
   if (indicators.stimulant.test(text)) return 'stimulant';
   if (indicators.cannabis.test(text)) return 'cannabis';
