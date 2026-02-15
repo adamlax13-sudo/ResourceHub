@@ -9,6 +9,18 @@ import type { SearchType, QueryIntent, SubstanceType } from './config';
 // Re-export types from config for convenience
 export type { SearchType, QueryIntent, SubstanceType };
 
+// === SESSION CONTEXT ===
+
+/** Session context for personalized search */
+export interface SessionContext {
+  sessionId: string;
+  previousQueries: string[];
+  selectedLocation?: string;
+  clickedServiceIds: string[];
+  clickedCategories: string[];
+  lastSearchTime?: number;
+}
+
 // === INPUT TYPES ===
 
 export interface SearchInput {
@@ -16,6 +28,8 @@ export interface SearchInput {
   location?: string;
   page: number;
   pageSize: number;
+  /** Optional session context for personalization */
+  session?: SessionContext;
 }
 
 // === QUERY ANALYSIS ===
@@ -42,6 +56,8 @@ export interface QueryAnalysis {
   aliasMatch: string | null;
   /** Detected specific substance type for substance_abuse intent */
   substanceType: SubstanceType;
+  /** Terms user wants to exclude (e.g., "not religious" -> ["religious"]) */
+  negativeTerms: string[];
 }
 
 // === SERVICE TYPES ===

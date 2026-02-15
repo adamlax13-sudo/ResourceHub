@@ -19,6 +19,7 @@ import {
   correctTypos,
   expandKeywords,
   stem,
+  correctQueryPhonetic,
 } from '../helpers/keywords';
 
 /**
@@ -29,13 +30,22 @@ export function analyzeQuery(
   query: string,
   userSelectedLocation?: string | null
 ): QueryAnalysis {
-  // Normalize and correct typos
+  // Normalize and correct typos (Levenshtein-based)
   const { corrected, corrections } = correctTypos(query);
   if (corrections.length > 0) {
     console.log(`[QueryAnalyzer] Typo corrections: ${corrections.join(', ')}`);
   }
 
-  const normalized = normalizeForCache(corrected);
+  // Apply phonetic corrections (catches "fud bank" → "food bank")
+  const { corrected: phoneticCorrected, corrections: phoneticCorrections } = correctQueryPhonetic(corrected);
+  if (phoneticCorrections.length > 0) {
+    console.log(`[QueryAnalyzer] Phonetic corrections: ${phoneticCorrections.join(', ')}`);
+  }
+
+  const normalized = normalizeForCache(phoneticCorrected);
+
+  // Extract negative terms (words user wants to exclude)
+  const negativeTerms = extractNegativeTerms(query);
 
   // Extract keywords (non-stop words, non-location terms)
   const rawKeywords = extractKeywords(corrected);
@@ -89,6 +99,7 @@ export function analyzeQuery(
     isCrisis,
     aliasMatch,
     substanceType,
+    negativeTerms,
   };
 }
 
@@ -339,6 +350,45 @@ export function getStemmedKeywords(keywords: string[]): Set<string> {
     }
   }
   return stemmed;
+}
+
+/**
+ * Extract negative terms from query (words user wants to exclude)
+ * Handles patterns like "not X", "without X", "no X", "except X"
+ */
+function extractNegativeTerms(query: string): string[] {
+  const negatives: string[] = [];
+  const q = query.toLowerCase();
+
+  // Patterns: "not X", "without X", "no X", "except X", "excluding X", "avoid X"
+  const patterns = [
+    /\b(?:not|without|except|excluding|avoid)\s+(\w+)/gi,
+    /\bno\s+(\w+)(?:\s+(?:services?|programs?|places?))?/gi,  // "no religious services"
+  ];
+
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(q)) !== null) {
+      const term = match[1].toLowerCase();
+      // Skip common false positives
+      if (!['one', 'way', 'idea', 'more', 'longer', 'problem'].includes(term)) {
+        negatives.push(term);
+      }
+    }
+  }
+
+  // Handle "X-free" patterns: "drug-free", "alcohol-free"
+  const freePattern = /\b(\w+)[- ]free\b/gi;
+  let match;
+  while ((match = freePattern.exec(q)) !== null) {
+    negatives.push(match[1].toLowerCase());
+  }
+
+  if (negatives.length > 0) {
+    console.log(`[QueryAnalyzer] Negative terms detected: ${negatives.join(', ')}`);
+  }
+
+  return negatives;
 }
 
 // Re-export types for convenience

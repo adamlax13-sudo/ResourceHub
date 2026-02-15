@@ -809,6 +809,162 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
+
+  // ============= QUERY-SERVICE AFFINITY =============
+
+  /**
+   * Get affinity scores for services based on historical query performance
+   * Returns services that users have clicked on for similar queries
+   */
+  async getQueryAffinities(
+    queryPattern: string,
+    serviceIds: string[]
+  ): Promise<Array<{ serviceId: string; affinityScore: number }>> {
+    if (serviceIds.length === 0) return [];
+
+    try {
+      const result = await db.execute(sql`
+        SELECT service_id, affinity_score
+        FROM query_service_affinity
+        WHERE query_pattern = ${queryPattern}
+          AND service_id = ANY(${serviceIds})
+          AND affinity_score > 0.1
+        ORDER BY affinity_score DESC
+        LIMIT 20
+      `);
+
+      return (result.rows as any[]).map(r => ({
+        serviceId: r.service_id as string,
+        affinityScore: r.affinity_score as number,
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Record a click on a service for a given query pattern
+   * Builds affinity over time
+   */
+  async recordQueryClick(queryPattern: string, serviceId: string): Promise<void> {
+    try {
+      await db.execute(sql`SELECT update_query_affinity(${queryPattern}, ${serviceId})`);
+    } catch (err) {
+      console.warn('[Affinity] Failed to record click:', err);
+    }
+  }
+
+  /**
+   * Record impressions for services appearing in search results
+   */
+  async recordQueryImpressions(queryPattern: string, serviceIds: string[]): Promise<void> {
+    if (serviceIds.length === 0) return;
+    try {
+      await db.execute(sql`SELECT record_query_impressions(${queryPattern}, ${serviceIds})`);
+    } catch (err) {
+      console.warn('[Affinity] Failed to record impressions:', err);
+    }
+  }
+
+  /**
+   * Recompute all affinity scores (run periodically)
+   */
+  async computeAffinityScores(): Promise<void> {
+    try {
+      await db.execute(sql`SELECT compute_affinity_scores()`);
+      console.log('[Affinity] Recomputed affinity scores');
+    } catch (err) {
+      console.warn('[Affinity] Failed to compute scores:', err);
+    }
+  }
+
+  // ============= SEARCH QUALITY METRICS =============
+
+  /**
+   * Record a new search for quality tracking
+   * Returns the metric ID for later updates
+   */
+  async recordSearchQuality(data: {
+    sessionId?: string;
+    query: string;
+    queryNormalized: string;
+    resultCount: number;
+  }): Promise<number | null> {
+    try {
+      const result = await db.execute(sql`
+        INSERT INTO search_quality_metrics (session_id, query, query_normalized, result_count)
+        VALUES (${data.sessionId || null}, ${data.query}, ${data.queryNormalized}, ${data.resultCount})
+        RETURNING id
+      `);
+      return (result.rows[0] as any)?.id || null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Update search quality metrics (e.g., when user clicks)
+   */
+  async updateSearchQuality(id: number, data: {
+    firstClickPosition?: number;
+    clickCount?: number;
+    dwellTimeMs?: number;
+    reformulated?: boolean;
+  }): Promise<void> {
+    try {
+      const updates: string[] = [];
+      if (data.firstClickPosition !== undefined) {
+        updates.push(`first_click_position = ${data.firstClickPosition}`);
+      }
+      if (data.clickCount !== undefined) {
+        updates.push(`click_count = ${data.clickCount}`);
+      }
+      if (data.dwellTimeMs !== undefined) {
+        updates.push(`dwell_time_ms = ${data.dwellTimeMs}`);
+      }
+      if (data.reformulated !== undefined) {
+        updates.push(`reformulated = ${data.reformulated}`);
+      }
+
+      if (updates.length > 0) {
+        await db.execute(sql.raw(`
+          UPDATE search_quality_metrics
+          SET ${updates.join(', ')}
+          WHERE id = ${id}
+        `));
+      }
+    } catch (err) {
+      console.warn('[Quality] Failed to update metrics:', err);
+    }
+  }
+
+  /**
+   * Get search quality report for the last N days
+   */
+  async getSearchQualityReport(days: number = 7): Promise<{
+    totalSearches: number;
+    avgFirstClickPosition: number;
+    reformulationRate: number;
+    zeroResultRate: number;
+  }> {
+    try {
+      const result = await db.execute(sql`SELECT * FROM get_search_quality_report(${days})`);
+      const row = result.rows[0] as any;
+      return {
+        totalSearches: Number(row?.total_searches) || 0,
+        avgFirstClickPosition: Number(row?.avg_first_click) || 0,
+        reformulationRate: Number(row?.reformulation_rate) || 0,
+        zeroResultRate: Number(row?.zero_result_rate) || 0,
+      };
+    } catch {
+      return {
+        totalSearches: 0,
+        avgFirstClickPosition: 0,
+        reformulationRate: 0,
+        zeroResultRate: 0,
+      };
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

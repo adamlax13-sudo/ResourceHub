@@ -290,3 +290,167 @@ export function classifyQueryIntent(query: string): QueryIntent {
 
   return 'general';
 }
+
+// ============= PHONETIC MATCHING =============
+// Catches typos that sound right but are spelled wrong (e.g., "fud bank" → "food bank")
+
+// Phonetic substitution rules for social services domain
+const PHONETIC_SUBSTITUTIONS: [RegExp, string][] = [
+  // Common phonetic equivalents
+  [/ph/g, 'f'],
+  [/gh/g, 'f'],
+  [/ck/g, 'k'],
+  [/cc/g, 'k'],
+  [/qu/g, 'k'],
+  [/tion/g, 'shn'],
+  [/sion/g, 'zhn'],
+  [/dge/g, 'j'],
+  [/tch/g, 'ch'],
+  [/wr/g, 'r'],
+  [/kn/g, 'n'],
+  [/gn/g, 'n'],
+  [/pn/g, 'n'],
+  [/wh/g, 'w'],
+  [/mb/g, 'm'],
+  [/sce/g, 'se'],
+  [/sci/g, 'si'],
+  // Vowel normalizations
+  [/ae/g, 'e'],
+  [/oe/g, 'e'],
+  [/ey/g, 'e'],
+  [/ay/g, 'a'],
+  [/eau/g, 'o'],
+  [/ew/g, 'u'],
+  [/oo/g, 'u'],
+  [/ou/g, 'o'],
+];
+
+/**
+ * Generate a phonetic code for a word
+ * Similar words should produce similar codes
+ */
+export function phoneticCode(word: string): string {
+  let s = word.toLowerCase().trim();
+
+  // Apply phonetic substitutions
+  for (const [pattern, replacement] of PHONETIC_SUBSTITUTIONS) {
+    s = s.replace(pattern, replacement);
+  }
+
+  // Remove duplicate consonants
+  s = s.replace(/([bcdfghjklmnpqrstvwxz])\1+/g, '$1');
+
+  // Remove trailing silent e
+  s = s.replace(/e$/, '');
+
+  // Keep first vowel, remove subsequent vowels (simplification)
+  const firstVowelIdx = s.search(/[aeiou]/);
+  if (firstVowelIdx >= 0) {
+    const before = s.substring(0, firstVowelIdx + 1);
+    const after = s.substring(firstVowelIdx + 1).replace(/[aeiou]/g, '');
+    s = before + after;
+  }
+
+  return s.substring(0, 8); // Limit to 8 chars for comparison
+}
+
+/**
+ * Check if two words match phonetically
+ */
+export function phoneticMatch(word1: string, word2: string): boolean {
+  return phoneticCode(word1) === phoneticCode(word2);
+}
+
+// Direct phonetic corrections for common social services terms
+export const PHONETIC_CORRECTIONS: Record<string, string> = {
+  // Food
+  'fud': 'food',
+  'fut': 'food',
+  'fod': 'food',
+  // Shelter
+  'shelta': 'shelter',
+  'sheltr': 'shelter',
+  'sheltar': 'shelter',
+  // Counselling
+  'konseling': 'counselling',
+  'counsling': 'counselling',
+  'konsling': 'counselling',
+  'cownseling': 'counselling',
+  // Addiction
+  'adikshun': 'addiction',
+  'adikshon': 'addiction',
+  // Mental
+  'mentl': 'mental',
+  'mentul': 'mental',
+  // Health
+  'helth': 'health',
+  'helthe': 'health',
+  // Housing
+  'howsing': 'housing',
+  'howzing': 'housing',
+  'housng': 'housing',
+  // Emergency
+  'emerjency': 'emergency',
+  'imergency': 'emergency',
+  'emergancy': 'emergency',
+  // Recovery
+  'recovry': 'recovery',
+  'recuvery': 'recovery',
+  // Therapy
+  'theripy': 'therapy',
+  'theropy': 'therapy',
+  // Crisis
+  'crysis': 'crisis',
+  'krisis': 'crisis',
+};
+
+/**
+ * Correct a word using phonetic matching
+ * Returns the corrected word or the original if no match
+ */
+export function correctPhonetic(word: string): string {
+  const lower = word.toLowerCase();
+
+  // Check direct phonetic corrections first
+  if (PHONETIC_CORRECTIONS[lower]) {
+    return PHONETIC_CORRECTIONS[lower];
+  }
+
+  // Check if phonetically matches any known correction target
+  for (const correct of Object.values(PHONETIC_CORRECTIONS)) {
+    if (phoneticMatch(lower, correct)) {
+      return correct;
+    }
+  }
+
+  // Check if phonetically matches any known keyword
+  for (const keyword of Object.keys(KEYWORD_EXPANSIONS)) {
+    if (phoneticMatch(lower, keyword) && lower !== keyword) {
+      return keyword;
+    }
+  }
+
+  return word;
+}
+
+/**
+ * Apply phonetic corrections to a full query
+ */
+export function correctQueryPhonetic(query: string): { corrected: string; corrections: string[] } {
+  const words = query.toLowerCase().split(/\s+/);
+  const corrections: string[] = [];
+
+  const correctedWords = words.map(word => {
+    // Skip short words
+    if (word.length < 3) return word;
+
+    const corrected = correctPhonetic(word);
+    if (corrected !== word) {
+      corrections.push(`${word} → ${corrected} (phonetic)`);
+      return corrected;
+    }
+    return word;
+  });
+
+  return { corrected: correctedWords.join(' '), corrections };
+}

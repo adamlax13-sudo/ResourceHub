@@ -847,6 +847,48 @@ function detectOrganizationSearch(query: string): string | null {
 }
 
 /**
+ * Compute Reciprocal Rank Fusion (RRF) score for hybrid SQL + semantic ranking
+ * Higher scores = better ranking. Services appearing in both sources score highest.
+ */
+function computeRRFScore(sqlRank: number | null, semanticRank: number | null, k: number = 60): number {
+  let score = 0;
+  if (sqlRank !== null) {
+    score += 1 / (k + sqlRank);
+  }
+  if (semanticRank !== null) {
+    score += 1 / (k + semanticRank);
+  }
+  return score;
+}
+
+/**
+ * Apply penalty for services containing negative terms user wants to exclude
+ * E.g., "shelter not religious" penalizes shelters with "religious" in their text
+ */
+function applyNegativePenalty(services: LiteService[], negativeTerms: string[]): LiteService[] {
+  if (negativeTerms.length === 0) return services;
+
+  const scored = services.map(service => {
+    let penalty = 0;
+    const searchText = `${service.name} ${service.description} ${service.category}`.toLowerCase();
+
+    for (const term of negativeTerms) {
+      if (searchText.includes(term)) {
+        penalty += 100; // Heavy penalty for containing excluded term
+        console.log(`[NegativeKeyword] Penalizing "${service.name}" (-100) for containing "${term}"`);
+      }
+    }
+
+    return { service, penalty };
+  });
+
+  // Sort by penalty (lower is better), maintaining original order for equal penalties
+  scored.sort((a, b) => a.penalty - b.penalty);
+
+  return scored.map(s => s.service);
+}
+
+/**
  * Apply organization diversity - prevent too many results from same org in top results
  * Limits to max 2 services per organization in the top 10 results
  * EXCEPTION: If user is searching for a specific organization, don't limit that org
@@ -901,6 +943,89 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     // Check if embeddings are available (cached after first check)
     const hasEmbeddings = await checkEmbeddingsAvailable();
+
+    // ============= TIER 1: ALIAS/EXACT MATCH (<20ms) =============
+    // If user is searching for a specific known service by alias, return immediately
+    if (analysis.intent === 'alias' && analysis.aliasMatch) {
+      const aliasResult = await storage.getServiceById(analysis.aliasMatch);
+      if (aliasResult.service) {
+        console.log(`[TieredSearch] Tier 1: Alias match for "${analysis.aliasMatch}" in ${Date.now() - startTime}ms`);
+        return {
+          services: [{
+            id: aliasResult.service.serviceId,
+            name: aliasResult.service.name,
+            category: aliasResult.service.category || '',
+            description: this.truncateDescription(aliasResult.service.description),
+            location: aliasResult.service.location || aliasResult.service.address || '',
+            waitTimes: aliasResult.service.waitTimes || '',
+          }],
+          summary: '',
+          searchType: 'sql',
+          totalResults: 1,
+        };
+      }
+    }
+
+    // ============= TIER 2: FAST SQL PATH (<50ms) =============
+    // For simple, high-confidence queries, SQL alone may be sufficient
+    const sqlOnly = await storage.fastSearch(
+      analysis.raw,
+      analysis.location.specified,
+      analysis.intent === 'location_only',
+      config.maxResults
+    );
+
+    // Calculate average score to determine confidence
+    const avgSqlScore = sqlOnly.length > 0
+      ? sqlOnly.reduce((sum, r) => sum + (r.relevanceScore || 0), 0) / sqlOnly.length
+      : 0;
+
+    // If SQL returns many high-confidence results, skip semantic search
+    if (sqlOnly.length >= 10 && avgSqlScore > 80 && !isDomainIntent) {
+      console.log(`[TieredSearch] Tier 2: High-confidence SQL (${sqlOnly.length} results, avg score ${avgSqlScore.toFixed(1)}) in ${Date.now() - startTime}ms`);
+
+      // Convert to LiteService format
+      const enrichments = await storage.getEnrichmentsBatch(sqlOnly.map(r => r.serviceId));
+      const services: LiteService[] = sqlOnly.map(sr => {
+        const enrichment = enrichments.get(sr.serviceId);
+        const merged = mergeForLiteView(
+          {
+            serviceId: sr.serviceId,
+            name: sr.name,
+            category: sr.category,
+            description: sr.description,
+            location: sr.location,
+            address: sr.address,
+            waitTimes: sr.waitTimes,
+          },
+          enrichment
+        );
+        return {
+          id: sr.serviceId,
+          name: sr.name,
+          category: merged.category,
+          description: this.truncateDescription(merged.description),
+          location: merged.location,
+          waitTimes: merged.waitTimes,
+        };
+      });
+
+      // Apply minimal boosting and return early
+      const boosted = boostByIntent(services, analysis.intent, analysis.raw, analysis);
+      const final = analysis.negativeTerms?.length
+        ? applyNegativePenalty(boosted, analysis.negativeTerms)
+        : boosted;
+
+      return {
+        services: applyOrganizationDiversity(final, analysis.raw),
+        summary: this.buildSummary(final.length, analysis.raw, analysis.location.specified),
+        searchType: enrichments.size > 0 ? 'sql+enrichment' : 'sql',
+        totalResults: final.length,
+      };
+    }
+
+    // ============= TIER 3: FULL SEARCH (SQL + SEMANTIC + OpenAI) =============
+    // Continue with parallel execution for complex queries
 
     // ============= PARALLEL EXECUTION =============
     // Run SQL search, semantic search, and OpenAI enhancement ALL IN PARALLEL
@@ -1007,6 +1132,11 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     if (isDomainIntent || hasAnyPreference) {
       services = boostByIntent(services, analysis.intent, analysis.raw, analysis);
+    }
+
+    // Apply negative keyword penalty (e.g., "shelter not religious")
+    if (analysis.negativeTerms && analysis.negativeTerms.length > 0) {
+      services = applyNegativePenalty(services, analysis.negativeTerms);
     }
 
     // Apply organization diversity to prevent monopoly in top results
@@ -1126,31 +1256,61 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       });
     }
 
-    // Merge: SQL first, then unique semantic results
-    const combined: LiteService[] = [...sqlServices];
-    const existingIds = new Set(sqlServices.map(s => s.id));
-    let addedFromSemantic = 0;
+    // ============= RRF HYBRID SCORING =============
+    // Instead of SQL-first merge, use Reciprocal Rank Fusion to combine rankings
+    // Services appearing in both SQL AND semantic results rank highest
 
-    for (const svc of sortedSemantic) {
-      if (!existingIds.has(svc.id)) {
-        combined.push(svc);
-        existingIds.add(svc.id);
-        addedFromSemantic++;
-      }
+    // Build rank maps (1-indexed)
+    const sqlRanks = new Map<string, number>();
+    sqlServices.forEach((s, i) => sqlRanks.set(s.id, i + 1));
+
+    const semanticRanks = new Map<string, number>();
+    sortedSemantic.forEach((s, i) => semanticRanks.set(s.id, i + 1));
+
+    // Build service lookup map
+    const serviceMap = new Map<string, LiteService>();
+    for (const s of sqlServices) serviceMap.set(s.id, s);
+    for (const s of sortedSemantic) {
+      if (!serviceMap.has(s.id)) serviceMap.set(s.id, s);
     }
+
+    // Compute RRF scores for all services
+    const scored: Array<{ id: string; rrfScore: number; inBoth: boolean }> = [];
+    const mergedServiceIds = Array.from(serviceMap.keys());
+    for (const id of mergedServiceIds) {
+      const sqlRank = sqlRanks.get(id) || null;
+      const semanticRank = semanticRanks.get(id) || null;
+      const rrfScore = computeRRFScore(sqlRank, semanticRank);
+      scored.push({
+        id,
+        rrfScore,
+        inBoth: sqlRank !== null && semanticRank !== null,
+      });
+    }
+
+    // Sort by RRF score (higher is better)
+    scored.sort((a, b) => b.rrfScore - a.rrfScore);
+
+    // Log RRF ranking info
+    const inBothCount = scored.filter(s => s.inBoth).length;
+    if (inBothCount > 0) {
+      console.log(`[RRF] ${inBothCount} services in both SQL+semantic. Top 3 scores: ${scored.slice(0, 3).map(s => s.rrfScore.toFixed(4)).join(', ')}`);
+    }
+
+    // Build final sorted list
+    const combined: LiteService[] = scored.map(s => serviceMap.get(s.id)!);
 
     // Determine search type
     let searchType: SearchType = 'sql';
     if (enrichments.size > 0) {
       searchType = 'sql+enrichment';
     }
-    if (addedFromSemantic > 0) {
+    const addedFromSemantic = semanticRanks.size - sqlRanks.size;
+    if (addedFromSemantic > 0 || inBothCount > 0) {
       searchType = sqlServices.length > 0 ? 'sql+semantic' : 'semantic';
     }
 
-    if (addedFromSemantic > 0) {
-      console.log(`[ComprehensiveSearch] Added ${addedFromSemantic} from semantic. Total: ${combined.length}`);
-    }
+    console.log(`[ComprehensiveSearch] RRF merged ${combined.length} services (SQL: ${sqlServices.length}, Semantic: ${sortedSemantic.length}, Both: ${inBothCount})`);
 
     return { services: combined, searchType };
   }
