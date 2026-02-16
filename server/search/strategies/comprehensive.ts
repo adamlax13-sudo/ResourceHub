@@ -117,6 +117,7 @@ Examples:
 "adhd help" → {"rewritten":"ADHD support services","categories":["mental health","disability"],"keywords":["ADHD","attention deficit","counselling","therapy","support","mental health","assessment"]}
 "lonely no friends isolated" → {"rewritten":"social isolation support","categories":["mental health","community","support"],"keywords":["loneliness","isolation","social support","counselling","community","support group","mental health"]}
 "my mom passed away" → {"rewritten":"grief bereavement support","categories":["grief","bereavement","support"],"keywords":["grief","loss","mourning","support group","counselling","bereavement","hospice"]}
+"my husband was murdered" → {"rewritten":"grief violent loss survivor support","categories":["grief","bereavement","trauma"],"keywords":["grief","loss","mourning","homicide","violent loss","survivor","trauma","counselling","support group"]}
 "senior services for my dad" → {"rewritten":"senior elderly care services","categories":["senior","aging","elder care"],"keywords":["senior","elderly","aging","home care","dementia","retirement","meals on wheels"]}
 "need a lawyer for custody" → {"rewritten":"family law legal aid custody","categories":["legal","family law"],"keywords":["legal aid","lawyer","custody","family court","divorce","child support"]}
 "lost my job need help" → {"rewritten":"employment job training support","categories":["employment","career"],"keywords":["employment","job training","resume","career","workforce","EI","unemployment"]}
@@ -674,9 +675,9 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     }
 
     // Grief support boosting
-    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow)\b/i.test(queryLower);
+    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide|overdose|took their life)\b/i.test(queryLower);
     if (isGriefQuery) {
-      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral)\b/i.test(textLower)) {
+      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral|survivors?|violent loss)\b/i.test(textLower)) {
         boost += 120;
         console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +120 for grief support`);
       }

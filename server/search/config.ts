@@ -320,10 +320,13 @@ export const SEARCH_CONFIG = {
     // Grief and bereavement support
     grief_support: [
       /(?:grief|bereavement|mourning).*(?:support|counsell?ing|group|help)/i,
-      /(?:lost|death of|passed away|died).*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one|sibling|brother|sister)/i,
-      /(?:coping|dealing).*(?:with|after).*(?:loss|death|passing)/i,
+      /(?:lost|death of|passed away|died|murdered|killed).*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one|sibling|brother|sister)/i,
+      /(?:coping|dealing).*(?:with|after).*(?:loss|death|passing|murder)/i,
       /(?:widow|widower|bereaved)\b/i,
-      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter).*(?:died|passed|passed away|gone)\b/i,
+      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter).*(?:died|passed|passed away|gone|murdered|killed|was killed)\b/i,
+      // Violent loss patterns
+      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one).*(?:was|were|got).*(?:murdered|killed|shot|stabbed)\b/i,
+      /\b(?:murdered|killed|homicide|violent death|took their life|suicide|overdose|OD'd)\b.*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one)/i,
     ],
     // Senior and elderly services
     senior_services: [
@@ -536,6 +539,7 @@ export const SEARCH_CONFIG = {
     grief: [
       /\b(grief|bereavement|mourning|loss|died|passed away|death|funeral|memorial)\b/i,
       /\b(widow|widower|bereaved|losing.*loved one)\b/i,
+      /\b(murdered|killed|homicide|suicide|overdose|OD'd|took their life|violent death)\b/i,
     ],
     // Senior/elderly indicators
     senior: [
