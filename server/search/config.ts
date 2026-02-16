@@ -288,14 +288,113 @@ export const SEARCH_CONFIG = {
       /(?:can'?t cope|breaking down|falling apart|at my wit'?s end)/i,
       /(?:completely alone|nobody understands|no one to talk)/i,
       /(?:don'?t know what to do|at a loss|losing it)/i,
-      // Social isolation and friendship difficulties
+      // Social isolation and friendship difficulties (generic - not disability-specific)
       /(?:can'?t|cannot|don'?t|hard to).*(?:make|keep|have).*(?:friends|friendships|connections)/i,
       /(?:no friends|have no friends|friendless|alone|no one to talk)/i,
       /(?:socially|social).*(?:awkward|anxious|isolated|struggling)/i,
-      // Disability and neurodivergent support patterns
-      /\b(?:i'?m|i am|i have|diagnosed with)\s*(?:autistic|autism|ASD|ADHD|ADD|aspergers?)\b/i,
-      /\b(?:autistic|autism|ADHD|ADD|aspergers?)\s*(?:and|support|help|services|therapy|counselling)\b/i,
-      /\b(?:disability|disabled|neurodivergent)\s*(?:support|services|help|resources)\b/i,
+    ],
+    // Disability and neurodivergent support - checked BEFORE mental_health fallback in analyzer
+    // Combined patterns: disability condition + social/support need
+    disability_support: [
+      // Autism/ASD + social difficulties (the key pattern for "im autistic and cant find friends")
+      /\b(?:autis|autism|autistic|ASD|asperger|aspie|on the spectrum)\b.*(?:friend|social|lonely|isolated|connect|relationship)/i,
+      /(?:friend|social|lonely|isolated|connect).*\b(?:autis|autism|autistic|ASD|asperger|aspie|on the spectrum)\b/i,
+      // Direct disability support requests
+      /\b(?:i'?m|i am|i have|diagnosed with)\s*(?:autistic|autism|ASD|asperger|aspie)\b/i,
+      /\b(?:autistic|autism|ASD|asperger|aspie)\s*(?:and|support|help|services|group|program|community)\b/i,
+      // ADHD support patterns
+      /\b(?:i'?m|i am|i have|diagnosed with)\s*(?:ADHD|ADD)\b.*(?:help|support|group|program|struggling)/i,
+      /\b(?:ADHD|ADD)\s*(?:support|help|services|group|program|community|coaching)\b/i,
+      // Neurodivergent community/support
+      /\b(?:neurodivergent|neurodiverse)\s*(?:support|services|help|group|community|friends|social)\b/i,
+      /\b(?:i'?m|i am)\s*(?:neurodivergent|neurodiverse)\b/i,
+      // Disability services general
+      /\b(?:disability|disabled)\s*(?:support|services|help|resources|program|community)\b/i,
+      // Developmental disability support
+      /\b(?:developmental.*disability|intellectual.*disability|learning.*disability)\b.*(?:support|help|services|program)/i,
+      // Sensory processing support
+      /\b(?:sensory.*processing|sensory.*issues|sensory.*overload)\b.*(?:support|help|therapy|group)/i,
+      // AISH/PDD (Alberta disability programs)
+      /\b(?:AISH|PDD)\b.*(?:help|support|apply|services)/i,
+    ],
+    // Grief and bereavement support
+    grief_support: [
+      /(?:grief|bereavement|mourning).*(?:support|counsell?ing|group|help)/i,
+      /(?:lost|death of|passed away|died).*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one|sibling|brother|sister)/i,
+      /(?:coping|dealing).*(?:with|after).*(?:loss|death|passing)/i,
+      /(?:widow|widower|bereaved)\b/i,
+      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter).*(?:died|passed|passed away|gone)\b/i,
+    ],
+    // Senior and elderly services
+    senior_services: [
+      /(?:senior|elderly|aging|aged).*(?:services?|support|help|care)/i,
+      /(?:help|support|care).*(?:for|with).*(?:my|a|an).*(?:elderly|aging|senior|old).*(?:parent|mom|dad|mother|father)/i,
+      /\b(?:dementia|alzheimer|mobility|fall risk|home care|assisted living|nursing home)\b/i,
+      /\b(?:meals on wheels|senior center|senior centre|elder abuse|geriatric)\b/i,
+      /\b(?:65\+|70\+|80\+).*(?:services?|support|help)\b/i,
+    ],
+    // Legal aid and court services
+    legal_aid: [
+      /(?:need|looking for|find).*(?:a\s+)?(?:lawyer|attorney|legal help|legal aid)/i,
+      /(?:legal|court|custody|divorce|immigration).*(?:help|support|services?|assistance)/i,
+      /(?:can'?t afford|free|low cost).*(?:lawyer|legal)/i,
+      /\b(?:tenant rights|eviction.*legal|housing.*legal|family court|child support)\b/i,
+      /\b(?:legal aid|pro bono|lawyer referral)\b/i,
+    ],
+    // Employment and job support
+    employment_support: [
+      /(?:lost|fired|laid off|unemployed|need).*(?:my\s+)?(?:job|work|employment)/i,
+      /(?:job|career|employment|work).*(?:help|support|training|services?)/i,
+      /(?:looking for|find|need).*(?:work|job|employment)/i,
+      /\b(?:EI|employment insurance|unemployment|resume|interview prep|job search)\b/i,
+      /\b(?:career counsell?ing|workforce|apprentice|skills training)\b/i,
+    ],
+    // Youth and teen services
+    youth_services: [
+      /(?:teen|teenager|adolescent|youth|young adult).*(?:help|support|services?|crisis|struggling)/i,
+      /(?:help|support).*(?:for|with).*(?:my|a).*(?:teen|teenager|adolescent|youth)/i,
+      /(?:my|our).*(?:teen|teenager).*(?:needs?|struggling|crisis|problem)/i,
+      /\b(?:kids help phone|youth shelter|runaway|troubled teen)\b/i,
+    ],
+    // Newcomer and immigration services
+    newcomer_services: [
+      /(?:newcomer|immigrant|refugee|new to canada).*(?:help|support|services?)/i,
+      /(?:settlement|immigration|ESL|language).*(?:help|support|services?)/i,
+      /(?:just arrived|recently arrived|new immigrant|asylum)\b/i,
+      /\b(?:sponsorship|citizenship|work permit|refugee claim|landed immigrant)\b/i,
+    ],
+    // Family addiction support (Al-Anon, Nar-Anon)
+    family_addiction_support: [
+      /(?:my|our).*(?:spouse|husband|wife|partner|parent|child|son|daughter|family member|loved one).*(?:is|has|drinks?|using|addicted|addiction)/i,
+      /(?:living with|married to|dealing with).*(?:an?\s+)?(?:alcoholic|addict)/i,
+      /(?:family|loved one).*(?:'s|has).*(?:addiction|drinking|drug).*(?:problem|issue)/i,
+      /\b(?:al-?anon|nar-?anon|family.*addiction.*support|codependent)\b/i,
+      /(?:help|support).*(?:for|as).*(?:family|spouse|parent|child).*(?:of|with).*(?:addict|alcoholic)/i,
+    ],
+    // Financial support and debt help
+    financial_support: [
+      /(?:can'?t|cannot).*(?:pay|afford).*(?:bills?|rent|utilities|groceries)/i,
+      /(?:in|have|drowning in).*(?:debt|financial.*trouble)/i,
+      /(?:financial|money).*(?:help|support|assistance|crisis)/i,
+      /\b(?:bankruptcy|collections?|payday loan|credit counsell?ing)\b/i,
+      /(?:behind on|late on).*(?:payments?|bills?|rent)/i,
+      /\b(?:budget|debt management|financial literacy)\b/i,
+    ],
+    // Caregiver support
+    caregiver_support: [
+      /(?:caregiver|caregiving|caring for).*(?:burnout|stress|support|help|exhausted)/i,
+      /(?:looking after|taking care of).*(?:my|a).*(?:parent|spouse|child|family member)/i,
+      /\b(?:respite care|caregiver respite|family caregiver)\b/i,
+      /(?:overwhelmed|exhausted|burnt out).*(?:caring|looking after|caregiver)/i,
+      /\b(?:caregiver.*support|support.*caregiver)\b/i,
+    ],
+    // LGBTQ+ services
+    lgbtq_services: [
+      /\b(?:lgbtq|lgbt|lgbtq\+|2slgbtq|queer).*(?:services?|support|help|resources?)/i,
+      /\b(?:trans|transgender).*(?:healthcare|support|services?|help)/i,
+      /(?:coming out|gay|lesbian|bisexual|non-?binary).*(?:support|help|counsell?ing)/i,
+      /\b(?:pride|gender affirming|hormone therapy|gender identity)\b/i,
+      /\b(?:lgbtq|lgbt|queer|trans).*(?:youth|teen|senior|elder)\b/i,
     ],
   },
 
@@ -433,6 +532,43 @@ export const SEARCH_CONFIG = {
       /\b(engineering|eng|arts|science|nursing|business|education|med school|law school)\b/i,
       /\b(dorm|residence|res|roommate|tuition|finals|exams|semester|prof|professor)\b/i,
     ],
+    // Grief and bereavement indicators
+    grief: [
+      /\b(grief|bereavement|mourning|loss|died|passed away|death|funeral|memorial)\b/i,
+      /\b(widow|widower|bereaved|losing.*loved one)\b/i,
+    ],
+    // Senior/elderly indicators
+    senior: [
+      /\b(senior|elderly|aging|aged|older adult|65\+|70\+|retirement|retired)\b/i,
+      /\b(dementia|alzheimer|mobility.*issue|home care|nursing home|assisted living)\b/i,
+      /\b(geriatric|elder|grandparent|grandmother|grandfather)\b/i,
+    ],
+    // Youth/teen indicators
+    youth: [
+      /\b(youth|teen|teenager|adolescent|young adult|under 18|under 25)\b/i,
+      /\b(runaway|troubled teen|youth.*crisis|kids help)\b/i,
+    ],
+    // Newcomer/immigrant indicators
+    newcomer: [
+      /\b(newcomer|refugee|immigrant|asylum|settlement|new to canada)\b/i,
+      /\b(ESL|citizenship|work permit|sponsorship|landed immigrant)\b/i,
+    ],
+    // Family addiction support indicators (Al-Anon, Nar-Anon)
+    family_addiction: [
+      /\b(my|our).*(family|spouse|partner|parent|child|son|daughter).*(addict|alcohol|drug|drinking)\b/i,
+      /\b(al-?anon|nar-?anon|family.*support.*addict|codependent)\b/i,
+      /\b(loved one|family member).*(?:is|has).*(?:addiction|drinking|drug)\b/i,
+    ],
+    // Caregiver indicators
+    caregiver: [
+      /\b(caregiver|caregiving|caring for|looking after)\b/i,
+      /\b(respite|caregiver.*(?:burnout|stress|support|exhausted))\b/i,
+    ],
+    // LGBTQ+ indicators
+    lgbtq: [
+      /\b(lgbtq|lgbt|2slgbtq|queer|gay|lesbian|trans|transgender|bisexual|non-?binary)\b/i,
+      /\b(coming out|pride|gender affirming|hormone therapy|gender identity)\b/i,
+    ],
   },
 
   // === DISTRESS/NEED INDICATORS ===
@@ -514,7 +650,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type

@@ -186,11 +186,101 @@ function detectDomainIntent(query: string): QueryIntent | null {
     }
   }
 
+  // Check family addiction support patterns FIRST (before substance_abuse)
+  // This ensures "my husband is an alcoholic" routes to family support (Al-Anon), not treatment
+  for (const pattern of patterns.family_addiction_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: family_addiction_support`);
+      return 'family_addiction_support';
+    }
+  }
+
   // Check substance abuse patterns
   for (const pattern of patterns.substance_abuse) {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: substance_abuse`);
       return 'substance_abuse';
+    }
+  }
+
+  // Check LGBTQ+ services patterns (identity-specific needs)
+  for (const pattern of patterns.lgbtq_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: lgbtq_services`);
+      return 'lgbtq_services';
+    }
+  }
+
+  // Check legal aid patterns
+  for (const pattern of patterns.legal_aid) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: legal_aid`);
+      return 'legal_aid';
+    }
+  }
+
+  // Check employment support patterns
+  for (const pattern of patterns.employment_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: employment_support`);
+      return 'employment_support';
+    }
+  }
+
+  // Check financial support patterns
+  for (const pattern of patterns.financial_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: financial_support`);
+      return 'financial_support';
+    }
+  }
+
+  // Check grief support patterns
+  for (const pattern of patterns.grief_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: grief_support`);
+      return 'grief_support';
+    }
+  }
+
+  // Check caregiver support patterns
+  for (const pattern of patterns.caregiver_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: caregiver_support`);
+      return 'caregiver_support';
+    }
+  }
+
+  // Check senior services patterns
+  for (const pattern of patterns.senior_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: senior_services`);
+      return 'senior_services';
+    }
+  }
+
+  // Check youth services patterns
+  for (const pattern of patterns.youth_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: youth_services`);
+      return 'youth_services';
+    }
+  }
+
+  // Check newcomer services patterns
+  for (const pattern of patterns.newcomer_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: newcomer_services`);
+      return 'newcomer_services';
+    }
+  }
+
+  // Check disability support patterns FIRST (before mental_health)
+  // This ensures autism + social difficulty queries get proper disability routing
+  for (const pattern of patterns.disability_support) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: disability_support`);
+      return 'disability_support';
     }
   }
 
@@ -234,17 +324,71 @@ function detectDomainIntent(query: string): QueryIntent | null {
     return 'food_insecurity';
   }
 
+  // Check family addiction indicators (Al-Anon, Nar-Anon)
+  if (categoryIndicators.family_addiction?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: family_addiction_support (via family addiction indicator)`);
+    return 'family_addiction_support';
+  }
+
+  // Check LGBTQ+ indicators
+  if (categoryIndicators.lgbtq?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: lgbtq_services (via LGBTQ indicator)`);
+    return 'lgbtq_services';
+  }
+
+  // Check legal indicators
+  if (categoryIndicators.legal?.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: legal_aid (via legal indicator)`);
+    return 'legal_aid';
+  }
+
+  // Check financial indicators
+  if (categoryIndicators.financial?.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: financial_support (via financial indicator)`);
+    return 'financial_support';
+  }
+
+  // Check grief indicators
+  if (categoryIndicators.grief?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: grief_support (via grief indicator)`);
+    return 'grief_support';
+  }
+
+  // Check caregiver indicators
+  if (categoryIndicators.caregiver?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: caregiver_support (via caregiver indicator)`);
+    return 'caregiver_support';
+  }
+
+  // Check senior indicators
+  if (categoryIndicators.senior?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: senior_services (via senior indicator)`);
+    return 'senior_services';
+  }
+
+  // Check youth indicators
+  if (categoryIndicators.youth?.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: youth_services (via youth indicator)`);
+    return 'youth_services';
+  }
+
+  // Check newcomer indicators
+  if (categoryIndicators.newcomer?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: newcomer_services (via newcomer indicator)`);
+    return 'newcomer_services';
+  }
+
   // Check mental health indicators (even without explicit distress - symptoms are distress)
   if (categoryIndicators.mental_health.some(p => p.test(q))) {
     console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via mental health indicator)`);
     return 'mental_health';
   }
 
-  // Check disability/neurodivergent indicators - route to mental_health for support services
-  // Many disability queries need counselling, support groups, or specialized mental health services
+  // Check disability/neurodivergent indicators - route to disability_support
+  // These queries need specialized disability services, not generic mental health
   if (categoryIndicators.disability?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via disability indicator)`);
-    return 'mental_health';
+    console.log(`[QueryAnalyzer] Domain intent detected: disability_support (via disability indicator)`);
+    return 'disability_support';
   }
 
   // Check domestic violence indicators

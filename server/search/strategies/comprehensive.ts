@@ -113,9 +113,19 @@ Examples:
 "i feel so hopeless" → {"rewritten":"mental health counselling support","categories":["mental health","counselling"],"keywords":["depression","therapy","counsellor","crisis","support","mental health"]}
 "nowhere to sleep tonight" → {"rewritten":"emergency shelter housing","categories":["shelter","housing"],"keywords":["homeless","emergency shelter","beds","accommodation","housing","shelter"]}
 "my child is addicted to drugs" → {"rewritten":"youth addiction family support","categories":["addiction","youth","family support"],"keywords":["addiction","treatment","youth","family","support","PCHAD","intervention","parent"]}
-"im autistic and cant make friends" → {"rewritten":"autism social support counselling","categories":["mental health","disability","support groups"],"keywords":["autism","ASD","social skills","counselling","support group","therapy","community","mental health"]}
+"im autistic and cant make friends" → {"rewritten":"autism social skills support group","categories":["disability","autism support","social programs"],"keywords":["autism","ASD","autistic","social skills","support group","peer support","community program","neurodivergent","disability services"]}
 "adhd help" → {"rewritten":"ADHD support services","categories":["mental health","disability"],"keywords":["ADHD","attention deficit","counselling","therapy","support","mental health","assessment"]}
-"lonely no friends isolated" → {"rewritten":"social isolation support","categories":["mental health","community","support"],"keywords":["loneliness","isolation","social support","counselling","community","support group","mental health"]}`
+"lonely no friends isolated" → {"rewritten":"social isolation support","categories":["mental health","community","support"],"keywords":["loneliness","isolation","social support","counselling","community","support group","mental health"]}
+"my mom passed away" → {"rewritten":"grief bereavement support","categories":["grief","bereavement","support"],"keywords":["grief","loss","mourning","support group","counselling","bereavement","hospice"]}
+"senior services for my dad" → {"rewritten":"senior elderly care services","categories":["senior","aging","elder care"],"keywords":["senior","elderly","aging","home care","dementia","retirement","meals on wheels"]}
+"need a lawyer for custody" → {"rewritten":"family law legal aid custody","categories":["legal","family law"],"keywords":["legal aid","lawyer","custody","family court","divorce","child support"]}
+"lost my job need help" → {"rewritten":"employment job training support","categories":["employment","career"],"keywords":["employment","job training","resume","career","workforce","EI","unemployment"]}
+"help for my teenager" → {"rewritten":"youth teen support services","categories":["youth","teen"],"keywords":["youth","teen","adolescent","support","counselling","kids help phone"]}
+"new to canada need help" → {"rewritten":"newcomer settlement services","categories":["newcomer","settlement"],"keywords":["immigrant","refugee","newcomer","settlement","ESL","citizenship"]}
+"my husband is an alcoholic" → {"rewritten":"family addiction support al-anon","categories":["family support","addiction"],"keywords":["al-anon","family addiction support","loved one","concerned person","codependent"]}
+"cant pay my bills in debt" → {"rewritten":"financial debt assistance","categories":["financial","debt"],"keywords":["financial","debt","credit counselling","bankruptcy","budget","money management"]}
+"caregiver burnout exhausted" → {"rewritten":"caregiver respite support","categories":["caregiver","respite"],"keywords":["caregiver","respite","burnout","support","family caregiver"]}
+"trans healthcare support" → {"rewritten":"LGBTQ transgender healthcare","categories":["lgbtq","transgender"],"keywords":["lgbtq","trans","transgender","gender affirming","pride","healthcare"]}`
       }, {
         role: 'user',
         content: rawQuery
@@ -449,6 +459,50 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
     serviceTypes: ['mental_health', 'counselling', 'crisis_line'],
     categoryPatterns: /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog/i,
   },
+  'disability_support': {
+    serviceTypes: ['disability_services', 'support_groups', 'community_programs'],
+    categoryPatterns: /autis|autism|ASD|asperger|disability|disabled|neurodivergent|neurodiverse|ADHD|ADD|developmental|sensory|AISH|PDD|accessibility|social skills|peer support|support group|life skills|independent living/i,
+  },
+  'grief_support': {
+    serviceTypes: ['grief_support', 'bereavement', 'loss_support'],
+    categoryPatterns: /grief|bereavement|loss|mourning|funeral|memorial|hospice|palliative|widow|death|dying|end.of.life/i,
+  },
+  'senior_services': {
+    serviceTypes: ['senior_services', 'aging', 'elder_care'],
+    categoryPatterns: /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer|home care|meals on wheels|geriatric/i,
+  },
+  'legal_aid': {
+    serviceTypes: ['legal_aid', 'legal_services'],
+    categoryPatterns: /legal|lawyer|attorney|court|custody|divorce|immigration|family law|tenant|housing rights|pro bono/i,
+  },
+  'employment_support': {
+    serviceTypes: ['employment', 'job_training', 'career'],
+    categoryPatterns: /employment|job|career|training|workforce|resume|interview|EI|apprentice|skills training/i,
+  },
+  'youth_services': {
+    serviceTypes: ['youth_services', 'teen_support'],
+    categoryPatterns: /youth|teen|adolescent|young adult|under 25|kids help|student|runaway/i,
+  },
+  'newcomer_services': {
+    serviceTypes: ['newcomer', 'settlement', 'immigration'],
+    categoryPatterns: /immigrant|refugee|newcomer|settlement|ESL|language|citizenship|sponsorship|asylum/i,
+  },
+  'family_addiction_support': {
+    serviceTypes: ['family_support', 'addiction_family'],
+    categoryPatterns: /al-?anon|nar-?anon|family.*support|loved one|concerned person|family.*addiction|intervention|codependent/i,
+  },
+  'financial_support': {
+    serviceTypes: ['financial_services', 'debt_counseling'],
+    categoryPatterns: /financial|debt|credit|bankruptcy|budget|money management|bills|collections|payday loan/i,
+  },
+  'caregiver_support': {
+    serviceTypes: ['caregiver_support', 'respite'],
+    categoryPatterns: /caregiver|respite|family caregiver|caring for|burnout|caregiver support/i,
+  },
+  'lgbtq_services': {
+    serviceTypes: ['lgbtq_services', 'pride'],
+    categoryPatterns: /lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|pride|gender affirming|2slgbtq/i,
+  },
 };
 
 /**
@@ -580,28 +634,173 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     }
 
     // Disability/Autism boosting - detect autism/disability in query and boost relevant services
+    // Boost values must be LARGE (100+) to overcome SQL base scores of 100-150
     const queryLower = analysis?.raw?.toLowerCase() || '';
     const isDisabilityQuery = /\b(autis|autism|autistic|ASD|asperger|ADHD|ADD|disability|disabled|neurodivergent|neurodiverse|on the spectrum|sensory|developmental|AISH|PDD)\b/i.test(queryLower);
+    const hasSocialIsolation = /\b(friend|friends|friendship|lonely|isolated|social|connect|relationship|alone)\b/i.test(queryLower);
+
     if (isDisabilityQuery) {
-      // Strong boost for disability-specific services
+      // VERY strong boost for autism-specific services (must beat SQL scores of 100-150)
       if (/\b(autis|autism|autistic|ASD|asperger|on the spectrum)\b/i.test(textLower)) {
-        boost += 50;
-        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" boosted for autism match`);
+        boost += 150;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +150 for autism match`);
       }
+      // Strong boost for disability services
       if (/\b(disability|disabled|AISH|PDD|developmental|persons with disabilities|accessibility|accommodations?)\b/i.test(textLower)) {
-        boost += 40;
-        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" boosted for disability services`);
+        boost += 120;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +120 for disability services`);
       }
+      // Good boost for neurodivergent/ADHD services
       if (/\b(neurodivergent|neurodiverse|ADHD|ADD|sensory processing|learning disability)\b/i.test(textLower)) {
-        boost += 35;
+        boost += 100;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +100 for neurodivergent match`);
       }
-      // Moderate boost for social skills and support groups relevant to autism
-      if (/\b(social skills|social support|support group|peer support|life skills|independent living)\b/i.test(textLower)) {
-        boost += 20;
+      // Extra boost for social support when query mentions social isolation + disability
+      // This is key for "im autistic and cant find friends" type queries
+      if (hasSocialIsolation && /\b(social skills|social support|support group|peer support|life skills|community|friends|friendship|social program)\b/i.test(textLower)) {
+        boost += 80;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +80 for social support (disability + isolation query)`);
       }
-      // Slight penalty for generic mental health services when disability services exist
+      // Moderate boost for general support groups
+      if (/\b(support group|peer support|community program|drop-in|meetup)\b/i.test(textLower)) {
+        boost += 40;
+      }
+      // Penalty for generic mental health services when disability services should be prioritized
+      // Only apply penalty if NO disability-specific boost was applied
       if (boost === 0 && /\b(mental health|counselling|therapy|psycholog)\b/i.test(textLower)) {
-        boost -= 5; // Only penalize if no disability-specific boost was applied
+        boost -= 30; // Stronger penalty to deprioritize generic mental health
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" -30 for generic mental health (disability query)`);
+      }
+    }
+
+    // Grief support boosting
+    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow)\b/i.test(queryLower);
+    if (isGriefQuery) {
+      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +120 for grief support`);
+      }
+      if (/\b(support group|peer support|counsell?ing)\b/i.test(textLower)) {
+        boost += 60;
+      }
+      // Penalty for generic mental health when grief-specific exists
+      if (boost === 0 && /\b(mental health|counselling|therapy)\b/i.test(textLower)) {
+        boost -= 20;
+      }
+    }
+
+    // Senior services boosting
+    const isSeniorQuery = /\b(senior|elderly|aging|aged|65\+|70\+|old parent|dementia|alzheimer|geriatric)\b/i.test(queryLower);
+    if (isSeniorQuery) {
+      if (/\b(senior|elderly|aging|older adult|65\+|retirement|dementia|alzheimer|home care|geriatric)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[SeniorBoost] "${svc.name.substring(0, 40)}" +120 for senior services`);
+      }
+      if (/\b(meals on wheels|senior center|senior centre|elder|assisted living)\b/i.test(textLower)) {
+        boost += 80;
+      }
+      // Penalty for youth-only services
+      if (/\b(youth only|under 25|teen only|kids only|children only)\b/i.test(textLower)) {
+        boost -= 50;
+      }
+    }
+
+    // Legal aid boosting
+    const isLegalQuery = /\b(lawyer|legal|court|custody|divorce|immigration|tenant rights|charges)\b/i.test(queryLower);
+    if (isLegalQuery) {
+      if (/\b(legal aid|pro bono|free legal|low cost legal|lawyer referral)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[LegalBoost] "${svc.name.substring(0, 40)}" +150 for legal aid`);
+      }
+      if (/\b(lawyer|attorney|law.*society|legal.*services|court)\b/i.test(textLower)) {
+        boost += 80;
+      }
+    }
+
+    // Employment support boosting
+    const isEmploymentQuery = /\b(job|employment|career|unemployed|laid off|fired|work|EI|resume)\b/i.test(queryLower);
+    if (isEmploymentQuery) {
+      if (/\b(employment|job.*training|career|workforce|resume|interview|employment services)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[EmploymentBoost] "${svc.name.substring(0, 40)}" +120 for employment support`);
+      }
+      if (/\b(apprentice|skills training|job search|employment insurance|EI)\b/i.test(textLower)) {
+        boost += 60;
+      }
+    }
+
+    // Youth services boosting
+    const isYouthQuery = /\b(teen|teenager|adolescent|youth|young adult|my kid|my child|under 18|runaway)\b/i.test(queryLower);
+    if (isYouthQuery) {
+      if (/\b(youth|teen|adolescent|young adult|under 25|kids help phone|runaway)\b/i.test(textLower)) {
+        boost += 100;
+        console.log(`[YouthBoost] "${svc.name.substring(0, 40)}" +100 for youth services`);
+      }
+      // Penalty for senior-only services
+      if (/\b(senior only|65\+|elderly only|seniors only)\b/i.test(textLower)) {
+        boost -= 50;
+      }
+    }
+
+    // Newcomer services boosting
+    const isNewcomerQuery = /\b(newcomer|immigrant|refugee|new to canada|settlement|ESL|asylum|citizenship)\b/i.test(queryLower);
+    if (isNewcomerQuery) {
+      if (/\b(immigrant|refugee|newcomer|settlement|ESL|language|citizenship|sponsorship)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[NewcomerBoost] "${svc.name.substring(0, 40)}" +120 for newcomer services`);
+      }
+      if (/\b(work permit|visa|immigration|asylum|refugee services)\b/i.test(textLower)) {
+        boost += 80;
+      }
+    }
+
+    // Family addiction support boosting (Al-Anon, Nar-Anon)
+    const isFamilyAddictionQuery = /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcohol|drug|drinking|using)\b/i.test(queryLower) || /\b(al-?anon|nar-?anon)\b/i.test(queryLower);
+    if (isFamilyAddictionQuery) {
+      if (/\b(al-?anon|nar-?anon|family.*support|loved one|concerned|codependent|family.*addiction)\b/i.test(textLower)) {
+        boost += 180; // Very high - must beat treatment services
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +180 for family addiction support`);
+      }
+      // Penalty for treatment/detox services (wrong target - those are for the addict)
+      if (/\b(detox|rehab|residential treatment|treatment center|inpatient|recovery house)\b/i.test(textLower)) {
+        boost -= 80;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" -80 penalty for treatment (wrong target)`);
+      }
+    }
+
+    // Financial support boosting
+    const isFinancialQuery = /\b(debt|bills?|financial|money|can'?t afford|bankruptcy|collections?)\b/i.test(queryLower);
+    if (isFinancialQuery) {
+      if (/\b(financial|debt|credit counsell?ing|bankruptcy|money management|budget)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[FinancialBoost] "${svc.name.substring(0, 40)}" +120 for financial support`);
+      }
+      if (/\b(payday loan|collections?|bills|utilities assistance)\b/i.test(textLower)) {
+        boost += 60;
+      }
+    }
+
+    // Caregiver support boosting
+    const isCaregiverQuery = /\b(caregiver|caregiving|caring for|looking after|respite)\b/i.test(queryLower);
+    if (isCaregiverQuery) {
+      if (/\b(caregiver|respite|family caregiver|caregiver support|caregiver burnout)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +120 for caregiver support`);
+      }
+      if (/\b(caring for|looking after|support for families)\b/i.test(textLower)) {
+        boost += 60;
+      }
+    }
+
+    // LGBTQ+ services boosting
+    const isLgbtqQuery = /\b(lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|coming out|pride|2slgbtq)\b/i.test(queryLower);
+    if (isLgbtqQuery) {
+      if (/\b(lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|pride|2slgbtq)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +150 for LGBTQ+ services`);
+      }
+      if (/\b(gender affirming|hormone therapy|coming out|pride center|pride centre)\b/i.test(textLower)) {
+        boost += 80;
       }
     }
 
@@ -973,7 +1172,12 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const startTime = Date.now();
 
     // Check if this is a domain-specific intent that needs OpenAI query enhancement
-    const isDomainIntent = ['domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse', 'mental_health'].includes(analysis.intent);
+    const isDomainIntent = [
+      'domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse',
+      'mental_health', 'disability_support', 'grief_support', 'senior_services',
+      'legal_aid', 'employment_support', 'youth_services', 'newcomer_services',
+      'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services'
+    ].includes(analysis.intent);
 
     // Check if embeddings are available (cached after first check)
     const hasEmbeddings = await checkEmbeddingsAvailable();
@@ -1132,6 +1336,17 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         'housing_urgent': 'shelter housing emergency homeless',
         'food_insecurity': 'food bank meals groceries',
         'domestic_violence': 'domestic violence shelter women safety',
+        'disability_support': 'autism disability support group social skills neurodivergent ADHD community program',
+        'grief_support': 'grief bereavement loss mourning support group counselling hospice memorial',
+        'senior_services': 'senior elderly aging support services home care meals retirement dementia geriatric',
+        'legal_aid': 'legal aid lawyer court services immigration family law custody divorce free legal',
+        'employment_support': 'employment job training career support workforce resume EI unemployment',
+        'youth_services': 'youth teen adolescent services support young adult crisis kids help phone',
+        'newcomer_services': 'immigrant refugee newcomer settlement services ESL language citizenship',
+        'family_addiction_support': 'al-anon nar-anon family addiction support loved one caregiver intervention',
+        'financial_support': 'financial debt credit counselling bankruptcy budget money management assistance',
+        'caregiver_support': 'caregiver respite family caregiver support burnout caring for elderly',
+        'lgbtq_services': 'lgbtq lgbt queer trans transgender gay lesbian pride gender affirming support',
       };
 
       const fallbackTerms = domainFallbackTerms[analysis.intent];
