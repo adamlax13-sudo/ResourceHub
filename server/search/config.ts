@@ -234,6 +234,15 @@ export const SEARCH_CONFIG = {
       /(?:escape|leave|flee).*(?:relationship|partner|husband|wife|abuser)/i,
       /(?:women'?s|woman'?s).*(?:shelter|safe)/i,
       /(?:he|she).*(?:threatens|threatening|controls|controlling)/i,
+      // Sexual assault / rape
+      /\b(?:raped|rape|sexual assault|sexually assaulted|molested|sexual abuse)\b/i,
+      /(?:he|she|partner|ex).*(?:forced|made).*(?:me|sex)/i,
+      // Stalking / harassment
+      /\b(?:stalking|stalker|stalked|harassing|harassment)\b.*(?:ex|partner|won'?t leave)/i,
+      /(?:ex|partner).*(?:won'?t|will not).*(?:leave me alone|stop|go away)/i,
+      // Coercive control
+      /(?:controls?|controlling).*(?:my|money|friends|family|phone|where I go)/i,
+      /\b(?:financial abuse|emotional abuse|coercive control|isolated me)\b/i,
     ],
     food_insecurity: [
       /(?:hungry|starving).*(?:no food|can'?t eat|nothing to eat)/i,
@@ -292,6 +301,20 @@ export const SEARCH_CONFIG = {
       /(?:can'?t|cannot|don'?t|hard to).*(?:make|keep|have).*(?:friends|friendships|connections)/i,
       /(?:no friends|have no friends|friendless|alone|no one to talk)/i,
       /(?:socially|social).*(?:awkward|anxious|isolated|struggling)/i,
+      // Eating disorders
+      /\b(?:anorexia|anorexic|bulimia|bulimic|binge eating|eating disorder|ED recovery)\b/i,
+      /(?:can'?t|won'?t|afraid to).*(?:eat|eating)|(?:purging|throwing up|making myself sick)/i,
+      // Self-harm
+      /\b(?:self-?harm|cutting|self-?injury|hurting myself|burning myself)\b/i,
+      /(?:want to|urge to).*(?:hurt myself|cut myself|harm myself)/i,
+      // Specific conditions
+      /\b(?:bipolar|manic|mania|schizophrenia|psychosis|psychotic|hearing voices|BPD|borderline)\b/i,
+      /\b(?:OCD|obsessive.*compulsive|intrusive thoughts|compulsions?)\b/i,
+      /\b(?:panic attack|agoraphobia|phobia|social anxiety)\b/i,
+      // Postpartum
+      /\b(?:postpartum|post-?partum|PPD|baby blues|after giving birth).*(?:depression|anxiety|help|support)/i,
+      // Trauma/PTSD
+      /\b(?:PTSD|post-?traumatic|trauma|flashbacks?|nightmares?|triggered)\b/i,
     ],
     // Disability and neurodivergent support - checked BEFORE mental_health fallback in analyzer
     // Combined patterns: disability condition + social/support need
@@ -320,13 +343,21 @@ export const SEARCH_CONFIG = {
     // Grief and bereavement support
     grief_support: [
       /(?:grief|bereavement|mourning).*(?:support|counsell?ing|group|help)/i,
-      /(?:lost|death of|passed away|died|murdered|killed).*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one|sibling|brother|sister)/i,
+      /(?:lost|death of|passed away|died|murdered|killed).*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one|sibling|brother|sister|baby|friend|pet|dog|cat)/i,
       /(?:coping|dealing).*(?:with|after).*(?:loss|death|passing|murder)/i,
       /(?:widow|widower|bereaved)\b/i,
       /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter).*(?:died|passed|passed away|gone|murdered|killed|was killed)\b/i,
       // Violent loss patterns
-      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one).*(?:was|were|got).*(?:murdered|killed|shot|stabbed)\b/i,
+      /\b(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one).*(?:was|were|got).*(?:murdered|killed|shot|stabbed|drowned)\b/i,
       /\b(?:murdered|killed|homicide|violent death|took their life|suicide|overdose|OD'd)\b.*(?:my|a).*(?:mom|dad|parent|spouse|husband|wife|child|son|daughter|loved one)/i,
+      // Pregnancy/infant loss
+      /\b(?:miscarriage|stillbirth|stillborn|lost the baby|baby died|infant loss|pregnancy loss|SIDS)\b/i,
+      // Pet loss
+      /\b(?:my|our).*(?:dog|cat|pet).*(?:died|passed|had to put down|euthanized|put to sleep)\b/i,
+      /\b(?:pet loss|losing a pet|grieving.*pet)\b/i,
+      // Accident/illness related
+      /\b(?:died in|killed in|lost.*to).*(?:accident|crash|fire|cancer|illness)\b/i,
+      /\b(?:terminal|hospice|end of life|dying).*(?:family|parent|spouse|child|loved one)\b/i,
     ],
     // Senior and elderly services
     senior_services: [
@@ -481,6 +512,15 @@ export const SEARCH_CONFIG = {
       /\b(lonely|loneliness|isolated|isolation|no.*friends|can'?t.*make.*friends|socially.*awkward)\b/i,
       /\b(don'?t.*have.*friends|have.*no.*friends|friendless|no.*social.*(?:life|connections?|skills?))\b/i,
       /\b(social.*anxiety|social.*phobia|social.*skills|social.*difficulties)\b/i,
+      // Eating disorders
+      /\b(anorexia|anorexic|bulimia|bulimic|binge.*eat|eating.*disorder|purging)\b/i,
+      // Self-harm
+      /\b(self-?harm|cutting|self-?injury|hurting.*myself|burning.*myself)\b/i,
+      // Specific conditions
+      /\b(borderline|BPD|manic|mania|psychosis|psychotic|hearing.*voices|dissociat)\b/i,
+      /\b(agoraphobia|phobia|intrusive.*thoughts|compulsions?|flashbacks?)\b/i,
+      // Postpartum
+      /\b(postpartum|post-?partum|PPD|baby.*blues|perinatal)\b/i,
     ],
     // Disability and neurodivergent conditions (often need specialized support)
     disability: [
@@ -540,6 +580,10 @@ export const SEARCH_CONFIG = {
       /\b(grief|bereavement|mourning|loss|died|passed away|death|funeral|memorial)\b/i,
       /\b(widow|widower|bereaved|losing.*loved one)\b/i,
       /\b(murdered|killed|homicide|suicide|overdose|OD'd|took their life|violent death)\b/i,
+      /\b(miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|lost the baby)\b/i,
+      /\b(pet.*died|dog.*died|cat.*died|pet loss|put to sleep|euthanized)\b/i,
+      /\b(terminal|hospice|end of life|dying|cancer took)\b/i,
+      /\b(accident|crash|drowned|fire).*(?:died|killed|lost)\b/i,
     ],
     // Senior/elderly indicators
     senior: [

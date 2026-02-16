@@ -118,6 +118,11 @@ Examples:
 "lonely no friends isolated" → {"rewritten":"social isolation support","categories":["mental health","community","support"],"keywords":["loneliness","isolation","social support","counselling","community","support group","mental health"]}
 "my mom passed away" → {"rewritten":"grief bereavement support","categories":["grief","bereavement","support"],"keywords":["grief","loss","mourning","support group","counselling","bereavement","hospice"]}
 "my husband was murdered" → {"rewritten":"grief violent loss survivor support","categories":["grief","bereavement","trauma"],"keywords":["grief","loss","mourning","homicide","violent loss","survivor","trauma","counselling","support group"]}
+"i had a miscarriage" → {"rewritten":"pregnancy loss grief support","categories":["grief","pregnancy loss","support"],"keywords":["miscarriage","pregnancy loss","infant loss","grief","bereavement","support group","perinatal"]}
+"my dog died" → {"rewritten":"pet loss grief support","categories":["grief","pet loss"],"keywords":["pet loss","grief","bereavement","animal loss","support","counselling"]}
+"i was raped" → {"rewritten":"sexual assault support services","categories":["crisis","sexual assault","trauma"],"keywords":["sexual assault","rape","crisis","trauma","support","counselling","SACE"]}
+"i have an eating disorder" → {"rewritten":"eating disorder support treatment","categories":["mental health","eating disorder"],"keywords":["eating disorder","anorexia","bulimia","recovery","treatment","support","therapy"]}
+"postpartum depression help" → {"rewritten":"postpartum depression support","categories":["mental health","postpartum"],"keywords":["postpartum","PPD","depression","perinatal","support","counselling","new mom"]}
 "senior services for my dad" → {"rewritten":"senior elderly care services","categories":["senior","aging","elder care"],"keywords":["senior","elderly","aging","home care","dementia","retirement","meals on wheels"]}
 "need a lawyer for custody" → {"rewritten":"family law legal aid custody","categories":["legal","family law"],"keywords":["legal aid","lawyer","custody","family court","divorce","child support"]}
 "lost my job need help" → {"rewritten":"employment job training support","categories":["employment","career"],"keywords":["employment","job training","resume","career","workforce","EI","unemployment"]}
@@ -675,11 +680,20 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     }
 
     // Grief support boosting
-    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide|overdose|took their life)\b/i.test(queryLower);
+    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide|overdose|took their life|miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|pet died|dog died|cat died|put to sleep|drowned|accident|terminal|cancer)\b/i.test(queryLower);
     if (isGriefQuery) {
       if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral|survivors?|violent loss)\b/i.test(textLower)) {
         boost += 120;
         console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +120 for grief support`);
+      }
+      // Pregnancy/infant loss specific
+      if (/\b(miscarriage|stillbirth|pregnancy loss|infant loss|perinatal|SIDS|baby loss)\b/i.test(textLower)) {
+        boost += 100;
+        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +100 for pregnancy/infant loss`);
+      }
+      // Pet loss specific
+      if (/\b(pet loss|pet bereavement|animal loss|companion animal)\b/i.test(textLower)) {
+        boost += 80;
       }
       if (/\b(support group|peer support|counsell?ing)\b/i.test(textLower)) {
         boost += 60;
