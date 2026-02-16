@@ -430,6 +430,32 @@ export const SEARCH_CONFIG = {
       /\b(?:pride|gender affirming|hormone therapy|gender identity)\b/i,
       /\b(?:lgbtq|lgbt|queer|trans).*(?:youth|teen|senior|elder)\b/i,
     ],
+    // Indigenous services (First Nations, Métis, Inuit)
+    indigenous_services: [
+      /\b(?:indigenous|first nations?|métis|metis|inuit|native|aboriginal).*(?:services?|support|help|resources?)/i,
+      /\b(?:treaty|reserve|band office|status card|status indian)\b/i,
+      /\b(?:elder|smudging|sweat lodge|ceremony|medicine wheel|traditional healing)\b/i,
+      /\b(?:residential school|sixties scoop|MMIWG|missing.*murdered.*indigenous)\b/i,
+      /\b(?:indigenous|native|aboriginal).*(?:mental health|addiction|healing|wellness)\b/i,
+      /\b(?:jordan'?s principle|nihb|non-?insured health benefits)\b/i,
+    ],
+    // Student/campus services
+    student_services: [
+      /\b(?:student|university|college|campus).*(?:counsell?ing|mental health|support|crisis)/i,
+      /\b(?:u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|sait|nait|macewan|bow valley)\b/i,
+      /\b(?:academic|exam|finals|stress|thesis|dissertation|failing|dropped out)\b/i,
+      /\b(?:dorm|residence|student housing|roommate|tuition|student loan)\b/i,
+      /\b(?:grad student|undergrad|postgrad|phd|masters|degree)\b/i,
+    ],
+    // Parenting and baby support
+    parenting_support: [
+      /\b(?:pregnant|pregnancy|prenatal|postpartum|new mom|new parent|expecting)\b/i,
+      /\b(?:baby|infant|newborn|toddler).*(?:help|support|need|struggling)/i,
+      /\b(?:formula|diapers|baby supplies|infant essentials|car seat|crib|stroller)\b/i,
+      /\b(?:parenting|parent support|single parent|teen parent|young parent)\b/i,
+      /\b(?:breastfeeding|nursing|lactation|postpartum depression|ppd|baby blues)\b/i,
+      /\b(?:childcare|daycare|child care).*(?:help|afford|can'?t|need)/i,
+    ],
   },
 
   // === SUBSTANCE-SPECIFIC PATTERNS ===
@@ -617,6 +643,19 @@ export const SEARCH_CONFIG = {
       /\b(lgbtq|lgbt|2slgbtq|queer|gay|lesbian|trans|transgender|bisexual|non-?binary)\b/i,
       /\b(coming out|pride|gender affirming|hormone therapy|gender identity)\b/i,
     ],
+    // Indigenous indicators
+    indigenous: [
+      /\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i,
+      /\b(treaty|reserve|band office|status|elder|ceremony|smudging|traditional healing)\b/i,
+      /\b(residential school|sixties scoop|MMIWG|jordan'?s principle)\b/i,
+    ],
+    // Parenting/baby indicators
+    parenting: [
+      /\b(pregnant|pregnancy|prenatal|postpartum|expecting|due date)\b/i,
+      /\b(baby|infant|newborn|toddler|diapers|formula|breastfeeding|nursing)\b/i,
+      /\b(parent|parenting|mom|dad|single parent|teen parent|young parent)\b/i,
+      /\b(childcare|daycare|car seat|crib|stroller|baby supplies)\b/i,
+    ],
   },
 
   // === DISTRESS/NEED INDICATORS ===
@@ -698,7 +737,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'student_services' | 'parenting_support' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type

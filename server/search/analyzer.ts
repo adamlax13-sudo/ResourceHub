@@ -378,6 +378,24 @@ function detectDomainIntent(query: string): QueryIntent | null {
     return 'newcomer_services';
   }
 
+  // Check indigenous indicators
+  if (categoryIndicators.indigenous?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: indigenous_services (via indigenous indicator)`);
+    return 'indigenous_services';
+  }
+
+  // Check student/campus indicators
+  if (categoryIndicators.student?.some(p => p.test(q)) && hasDistress) {
+    console.log(`[QueryAnalyzer] Domain intent detected: student_services (via student indicator + distress)`);
+    return 'student_services';
+  }
+
+  // Check parenting indicators
+  if (categoryIndicators.parenting?.some(p => p.test(q))) {
+    console.log(`[QueryAnalyzer] Domain intent detected: parenting_support (via parenting indicator)`);
+    return 'parenting_support';
+  }
+
   // Check mental health indicators (even without explicit distress - symptoms are distress)
   if (categoryIndicators.mental_health.some(p => p.test(q))) {
     console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via mental health indicator)`);

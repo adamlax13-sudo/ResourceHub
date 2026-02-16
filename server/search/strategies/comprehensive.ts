@@ -131,7 +131,10 @@ Examples:
 "my husband is an alcoholic" → {"rewritten":"family addiction support al-anon","categories":["family support","addiction"],"keywords":["al-anon","family addiction support","loved one","concerned person","codependent"]}
 "cant pay my bills in debt" → {"rewritten":"financial debt assistance","categories":["financial","debt"],"keywords":["financial","debt","credit counselling","bankruptcy","budget","money management"]}
 "caregiver burnout exhausted" → {"rewritten":"caregiver respite support","categories":["caregiver","respite"],"keywords":["caregiver","respite","burnout","support","family caregiver"]}
-"trans healthcare support" → {"rewritten":"LGBTQ transgender healthcare","categories":["lgbtq","transgender"],"keywords":["lgbtq","trans","transgender","gender affirming","pride","healthcare"]}`
+"trans healthcare support" → {"rewritten":"LGBTQ transgender healthcare","categories":["lgbtq","transgender"],"keywords":["lgbtq","trans","transgender","gender affirming","pride","healthcare"]}
+"indigenous mental health support" → {"rewritten":"indigenous first nations mental health","categories":["indigenous","first nations"],"keywords":["indigenous","first nations","metis","inuit","native","aboriginal","elder","traditional healing"]}
+"student counselling uofc" → {"rewritten":"university calgary student counselling","categories":["campus","student"],"keywords":["ucalgary","u of c","student","campus","counselling","wellness","university"]}
+"i need diapers and formula" → {"rewritten":"baby supplies parenting support","categories":["parenting","baby resources"],"keywords":["baby","infant","diapers","formula","parenting","parent support","baby supplies"]}`
       }, {
         role: 'user',
         content: rawQuery
@@ -508,6 +511,18 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   'lgbtq_services': {
     serviceTypes: ['lgbtq_services', 'pride'],
     categoryPatterns: /lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|pride|gender affirming|2slgbtq/i,
+  },
+  'indigenous_services': {
+    serviceTypes: ['indigenous_services', 'first_nations'],
+    categoryPatterns: /indigenous|first nations?|métis|metis|inuit|native|aboriginal|treaty|reserve|elder|ceremony|traditional healing/i,
+  },
+  'student_services': {
+    serviceTypes: ['campus_services', 'student_support'],
+    categoryPatterns: /campus|university|college|student|u of c|u of a|ucalgary|ualberta|mount royal|mru|sait|nait|macewan/i,
+  },
+  'parenting_support': {
+    serviceTypes: ['parenting', 'baby_resources', 'family_support'],
+    categoryPatterns: /pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support|childcare|daycare|formula|diapers/i,
   },
 };
 
@@ -971,6 +986,45 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
+    // Indigenous services boosting
+    if (intent === 'indigenous_services') {
+      if (/\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[IndigenousBoost] "${svc.name.substring(0, 40)}" boosted as indigenous service`);
+      }
+      if (/\b(elder|ceremony|smudging|sweat lodge|traditional healing|medicine wheel)\b/i.test(textLower)) {
+        boost += 80;
+      }
+      if (/\b(treaty|reserve|band|status|nihb|jordan'?s principle)\b/i.test(textLower)) {
+        boost += 60;
+      }
+    }
+
+    // Parenting/baby support boosting
+    if (intent === 'parenting_support') {
+      if (/\b(pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[ParentingBoost] "${svc.name.substring(0, 40)}" boosted as parenting support`);
+      }
+      if (/\b(formula|diapers|baby supplies|car seat|crib|stroller|breastfeeding|lactation)\b/i.test(textLower)) {
+        boost += 80;
+      }
+      if (/\b(single parent|teen parent|young parent|childcare|daycare)\b/i.test(textLower)) {
+        boost += 60;
+      }
+    }
+
+    // Student services boosting (when intent is student_services)
+    if (intent === 'student_services') {
+      if (/\b(campus|university|college|student|u of c|u of a|ucalgary|ualberta|mount royal|mru|sait|nait|macewan)\b/i.test(textLower)) {
+        boost += 120;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" boosted as campus service`);
+      }
+      if (/\b(student.*counsell?ing|student.*wellness|student.*services)\b/i.test(textLower)) {
+        boost += 80;
+      }
+    }
+
     // Substance-specific boosting (for substance_abuse intent)
     // Boost values must be LARGE (50-100+) to overcome SQL scores of 100-150
     if (intent === 'substance_abuse' && analysis?.substanceType) {
@@ -1191,7 +1245,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       'domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse',
       'mental_health', 'disability_support', 'grief_support', 'senior_services',
       'legal_aid', 'employment_support', 'youth_services', 'newcomer_services',
-      'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services'
+      'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services',
+      'indigenous_services', 'student_services', 'parenting_support'
     ].includes(analysis.intent);
 
     // Check if embeddings are available (cached after first check)
@@ -1362,6 +1417,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         'financial_support': 'financial debt credit counselling bankruptcy budget money management assistance',
         'caregiver_support': 'caregiver respite family caregiver support burnout caring for elderly',
         'lgbtq_services': 'lgbtq lgbt queer trans transgender gay lesbian pride gender affirming support',
+        'indigenous_services': 'indigenous first nations métis inuit native aboriginal elder ceremony healing treaty',
+        'student_services': 'campus university college student counselling mental health support crisis',
+        'parenting_support': 'pregnancy pregnant baby infant parenting parent support formula diapers childcare postpartum',
       };
 
       const fallbackTerms = domainFallbackTerms[analysis.intent];
