@@ -134,3 +134,118 @@ class ScraperLog(Base):
     __table_args__ = (
         Index('idx_scraper_log_started', 'started_at'),
     )
+
+
+class WebsiteCrawl(Base):
+    """Record of a deep website crawl."""
+    __tablename__ = 'website_crawls'
+
+    id = Column(Integer, primary_key=True)
+    service_id = Column(String(255), ForeignKey('services.service_id'), nullable=False, index=True)
+
+    # Crawl metadata
+    base_url = Column(Text, nullable=False)
+    crawl_date = Column(DateTime, default=func.now())
+    pages_crawled = Column(Integer, default=0)
+    crawl_duration_seconds = Column(Integer)
+
+    # Results summary
+    intake_pages_found = Column(Integer, default=0)
+    eligibility_pages_found = Column(Integer, default=0)
+    services_pages_found = Column(Integer, default=0)
+
+    # Errors
+    errors = Column(JSON)  # Array of error messages
+    robots_respected = Column(Boolean, default=True)
+
+    __table_args__ = (
+        Index('idx_crawl_service', 'service_id'),
+        Index('idx_crawl_date', 'crawl_date'),
+    )
+
+
+class CrawledPage(Base):
+    """A single page crawled from a website."""
+    __tablename__ = 'crawled_pages'
+
+    id = Column(Integer, primary_key=True)
+    crawl_id = Column(Integer, ForeignKey('website_crawls.id'), nullable=False, index=True)
+
+    # Page details
+    url = Column(Text, nullable=False)
+    page_type = Column(String(50))  # 'intake', 'eligibility', 'services', 'contact', etc.
+    classification_confidence = Column(Integer)  # 0-100
+
+    # Content (stored for extraction)
+    text_content = Column(Text)
+    html_content = Column(Text)
+
+    # Metadata
+    crawl_depth = Column(Integer, default=0)
+    crawl_time_ms = Column(Integer)
+    status_code = Column(Integer)
+
+    __table_args__ = (
+        Index('idx_page_crawl', 'crawl_id'),
+        Index('idx_page_type', 'page_type'),
+    )
+
+
+class ServiceIntakeDetails(Base):
+    """Detailed intake process extracted from service website."""
+    __tablename__ = 'service_intake_details'
+
+    id = Column(Integer, primary_key=True)
+    service_id = Column(String(255), ForeignKey('services.service_id'), nullable=False, unique=True, index=True)
+
+    # Detailed steps (more structured than process_steps in services table)
+    steps = Column(JSON)  # Array of step objects with action, details, timing
+
+    # Intake contact (may differ from main contact)
+    intake_phone = Column(String(100))
+    intake_email = Column(String(255))
+    intake_hours = Column(String(255))
+
+    # Time estimates
+    total_time_estimate = Column(String(255))
+
+    # Intake methods
+    primary_contact_method = Column(String(50))  # phone, online, in-person
+    walk_in_available = Column(Boolean, default=False)
+    appointment_required = Column(Boolean, default=False)
+    online_application_available = Column(Boolean, default=False)
+    online_application_url = Column(Text)
+
+    # Referral info
+    requires_referral = Column(Boolean, default=False)
+    referral_sources = Column(JSON)  # Array of referral source types
+
+    # Required documents
+    required_documents = Column(JSON)  # Array of document names
+
+    # Source tracking
+    source_url = Column(Text)
+    extracted_at = Column(DateTime, default=func.now())
+    extraction_confidence = Column(Integer, default=50)  # 0-100
+
+
+class ServiceFieldSource(Base):
+    """Tracks the source of each field's data for a service."""
+    __tablename__ = 'service_field_sources'
+
+    id = Column(Integer, primary_key=True)
+    service_id = Column(String(255), ForeignKey('services.service_id'), nullable=False, index=True)
+    field_name = Column(String(100), nullable=False)
+
+    # Source info
+    source = Column(String(50), nullable=False)  # 'direct_website', '211_alberta', 'informalberta', 'reference_data', 'ai_enrichment'
+    source_url = Column(Text)
+    extraction_date = Column(DateTime, default=func.now())
+    confidence = Column(Integer, default=50)  # 0-100
+
+    # For auditing
+    raw_value = Column(Text)
+
+    __table_args__ = (
+        Index('idx_source_service_field', 'service_id', 'field_name'),
+    )

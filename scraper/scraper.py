@@ -4,6 +4,7 @@ Unified Alberta Service Scraper & Data Pipeline.
 
 A single entry point for all data management tasks:
   - Scraping and enriching service data from 211 Alberta, InformAlberta, and websites
+  - Deep crawling service websites for detailed intake/eligibility information
   - Normalizing contact information (phone, email, address extraction)
   - Enhancing searchable tags
   - Generating vector embeddings for semantic search
@@ -15,7 +16,9 @@ Usage:
     python scraper.py --phase reference         # Only reference data sync
     python scraper.py --phase 211               # Only 211 discovery
     python scraper.py --phase enrich            # Only 211 enrichment
-    python scraper.py --phase websites          # Only website scraping
+    python scraper.py --phase websites          # Only website scraping (legacy shallow)
+    python scraper.py --phase deepcrawl         # Deep crawl service websites
+    python scraper.py --phase extract           # Extract intake/eligibility from crawled pages
     python scraper.py --phase informalberta     # Only InformAlberta enrichment
     python scraper.py --phase normalize         # Only normalize contacts
     python scraper.py --phase tags              # Only enhance tags
@@ -51,7 +54,11 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-from models import Base, Service, ServiceHistory, ScraperLog
+from models import Base, Service, ServiceHistory, ScraperLog, WebsiteCrawl, CrawledPage, ServiceIntakeDetails, ServiceFieldSource
+
+# Deep crawler and extractors
+from deep_crawler import DeepCrawler, PageType
+from extractors import IntakeExtractor, EligibilityExtractor
 
 # Optional OpenAI integration
 try:
@@ -831,6 +838,258 @@ def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLo
             logger.error(f"Failed: {e}")
 
 
+def phase_deep_crawl(session, client: Optional[OpenAIClient], log: ScraperLog):
+    """Phase 4b: Deep crawl service websites for detailed information.
+
+    Crawls 2-3 levels deep to find intake procedures, eligibility criteria,
+    and program details that aren't visible on the homepage.
+    """
+    logger.info("=== Phase 4b: Deep Website Crawling ===")
+
+    crawler = DeepCrawler(
+        max_depth=2,
+        max_pages=15,
+        request_delay=2.0,
+        openai_client=client
+    )
+
+    # Get services with websites that haven't been deep crawled recently
+    services = session.query(Service).filter(
+        Service.is_active == True,
+        Service.website_url != None,
+        Service.website_url != ""
+    ).all()
+
+    # Filter to services missing intake details or not recently crawled
+    services_to_crawl = []
+    for service in services:
+        # Check if already crawled recently
+        recent_crawl = session.query(WebsiteCrawl).filter(
+            WebsiteCrawl.service_id == service.service_id
+        ).order_by(WebsiteCrawl.crawl_date.desc()).first()
+
+        if recent_crawl:
+            days_since = (datetime.now() - recent_crawl.crawl_date).days
+            if days_since < 30:
+                continue
+
+        services_to_crawl.append(service)
+
+    logger.info(f"Found {len(services_to_crawl)} services to deep crawl")
+
+    # Limit per run to avoid overload
+    for i, service in enumerate(services_to_crawl[:50]):
+        logger.info(f"[{i+1}/50] Deep crawling: {service.name}")
+        try:
+            result = crawler.crawl_website(service.website_url)
+
+            # Store crawl result
+            crawl_record = WebsiteCrawl(
+                service_id=service.service_id,
+                base_url=service.website_url,
+                pages_crawled=result.total_pages_crawled,
+                crawl_duration_seconds=int(result.crawl_duration_seconds),
+                intake_pages_found=len(result.page_types.get('intake', [])),
+                eligibility_pages_found=len(result.page_types.get('eligibility', [])),
+                services_pages_found=len(result.page_types.get('services', [])),
+                errors=result.errors if result.errors else None,
+                robots_respected=result.robots_respected
+            )
+            session.add(crawl_record)
+            session.flush()  # Get the crawl_id
+
+            # Store crawled pages
+            for url, page in result.pages.items():
+                page_record = CrawledPage(
+                    crawl_id=crawl_record.id,
+                    url=url,
+                    page_type=page.page_type.value,
+                    classification_confidence=int(page.classification.confidence * 100),
+                    text_content=page.text_content[:50000],  # Limit storage
+                    html_content=page.html[:100000] if len(page.html) < 100000 else None,
+                    crawl_depth=page.depth,
+                    crawl_time_ms=int(page.crawl_time * 1000),
+                    status_code=page.status_code
+                )
+                session.add(page_record)
+
+            session.commit()
+            log.services_checked += 1
+
+            if result.total_pages_crawled > 0:
+                logger.info(f"  Crawled {result.total_pages_crawled} pages "
+                           f"(intake: {crawl_record.intake_pages_found}, "
+                           f"eligibility: {crawl_record.eligibility_pages_found})")
+
+        except Exception as e:
+            logger.error(f"Deep crawl failed for {service.name}: {e}")
+            session.rollback()
+            log.errors_count += 1
+
+
+def phase_enhanced_extraction(session, client: Optional[OpenAIClient], log: ScraperLog):
+    """Phase 4c: Extract detailed intake/eligibility from crawled pages.
+
+    Uses specialized extractors to pull detailed process steps,
+    eligibility criteria, and required documents from crawled pages.
+    """
+    logger.info("=== Phase 4c: Enhanced Extraction ===")
+
+    if not client:
+        logger.warning("OpenAI client required for enhanced extraction")
+        return
+
+    intake_extractor = IntakeExtractor(client)
+    eligibility_extractor = EligibilityExtractor(client)
+
+    # Get recent crawls that haven't been extracted yet
+    crawls = session.query(WebsiteCrawl).filter(
+        WebsiteCrawl.pages_crawled > 0
+    ).order_by(WebsiteCrawl.crawl_date.desc()).limit(100).all()
+
+    for crawl in crawls:
+        service = session.query(Service).filter_by(service_id=crawl.service_id).first()
+        if not service:
+            continue
+
+        # Check if already extracted
+        existing_intake = session.query(ServiceIntakeDetails).filter_by(
+            service_id=service.service_id
+        ).first()
+        if existing_intake and (datetime.now() - existing_intake.extracted_at).days < 30:
+            continue
+
+        logger.info(f"Extracting from {service.name}")
+
+        try:
+            # Get crawled pages for this service
+            pages = session.query(CrawledPage).filter_by(crawl_id=crawl.id).all()
+
+            # Find intake pages
+            intake_pages = [p for p in pages if p.page_type == 'intake']
+            eligibility_pages = [p for p in pages if p.page_type == 'eligibility']
+
+            # Also check homepage and services pages for intake info
+            other_pages = [p for p in pages if p.page_type in ('home', 'services', 'contact')]
+
+            best_intake = None
+            best_eligibility = None
+
+            # Extract from intake pages
+            for page in (intake_pages + other_pages)[:3]:  # Limit to 3 pages
+                if not page.text_content:
+                    continue
+
+                intake = intake_extractor.extract(
+                    text=page.text_content,
+                    html=page.html_content or "",
+                    service_name=service.name,
+                    source_url=page.url
+                )
+
+                if intake.is_complete():
+                    if not best_intake or len(intake.steps) > len(best_intake.steps):
+                        best_intake = intake
+                        best_intake.source_url = page.url
+
+            # Extract from eligibility pages
+            for page in (eligibility_pages + other_pages)[:3]:
+                if not page.text_content:
+                    continue
+
+                eligibility = eligibility_extractor.extract(
+                    text=page.text_content,
+                    html=page.html_content or "",
+                    service_name=service.name,
+                    source_url=page.url
+                )
+
+                if eligibility.is_complete():
+                    if not best_eligibility or (eligibility.summary and not best_eligibility.summary):
+                        best_eligibility = eligibility
+
+            # Update service with extracted data
+            updated = False
+
+            if best_intake and best_intake.steps:
+                # Update process_steps in main service
+                new_steps = best_intake.to_process_steps()
+                if new_steps and (not service.process_steps or len(new_steps) > len(service.process_steps or [])):
+                    service.process_steps = new_steps
+                    updated = True
+
+                    # Store detailed intake info
+                    intake_record = existing_intake or ServiceIntakeDetails(
+                        service_id=service.service_id
+                    )
+                    intake_record.steps = [
+                        {"action": s.action, "details": s.details, "timing": s.timing}
+                        for s in best_intake.steps
+                    ]
+                    intake_record.intake_phone = best_intake.intake_phone
+                    intake_record.intake_email = best_intake.intake_email
+                    intake_record.intake_hours = best_intake.intake_hours
+                    intake_record.total_time_estimate = best_intake.total_time_estimate
+                    intake_record.primary_contact_method = best_intake.primary_contact_method
+                    intake_record.walk_in_available = best_intake.walk_in_available
+                    intake_record.appointment_required = best_intake.appointment_required
+                    intake_record.online_application_available = best_intake.online_application_available
+                    intake_record.requires_referral = best_intake.requires_referral
+                    intake_record.required_documents = best_intake.required_documents
+                    intake_record.source_url = best_intake.source_url
+                    intake_record.extracted_at = datetime.now()
+                    intake_record.extraction_confidence = 70
+
+                    if not existing_intake:
+                        session.add(intake_record)
+
+                # Update required_docs if better
+                if best_intake.required_documents and (
+                    not service.required_docs or
+                    len(best_intake.required_documents) > len(service.required_docs or [])
+                ):
+                    service.required_docs = best_intake.required_documents
+                    updated = True
+
+                # Update phone if intake-specific and missing
+                if best_intake.intake_phone and not service.phone:
+                    service.phone = best_intake.intake_phone
+                    updated = True
+
+            if best_eligibility:
+                # Update eligibility if better
+                eligibility_text = best_eligibility.to_text()
+                if eligibility_text and (
+                    not service.eligibility or
+                    len(eligibility_text) > len(service.eligibility or "")
+                ):
+                    service.eligibility = eligibility_text
+                    updated = True
+
+                # Update gender restriction
+                if best_eligibility.gender_requirements and not service.gender_restriction:
+                    service.gender_restriction = best_eligibility.gender_requirements
+                    updated = True
+
+                # Update languages
+                if best_eligibility.languages_available and not service.languages_supported:
+                    service.languages_supported = best_eligibility.languages_available
+                    updated = True
+
+            if updated:
+                service.last_updated = datetime.now()
+                session.commit()
+                log.services_updated += 1
+                logger.info(f"  Updated {service.name} with extracted data")
+
+        except Exception as e:
+            logger.error(f"Extraction failed for {service.name}: {e}")
+            session.rollback()
+            log.errors_count += 1
+
+        time.sleep(1)  # Rate limit
+
+
 def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog):
     """Phase 5: Enrich services from InformAlberta."""
     logger.info("=== Phase 5: InformAlberta Enrichment ===")
@@ -1201,6 +1460,13 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
             phase_211_enrich(session, client, log)
         if all_phases or "websites" in phase_set:
             phase_website_enrich(session, client, log)
+
+        # Deep crawling phases (new)
+        if all_phases or "deepcrawl" in phase_set:
+            phase_deep_crawl(session, client, log)
+        if all_phases or "extract" in phase_set:
+            phase_enhanced_extraction(session, client, log)
+
         if (all_phases or "informalberta" in phase_set) and client:
             phase_informalberta_enrich(session, client, log)
 
@@ -1241,8 +1507,9 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Alberta Service Scraper & Data Pipeline")
     parser.add_argument("--phase", nargs="+", choices=[
-        "reference", "211", "enrich", "websites", "informalberta",
-        "normalize", "tags", "embeddings", "dedupe", "recover", "refresh"
+        "reference", "211", "enrich", "websites", "deepcrawl", "extract",
+        "informalberta", "normalize", "tags", "embeddings", "dedupe",
+        "recover", "refresh"
     ], help="Run specific phase(s)")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes without saving")
     args = parser.parse_args()

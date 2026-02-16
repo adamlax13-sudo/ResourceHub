@@ -4111,6 +4111,203 @@ def load_alberta_services() -> List[Dict]:
     ]
     services.extend(family_support)
 
+    # ==================== DISABILITY & AUTISM SUPPORT ====================
+    disability_services = [
+        {
+            'name': 'Autism Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-250-5033, autismcalgary.com',
+            'description': 'Programs and support for autistic individuals and families including social groups, life skills programs, respite, and community connections',
+            'process': ['Call 403-250-5033 or visit autismcalgary.com', 'Complete intake form', 'Meet with family support coordinator', 'Discuss needs and available programs', 'Register for programs'],
+            'waitTimes': 'Varies by program, typically 1-4 weeks',
+            'requiredDocs': ['Autism diagnosis (for some programs)'],
+            'location': 'Calgary',
+            'eligibility': 'Autistic individuals and their families in Calgary area',
+            'hours_of_operation': 'Mon-Fri 9am-5pm'
+        },
+        {
+            'name': 'Autism Edmonton',
+            'category': 'Disability & Autism Support',
+            'contact': '780-453-3971, autismedmonton.org',
+            'description': 'Community support, social skills groups, family resources, employment programs, and advocacy for autistic individuals',
+            'process': ['Call 780-453-3971 or visit autismedmonton.org', 'Complete membership application', 'Connect with program coordinator', 'Access programs and services', 'Join support groups'],
+            'waitTimes': 'Varies by program',
+            'requiredDocs': [],
+            'location': 'Edmonton',
+            'eligibility': 'Autistic individuals and families in Edmonton area',
+            'hours_of_operation': 'Mon-Fri 9am-5pm'
+        },
+        {
+            'name': 'Autism Society Alberta',
+            'category': 'Disability & Autism Support',
+            'contact': '1-855-252-7017, autismsocietyalberta.org',
+            'description': 'Province-wide autism advocacy, resources, support navigation, and connections to local services',
+            'process': ['Call 1-855-252-7017', 'Speak with resource navigator', 'Get connected to local autism services', 'Access online resources', 'Find support groups'],
+            'waitTimes': 'Immediate phone support',
+            'requiredDocs': [],
+            'location': 'Alberta-wide',
+            'eligibility': 'Anyone seeking autism support in Alberta',
+            'hours_of_operation': 'Mon-Fri 9am-4pm'
+        },
+        {
+            'name': 'CanLearn Society Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-686-9300, canlearnsociety.ca',
+            'description': 'Learning support, social skills programs, tutoring, and educational advocacy for neurodiverse learners including autism and ADHD',
+            'process': ['Call 403-686-9300', 'Complete intake assessment', 'Develop learning plan', 'Register for programs', 'Begin services'],
+            'waitTimes': '1-2 weeks for assessment',
+            'requiredDocs': ['Previous assessments if available'],
+            'location': 'Calgary',
+            'eligibility': 'Children and youth with learning differences, autism, ADHD',
+            'hours_of_operation': 'Mon-Fri 9am-5pm, some evening programs'
+        },
+        {
+            'name': 'Pacekids Programs Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-278-8389, pacekids.ca',
+            'description': 'Early intervention, therapy services, and support for children with developmental disabilities including autism',
+            'process': ['Call 403-278-8389', 'Complete referral form', 'Attend assessment', 'Develop therapy plan', 'Begin services'],
+            'waitTimes': 'Varies, typically 2-8 weeks',
+            'requiredDocs': ['Medical referral recommended'],
+            'location': 'Calgary',
+            'eligibility': 'Children with developmental disabilities and their families',
+            'hours_of_operation': 'Mon-Fri 8am-5pm'
+        },
+        {
+            'name': 'Gateway Association Edmonton',
+            'category': 'Disability & Autism Support',
+            'contact': '780-454-0701, gatewayassociation.ca',
+            'description': 'Community inclusion, employment support, day programs, and residential services for adults with developmental disabilities',
+            'process': ['Call 780-454-0701', 'Meet with intake coordinator', 'Complete assessment', 'Develop support plan', 'Access programs'],
+            'waitTimes': 'Varies by program',
+            'requiredDocs': ['PDD eligibility documentation'],
+            'location': 'Edmonton area',
+            'eligibility': 'Adults with developmental disabilities eligible for PDD',
+            'hours_of_operation': 'Mon-Fri 8:30am-4:30pm'
+        },
+        {
+            'name': 'AISH (Assured Income for the Severely Handicapped)',
+            'category': 'Disability & Autism Support',
+            'contact': '1-877-644-9992, alberta.ca/aish',
+            'description': 'Financial and health benefits for Albertans with permanent disabilities that limit ability to work',
+            'process': ['Call 1-877-644-9992 or apply at alberta.ca/aish', 'Complete application with medical information', 'Provide supporting documents', 'Attend assessment if required', 'Receive decision'],
+            'waitTimes': '3-6 months for application processing',
+            'requiredDocs': ['Medical documentation of disability', 'Proof of Alberta residency', 'Financial information'],
+            'location': 'Alberta-wide',
+            'eligibility': 'Alberta residents 18+ with permanent disability limiting employment',
+            'hours_of_operation': 'Mon-Fri 8:15am-4:30pm'
+        },
+        {
+            'name': 'PDD (Persons with Developmental Disabilities) Program',
+            'category': 'Disability & Autism Support',
+            'contact': '1-877-644-9992, alberta.ca/pdd',
+            'description': 'Supports and services for adults with developmental disabilities including residential, community access, and employment supports',
+            'process': ['Call 1-877-644-9992 or apply at alberta.ca/pdd', 'Complete eligibility application', 'Undergo assessment', 'Develop Individual Support Plan', 'Access funded services'],
+            'waitTimes': '3-6 months for eligibility determination',
+            'requiredDocs': ['Psychological assessment', 'Medical documentation', 'Proof of Alberta residency'],
+            'location': 'Alberta-wide',
+            'eligibility': 'Adults 18+ with developmental disability originating before age 18',
+            'hours_of_operation': 'Mon-Fri 8:15am-4:30pm'
+        },
+        {
+            'name': 'Autism Aspergers Friendship Society of Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-670-9776, aafscalgary.ca',
+            'description': 'Social groups, friendship programs, life skills, and recreation for autistic teens and adults',
+            'process': ['Call 403-670-9776 or email', 'Complete membership form', 'Attend orientation', 'Join social groups and programs', 'Build friendships'],
+            'waitTimes': 'Most programs start monthly',
+            'requiredDocs': [],
+            'location': 'Calgary',
+            'eligibility': 'Teens and adults on the autism spectrum seeking social connections',
+            'hours_of_operation': 'Various program times including evenings and weekends'
+        },
+        {
+            'name': 'Autism Programs - Recreation Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-268-3800, calgary.ca/recreation',
+            'description': 'Inclusive recreation programs, adapted sports, swimming lessons, and social activities for autistic individuals',
+            'process': ['Call 403-268-3800 or visit calgary.ca/recreation', 'Discuss accommodation needs', 'Register for programs', 'Attend orientation if needed', 'Participate in activities'],
+            'waitTimes': 'Varies by program',
+            'requiredDocs': [],
+            'location': 'Calgary - various recreation centres',
+            'eligibility': 'Autistic individuals of all ages',
+            'hours_of_operation': 'Varies by program'
+        },
+        {
+            'name': 'Centre for Autism Services Alberta (CASA)',
+            'category': 'Disability & Autism Support',
+            'contact': '780-488-6600, centreforautism.ab.ca',
+            'description': 'Comprehensive autism diagnosis, therapy, behavioural support, and family services',
+            'process': ['Call 780-488-6600', 'Complete referral form', 'Attend intake meeting', 'Undergo assessment', 'Begin therapy services'],
+            'waitTimes': '3-12 months depending on service',
+            'requiredDocs': ['Referral from physician or psychologist'],
+            'location': 'Edmonton',
+            'eligibility': 'Autistic individuals seeking diagnosis or therapy',
+            'hours_of_operation': 'Mon-Fri 8:30am-4:30pm'
+        },
+        {
+            'name': 'Ability Hub Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-284-2231, abilityhub.ca',
+            'description': 'Information, referral, and support navigation for people with disabilities and their families',
+            'process': ['Call 403-284-2231', 'Speak with navigator', 'Discuss your needs', 'Get connected to appropriate services', 'Receive ongoing support'],
+            'waitTimes': 'Immediate phone support',
+            'requiredDocs': [],
+            'location': 'Calgary',
+            'eligibility': 'Anyone with a disability or family members seeking support',
+            'hours_of_operation': 'Mon-Fri 9am-4pm'
+        },
+        {
+            'name': 'ADHD Edmonton Support',
+            'category': 'Disability & Autism Support',
+            'contact': 'adhdedmonton.com',
+            'description': 'Support groups, resources, and community connections for adults with ADHD',
+            'process': ['Visit adhdedmonton.com', 'Find support group meetings', 'Attend peer support sessions', 'Access online resources', 'Connect with community'],
+            'waitTimes': 'Monthly meetings',
+            'requiredDocs': [],
+            'location': 'Edmonton',
+            'eligibility': 'Adults with ADHD',
+            'hours_of_operation': 'Monthly meetings, typically evenings'
+        },
+        {
+            'name': 'CADDAC - Centre for ADHD Awareness Canada',
+            'category': 'Disability & Autism Support',
+            'contact': '1-416-637-8584, caddac.ca',
+            'description': 'National ADHD education, advocacy, resources, and support for individuals and families',
+            'process': ['Visit caddac.ca', 'Access educational resources', 'Find local support', 'Join webinars and programs', 'Connect with advocates'],
+            'waitTimes': 'Immediate online access',
+            'requiredDocs': [],
+            'location': 'Canada-wide (available in Alberta)',
+            'eligibility': 'Anyone affected by ADHD',
+            'hours_of_operation': '24/7 online resources'
+        },
+        {
+            'name': 'CNIB Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '1-800-563-2642, cnib.ca',
+            'description': 'Support services for people who are blind or partially sighted including technology training, life skills, and employment support',
+            'process': ['Call 1-800-563-2642', 'Complete intake', 'Meet with specialist', 'Develop support plan', 'Access services'],
+            'waitTimes': '1-2 weeks for initial consultation',
+            'requiredDocs': ['Vision assessment'],
+            'location': 'Calgary',
+            'eligibility': 'People who are blind or have low vision',
+            'hours_of_operation': 'Mon-Fri 8:30am-4:30pm'
+        },
+        {
+            'name': 'Canadian Hard of Hearing Association - Calgary',
+            'category': 'Disability & Autism Support',
+            'contact': '403-284-6200, chha-calgary.ca',
+            'description': 'Support, resources, and advocacy for people who are deaf or hard of hearing',
+            'process': ['Call 403-284-6200', 'Discuss needs with staff', 'Access assistive devices', 'Join support programs', 'Connect with community'],
+            'waitTimes': 'Varies by service',
+            'requiredDocs': ['Audiogram for some services'],
+            'location': 'Calgary',
+            'eligibility': 'People who are deaf or hard of hearing',
+            'hours_of_operation': 'Mon-Fri 9am-4pm'
+        },
+    ]
+    services.extend(disability_services)
+
     # ==================== HARM REDUCTION ====================
     harm_reduction = [
         {

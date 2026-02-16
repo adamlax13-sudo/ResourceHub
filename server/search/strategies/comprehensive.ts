@@ -579,6 +579,32 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
+    // Disability/Autism boosting - detect autism/disability in query and boost relevant services
+    const queryLower = analysis?.raw?.toLowerCase() || '';
+    const isDisabilityQuery = /\b(autis|autism|autistic|ASD|asperger|ADHD|ADD|disability|disabled|neurodivergent|neurodiverse|on the spectrum|sensory|developmental|AISH|PDD)\b/i.test(queryLower);
+    if (isDisabilityQuery) {
+      // Strong boost for disability-specific services
+      if (/\b(autis|autism|autistic|ASD|asperger|on the spectrum)\b/i.test(textLower)) {
+        boost += 50;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" boosted for autism match`);
+      }
+      if (/\b(disability|disabled|AISH|PDD|developmental|persons with disabilities|accessibility|accommodations?)\b/i.test(textLower)) {
+        boost += 40;
+        console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" boosted for disability services`);
+      }
+      if (/\b(neurodivergent|neurodiverse|ADHD|ADD|sensory processing|learning disability)\b/i.test(textLower)) {
+        boost += 35;
+      }
+      // Moderate boost for social skills and support groups relevant to autism
+      if (/\b(social skills|social support|support group|peer support|life skills|independent living)\b/i.test(textLower)) {
+        boost += 20;
+      }
+      // Slight penalty for generic mental health services when disability services exist
+      if (boost === 0 && /\b(mental health|counselling|therapy|psycholog)\b/i.test(textLower)) {
+        boost -= 5; // Only penalize if no disability-specific boost was applied
+      }
+    }
+
     // Family situation boosting
     if (familySituations.length > 0) {
       for (const situation of familySituations) {
