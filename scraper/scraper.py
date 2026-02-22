@@ -42,7 +42,7 @@ import time
 import uuid
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 from urllib.parse import urlparse
 
 import requests
@@ -200,7 +200,7 @@ def is_service_complete(service: Service) -> bool:
     return all(not should_enrich_field(service, f) for f in critical_fields)
 
 
-def init_openai() -> Optional[OpenAIClient]:
+def init_openai() -> Optional[Any]:
     """Initialize OpenAI client if available."""
     if not HAS_OPENAI:
         logger.warning("openai package not installed - AI features disabled")
@@ -281,7 +281,7 @@ def scrape_website(url: str) -> Dict:
         return {}
 
 
-def find_website_with_ai(client: OpenAIClient, name: str, location: str, category: str) -> Optional[str]:
+def find_website_with_ai(client: Any, name: str, location: str, category: str) -> Optional[str]:
     """Use OpenAI to find service website."""
     try:
         response = client.responses.create(
@@ -754,7 +754,7 @@ def sync_service_data(service_data: Dict, session, log: ScraperLog) -> str:
 # =============================================================================
 
 
-def phase_reference_sync(session, client: Optional[OpenAIClient], log: ScraperLog, claude_client=None):
+def phase_reference_sync(session, client: Optional[Any], log: ScraperLog, claude_client=None):
     """Phase 1: Sync reference data."""
     logger.info("=== Phase 1: Reference Data Sync ===")
     from reference_data import load_alberta_services
@@ -790,7 +790,7 @@ def phase_reference_sync(session, client: Optional[OpenAIClient], log: ScraperLo
             session.rollback()
 
 
-def phase_211_discovery(session, client: OpenAIClient, log: ScraperLog, claude_client=None):
+def phase_211_discovery(session, client: Any, log: ScraperLog, claude_client=None):
     """Phase 2: Discover new services from 211 Alberta."""
     logger.info("=== Phase 2: 211 Alberta Discovery ===")
     existing = get_existing_services_lookup(session)
@@ -837,7 +837,7 @@ def phase_211_discovery(session, client: OpenAIClient, log: ScraperLog, claude_c
             session.rollback()
 
 
-def phase_211_enrich(session, client: OpenAIClient, log: ScraperLog, claude_client=None):
+def phase_211_enrich(session, client: Any, log: ScraperLog, claude_client=None):
     """Phase 3: Enrich sparse services from 211."""
     logger.info("=== Phase 3: 211 Enrichment ===")
     all_services = session.query(Service).filter(Service.is_active == True).all()
@@ -871,7 +871,7 @@ def phase_211_enrich(session, client: OpenAIClient, log: ScraperLog, claude_clie
             logger.error(f"Failed: {e}")
 
 
-def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLog, claude_client=None):
+def phase_website_enrich(session, client: Optional[Any], log: ScraperLog, claude_client=None):
     """Phase 4: Scrape service websites for additional data."""
     logger.info("=== Phase 4: Website Enrichment ===")
     if not client:
@@ -910,7 +910,7 @@ def phase_website_enrich(session, client: Optional[OpenAIClient], log: ScraperLo
             logger.error(f"Failed: {e}")
 
 
-def phase_deep_crawl(session, client: Optional[OpenAIClient], log: ScraperLog):
+def phase_deep_crawl(session, client: Optional[Any], log: ScraperLog):
     """Phase 4b: Deep crawl service websites for detailed information.
 
     Crawls 2-3 levels deep to find intake procedures, eligibility criteria,
@@ -999,7 +999,7 @@ def phase_deep_crawl(session, client: Optional[OpenAIClient], log: ScraperLog):
             log.errors_count += 1
 
 
-def phase_enhanced_extraction(session, client: Optional[OpenAIClient], log: ScraperLog):
+def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog):
     """Phase 4c: Extract detailed intake/eligibility from crawled pages.
 
     Uses specialized extractors to pull detailed process steps,
@@ -1162,7 +1162,7 @@ def phase_enhanced_extraction(session, client: Optional[OpenAIClient], log: Scra
         time.sleep(1)  # Rate limit
 
 
-def phase_informalberta_enrich(session, client: OpenAIClient, log: ScraperLog, claude_client=None):
+def phase_informalberta_enrich(session, client: Any, log: ScraperLog, claude_client=None):
     """Phase 5: Enrich services from InformAlberta."""
     logger.info("=== Phase 5: InformAlberta Enrichment ===")
     all_services = session.query(Service).filter(Service.is_active == True).all()
@@ -1235,9 +1235,9 @@ def phase_normalize_contacts(session, log: ScraperLog, dry_run: bool = False):
                 service.website_url = url
                 changes = True
 
-        # Extract address from notes
-        if not service.address and service.notes:
-            match = re.search(r'Address:\s*([^|]+)', service.notes, re.I)
+        # Extract address from description field (may contain address info)
+        if not service.address and service.description:
+            match = re.search(r'Address:\s*([^|]+)', service.description, re.I)
             if match:
                 service.address = match.group(1).strip()
                 changes = True
@@ -1272,7 +1272,7 @@ def phase_enhance_tags(session, log: ScraperLog, dry_run: bool = False):
     updated_count = 0
 
     for service in all_services:
-        combined_text = " ".join(filter(None, [service.name, service.description, service.category, service.eligibility, service.notes]))
+        combined_text = " ".join(filter(None, [service.name, service.description, service.category, service.eligibility]))
         tags = set()
 
         # Location tags
@@ -1312,7 +1312,7 @@ def phase_enhance_tags(session, log: ScraperLog, dry_run: bool = False):
     logger.info(f"Enhanced tags for {updated_count} services")
 
 
-def phase_generate_embeddings(session, client: Optional[OpenAIClient], log: ScraperLog, regenerate_all: bool = False):
+def phase_generate_embeddings(session, client: Optional[Any], log: ScraperLog, regenerate_all: bool = False):
     """Phase 8: Generate vector embeddings for semantic search."""
     logger.info("=== Phase 8: Generate Embeddings ===")
     if not client:
@@ -1430,7 +1430,6 @@ def phase_dedupe_services(session, log: ScraperLog, dry_run: bool = False):
                 if 'alberta' in loc or 'province' in loc:
                     if not dry_run:
                         svc.is_active = False
-                        svc.notes = (svc.notes or '') + f' [Deactivated: Redundant with local entries]'
                     deactivated += 1
                     logger.info(f"Deactivating: {svc.name} ({svc.location})")
                     break
@@ -1441,7 +1440,7 @@ def phase_dedupe_services(session, log: ScraperLog, dry_run: bool = False):
     logger.info(f"Deactivated {deactivated} redundant services")
 
 
-def phase_recover_inactive(session, client: OpenAIClient, log: ScraperLog, claude_client=None):
+def phase_recover_inactive(session, client: Any, log: ScraperLog, claude_client=None):
     """Phase 10: Recover inactive services with sufficient data."""
     logger.info("=== Phase 10: Inactive Recovery ===")
     if not client:
