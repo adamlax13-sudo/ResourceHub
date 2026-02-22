@@ -56,16 +56,27 @@ load_dotenv()
 
 from models import Base, Service, ServiceHistory, ScraperLog, WebsiteCrawl, CrawledPage, ServiceIntakeDetails, ServiceFieldSource
 
-# Deep crawler and extractors
-from deep_crawler import DeepCrawler, PageType
-from extractors import IntakeExtractor, EligibilityExtractor
+# Deep crawler and extractors - optional, may not exist
+try:
+    from deep_crawler import DeepCrawler, PageType
+    from extractors import IntakeExtractor, EligibilityExtractor
+    HAS_DEEP_CRAWLER = True
+except ImportError:
+    HAS_DEEP_CRAWLER = False
 
-# Optional OpenAI integration
+# Optional OpenAI integration (for web search and embeddings)
 try:
     from openai import OpenAI as OpenAIClient
     HAS_OPENAI = True
 except ImportError:
     HAS_OPENAI = False
+
+# Optional Claude integration (for extraction)
+try:
+    from claude_client import ClaudeClient, init_claude
+    HAS_CLAUDE = True
+except ImportError:
+    HAS_CLAUDE = False
 
 # =============================================================================
 # Configuration
