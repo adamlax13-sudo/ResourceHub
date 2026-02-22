@@ -374,9 +374,10 @@ def service_exists(name: str, existing: Dict) -> bool:
     return False
 
 
-def discover_services_for_category(client: OpenAIClient, category: str, region: str) -> List[Dict]:
+def discover_services_for_category(client, category: str, region: str, claude_client=None) -> List[Dict]:
     """Search 211 Alberta for services."""
     try:
+        # Keep using OpenAI for web search (Claude doesn't have web_search tool)
         response = client.responses.create(
             model="gpt-4o-mini",
             tools=[{"type": "web_search"}],
@@ -386,37 +387,54 @@ def discover_services_for_category(client: OpenAIClient, category: str, region: 
         result = response.output_text.strip()
         if "NO_RESULTS" in result:
             return []
-        return parse_discovery_results(client, result, category, region)
+        return parse_discovery_results(client, result, category, region, claude_client)
     except Exception as e:
         logger.error(f"211 discovery failed: {e}")
         return []
 
 
-def parse_discovery_results(client: OpenAIClient, raw_text: str, category: str, region: str) -> List[Dict]:
-    """Parse AI search results into service dicts."""
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": (
-                    "Parse text into JSON array of services with: name, description, contact, "
-                    "location, website_url, hours_of_operation, eligibility, category. "
-                    'Return {"services": [...]}. Skip 211 itself and generic helplines.'
-                )},
-                {"role": "user", "content": f"Category: {category}\nRegion: {region}\n\n{raw_text[:6000]}"},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.1,
-        )
-        result = json.loads(completion.choices[0].message.content)
-        services = result.get("services", [])
-        for svc in services:
-            svc.setdefault("category", category.title())
-            svc.setdefault("location", region)
-        return services
-    except Exception as e:
-        logger.error(f"Failed to parse discovery results: {e}")
-        return []
+def parse_discovery_results(client, raw_text: str, category: str, region: str, claude_client=None) -> List[Dict]:
+    """Parse AI search results into service dicts.
+
+    Uses Claude if available, falls back to OpenAI.
+    """
+    # Prefer Claude for parsing
+    if claude_client and HAS_CLAUDE:
+        try:
+            services = claude_client.parse_discovery_results(raw_text, category, region)
+            if services:
+                return services
+        except Exception as e:
+            logger.error(f"Claude parsing failed: {e}")
+            # Fall through to OpenAI fallback
+
+    # Fallback to OpenAI
+    if client and HAS_OPENAI:
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": (
+                        "Parse text into JSON array of services with: name, description, contact, "
+                        "location, website_url, hours_of_operation, eligibility, category. "
+                        'Return {"services": [...]}. Skip 211 itself and generic helplines.'
+                    )},
+                    {"role": "user", "content": f"Category: {category}\nRegion: {region}\n\n{raw_text[:6000]}"},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.1,
+            )
+            result = json.loads(completion.choices[0].message.content)
+            services = result.get("services", [])
+            for svc in services:
+                svc.setdefault("category", category.title())
+                svc.setdefault("location", region)
+            return services
+        except Exception as e:
+            logger.error(f"OpenAI parsing failed: {e}")
+            return []
+
+    return []
 
 
 def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
