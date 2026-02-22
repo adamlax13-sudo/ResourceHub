@@ -11,5 +11,8 @@ pgvector>=0.2.0
 # OpenAI API
 openai>=1.30.0
 
+# Anthropic API (Claude)
+anthropic>=0.40.0
+
 # Utilities
 python-dotenv>=1.0.0
