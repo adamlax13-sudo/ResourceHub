@@ -437,9 +437,12 @@ def parse_discovery_results(client, raw_text: str, category: str, region: str, c
     return []
 
 
-def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
+def enrich_from_211(client, service: Service, claude_client=None) -> Optional[Dict]:
     """Search 211 Alberta for service details.
-    Only enriches fields that are currently empty in the service."""
+    Only enriches fields that are currently empty in the service.
+
+    Uses OpenAI for web search, Claude for extraction.
+    """
     try:
         # Check which fields need enrichment
         fields_needed = get_fields_needing_enrichment(service)
@@ -448,6 +451,11 @@ def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
             return None
 
         logger.info(f"[Enrichment] Service '{service.name}' needs: {', '.join(fields_needed)}")
+
+        # Use OpenAI for web search (Claude doesn't have web_search)
+        if not client or not HAS_OPENAI:
+            logger.warning("OpenAI client required for 211 web search")
+            return None
 
         response = client.responses.create(
             model="gpt-4o-mini",
@@ -459,6 +467,11 @@ def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
         if "NOT_FOUND" in result:
             return None
 
+        # Use Claude for extraction if available
+        if claude_client and HAS_CLAUDE:
+            return claude_client.extract_211_data(result, service.name, fields_needed)
+
+        # Fallback to OpenAI extraction
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -473,7 +486,6 @@ def enrich_from_211(client: OpenAIClient, service: Service) -> Optional[Dict]:
         )
         data = json.loads(completion.choices[0].message.content)
 
-        # Only include fields that are (1) valid, (2) have data, and (3) are needed
         valid_fields = {"description", "contact", "hours_of_operation", "eligibility",
                        "website_url", "tags", "process_steps", "required_docs"}
         needed_set = set(fields_needed)
