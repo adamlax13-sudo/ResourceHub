@@ -300,27 +300,45 @@ def find_website_with_ai(client: OpenAIClient, name: str, location: str, categor
         return None
 
 
-def enrich_with_ai(client: OpenAIClient, page_text: str, name: str, category: str) -> Optional[Dict]:
-    """Extract structured data from webpage using AI."""
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": (
-                    "Extract service information from webpage. Return JSON with fields: "
-                    "description, hours_of_operation, service_format, languages_supported, "
-                    "booking_url, contact, eligibility, tags. Use null for unknown fields."
-                )},
-                {"role": "user", "content": f"Service: {name}\nCategory: {category}\n\nContent:\n{page_text}"},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.1,
-        )
-        result = json.loads(completion.choices[0].message.content)
-        return {k: v for k, v in result.items() if v is not None} or None
-    except Exception as e:
-        logger.error(f"AI enrichment failed for {name}: {e}")
-        return None
+def enrich_with_ai(client, page_text: str, name: str, category: str, claude_client=None) -> Optional[Dict]:
+    """Extract structured data from webpage using AI.
+
+    Uses Claude if available, falls back to OpenAI.
+    """
+    # Prefer Claude for extraction
+    if claude_client and HAS_CLAUDE:
+        try:
+            result = claude_client.extract_service_details(page_text, name, category)
+            if result:
+                # Remove source fields from output (kept for debugging)
+                return {k: v for k, v in result.items() if not k.endswith("_source") and v is not None}
+        except Exception as e:
+            logger.error(f"Claude enrichment failed for {name}: {e}")
+            # Fall through to OpenAI fallback
+
+    # Fallback to OpenAI
+    if client and HAS_OPENAI:
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": (
+                        "Extract service information from webpage. Return JSON with fields: "
+                        "description, hours_of_operation, service_format, languages_supported, "
+                        "booking_url, contact, eligibility, tags. Use null for unknown fields."
+                    )},
+                    {"role": "user", "content": f"Service: {name}\nCategory: {category}\n\nContent:\n{page_text}"},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.1,
+            )
+            result = json.loads(completion.choices[0].message.content)
+            return {k: v for k, v in result.items() if v is not None} or None
+        except Exception as e:
+            logger.error(f"OpenAI enrichment failed for {name}: {e}")
+            return None
+
+    return None
 
 
 # =============================================================================
