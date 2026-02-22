@@ -495,11 +495,13 @@ def enrich_from_211(client, service: Service, claude_client=None) -> Optional[Di
         return None
 
 
-def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optional[Dict]:
+def enrich_from_informalberta(client, service: Service, claude_client=None) -> Optional[Dict]:
     """Search InformAlberta for service details.
-    Only enriches fields that are currently empty in the service."""
+    Only enriches fields that are currently empty in the service.
+
+    Uses OpenAI for web search, Claude for extraction.
+    """
     try:
-        # Check which fields need enrichment (extended list for InformAlberta)
         enrichable_fields = [
             "description", "contact", "eligibility", "hours_of_operation",
             "website_url", "process_steps", "required_docs", "tags",
@@ -513,6 +515,11 @@ def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optiona
 
         logger.info(f"[Enrichment] Service '{service.name}' needs from InformAlberta: {', '.join(fields_needed)}")
 
+        # Use OpenAI for web search
+        if not client or not HAS_OPENAI:
+            logger.warning("OpenAI client required for InformAlberta web search")
+            return None
+
         response = client.responses.create(
             model="gpt-4o-mini",
             tools=[{"type": "web_search"}],
@@ -523,6 +530,13 @@ def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optiona
         if "NOT_FOUND" in result.upper():
             return None
 
+        # Use Claude for extraction if available
+        if claude_client and HAS_CLAUDE:
+            return claude_client.extract_informalberta_data(
+                result, service.name, service.category, fields_needed
+            )
+
+        # Fallback to OpenAI extraction
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -542,7 +556,6 @@ def enrich_from_informalberta(client: OpenAIClient, service: Service) -> Optiona
                        "required_docs", "service_format"}
         needed_set = set(fields_needed)
 
-        # Only include fields that are (1) valid, (2) have data, and (3) are needed
         updates = {k: v for k, v in data.items() if v and k in valid_fields and k in needed_set}
 
         # Validate URL
