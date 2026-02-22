@@ -42,19 +42,45 @@ cd scraper
 pip install -r requirements.txt
 ```
 
-### 2. Configure Database
+### 2. Configure Environment
 
-Set your database connection in environment variable:
-
-```bash
-export DATABASE_URL="postgresql://user:password@localhost:5432/recovery_hub"
-```
-
-Or create a `.env` file:
+Set your database and API connections in environment variables or a `.env` file:
 
 ```env
+# Database connection (required)
 DATABASE_URL=postgresql://user:password@localhost:5432/recovery_hub
+
+# Anthropic API key for Claude (recommended - better extraction accuracy)
+ANTHROPIC_API_KEY=sk-ant-...
+
+# OpenAI API key (required for web search, optional for extraction fallback)
+AI_INTEGRATIONS_OPENAI_API_KEY=sk-...
 ```
+
+## AI Configuration
+
+The scraper uses AI for service discovery and data extraction. It supports two providers:
+
+### Claude (Recommended)
+
+Claude Sonnet 4.5 is the primary AI provider for structured extraction. It offers:
+- Better accuracy for extracting service details
+- Reduced hallucinations through explicit anti-hallucination prompts
+- Source citation tracking for auditing
+
+Set `ANTHROPIC_API_KEY` in your `.env` file to enable Claude.
+
+### OpenAI (Required for Web Search)
+
+OpenAI is always required for web search functionality (discovering services from 211 Alberta and InformAlberta). If Claude is unavailable, OpenAI also serves as the fallback for extraction.
+
+Set `AI_INTEGRATIONS_OPENAI_API_KEY` in your `.env` file.
+
+### How It Works
+
+1. **Web Search**: Always uses OpenAI's `gpt-4o-mini` with web search capability
+2. **Extraction**: Uses Claude Sonnet when available, falls back to OpenAI if not
+3. **Embeddings**: Uses OpenAI's `text-embedding-3-small` model
 
 ### 3. Initialize Database
 
