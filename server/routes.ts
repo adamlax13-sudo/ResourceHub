@@ -11,10 +11,23 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { strictLimiter, feedbackLimiter } from "./middleware/rateLimiter";
+import { adminAuth, adminLimiter } from "./middleware/adminAuth";
 
 // Import the new search module
 import { search, getServiceDetails } from "./search";
 import { normalizeForCache } from "./helpers/keywords";
+
+// Standard error response format for consistency
+interface ErrorResponse {
+  success: false;
+  message: string;
+  error?: string;
+  errors?: z.ZodIssue[];
+}
+
+function createErrorResponse(message: string, error?: string, errors?: z.ZodIssue[]): ErrorResponse {
+  return { success: false, message, error, errors };
+}
 
 // ============= ROUTE REGISTRATION =============
 
@@ -44,11 +57,11 @@ export async function registerRoutes(
       res.json(result);
     } catch (err) {
       console.error("Search error:", err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      res.status(500).json({
-        message: "Search failed",
-        error: errorMessage,
-      });
+      // Don't expose internal error details to clients in production
+      const errorMessage = process.env.NODE_ENV === 'production'
+        ? undefined
+        : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Search failed", errorMessage));
     }
   });
 
@@ -80,9 +93,9 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Feedback error:", err);
       if (err instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid feedback data", errors: err.errors });
+        res.status(400).json(createErrorResponse("Invalid feedback data", undefined, err.errors));
       } else {
-        res.status(500).json({ message: "Failed to submit feedback" });
+        res.status(500).json(createErrorResponse("Failed to submit feedback"));
       }
     }
   });
@@ -91,18 +104,24 @@ export async function registerRoutes(
   // Get full service details by ID (loaded when user expands a card)
   app.get("/api/services/:id", async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      // Validate service ID parameter
+      const idSchema = z.string().min(1).max(255);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+      const id = parseResult.data;
 
       const serviceDetails = await getServiceDetails(id);
 
       if (!serviceDetails) {
-        return res.status(404).json({ message: "Service not found" });
+        return res.status(404).json(createErrorResponse("Service not found"));
       }
 
       res.json(serviceDetails);
     } catch (err) {
       console.error("Service detail error:", err);
-      res.status(500).json({ message: "Failed to fetch service details" });
+      res.status(500).json(createErrorResponse("Failed to fetch service details"));
     }
   });
 
@@ -118,6 +137,12 @@ export async function registerRoutes(
 
       const data = clickSchema.parse(req.body);
 
+      // Safely extract headers (handle array case)
+      const sessionIdHeader = req.headers['x-session-id'];
+      const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
+      const userAgentHeader = req.headers['user-agent'];
+      const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader;
+
       // Track the click asynchronously (don't block response)
       storage.trackSearchClick({
         query: data.query,
@@ -125,8 +150,8 @@ export async function registerRoutes(
         resultCount: 0,
         clickedServiceId: data.serviceId,
         clickPosition: data.position,
-        sessionId: req.headers['x-session-id'] as string || undefined,
-        userAgent: req.headers['user-agent'] || undefined,
+        sessionId: sessionId || undefined,
+        userAgent: userAgent || undefined,
       }).catch(err => {
         console.error('Failed to track click:', err);
       });
@@ -134,7 +159,11 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (err) {
       console.error("Click tracking error:", err);
-      res.json({ success: false });
+      // Return 400 for validation errors, not 200 with success: false
+      if (err instanceof z.ZodError) {
+        return res.status(400).json(createErrorResponse("Invalid click data", undefined, err.errors));
+      }
+      res.status(500).json(createErrorResponse("Failed to track click"));
     }
   });
 
@@ -142,19 +171,24 @@ export async function registerRoutes(
   // Returns popular searches (for admin/analytics purposes)
   app.get("/api/analytics/popular-searches", async (req: Request, res: Response) => {
     try {
-      const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+      // Validate limit parameter with Zod
+      const limitSchema = z.coerce.number().int().min(1).max(100).default(20);
+      const parseResult = limitSchema.safeParse(req.query.limit);
+      const limit = parseResult.success ? parseResult.data : 20;
+
       const popularSearches = await storage.getPopularSearches(limit);
-      res.json({ searches: popularSearches });
+      res.json({ success: true, searches: popularSearches });
     } catch (err) {
       console.error("Analytics error:", err);
-      res.status(500).json({ message: "Failed to fetch analytics" });
+      res.status(500).json(createErrorResponse("Failed to fetch analytics"));
     }
   });
 
   // ============= ADMIN: REFRESH SEARCH VIEW =============
   // Refreshes the materialized view and clears search cache
   // Call this after marking services as inactive or making bulk changes
-  app.post("/api/admin/refresh-search", async (_req: Request, res: Response) => {
+  // SECURITY: Protected with API key authentication
+  app.post("/api/admin/refresh-search", adminLimiter, adminAuth, async (_req: Request, res: Response) => {
     try {
       // Refresh the materialized view (removes inactive services)
       await storage.refreshSearchView();
@@ -166,14 +200,15 @@ export async function registerRoutes(
       res.json({ success: true, message: 'Search view refreshed and cache cleared' });
     } catch (err) {
       console.error("Refresh search error:", err);
-      res.status(500).json({ message: "Failed to refresh search view" });
+      res.status(500).json(createErrorResponse("Failed to refresh search view", err instanceof Error ? err.message : undefined));
     }
   });
 
   // Persist AI enrichments to services table (backfill job)
   // This copies enrichment data to the services table for empty fields only,
   // reducing future enrichment lookups and API calls
-  app.post("/api/admin/persist-enrichments", async (_req: Request, res: Response) => {
+  // SECURITY: Protected with API key authentication
+  app.post("/api/admin/persist-enrichments", adminLimiter, adminAuth, async (_req: Request, res: Response) => {
     try {
       const enrichments = await storage.getAllEnrichments();
       let totalFieldsUpdated = 0;
@@ -203,7 +238,7 @@ export async function registerRoutes(
       });
     } catch (err) {
       console.error("Persist enrichments error:", err);
-      res.status(500).json({ message: "Failed to persist enrichments" });
+      res.status(500).json(createErrorResponse("Failed to persist enrichments", err instanceof Error ? err.message : undefined));
     }
   });
 

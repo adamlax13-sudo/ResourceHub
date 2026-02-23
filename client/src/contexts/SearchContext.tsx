@@ -28,18 +28,28 @@ const SearchContext = createContext<SearchContextType | null>(null);
 const STORAGE_KEY = 'roc_search_state';
 const LOCATION_KEY = 'roc_selected_locations';
 
+// Type guard for validating parsed localStorage data
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchState, setSearchState] = useState<SearchState>(() => {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
       const savedLocations = localStorage.getItem(LOCATION_KEY);
+      // Validate parsed data is actually a string array
       const parsedLocations = savedLocations ? JSON.parse(savedLocations) : [];
+      const validLocations = isStringArray(parsedLocations) ? parsedLocations : [];
       if (stored) {
         const parsed = JSON.parse(stored);
-        return { ...parsed, locations: parsedLocations };
+        return { ...parsed, locations: validLocations };
       }
-      return { ...defaultState, locations: parsedLocations };
+      return { ...defaultState, locations: validLocations };
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load search state from storage:', e);
+      }
     }
     return defaultState;
   });
@@ -48,6 +58,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(searchState));
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save search state to storage:', e);
+      }
     }
   }, [searchState]);
 
@@ -65,6 +78,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(LOCATION_KEY, JSON.stringify(locations));
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save locations to storage:', e);
+      }
     }
   }, []);
 
@@ -76,6 +92,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       try {
         localStorage.setItem(LOCATION_KEY, JSON.stringify(newLocations));
       } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to save locations to storage:', e);
+        }
       }
       return { ...prev, locations: newLocations };
     });
@@ -86,6 +105,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
     } catch (e) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to clear search state from storage:', e);
+      }
     }
   }, []);
 

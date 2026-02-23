@@ -8,6 +8,7 @@ import { registerRoutes } from "./routes";
 import { registerHealthRoutes } from "./routes/health";
 import { apiLimiter } from "./middleware/rateLimiter";
 import { pool } from "./db";
+import { csrfProtection, csrfTokenEndpoint } from "./middleware/csrf";
 
 const app = express();
 
@@ -53,10 +54,33 @@ app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST'],
   credentials: true,
+  maxAge: 86400, // Cache preflight for 24 hours
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-Id', 'X-CSRF-Token', 'X-Correlation-Id'],
 }));
 
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: false }));
+
+// Validate Content-Type for POST/PUT/PATCH requests
+app.use('/api', (req, res, next) => {
+  if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.path.startsWith('/health')) {
+    const contentType = req.headers['content-type'];
+    if (!contentType || !contentType.includes('application/json')) {
+      return res.status(415).json({
+        success: false,
+        message: 'Unsupported Media Type',
+        error: 'Content-Type must be application/json'
+      });
+    }
+  }
+  next();
+});
+
+// CSRF protection for state-changing requests
+app.use('/api', csrfProtection(allowedOrigins));
+
+// CSRF token endpoint for clients to fetch tokens
+app.get('/api/csrf-token', csrfTokenEndpoint);
 
 // Apply global rate limiting to all routes (except health checks)
 app.use((req, res, next) => {

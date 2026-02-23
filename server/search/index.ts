@@ -19,6 +19,7 @@ import type {
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
 import { normalizeForCache } from '../helpers/keywords';
+import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
@@ -115,8 +116,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
 
-  // Execute search
-  const result = await searchStrategy.search(analysis, input);
+  // Execute search with timeout protection
+  const result = await withTimeout(
+    searchStrategy.search(analysis, input),
+    TIMEOUTS.SEARCH_TOTAL,
+    'Search operation'
+  );
 
   // Apply crisis pinning if needed (single place!)
   if (analysis.isCrisis) {

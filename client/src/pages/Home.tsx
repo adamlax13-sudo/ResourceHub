@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useEffect } from "react";
+import { useState, lazy, Suspense, useEffect, useCallback, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
@@ -14,18 +14,37 @@ import { useSearchContext } from "@/contexts/SearchContext";
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
 
-function FlipCard({ frontContent, backContent, index }: { 
-  frontContent: React.ReactNode; 
+// FlipCard component moved outside Home to prevent recreation on every render
+interface FlipCardProps {
+  frontContent: React.ReactNode;
   backContent: React.ReactNode;
   index: number;
-}) {
+}
+
+const FlipCard = memo(function FlipCard({ frontContent, backContent, index }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useTranslation();
+
+  const handleClick = useCallback(() => {
+    setIsFlipped(prev => !prev);
+  }, []);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsFlipped(prev => !prev);
+    }
+  }, []);
 
   return (
     <motion.div
       className="relative h-64 cursor-pointer perspective-1000"
-      onClick={() => setIsFlipped(!isFlipped)}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`Flip card ${index + 1}`}
+      aria-pressed={isFlipped}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 + index * 0.15 }}
@@ -37,28 +56,28 @@ function FlipCard({ frontContent, backContent, index }: {
         className="w-full h-full relative"
         initial={false}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ 
-          duration: 0.6, 
-          type: "spring", 
+        transition={{
+          duration: 0.6,
+          type: "spring",
           stiffness: 100,
           damping: 15
         }}
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Front */}
-        <div 
+        <div
           className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 shadow-lg hover:shadow-xl hover:shadow-primary/5 transition-shadow duration-300 p-6 flex flex-col items-center justify-center"
           style={{ backfaceVisibility: "hidden" }}
         >
           {frontContent}
           <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1 text-xs text-muted-foreground/60">
-            <RotateCcw className="w-3 h-3" />
+            <RotateCcw className="w-3 h-3" aria-hidden="true" />
             <span>{t('howItWorks.clickToFlip')}</span>
           </div>
         </div>
-        
+
         {/* Back */}
-        <div 
+        <div
           className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-card border border-primary/20 shadow-xl p-6 flex flex-col items-center justify-center"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
@@ -67,7 +86,7 @@ function FlipCard({ frontContent, backContent, index }: {
       </motion.div>
     </motion.div>
   );
-}
+});
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
@@ -76,11 +95,15 @@ export default function Home() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const { t } = useTranslation();
 
+  // Store search results when data changes
+  // Note: We only depend on data and setSearchResults
+  // The locations are already tracked in the context from when search was initiated
   useEffect(() => {
     if (data && data.services) {
-      setSearchResults(data.query, data.services, searchState.locations);
+      // Pass current locations from searchState at time of update
+      setSearchResults(data.query, data.services);
     }
-  }, [data, setSearchResults, searchState.locations]);
+  }, [data, setSearchResults]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 

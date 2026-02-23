@@ -232,10 +232,11 @@ export class DatabaseStorage implements IStorage {
           OR location = ''
         )`;
       } else if (locations.length > 1) {
-        // Multiple locations - match any of them
-        const locationConditions = locations.map(l => `location ILIKE '%${l}%'`).join(' OR ');
+        // Multiple locations - match any of them using parameterized queries
+        // Build safe SQL conditions using sql template literals
+        const locationClauses = locations.map(l => sql`location ILIKE ${'%' + l + '%'}`);
         locationFilter = sql`AND (
-          ${sql.raw(locationConditions)}
+          ${sql.join(locationClauses, sql` OR `)}
           OR location ILIKE '%alberta%'
           OR location ILIKE '%province%'
           OR location IS NULL
@@ -352,6 +353,7 @@ export class DatabaseStorage implements IStorage {
    * Persist enrichment data to the services table for empty fields only.
    * This reduces future enrichment lookups by making service data complete.
    * Returns the number of fields that were updated.
+   * SECURITY: Uses transaction to ensure atomic read-modify-write
    */
   async persistEnrichmentToService(
     serviceId: string,
@@ -360,31 +362,34 @@ export class DatabaseStorage implements IStorage {
     // Import the helper here to avoid circular dependencies
     const { buildEnrichmentUpdate } = await import('./helpers/enrichment');
 
-    // Fetch current service state
-    const [service] = await db.select().from(services)
-      .where(eq(services.serviceId, serviceId));
+    // Use transaction for atomic read-modify-write
+    return await db.transaction(async (tx) => {
+      // Fetch current service state within transaction
+      const [service] = await tx.select().from(services)
+        .where(eq(services.serviceId, serviceId));
 
-    if (!service) {
-      console.warn(`[Enrichment] Service ${serviceId} not found, skipping persist`);
-      return 0;
-    }
+      if (!service) {
+        console.warn(`[Enrichment] Service ${serviceId} not found, skipping persist`);
+        return 0;
+      }
 
-    // Build update object with only empty fields
-    const updates = buildEnrichmentUpdate(service, enrichment);
+      // Build update object with only empty fields
+      const updates = buildEnrichmentUpdate(service, enrichment);
 
-    if (!updates) {
-      return 0;
-    }
+      if (!updates) {
+        return 0;
+      }
 
-    // Update the service with enrichment data
-    await db.update(services)
-      .set({ ...updates, lastUpdated: new Date() })
-      .where(eq(services.serviceId, serviceId));
+      // Update the service with enrichment data
+      await tx.update(services)
+        .set({ ...updates, lastUpdated: new Date() })
+        .where(eq(services.serviceId, serviceId));
 
-    const fieldCount = Object.keys(updates).length;
-    console.log(`[Enrichment] Persisted ${fieldCount} fields to service ${serviceId}: ${Object.keys(updates).join(', ')}`);
+      const fieldCount = Object.keys(updates).length;
+      console.log(`[Enrichment] Persisted ${fieldCount} fields to service ${serviceId}: ${Object.keys(updates).join(', ')}`);
 
-    return fieldCount;
+      return fieldCount;
+    });
   }
 
   /**
@@ -395,6 +400,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // ============= SEARCH ANALYTICS & CLICK TRACKING =============
+  /**
+   * Track search clicks for analytics and service ranking
+   * SECURITY: Uses transaction to ensure both operations succeed or fail together
+   */
   async trackSearchClick(data: {
     query: string;
     normalizedQuery: string;
@@ -404,26 +413,29 @@ export class DatabaseStorage implements IStorage {
     sessionId?: string;
     userAgent?: string;
   }): Promise<void> {
-    await db.insert(searchAnalytics).values({
-      query: data.query,
-      normalizedQuery: data.normalizedQuery,
-      resultCount: data.resultCount,
-      clickedServiceId: data.clickedServiceId || null,
-      clickPosition: data.clickPosition || null,
-      sessionId: data.sessionId || null,
-      userAgent: data.userAgent || null,
-    });
+    // Use transaction to ensure atomicity of analytics + click count update
+    await db.transaction(async (tx) => {
+      await tx.insert(searchAnalytics).values({
+        query: data.query,
+        normalizedQuery: data.normalizedQuery,
+        resultCount: data.resultCount,
+        clickedServiceId: data.clickedServiceId || null,
+        clickPosition: data.clickPosition || null,
+        sessionId: data.sessionId || null,
+        userAgent: data.userAgent || null,
+      });
 
-    // If a service was clicked, increment its click count and update last_clicked
-    if (data.clickedServiceId) {
-      await db
-        .update(services)
-        .set({
-          clickCount: sql`COALESCE(${services.clickCount}, 0) + 1`,
-          lastUpdated: new Date(), // Also track when last clicked for recency
-        })
-        .where(eq(services.serviceId, data.clickedServiceId));
-    }
+      // If a service was clicked, increment its click count and update last_clicked
+      if (data.clickedServiceId) {
+        await tx
+          .update(services)
+          .set({
+            clickCount: sql`COALESCE(${services.clickCount}, 0) + 1`,
+            lastUpdated: new Date(), // Also track when last clicked for recency
+          })
+          .where(eq(services.serviceId, data.clickedServiceId));
+      }
+    });
   }
 
   async getClickCountForService(serviceId: string): Promise<number> {
@@ -531,6 +543,7 @@ export class DatabaseStorage implements IStorage {
    * Fallback search when optimized SQL functions aren't available
    * Uses basic ILIKE matching (less efficient but works without migrations)
    * Now splits query into keywords for better matching
+   * SECURITY: Uses parameterized queries to prevent SQL injection
    */
   private async fallbackSearch(
     query: string,
@@ -546,33 +559,34 @@ export class DatabaseStorage implements IStorage {
     // If no valid keywords, use the original query
     const searchTerms = keywords.length > 0 ? keywords : [query.toLowerCase()];
 
-    // Build WHERE conditions for each keyword (OR logic)
+    // Build safe WHERE conditions using parameterized queries
     const keywordConditions = searchTerms.map(term => {
-      const pattern = `%${term}%`;
-      return `(lower(name) LIKE '${pattern}' OR lower(category) LIKE '${pattern}' OR lower(description) LIKE '${pattern}' OR tags::text ILIKE '${pattern}')`;
-    }).join(' OR ');
+      const pattern = '%' + term + '%';
+      return sql`(lower(name) LIKE ${pattern} OR lower(category) LIKE ${pattern} OR lower(description) LIKE ${pattern} OR tags::text ILIKE ${pattern})`;
+    });
 
-    // Build scoring for each keyword
+    // Build safe scoring expressions
     const keywordScoring = searchTerms.map(term => {
-      const pattern = `%${term}%`;
-      return `(CASE WHEN lower(name) LIKE '${pattern}' THEN 100 ELSE 0 END + CASE WHEN lower(category) LIKE '${pattern}' THEN 50 ELSE 0 END + CASE WHEN lower(description) LIKE '${pattern}' THEN 30 ELSE 0 END + CASE WHEN tags::text ILIKE '${pattern}' THEN 40 ELSE 0 END)`;
-    }).join(' + ');
+      const pattern = '%' + term + '%';
+      return sql`(CASE WHEN lower(name) LIKE ${pattern} THEN 100 ELSE 0 END + CASE WHEN lower(category) LIKE ${pattern} THEN 50 ELSE 0 END + CASE WHEN lower(description) LIKE ${pattern} THEN 30 ELSE 0 END + CASE WHEN tags::text ILIKE ${pattern} THEN 40 ELSE 0 END)`;
+    });
 
-    // Build location filter for multiple comma-separated locations
-    let locationFilter = '';
+    // Build safe location filter using parameterized queries
+    let locationFilter = sql``;
     if (location) {
       const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       if (locations.length === 1) {
-        locationFilter = `AND (lower(location) LIKE '%${locations[0]}%' OR lower(location) LIKE '%alberta%')`;
+        const locPattern = '%' + locations[0] + '%';
+        locationFilter = sql`AND (lower(location) LIKE ${locPattern} OR lower(location) LIKE '%alberta%')`;
       } else if (locations.length > 1) {
-        const locationConditions = locations.map(l => `lower(location) LIKE '%${l}%'`).join(' OR ');
-        locationFilter = `AND (${locationConditions} OR lower(location) LIKE '%alberta%')`;
+        const locationClauses = locations.map(l => sql`lower(location) LIKE ${'%' + l + '%'}`);
+        locationFilter = sql`AND (${sql.join(locationClauses, sql` OR `)} OR lower(location) LIKE '%alberta%')`;
       }
     }
 
     console.log(`[FallbackSearch] Keywords: ${searchTerms.join(', ')}, Location: ${location || 'Alberta-wide'}`);
 
-    const result = await db.execute(sql.raw(`
+    const result = await db.execute(sql`
       SELECT
         service_id,
         name,
@@ -589,14 +603,14 @@ export class DatabaseStorage implements IStorage {
         email,
         address,
         tags,
-        (${keywordScoring} + COALESCE(click_count, 0) * 2) as relevance_score
+        (${sql.join(keywordScoring, sql` + `)} + COALESCE(click_count, 0) * 2) as relevance_score
       FROM services
       WHERE is_active = true
-        AND (${keywordConditions})
+        AND (${sql.join(keywordConditions, sql` OR `)})
         ${locationFilter}
       ORDER BY relevance_score DESC
       LIMIT ${limit}
-    `));
+    `);
 
     return (result.rows as any[]).map(row => ({
       serviceId: row.service_id,
@@ -621,43 +635,41 @@ export class DatabaseStorage implements IStorage {
   /**
    * Batch fetch enrichments for multiple services (avoids N+1)
    * Single query to get all enrichments at once
+   * SECURITY: Uses Drizzle's inArray for safe parameterized queries
    */
   async getEnrichmentsBatch(serviceIds: string[]): Promise<Map<string, EnrichmentData>> {
     if (serviceIds.length === 0) return new Map();
 
-    // Use IN clause with properly escaped values
-    // Escape single quotes in service IDs to prevent SQL injection
-    const escapedIds = serviceIds.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
-
-    const result = await db.execute(sql.raw(`
-      SELECT
-        service_id,
-        service_name,
-        ai_description,
-        ai_category,
-        ai_process_steps,
-        ai_eligibility,
-        ai_wait_times,
-        ai_required_docs,
-        ai_location,
-        ai_contact
-      FROM ai_service_enrichments
-      WHERE service_id IN (${escapedIds})
-    `));
+    // Use Drizzle's inArray for safe parameterized query
+    const result = await db
+      .select({
+        serviceId: aiServiceEnrichments.serviceId,
+        serviceName: aiServiceEnrichments.serviceName,
+        aiDescription: aiServiceEnrichments.aiDescription,
+        aiCategory: aiServiceEnrichments.aiCategory,
+        aiProcessSteps: aiServiceEnrichments.aiProcessSteps,
+        aiEligibility: aiServiceEnrichments.aiEligibility,
+        aiWaitTimes: aiServiceEnrichments.aiWaitTimes,
+        aiRequiredDocs: aiServiceEnrichments.aiRequiredDocs,
+        aiLocation: aiServiceEnrichments.aiLocation,
+        aiContact: aiServiceEnrichments.aiContact,
+      })
+      .from(aiServiceEnrichments)
+      .where(inArray(aiServiceEnrichments.serviceId, serviceIds));
 
     const map = new Map<string, EnrichmentData>();
-    for (const row of result.rows as any[]) {
-      map.set(row.service_id, {
-        serviceId: row.service_id,
-        serviceName: row.service_name,
-        aiDescription: row.ai_description,
-        aiCategory: row.ai_category,
-        aiProcessSteps: row.ai_process_steps,
-        aiEligibility: row.ai_eligibility,
-        aiWaitTimes: row.ai_wait_times,
-        aiRequiredDocs: row.ai_required_docs,
-        aiLocation: row.ai_location,
-        aiContact: row.ai_contact,
+    for (const row of result) {
+      map.set(row.serviceId, {
+        serviceId: row.serviceId,
+        serviceName: row.serviceName,
+        aiDescription: row.aiDescription,
+        aiCategory: row.aiCategory,
+        aiProcessSteps: row.aiProcessSteps,
+        aiEligibility: row.aiEligibility,
+        aiWaitTimes: row.aiWaitTimes,
+        aiRequiredDocs: row.aiRequiredDocs,
+        aiLocation: row.aiLocation,
+        aiContact: row.aiContact,
       });
     }
     return map;
