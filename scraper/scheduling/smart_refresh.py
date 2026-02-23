@@ -6,12 +6,32 @@ when pages have changed and need re-scraping.
 """
 import hashlib
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import requests
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RefreshResult:
+    """Result of checking if a page has changed."""
+    changed: bool
+    etag: Optional[str]
+    content_hash: Optional[str]
+    content: Optional[str]
+    error: Optional[str] = None
+
+    @property
+    def has_error(self) -> bool:
+        """Check if an error occurred during the check."""
+        return self.error is not None
+
+    def as_tuple(self) -> Tuple[bool, Optional[str], Optional[str], Optional[str]]:
+        """Return as legacy tuple format for backward compatibility."""
+        return (self.changed, self.etag, self.content_hash, self.content)
 
 # Default headers for requests
 DEFAULT_HEADERS = {
@@ -37,7 +57,8 @@ def check_page_changed(
     stored_etag: Optional[str] = None,
     stored_hash: Optional[str] = None,
     timeout: int = 10,
-) -> Tuple[bool, Optional[str], Optional[str], Optional[str]]:
+    return_result: bool = False,
+) -> Union[RefreshResult, Tuple[bool, Optional[str], Optional[str], Optional[str]]]:
     """
     Check if a page has changed since last fetch.
 
@@ -49,11 +70,16 @@ def check_page_changed(
         stored_etag: Previously stored ETag header
         stored_hash: Previously stored content hash
         timeout: Request timeout in seconds
+        return_result: If True, return RefreshResult dataclass; else return tuple
 
     Returns:
-        Tuple of (changed: bool, new_etag: str, new_hash: str, content: str)
+        RefreshResult or Tuple of (changed: bool, new_etag: str, new_hash: str, content: str)
         content is None if page hasn't changed (304 response)
     """
+    def make_result(changed, etag, hash_, content, error=None):
+        result = RefreshResult(changed=changed, etag=etag, content_hash=hash_, content=content, error=error)
+        return result if return_result else result.as_tuple()
+
     try:
         headers = DEFAULT_HEADERS.copy()
 
@@ -65,7 +91,7 @@ def check_page_changed(
             if response.status_code == 304:
                 # Not modified
                 logger.debug(f"[SmartRefresh] {url}: Not modified (304)")
-                return (False, stored_etag, stored_hash, None)
+                return make_result(False, stored_etag, stored_hash, None)
 
             new_etag = response.headers.get("ETag")
             if new_etag and new_etag != stored_etag:
@@ -74,7 +100,7 @@ def check_page_changed(
                 response = requests.get(url, headers=DEFAULT_HEADERS, timeout=timeout)
                 content = response.text
                 new_hash = calculate_content_hash(content)
-                return (True, new_etag, new_hash, content)
+                return make_result(True, new_etag, new_hash, content)
 
         # No ETag or need content hash comparison
         response = requests.get(url, headers=DEFAULT_HEADERS, timeout=timeout)
@@ -84,14 +110,16 @@ def check_page_changed(
 
         if stored_hash and new_hash == stored_hash:
             logger.debug(f"[SmartRefresh] {url}: Content unchanged (hash match)")
-            return (False, new_etag, new_hash, None)
+            return make_result(False, new_etag, new_hash, None)
 
         logger.info(f"[SmartRefresh] {url}: Content changed")
-        return (True, new_etag, new_hash, content)
+        return make_result(True, new_etag, new_hash, content)
 
     except requests.RequestException as e:
-        logger.error(f"[SmartRefresh] Error checking {url}: {e}")
-        return (True, None, None, None)  # Assume changed on error
+        error_msg = str(e)
+        logger.error(f"[SmartRefresh] Error checking {url}: {error_msg}")
+        # Return error result - caller can decide whether to re-scrape
+        return make_result(False, stored_etag, stored_hash, None, error=error_msg)
 
 
 def get_pages_needing_refresh(

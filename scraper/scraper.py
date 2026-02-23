@@ -1171,16 +1171,26 @@ def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog, c
 
                 for page in best_pages:
                     if page.text_content:
-                        combined_content += f"\n\n=== FROM {page.url} ===\n{page.text_content[:3000]}"
+                        content = page.text_content
+                        # Log truncation for visibility
+                        if len(content) > 3000:
+                            logger.debug(f"Truncating content from {page.url} ({len(content)} -> 3000 chars)")
+                            content = content[:3000]
+                        combined_content += f"\n\n=== FROM {page.url} ===\n{content}"
                         source_urls.append(page.url)
 
                 if combined_content:
-                    extraction = claude_client.extract_full_service(
-                        page_content=combined_content,
-                        service_name=service.name,
-                        category=service.category or "",
-                        source_url=source_urls[0] if source_urls else None
-                    )
+                    try:
+                        extraction = claude_client.extract_full_service(
+                            page_content=combined_content,
+                            service_name=service.name,
+                            category=service.category or "",
+                            source_url=source_urls[0] if source_urls else None
+                        )
+                    except Exception as e:
+                        logger.error(f"Claude extraction failed for {service.name}: {e}")
+                        extraction = None
+                        log.errors_count += 1
 
                     if extraction:
                         updated = False
@@ -1248,9 +1258,30 @@ def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog, c
                             service.field_sources = field_sources
                             service.source_urls = source_urls
                             service.last_updated = datetime.now()
+
+                            # Calculate confidence score after extraction
+                            service.confidence_score = calculate_confidence_score(
+                                service_data={
+                                    "description": service.description,
+                                    "phone": service.phone,
+                                    "email": service.email,
+                                    "eligibility": service.eligibility,
+                                    "process_steps": service.process_steps,
+                                    "required_docs": service.required_docs,
+                                    "hours_of_operation": service.hours_of_operation,
+                                },
+                                field_sources=field_sources,
+                                has_website_data=True,
+                                has_211_data=any("211" in str(url) for url in source_urls),
+                            )
+
+                            # Flag for review if low confidence
+                            if service.confidence_score < 60:
+                                service.needs_review = True
+
                             log.services_updated += 1
                             session.commit()
-                            logger.info(f"  Updated with Claude extraction")
+                            logger.info(f"  Updated with Claude extraction (confidence: {service.confidence_score})")
 
                 continue  # Skip OpenAI extraction if using Claude
 
