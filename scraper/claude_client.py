@@ -566,6 +566,156 @@ CRITICAL RULES:
             tool_description="Extract comprehensive service information with source citations",
         )
 
+    def evaluate_steps_quality(
+        self,
+        service_name: str,
+        category: str,
+        description: str,
+        current_steps: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """Evaluate if existing process steps are specific enough or too generic.
+
+        Returns:
+            Dict with 'is_generic' (bool) and 'reason' (str)
+        """
+        if not current_steps:
+            return {"is_generic": True, "reason": "No steps provided"}
+
+        steps_text = "\n".join([
+            f"Step {s.get('step', i+1)}: {s.get('action', 'Unknown')}"
+            for i, s in enumerate(current_steps)
+        ])
+
+        system_prompt = """You are evaluating process steps for social services.
+Determine if the steps are SPECIFIC enough to actually help someone access the service,
+or if they are GENERIC placeholders that could apply to any service."""
+
+        user_prompt = f"""Service: {service_name}
+Category: {category}
+Description: {description[:500] if description else 'Not provided'}
+
+Current Process Steps:
+{steps_text}
+
+Are these steps specific to THIS service, or are they generic placeholders?
+Consider: Do they mention specific intake processes, assessments, timelines, or requirements unique to this type of service?"""
+
+        tool_schema = {
+            "type": "object",
+            "properties": {
+                "is_generic": {
+                    "type": "boolean",
+                    "description": "True if steps are generic/boilerplate, False if specific"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief explanation of the assessment"
+                }
+            },
+            "required": ["is_generic", "reason"]
+        }
+
+        result = self.extract_with_tool(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            tool_name="evaluate_steps",
+            tool_schema=tool_schema,
+            tool_description="Evaluate if process steps are specific or generic",
+        )
+
+        return result or {"is_generic": False, "reason": "Evaluation failed"}
+
+    def infer_process_steps(
+        self,
+        service_name: str,
+        category: str,
+        description: str,
+        eligibility: str,
+        location: str,
+        similar_examples: List[Dict[str, Any]],
+    ) -> Optional[List[Dict[str, Any]]]:
+        """Generate realistic process steps based on service context and similar examples.
+
+        Args:
+            service_name: Name of the service
+            category: Service category
+            description: Service description
+            eligibility: Who can access the service
+            location: Service location
+            similar_examples: List of similar services with their process_steps
+
+        Returns:
+            List of process step dicts with 'step', 'action', 'details' keys
+        """
+        # Format examples
+        examples_text = ""
+        for i, ex in enumerate(similar_examples[:3], 1):
+            steps = ex.get("process_steps", [])
+            if steps:
+                steps_formatted = "\n".join([
+                    f"  Step {s.get('step', j+1)}: {s.get('action', '')}"
+                    for j, s in enumerate(steps)
+                ])
+                examples_text += f"\nExample {i}: {ex.get('name', 'Unknown')}\n{steps_formatted}\n"
+
+        system_prompt = """You are generating realistic process steps for accessing social services in Alberta, Canada.
+
+IMPORTANT GUIDELINES:
+1. Generate 4-6 specific, actionable steps
+2. Use patterns from similar services but customize to this specific service
+3. Include realistic details about what happens at each stage
+4. Steps should guide someone who has never accessed this type of service
+5. Be specific: "Call the 24-hour crisis line at the shelter" not "Call for info"
+6. Include typical elements: initial contact, assessment/intake, documentation, service delivery
+7. Do NOT use generic placeholders like "Visit website" or "Contact organization" """
+
+        user_prompt = f"""Generate process steps for this service:
+
+SERVICE CONTEXT:
+Name: {service_name}
+Category: {category}
+Description: {description[:800] if description else 'Not provided'}
+Eligibility: {eligibility[:300] if eligibility else 'Not provided'}
+Location: {location or 'Alberta'}
+
+EXAMPLES FROM SIMILAR SERVICES:
+{examples_text if examples_text else 'No examples available - use your knowledge of typical processes for this service type.'}
+
+Generate 4-6 specific process steps for accessing this service."""
+
+        tool_schema = {
+            "type": "object",
+            "properties": {
+                "process_steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "step": {"type": "integer"},
+                            "action": {"type": "string"},
+                            "details": {"type": ["string", "null"]}
+                        },
+                        "required": ["step", "action"]
+                    },
+                    "minItems": 3,
+                    "maxItems": 7
+                }
+            },
+            "required": ["process_steps"]
+        }
+
+        result = self.extract_with_tool(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            tool_name="generate_process_steps",
+            tool_schema=tool_schema,
+            tool_description="Generate realistic process steps for accessing a service",
+        )
+
+        if result and "process_steps" in result:
+            return result["process_steps"]
+        return None
+
 
 def init_claude() -> Optional[ClaudeClient]:
     """Initialize Claude client if API key is available."""
