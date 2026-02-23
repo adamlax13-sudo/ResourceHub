@@ -92,20 +92,95 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
-# 211 Alberta search categories
+# 211 Alberta search categories - comprehensive social services
 SEARCH_CATEGORIES = [
-    "mental health counselling services", "addiction treatment programs",
-    "crisis intervention services", "youth mental health services",
-    "Indigenous mental health and wellness services", "women's shelters and domestic violence services",
-    "emergency shelters and housing support", "food banks and meal programs",
-    "substance abuse recovery and treatment centres", "LGBTQ+ support services",
-    "family counselling services", "grief and bereavement support",
-    "employment and job training programs", "newcomer and immigrant support services",
-    "disability support services", "seniors mental health services",
-    "harm reduction services", "eating disorder support", "gambling addiction support",
-    "trauma and PTSD support services", "peer support programs",
-    "outreach and mobile crisis teams", "detox centres",
-    "transitional housing programs", "legal aid for mental health and social issues",
+    # Mental Health & Addiction
+    "mental health counselling services",
+    "addiction treatment programs",
+    "substance abuse recovery centres",
+    "detox and withdrawal management",
+    "gambling addiction support",
+    "eating disorder treatment",
+    "trauma and PTSD support",
+    "grief and bereavement counselling",
+    "dual diagnosis services",
+
+    # Crisis Services
+    "crisis intervention hotlines",
+    "suicide prevention services",
+    "mobile crisis response teams",
+    "emergency psychiatric services",
+
+    # Housing & Shelter
+    "emergency shelters",
+    "transitional housing programs",
+    "affordable housing assistance",
+    "homelessness prevention services",
+    "rent assistance programs",
+    "housing for people with disabilities",
+
+    # Domestic Violence & Safety
+    "women's shelters",
+    "domestic violence support",
+    "family violence services",
+    "sexual assault support centres",
+
+    # Food & Basic Needs
+    "food banks",
+    "meal programs",
+    "clothing assistance",
+    "utility bill assistance",
+
+    # Employment & Financial
+    "employment training programs",
+    "job search assistance",
+    "income support programs",
+    "financial counselling",
+    "debt management services",
+
+    # Health Care Access
+    "low-income health services",
+    "prescription assistance programs",
+    "dental care for low-income",
+    "vision care assistance",
+
+    # Family & Children
+    "family counselling services",
+    "parenting support programs",
+    "childcare subsidies",
+    "child protection services",
+    "youth programs",
+
+    # Seniors Services
+    "seniors mental health",
+    "elder abuse support",
+    "seniors housing",
+    "home care services",
+
+    # Disability Services
+    "disability support services",
+    "developmental disability programs",
+    "brain injury support",
+    "wheelchair and mobility assistance",
+
+    # Population-Specific
+    "Indigenous wellness services",
+    "LGBTQ+ support services",
+    "newcomer and immigrant services",
+    "refugee support programs",
+    "veteran services",
+
+    # Legal & Advocacy
+    "legal aid services",
+    "tenant rights assistance",
+    "immigration legal help",
+    "disability advocacy",
+
+    # Peer Support & Recovery
+    "peer support programs",
+    "12-step programs",
+    "recovery support groups",
+    "harm reduction services",
 ]
 
 MAJOR_REGIONS = ["Calgary", "Edmonton", "Alberta province-wide"]
