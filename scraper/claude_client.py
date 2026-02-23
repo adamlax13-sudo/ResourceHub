@@ -23,6 +23,20 @@ CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 MIN_REQUEST_INTERVAL = 0.5  # seconds between requests
 _last_request_time = 0.0
 
+# Anti-hallucination system prompt for comprehensive extraction
+ANTI_HALLUCINATION_PROMPT = """You are extracting service information from webpage content.
+
+CRITICAL RULES - FOLLOW EXACTLY:
+1. ONLY extract information EXPLICITLY stated in the provided text
+2. If information is not found, return null - DO NOT guess or infer
+3. Before extracting any field, identify the EXACT quote from the source
+4. NEVER use information from your training data
+5. NEVER infer, assume, or extrapolate beyond what's written
+6. If information is ambiguous or unclear, return null
+7. Include source quotes for all extracted fields when possible
+
+The text below is the ONLY source you may use. Do not add any information not present in this text."""
+
 
 def _rate_limit():
     """Ensure minimum time between requests."""
@@ -399,6 +413,152 @@ Only extract the fields that are needed. Set to null if not found."""
 
             return filtered or None
         return None
+
+    def extract_full_service(
+        self,
+        page_content: str,
+        service_name: str,
+        category: str,
+        source_url: str = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Extract comprehensive service data from webpage content.
+
+        Uses anti-hallucination prompts and source citation requirements.
+
+        Args:
+            page_content: Text content from the webpage
+            service_name: Name of the service being extracted
+            category: Service category for context
+            source_url: URL the content came from (for citation)
+
+        Returns:
+            Dict with extracted fields and source citations, or None if failed
+        """
+        user_prompt = f"""Service Name: {service_name}
+Category: {category}
+Source URL: {source_url or "Unknown"}
+
+PAGE CONTENT TO EXTRACT FROM:
+---
+{page_content[:8000]}
+---
+
+Extract all available service information. Remember:
+- Only extract what is EXPLICITLY stated above
+- Return null for any field not found in the text
+- Include exact quotes for source fields
+- Do NOT guess or infer information"""
+
+        tool_schema = {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": ["string", "null"],
+                    "description": "Service description - null if not explicitly found"
+                },
+                "description_source": {
+                    "type": ["string", "null"],
+                    "description": "Exact quote from text that description was extracted from"
+                },
+                "phone": {
+                    "type": ["string", "null"],
+                    "description": "Primary phone number"
+                },
+                "email": {
+                    "type": ["string", "null"],
+                    "description": "Primary email address"
+                },
+                "address": {
+                    "type": ["string", "null"],
+                    "description": "Physical address"
+                },
+                "hours_of_operation": {
+                    "type": ["string", "null"],
+                    "description": "Operating hours"
+                },
+                "hours_source": {
+                    "type": ["string", "null"],
+                    "description": "Exact quote for hours"
+                },
+                "eligibility": {
+                    "type": ["string", "null"],
+                    "description": "Who can access this service - null if not found"
+                },
+                "eligibility_source": {
+                    "type": ["string", "null"],
+                    "description": "Exact quote for eligibility"
+                },
+                "process_steps": {
+                    "type": ["array", "null"],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "step": {"type": "integer"},
+                            "action": {"type": "string"},
+                            "details": {"type": ["string", "null"]}
+                        }
+                    },
+                    "description": "Steps to access service - null if not found"
+                },
+                "process_source": {
+                    "type": ["string", "null"],
+                    "description": "Exact quote for process steps"
+                },
+                "required_docs": {
+                    "type": ["array", "null"],
+                    "items": {"type": "string"},
+                    "description": "Required documents - null if not found"
+                },
+                "docs_source": {
+                    "type": ["string", "null"],
+                    "description": "Exact quote for required documents"
+                },
+                "service_format": {
+                    "type": ["string", "null"],
+                    "enum": ["in-person", "virtual", "hybrid", None],
+                    "description": "How service is delivered"
+                },
+                "languages": {
+                    "type": ["array", "null"],
+                    "items": {"type": "string"},
+                    "description": "Languages supported"
+                },
+                "is_24_7": {
+                    "type": ["boolean", "null"],
+                    "description": "Whether service operates 24/7"
+                },
+                "wait_times": {
+                    "type": ["string", "null"],
+                    "description": "Expected wait times"
+                },
+                "requires_referral": {
+                    "type": ["boolean", "null"],
+                    "description": "Whether a referral is required"
+                },
+                "walk_in_available": {
+                    "type": ["boolean", "null"],
+                    "description": "Whether walk-ins are accepted"
+                },
+                "booking_url": {
+                    "type": ["string", "null"],
+                    "description": "URL for online booking/intake"
+                },
+                "gender_restriction": {
+                    "type": ["string", "null"],
+                    "enum": ["all", "women_only", "men_only", None],
+                    "description": "Gender restriction if any"
+                }
+            }
+        }
+
+        return self.extract_with_tool(
+            system_prompt=ANTI_HALLUCINATION_PROMPT,
+            user_prompt=user_prompt,
+            tool_name="extract_full_service",
+            tool_schema=tool_schema,
+            tool_description="Extract comprehensive service information with source citations",
+        )
 
 
 def init_claude() -> Optional[ClaudeClient]:
