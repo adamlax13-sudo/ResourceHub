@@ -1110,20 +1110,27 @@ def phase_deep_crawl(session, client: Optional[Any], log: ScraperLog):
             log.errors_count += 1
 
 
-def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog):
+def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog, claude_client: Optional[Any] = None):
     """Phase 4c: Extract detailed intake/eligibility from crawled pages.
 
-    Uses specialized extractors to pull detailed process steps,
-    eligibility criteria, and required documents from crawled pages.
+    Uses Claude for extraction when available, falls back to OpenAI extractors.
     """
     logger.info("=== Phase 4c: Enhanced Extraction ===")
 
-    if not client:
-        logger.warning("OpenAI client required for enhanced extraction")
+    # Prefer Claude for extraction
+    use_claude = claude_client is not None
+
+    if not use_claude and not client:
+        logger.warning("No AI client available for enhanced extraction (need Claude or OpenAI)")
         return
 
-    intake_extractor = IntakeExtractor(client)
-    eligibility_extractor = EligibilityExtractor(client)
+    if use_claude:
+        logger.info("Using Claude for enhanced extraction")
+    else:
+        logger.info("Using OpenAI extractors for enhanced extraction")
+
+    intake_extractor = IntakeExtractor(client) if client else None
+    eligibility_extractor = EligibilityExtractor(client) if client else None
 
     # Get recent crawls that haven't been extracted yet
     crawls = session.query(WebsiteCrawl).filter(
@@ -1155,6 +1162,99 @@ def phase_enhanced_extraction(session, client: Optional[Any], log: ScraperLog):
             # Also check homepage and services pages for intake info
             other_pages = [p for p in pages if p.page_type in ('home', 'services', 'contact')]
 
+            # --- CLAUDE EXTRACTION PATH ---
+            if use_claude:
+                # Combine best pages for Claude extraction
+                best_pages = (intake_pages + eligibility_pages + other_pages)[:5]
+                combined_content = ""
+                source_urls = []
+
+                for page in best_pages:
+                    if page.text_content:
+                        combined_content += f"\n\n=== FROM {page.url} ===\n{page.text_content[:3000]}"
+                        source_urls.append(page.url)
+
+                if combined_content:
+                    extraction = claude_client.extract_full_service(
+                        page_content=combined_content,
+                        service_name=service.name,
+                        category=service.category or "",
+                        source_url=source_urls[0] if source_urls else None
+                    )
+
+                    if extraction:
+                        updated = False
+
+                        # Update service with extracted data
+                        if extraction.get("description") and (
+                            not service.description or
+                            len(extraction["description"]) > len(service.description or "")
+                        ):
+                            service.description = extraction["description"]
+                            updated = True
+
+                        if extraction.get("phone") and not service.phone:
+                            service.phone = extraction["phone"]
+                            updated = True
+
+                        if extraction.get("email") and not service.email:
+                            service.email = extraction["email"]
+                            updated = True
+
+                        if extraction.get("address") and not service.address:
+                            service.address = extraction["address"]
+                            updated = True
+
+                        if extraction.get("hours_of_operation") and not service.hours_of_operation:
+                            service.hours_of_operation = extraction["hours_of_operation"]
+                            updated = True
+
+                        if extraction.get("eligibility") and (
+                            not service.eligibility or
+                            len(extraction["eligibility"]) > len(service.eligibility or "")
+                        ):
+                            service.eligibility = extraction["eligibility"]
+                            updated = True
+
+                        if extraction.get("process_steps") and (
+                            not service.process_steps or
+                            len(extraction["process_steps"]) > len(service.process_steps or [])
+                        ):
+                            service.process_steps = extraction["process_steps"]
+                            updated = True
+
+                        if extraction.get("required_docs") and (
+                            not service.required_docs or
+                            len(extraction["required_docs"]) > len(service.required_docs or [])
+                        ):
+                            service.required_docs = extraction["required_docs"]
+                            updated = True
+
+                        if extraction.get("wait_times"):
+                            service.wait_times = extraction["wait_times"]
+                            updated = True
+
+                        # Store field sources for auditing
+                        if updated:
+                            field_sources = service.field_sources or {}
+                            for key in ["description", "phone", "email", "address", "eligibility", "process_steps", "required_docs"]:
+                                if extraction.get(key):
+                                    source_key = f"{key}_source"
+                                    field_sources[key] = {
+                                        "url": source_urls[0] if source_urls else None,
+                                        "quote": extraction.get(source_key),
+                                        "extracted_at": datetime.now().isoformat()
+                                    }
+                            service.field_sources = field_sources
+                            service.source_urls = source_urls
+                            service.last_updated = datetime.now()
+                            log.services_updated += 1
+                            session.commit()
+                            logger.info(f"  Updated with Claude extraction")
+
+                continue  # Skip OpenAI extraction if using Claude
+
+            # --- OPENAI EXTRACTION PATH (fallback) ---
             best_intake = None
             best_eligibility = None
 
@@ -1800,7 +1900,7 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
         if all_phases or "deepcrawl" in phase_set:
             phase_deep_crawl(session, client, log)
         if all_phases or "extract" in phase_set:
-            phase_enhanced_extraction(session, client, log)
+            phase_enhanced_extraction(session, client, log, claude_client)
 
         if (all_phases or "informalberta" in phase_set) and client:
             phase_informalberta_enrich(session, client, log, claude_client)
