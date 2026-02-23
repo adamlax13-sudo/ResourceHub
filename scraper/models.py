@@ -46,8 +46,13 @@ class Service(Base):
     # URLs and external links
     website_url = Column(Text)
 
-    # Data quality
-    confidence_score = Column(Integer, default=100)  # 0-100, data reliability
+    # Data quality and source tracking
+    confidence_score = Column(Integer, default=50)  # 0-100, data reliability
+    field_sources = Column(JSON, default=dict)  # JSON mapping field names to source URLs
+    source_urls = Column(JSON, default=list)  # Array of all source URLs
+    needs_review = Column(Boolean, default=False)  # Flag for low-confidence services
+    content_hash = Column(String(64))  # For change detection
+    etag = Column(String(255))  # For HTTP caching
 
     # Tracking
     is_active = Column(Boolean, default=True)
