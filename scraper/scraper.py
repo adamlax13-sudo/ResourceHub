@@ -1612,6 +1612,150 @@ def phase_refresh_views(session, log: ScraperLog):
 
 
 # =============================================================================
+# Run Modes
+# =============================================================================
+
+
+def run_daily_refresh(limit: int = 100, dry_run: bool = False):
+    """
+    Daily refresh mode - only process changed pages.
+
+    1. Check which service websites have changed (ETag/hash)
+    2. Re-extract only changed pages
+    3. Update confidence scores
+    """
+    from scheduling import check_page_changed, get_pages_needing_refresh, update_page_cache
+
+    logger.info("=" * 60)
+    logger.info("DAILY REFRESH MODE")
+    logger.info("=" * 60)
+
+    session = SessionLocal()
+    client = init_openai() if HAS_OPENAI else None
+    claude_client = init_claude() if HAS_CLAUDE else None
+
+    try:
+        pages = get_pages_needing_refresh(session, max_age_days=7, limit=limit)
+        logger.info(f"Found {len(pages)} pages to check")
+
+        stats = {"checked": 0, "changed": 0, "updated": 0}
+
+        for page in pages:
+            try:
+                changed, new_etag, new_hash, content = check_page_changed(
+                    page["website_url"],
+                    stored_etag=page.get("etag"),
+                    stored_hash=page.get("content_hash"),
+                )
+                stats["checked"] += 1
+
+                if changed and content:
+                    stats["changed"] += 1
+                    logger.info(f"[Daily] Changed: {page['website_url']}")
+
+                    if not dry_run:
+                        # Re-extract with Claude
+                        service = session.query(Service).filter_by(
+                            service_id=page["service_id"]
+                        ).first()
+
+                        if service and claude_client and HAS_CLAUDE:
+                            extracted = claude_client.extract_full_service(
+                                content[:8000],
+                                service.name,
+                                service.category,
+                                source_url=page["website_url"],
+                            )
+
+                            if extracted:
+                                field_sources = {}
+                                for field, value in extracted.items():
+                                    if value is not None and not field.endswith("_source"):
+                                        if should_enrich_field(service, field):
+                                            setattr(service, field, value)
+                                            field_sources[field] = page["website_url"]
+
+                                update_service_confidence(
+                                    service, session,
+                                    field_sources=field_sources,
+                                    has_website_data=True,
+                                )
+                                stats["updated"] += 1
+
+                        # Update cache
+                        update_page_cache(session, page["service_id"], new_etag, new_hash)
+
+                time.sleep(1)  # Rate limit
+
+            except Exception as e:
+                logger.error(f"[Daily] Error checking {page['website_url']}: {e}")
+
+        if not dry_run:
+            session.commit()
+
+        logger.info(f"[Daily] Complete: {stats['checked']} checked, {stats['changed']} changed, {stats['updated']} updated")
+
+    except Exception as e:
+        logger.error(f"Daily refresh error: {e}")
+        session.rollback()
+    finally:
+        session.close()
+
+
+def run_quick_test(dry_run: bool = True):
+    """
+    Quick test mode - verify pipeline imports and list sample services.
+    """
+    logger.info("=" * 60)
+    logger.info("QUICK TEST MODE")
+    logger.info("=" * 60)
+
+    session = SessionLocal()
+
+    try:
+        # Test imports
+        logger.info("Testing imports...")
+        from scoring import calculate_confidence_score
+        from scheduling import check_page_changed
+        logger.info("  - scoring module: OK")
+        logger.info("  - scheduling module: OK")
+
+        if HAS_CLAUDE:
+            logger.info("  - Claude client: OK")
+        else:
+            logger.info("  - Claude client: NOT AVAILABLE")
+
+        if HAS_OPENAI:
+            logger.info("  - OpenAI client: OK")
+        else:
+            logger.info("  - OpenAI client: NOT AVAILABLE")
+
+        # List sample services using raw SQL to avoid ORM column issues
+        result = session.execute(text("""
+            SELECT service_id, name, website_url, confidence_score
+            FROM services
+            WHERE is_active = TRUE
+              AND website_url IS NOT NULL
+            LIMIT 5
+        """))
+
+        services = result.fetchall()
+        logger.info(f"\nSample services ({len(services)} shown):")
+        for row in services:
+            score = row.confidence_score or 50
+            url_preview = row.website_url[:50] if row.website_url else 'None'
+            logger.info(f"  - {row.name}: confidence={score}, url={url_preview}...")
+
+        logger.info("\nQuick test complete - pipeline ready")
+
+    except Exception as e:
+        logger.error(f"Quick test failed: {e}")
+        raise
+    finally:
+        session.close()
+
+
+# =============================================================================
 # Main Entry Point
 # =============================================================================
 
@@ -1697,12 +1841,26 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Alberta Service Scraper & Data Pipeline")
+    parser.add_argument(
+        "--mode",
+        choices=["full", "daily", "quick"],
+        default="full",
+        help="Run mode: full (all phases), daily (smart refresh), quick (test run)"
+    )
     parser.add_argument("--phase", nargs="+", choices=[
         "211", "enrich", "websites", "deepcrawl", "extract",
         "informalberta", "normalize", "tags", "embeddings", "dedupe",
         "recover", "refresh"
     ], help="Run specific phase(s)")
+    parser.add_argument("--limit", type=int, default=100, help="Limit services to process")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes without saving")
     args = parser.parse_args()
 
-    run_scraper(phases=args.phase, dry_run=args.dry_run)
+    # Handle different modes
+    if args.mode == "daily":
+        run_daily_refresh(limit=args.limit, dry_run=args.dry_run)
+    elif args.mode == "quick":
+        run_quick_test(dry_run=True)
+    else:
+        # Full mode - run the standard scraper pipeline
+        run_scraper(phases=args.phase, dry_run=args.dry_run)
