@@ -78,6 +78,15 @@ try:
 except ImportError:
     HAS_CLAUDE = False
 
+# Confidence scoring
+try:
+    from scoring import calculate_confidence_score, get_confidence_level
+    HAS_SCORING = True
+except ImportError:
+    HAS_SCORING = False
+    def calculate_confidence_score(*args, **kwargs): return 50
+    def get_confidence_level(score): return "medium"
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -273,6 +282,70 @@ def is_service_complete(service: Service) -> bool:
     """
     critical_fields = ["description", "eligibility", "process_steps"]
     return all(not should_enrich_field(service, f) for f in critical_fields)
+
+
+def update_service_confidence(
+    service: Service,
+    session,
+    field_sources: Dict[str, str] = None,
+    has_website_data: bool = False,
+    has_211_data: bool = False,
+) -> int:
+    """
+    Calculate and update confidence score for a service.
+
+    Args:
+        service: Service model instance
+        session: Database session
+        field_sources: Dict mapping field names to source URLs
+        has_website_data: Whether data came from official website
+        has_211_data: Whether data came from 211 Alberta
+
+    Returns:
+        The calculated confidence score
+    """
+    from datetime import datetime, timedelta
+
+    # Check if data is stale (>6 months since last update)
+    is_stale = False
+    if service.last_updated:
+        six_months_ago = datetime.now() - timedelta(days=180)
+        is_stale = service.last_updated < six_months_ago
+
+    # Build service data dict for scoring
+    service_data = {
+        "description": service.description,
+        "phone": service.phone,
+        "email": service.email,
+        "contact": service.contact,
+        "hours_of_operation": service.hours_of_operation,
+        "eligibility": service.eligibility,
+        "process_steps": service.process_steps,
+        "required_docs": service.required_docs,
+    }
+
+    # Calculate score
+    score = calculate_confidence_score(
+        service_data,
+        field_sources=field_sources or {},
+        has_website_data=has_website_data,
+        has_211_data=has_211_data,
+        is_stale=is_stale,
+    )
+
+    # Update service
+    service.confidence_score = score
+    if field_sources:
+        existing_sources = service.field_sources or {}
+        existing_sources.update(field_sources)
+        service.field_sources = existing_sources
+
+    # Flag for review if low confidence
+    service.needs_review = score < 60
+
+    logger.info(f"[Confidence] Service '{service.name}': score={score} ({get_confidence_level(score)})")
+
+    return score
 
 
 def init_openai() -> Optional[Any]:
