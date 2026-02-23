@@ -35,6 +35,7 @@ class Service(Base):
 
     # Process and requirements
     process_steps = Column(JSON)  # Array of process steps
+    process_steps_inferred = Column(Boolean, default=False)  # True if steps were AI-generated
     wait_times = Column(String(255))
     required_docs = Column(JSON)  # Array of required documents
 
