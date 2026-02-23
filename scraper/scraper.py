@@ -13,7 +13,6 @@ A single entry point for all data management tasks:
 
 Usage:
     python scraper.py                           # Full pipeline (all phases)
-    python scraper.py --phase reference         # Only reference data sync
     python scraper.py --phase 211               # Only 211 discovery
     python scraper.py --phase enrich            # Only 211 enrichment
     python scraper.py --phase websites          # Only website scraping (legacy shallow)
@@ -902,42 +901,6 @@ def sync_service_data(service_data: Dict, session, log: ScraperLog) -> str:
 # =============================================================================
 
 
-def phase_reference_sync(session, client: Optional[Any], log: ScraperLog, claude_client=None):
-    """Phase 1: Sync reference data."""
-    logger.info("=== Phase 1: Reference Data Sync ===")
-    from reference_data import load_alberta_services
-
-    for svc_data in load_alberta_services():
-        try:
-            log.services_checked += 1
-            service_id = generate_service_id(svc_data["name"], svc_data.get("location", ""))
-            existing = session.query(Service).filter_by(service_id=service_id).first()
-
-            urls = extract_urls(svc_data.get("contact", ""))
-            if not urls and existing and existing.website_url:
-                urls = [existing.website_url]
-            if not urls and client:
-                found = find_website_with_ai(client, svc_data["name"], svc_data.get("location", "Alberta"), svc_data.get("category", ""))
-                if found:
-                    urls = [found]
-
-            if urls and client:
-                scraped = scrape_website(urls[0])
-                if scraped.get("page_text"):
-                    ai_data = enrich_with_ai(client, scraped["page_text"], svc_data["name"], svc_data.get("category", ""), claude_client)
-                    if ai_data:
-                        svc_data.update(ai_data)
-                svc_data["website_url"] = urls[0]
-                svc_data["data_source"] = urls[0]
-
-            sync_service_data(svc_data, session, log)
-            session.commit()
-            time.sleep(2 if client else 1)
-        except Exception as e:
-            logger.error(f"Error processing {svc_data.get('name', '?')}: {e}")
-            session.rollback()
-
-
 def phase_211_discovery(session, client: Any, log: ScraperLog, claude_client=None):
     """Phase 2: Discover new services from 211 Alberta."""
     logger.info("=== Phase 2: 211 Alberta Discovery ===")
@@ -1682,8 +1645,6 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
         phase_set = set(phases or [])
 
         # Core scraping phases (require OpenAI)
-        if all_phases or "reference" in phase_set:
-            phase_reference_sync(session, client, log, claude_client)
         if (all_phases or "211" in phase_set) and client:
             phase_211_discovery(session, client, log, claude_client)
         if (all_phases or "enrich" in phase_set) and client:
@@ -1737,7 +1698,7 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Alberta Service Scraper & Data Pipeline")
     parser.add_argument("--phase", nargs="+", choices=[
-        "reference", "211", "enrich", "websites", "deepcrawl", "extract",
+        "211", "enrich", "websites", "deepcrawl", "extract",
         "informalberta", "normalize", "tags", "embeddings", "dedupe",
         "recover", "refresh"
     ], help="Run specific phase(s)")
