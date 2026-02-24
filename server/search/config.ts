@@ -115,6 +115,8 @@ export const SEARCH_CONFIG = {
       description: 'Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988.',
       location: 'Canada-wide (available in Alberta)',
       waitTimes: 'Immediate - 24/7 availability',
+      phone: '988',
+      is24_7: true,
     },
     pinnedServiceFull: {
       id: '988-suicide-crisis-helpline',
@@ -171,6 +173,8 @@ export const SEARCH_CONFIG = {
       description: 'Alberta program allowing parents/guardians to get a court order to place their child (under 18) in a protective safe house for up to 5 days for addiction assessment and treatment planning. Available 24/7.',
       location: 'Alberta-wide',
       waitTimes: '24/7 availability - Immediate response',
+      phone: '211',
+      is24_7: true,
     },
     pinnedServiceFull: {
       id: 'pchad-alberta',
@@ -274,6 +278,10 @@ export const SEARCH_CONFIG = {
       /(?:drinking|alcohol|drug|addict|gambling|betting).*(?:problem|issue|help|recovery)/i,
       /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
       /(?:addicted|hooked).*(?:to|on)/i,
+      // Recovery-specific patterns (for queries like "recovery support no 12 step")
+      /\b(?:recovery|recovering).*(?:support|program|group|meeting|help)/i,
+      /\b(?:12[\s-]?step|twelve[\s-]?step|AA\b|NA\b|CA\b|SMART Recovery)\b/i,
+      /\b(?:no|non|not|without|alternative).*(?:12[\s-]?step|AA\b|NA\b)/i,
       // Gambling-specific patterns
       /(?:can'?t|cannot|stop|quit|control).*(?:gambling|betting|playing.*(?:slots|poker|casino|bet))/i,
       /(?:gambling|betting|casino).*(?:addiction|problem|help|support)/i,
@@ -438,6 +446,16 @@ export const SEARCH_CONFIG = {
       /\b(?:residential school|sixties scoop|MMIWG|missing.*murdered.*indigenous)\b/i,
       /\b(?:indigenous|native|aboriginal).*(?:mental health|addiction|healing|wellness)\b/i,
       /\b(?:jordan'?s principle|nihb|non-?insured health benefits)\b/i,
+    ],
+    // Veteran and military services
+    veteran_services: [
+      /\b(?:veteran|veterans?|military|armed forces|canadian forces|ex-?military|former military|CAF|CFB)\b.*(?:support|services?|help|mental health|PTSD|trauma)/i,
+      /\b(?:PTSD|post-?traumatic|trauma|flashback).*(?:veteran|military|combat|war|deployment|service)/i,
+      /\b(?:veteran|military).*(?:counsell?ing|therapy|treatment|recovery)/i,
+      /\b(?:VAC|veterans affairs|OSISS|operational stress|combat stress)\b/i,
+      /\b(?:legion|royal canadian legion|poppy fund)\b/i,
+      /(?:served|deployed|combat|tour).*(?:afghanistan|iraq|overseas|military)/i,
+      /(?:returning|returned).*(?:soldier|veteran|service member)/i,
     ],
     // Student/campus services
     student_services: [
@@ -717,7 +735,7 @@ export const SEARCH_CONFIG = {
     // Cost exclusions
     freeOnly: /\b(free only|must be free|can'?t afford|no money|no insurance|uninsured|low income|sliding scale)\b/i,
     // Wait time exclusions
-    noWaitlist: /\b(no wait|immediate|right away|can'?t wait|urgent|asap|today|tonight|now)\b/i,
+    noWaitlist: /\b(no wait|no waitlist|without wait|immediate|right away|can'?t wait|urgent|asap|today|tonight|now|walk[\s-]?in)\b/i,
   },
 
   // === SERVICE SUBSTANCE INDICATORS ===
@@ -737,7 +755,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'student_services' | 'parenting_support' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type

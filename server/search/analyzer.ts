@@ -170,6 +170,54 @@ function detectDomainIntent(query: string): QueryIntent | null {
     }
   }
 
+  // PRE-CHECK: If query explicitly mentions food/meals, prioritize food_insecurity
+  // even if it also mentions "homeless" (e.g., "free meals for homeless")
+  const isFoodQuery = /\b(meals?|food|hungry|eat|groceries|food bank|pantry|soup kitchen|hamper)\b/i.test(query);
+  if (isFoodQuery) {
+    for (const pattern of patterns.food_insecurity) {
+      if (pattern.test(query)) {
+        console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity (food-specific query)`);
+        return 'food_insecurity';
+      }
+    }
+  }
+
+  // PRE-CHECK: If query explicitly mentions veteran/military, prioritize veteran_services
+  // even if it also mentions "homeless" or housing (e.g., "homeless veteran with PTSD")
+  const isVeteranQuery = /\b(veteran|veterans?|military|armed forces|ex-?military|former military|CAF|PTSD.*(?:combat|military|veteran)|(?:combat|military|veteran).*PTSD)\b/i.test(query);
+  if (isVeteranQuery) {
+    for (const pattern of patterns.veteran_services) {
+      if (pattern.test(query)) {
+        console.log(`[QueryAnalyzer] Domain intent detected: veteran_services (veteran-specific query)`);
+        return 'veteran_services';
+      }
+    }
+  }
+
+  // PRE-CHECK: If query explicitly mentions indigenous, prioritize indigenous_services
+  // even if it also mentions addiction or other services
+  const isIndigenousQuery = /\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i.test(query);
+  if (isIndigenousQuery) {
+    for (const pattern of patterns.indigenous_services) {
+      if (pattern.test(query)) {
+        console.log(`[QueryAnalyzer] Domain intent detected: indigenous_services (indigenous-specific query)`);
+        return 'indigenous_services';
+      }
+    }
+  }
+
+  // PRE-CHECK: If query mentions tenant rights or eviction in legal context, prioritize legal_aid
+  // before housing_urgent (e.g., "tenant rights eviction" vs "getting evicted need shelter")
+  const isLegalEvictionQuery = /\b(tenant rights|eviction.*(?:legal|help|lawyer|rights)|(?:legal|lawyer|rights).*eviction)\b/i.test(query);
+  if (isLegalEvictionQuery) {
+    for (const pattern of patterns.legal_aid) {
+      if (pattern.test(query)) {
+        console.log(`[QueryAnalyzer] Domain intent detected: legal_aid (eviction legal query)`);
+        return 'legal_aid';
+      }
+    }
+  }
+
   // Check housing urgent (urgent need)
   for (const pattern of patterns.housing_urgent) {
     if (pattern.test(query)) {
@@ -178,7 +226,7 @@ function detectDomainIntent(query: string): QueryIntent | null {
     }
   }
 
-  // Check food insecurity (basic need)
+  // Check food insecurity (basic need) - for queries that weren't caught by pre-check
   for (const pattern of patterns.food_insecurity) {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity`);
@@ -208,6 +256,14 @@ function detectDomainIntent(query: string): QueryIntent | null {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: lgbtq_services`);
       return 'lgbtq_services';
+    }
+  }
+
+  // Check veteran/military services patterns
+  for (const pattern of patterns.veteran_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: veteran_services`);
+      return 'veteran_services';
     }
   }
 
@@ -281,6 +337,15 @@ function detectDomainIntent(query: string): QueryIntent | null {
     if (pattern.test(query)) {
       console.log(`[QueryAnalyzer] Domain intent detected: disability_support`);
       return 'disability_support';
+    }
+  }
+
+  // Check student services patterns BEFORE mental_health
+  // This ensures "UCalgary mental health" routes to student_services not general mental_health
+  for (const pattern of patterns.student_services) {
+    if (pattern.test(query)) {
+      console.log(`[QueryAnalyzer] Domain intent detected: student_services`);
+      return 'student_services';
     }
   }
 
@@ -517,24 +582,57 @@ export function getStemmedKeywords(keywords: string[]): Set<string> {
 /**
  * Extract negative terms from query (words user wants to exclude)
  * Handles patterns like "not X", "without X", "no X", "except X"
+ * Also handles multi-word phrases like "12 step", "faith based"
  */
 function extractNegativeTerms(query: string): string[] {
   const negatives: string[] = [];
   const q = query.toLowerCase();
 
+  // Check for known multi-word negative phrases first
+  const knownPhrases = [
+    { pattern: /\bno\s+12[\s-]?step/i, term: '12_step' },
+    { pattern: /\bnot?\s+12[\s-]?step/i, term: '12_step' },
+    { pattern: /\bwithout\s+12[\s-]?step/i, term: '12_step' },
+    { pattern: /\bnon[\s-]?12[\s-]?step/i, term: '12_step' },
+    { pattern: /\bnot?\s+religious/i, term: 'religious' },
+    { pattern: /\bnot?\s+faith[\s-]?based/i, term: 'faith_based' },
+    { pattern: /\bsecular\b/i, term: 'religious' },
+    { pattern: /\bnon[\s-]?religious/i, term: 'religious' },
+    { pattern: /\bnon[\s-]?faith/i, term: 'faith_based' },
+  ];
+
+  for (const { pattern, term } of knownPhrases) {
+    if (pattern.test(q)) {
+      negatives.push(term);
+    }
+  }
+
   // Patterns: "not X", "without X", "no X", "except X", "excluding X", "avoid X"
   const patterns = [
     /\b(?:not|without|except|excluding|avoid)\s+(\w+)/gi,
-    /\bno\s+(\w+)(?:\s+(?:services?|programs?|places?))?/gi,  // "no religious services"
+    /\bno\s+(\w+)(?:\s+(?:services?|programs?|places?))?/gi,
   ];
 
   for (const pattern of patterns) {
     let match;
     while ((match = pattern.exec(q)) !== null) {
       const term = match[1].toLowerCase();
-      // Skip common false positives
-      if (!['one', 'way', 'idea', 'more', 'longer', 'problem'].includes(term)) {
-        negatives.push(term);
+      // Skip common false positives and terms that indicate NEED rather than exclusion
+      // "no food" means they need food, not that they want to exclude food services
+      const skipTerms = [
+        // General false positives
+        'one', 'way', 'idea', 'more', 'longer', 'problem', '12',
+        // Terms that indicate NEED when preceded by "no" (e.g., "no food" = needs food)
+        'food', 'money', 'home', 'place', 'shelter', 'help', 'where', 'job',
+        'income', 'support', 'friends', 'family', 'insurance', 'bed', 'housing',
+        'sleep', 'resources', 'options', 'choice', 'hope', 'energy', 'motivation',
+        // Common nouns that don't make sense as exclusions
+        'point', 'reason', 'clue', 'idea',
+      ];
+      if (!skipTerms.includes(term)) {
+        if (!negatives.includes(term)) {
+          negatives.push(term);
+        }
       }
     }
   }

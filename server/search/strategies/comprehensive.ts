@@ -524,6 +524,10 @@ const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
     serviceTypes: ['parenting', 'baby_resources', 'family_support'],
     categoryPatterns: /pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support|childcare|daycare|formula|diapers/i,
   },
+  'veteran_services': {
+    serviceTypes: ['veteran_services', 'military_support', 'trauma_services'],
+    categoryPatterns: /veteran|military|armed forces|canadian forces|CAF|CFB|PTSD|post-?traumatic|trauma|operational stress|combat|deployment|VAC|veterans affairs|OSISS|legion|royal canadian legion/i,
+  },
 };
 
 /**
@@ -613,6 +617,23 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
+    // Location-only boosting: prioritize general information services
+    if (intent === 'location_only') {
+      // Strong boost for general information and referral services
+      if (/\b(211|information|referral|directory|helpline|help line|community services)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[LocationBoost] "${svc.name.substring(0, 40)}" +200 for general information service`);
+      }
+      // Moderate boost for multi-service agencies and broad access points
+      if (/\b(family|community|social services|resource|multi-?service|community centre|community center)\b/i.test(textLower)) {
+        boost += 50;
+      }
+      // Slight penalty for very specialized services (e.g., specific legal programs, specific treatment)
+      if (/\b(notary|immigration.*legal|residential treatment|detox|specific program)\b/i.test(textLower)) {
+        boost -= 30;
+      }
+    }
+
     // Gender-based boosting
     if (genderPref) {
       const isWomensService = /women|woman|female|mother|girl|domestic violence|yw\s|ywca/i.test(textLower);
@@ -656,8 +677,9 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
 
     // Disability/Autism boosting - detect autism/disability in query and boost relevant services
     // Boost values must be LARGE (100+) to overcome SQL base scores of 100-150
-    const queryLower = analysis?.raw?.toLowerCase() || '';
+    const queryLower = (analysis?.raw || rawQuery || '').toLowerCase();
     const isDisabilityQuery = /\b(autis|autism|autistic|ASD|asperger|ADHD|ADD|disability|disabled|neurodivergent|neurodiverse|on the spectrum|sensory|developmental|AISH|PDD)\b/i.test(queryLower);
+    const isADHDQuery = /\b(ADHD|ADD|attention deficit|hyperactiv|executive function)\b/i.test(queryLower);
     const hasSocialIsolation = /\b(friend|friends|friendship|lonely|isolated|social|connect|relationship|alone)\b/i.test(queryLower);
 
     if (isDisabilityQuery) {
@@ -672,7 +694,7 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
         console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +120 for disability services`);
       }
       // Good boost for neurodivergent/ADHD services
-      if (/\b(neurodivergent|neurodiverse|ADHD|ADD|sensory processing|learning disability)\b/i.test(textLower)) {
+      if (/\b(neurodivergent|neurodiverse|ADHD|ADD|attention deficit|sensory processing|learning disability|executive function)\b/i.test(textLower)) {
         boost += 100;
         console.log(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +100 for neurodivergent match`);
       }
@@ -694,21 +716,124 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
-    // Grief support boosting
-    const isGriefQuery = /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide|overdose|took their life|miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|pet died|dog died|cat died|put to sleep|drowned|accident|terminal|cancer)\b/i.test(queryLower);
-    if (isGriefQuery) {
-      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral|survivors?|violent loss)\b/i.test(textLower)) {
-        boost += 120;
-        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +120 for grief support`);
+    // ADHD-specific boosting (additional to disability boosting)
+    if (isADHDQuery) {
+      // Boost services that offer ADHD assessment, coaching, or support
+      if (/\b(ADHD|ADD|attention deficit|hyperactivity|executive function)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[ADHDBoost] "${svc.name.substring(0, 40)}" +200 for ADHD-specific`);
       }
-      // Pregnancy/infant loss specific
-      if (/\b(miscarriage|stillbirth|pregnancy loss|infant loss|perinatal|SIDS|baby loss)\b/i.test(textLower)) {
+      // Boost psychological assessment services (needed for ADHD diagnosis)
+      if (/\b(psychological.*assessment|psych.*assessment|neuropsych|cognitive assessment|diagnostic)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[ADHDBoost] "${svc.name.substring(0, 40)}" +150 for assessment services`);
+      }
+      // Boost coaching and skills-based support
+      if (/\b(coaching|life skills|executive.*coaching|organization|time management)\b/i.test(textLower)) {
         boost += 100;
-        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +100 for pregnancy/infant loss`);
+        console.log(`[ADHDBoost] "${svc.name.substring(0, 40)}" +100 for coaching/skills`);
       }
-      // Pet loss specific
-      if (/\b(pet loss|pet bereavement|animal loss|companion animal)\b/i.test(textLower)) {
+      // Boost psychiatry (medication management)
+      if (/\b(psychiatr|psychiatric|medication|prescription)\b/i.test(textLower)) {
         boost += 80;
+        console.log(`[ADHDBoost] "${svc.name.substring(0, 40)}" +80 for psychiatry`);
+      }
+      // Penalty for services clearly not ADHD-related
+      if (/\b(eating disorder|substance|addiction|domestic violence|shelter)\b/i.test(textLower)) {
+        if (!/\b(ADHD|ADD|attention|neurodivergent)\b/i.test(textLower)) {
+          boost -= 100;
+          console.log(`[ADHDBoost] "${svc.name.substring(0, 40)}" -100 penalty (not ADHD related)`);
+        }
+      }
+    }
+
+    // Crisis query detection - must be checked BEFORE grief to avoid misclassification
+    const isCrisisQuery = intent === 'crisis' || /\b(kill myself|suicide|want to die|end it all|don'?t want to (live|be here)|nobody.*miss me|no one.*care|burden|hopeless|give up|can'?t go on|not worth living|better off dead|cut myself|self-?harm)\b/i.test(queryLower);
+    if (isCrisisQuery) {
+      // MASSIVE boost for crisis/suicide helplines
+      if (/\b(988|crisis|suicide|helpline|hotline|distress|prevention)\b/i.test(textLower)) {
+        boost += 500;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" +500 for crisis services`);
+      }
+      // HIGH boost for services in Crisis category
+      if (/\bcris(is|es)\b/i.test(svc.category || '')) {
+        boost += 400;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" +400 for Crisis category`);
+      }
+      // High boost for mental health crisis services
+      if (/\b(crisis.*line|crisis.*team|crisis.*support|mental.*crisis|immediate.*help|24.?7|24.*hour)\b/i.test(textLower)) {
+        boost += 300;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" +300 for crisis support`);
+      }
+      // Moderate boost for mental health services that can help in crisis
+      if (/\b(counsell?ing|mental health|therapy|psycholog)\b/i.test(textLower) && !/\b(grief|bereavement|loss|mourning)\b/i.test(textLower)) {
+        boost += 100;
+      }
+      // HEAVY penalty for grief/bereavement services in crisis queries - WRONG type of help
+      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|funeral|memorial|widows?|survivors of loss)\b/i.test(textLower) &&
+          !/\b(crisis|suicide|helpline|hotline|distress)\b/i.test(textLower)) {
+        boost -= 350;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" -350 penalty for grief service (crisis query)`);
+      }
+      // Penalty for addiction treatment (not crisis intervention)
+      if (/\b(detox|rehab|residential treatment|recovery house)\b/i.test(textLower)) {
+        boost -= 200;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" -200 penalty for addiction treatment (crisis query)`);
+      }
+      // Penalty for gambling services (not relevant to mental health crisis)
+      if (/\b(gambling|casino|lottery|gaming|wagering)\b/i.test(textLower)) {
+        boost -= 300;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" -300 penalty for gambling service (crisis query)`);
+      }
+      // Penalty for day programs/hospitals (not immediate crisis help)
+      if (/\b(day hospital|day program|outpatient program)\b/i.test(textLower) && !/\bcris(is|es)\b/i.test(textLower)) {
+        boost -= 150;
+        console.log(`[CrisisBoost] "${svc.name.substring(0, 40)}" -150 penalty for day program (crisis query)`);
+      }
+    }
+
+    // Grief support boosting (only if NOT a crisis query)
+    const isGriefQuery = !isCrisisQuery && /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide loss|overdose death|miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|pet died|dog died|cat died|put to sleep|drowned|accident|terminal|cancer|my dog|my cat|my pet)\b/i.test(queryLower);
+    const isPetLossQuery = /\b(pet|dog|cat|animal).*(died|loss|passed|death|put to sleep|euthanized|put down)\b/i.test(queryLower) || /\b(died|lost|passed).*(pet|dog|cat|animal)\b/i.test(queryLower);
+    const isMiscarriageQuery = /\b(miscarriage|stillbirth|stillborn|pregnancy loss|infant loss|SIDS|baby loss|lost the baby|baby died)\b/i.test(queryLower);
+    const isViolentLossQuery = /\b(murder|murdered|killed|homicide|violent|suicide|overdose|accident|shooting|stabbing)\b/i.test(queryLower);
+    if (isGriefQuery) {
+      // General grief/bereavement services
+      if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral|survivors?|violent loss)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +150 for grief support`);
+      }
+      // Pregnancy/infant loss specific - extra high boost
+      if (isMiscarriageQuery) {
+        if (/\b(miscarriage|stillbirth|pregnancy loss|infant loss|perinatal|SIDS|baby loss|perinatal)\b/i.test(textLower)) {
+          boost += 250;
+          console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +250 for pregnancy/infant loss match`);
+        }
+        // Also boost services that mention pregnancy-related support
+        if (/\b(pregnancy|prenatal|postpartum|maternal|maternity)\b/i.test(textLower) && /\b(loss|grief|bereavement|support)\b/i.test(textLower)) {
+          boost += 150;
+          console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +150 for pregnancy loss support`);
+        }
+      }
+      // Pet loss specific - higher boost
+      if (isPetLossQuery) {
+        if (/\b(pet loss|pet bereavement|pet grief|animal loss|companion animal)\b/i.test(textLower)) {
+          boost += 250;
+          console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +250 for pet loss match`);
+        }
+        // Also boost general grief services that might help
+        if (/\b(grief|bereavement|loss support|counsell?ing)\b/i.test(textLower)) {
+          boost += 100;
+        }
+        // Penalty for crisis/shelter services in pet loss queries
+        if (/\b(crisis line|shelter|housing|emergency|domestic violence)\b/i.test(textLower)) {
+          boost -= 100;
+        }
+      }
+      // Violent loss specific
+      if (isViolentLossQuery && /\b(violent loss|homicide|survivors|trauma|violent crime|victim)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[GriefBoost] "${svc.name.substring(0, 40)}" +150 for violent loss support`);
       }
       if (/\b(support group|peer support|counsell?ing)\b/i.test(textLower)) {
         boost += 60;
@@ -716,6 +841,37 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       // Penalty for generic mental health when grief-specific exists
       if (boost === 0 && /\b(mental health|counselling|therapy)\b/i.test(textLower)) {
         boost -= 20;
+      }
+    }
+
+    // Postpartum depression boosting
+    const isPostpartumQuery = /\b(postpartum|post-?partum|PPD|perinatal|baby blues|new mom|after giving birth|after having a baby)\b/i.test(queryLower);
+    if (isPostpartumQuery) {
+      // Very high boost for postpartum-specific services
+      if (/\b(postpartum|post-?partum|PPD|perinatal|maternal|baby blues)\b/i.test(textLower)) {
+        boost += 250;
+        console.log(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +250 for postpartum-specific`);
+      }
+      // High boost for women's mental health services
+      if (/\b(women'?s.*mental|maternal.*mental|women'?s.*health|perinatal.*program)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +200 for women's mental health`);
+      }
+      // Good boost for services mentioning pregnancy/birth + mental health
+      if (/\b(pregnancy|pregnant|birth|baby|newborn|infant|new mom|new mother)\b/i.test(textLower) && /\b(depression|anxiety|mental|counsell?ing|support)\b/i.test(textLower)) {
+        boost += 150;
+        console.log(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +150 for pregnancy + mental health`);
+      }
+      // Moderate boost for general mental health that might help
+      if (/\b(mental health|counsell?ing|therapy|depression|anxiety)\b/i.test(textLower)) {
+        boost += 80;
+      }
+      // Penalty for services clearly not related (addiction, shelter, etc.)
+      if (/\b(addiction|substance|alcohol|drug|shelter|homeless|detox|residential treatment)\b/i.test(textLower)) {
+        if (!/\b(postpartum|perinatal|women'?s|maternal|pregnancy)\b/i.test(textLower)) {
+          boost -= 150;
+          console.log(`[PostpartumBoost] "${svc.name.substring(0, 40)}" -150 penalty (not postpartum related)`);
+        }
       }
     }
 
@@ -737,13 +893,54 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
 
     // Legal aid boosting
     const isLegalQuery = /\b(lawyer|legal|court|custody|divorce|immigration|tenant rights|charges)\b/i.test(queryLower);
-    if (isLegalQuery) {
+    const isTenantEvictionQuery = /\b(tenant|eviction|evicted|getting evicted|being evicted|landlord|renter|rental|lease|rtdrs)\b/i.test(queryLower);
+    const isUrgentEvictionQuery = isTenantEvictionQuery && /\b(tomorrow|tonight|today|urgent|emergency|need help|about to|going to be)\b/i.test(queryLower);
+    if (isLegalQuery || isTenantEvictionQuery) {
+      // VERY high boost for tenant/housing legal services in eviction queries
+      if (isTenantEvictionQuery) {
+        if (/\b(tenant|eviction|landlord|renter|rental|housing.*rights|residential tenancies|rtdrs|lease)\b/i.test(textLower)) {
+          boost += 300;
+          console.log(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +300 for tenant/eviction legal`);
+        }
+        // High boost for legal aid services that can help with housing
+        if (/\b(legal aid|pro bono|free legal|legal clinic|student legal|community legal)\b/i.test(textLower)) {
+          boost += 300;
+          console.log(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +300 for legal aid (eviction query)`);
+        }
+        // Boost for housing-related legal services
+        if (/\b(housing|landlord.*tenant|residential|civil law|housing connect)\b/i.test(textLower)) {
+          boost += 200;
+          console.log(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +200 for housing legal`);
+        }
+        // For urgent eviction, boost crisis/emergency tenant support even more
+        if (isUrgentEvictionQuery) {
+          if (/\b(emergency.*legal|urgent.*legal|immediate|same.*day)\b/i.test(textLower)) {
+            boost += 200;
+            console.log(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +200 for urgent eviction legal`);
+          }
+        }
+        // Heavy penalty for emergency shelters in tenant rights query (different need)
+        if (/\b(emergency shelter|homeless shelter|beds.*available|overnight|sleep)\b/i.test(textLower) &&
+            !/\b(legal|rights|tenant|eviction)\b/i.test(textLower)) {
+          boost -= 250;
+          console.log(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" -250 penalty for shelter (tenant rights query)`);
+        }
+      }
       if (/\b(legal aid|pro bono|free legal|low cost legal|lawyer referral)\b/i.test(textLower)) {
         boost += 150;
         console.log(`[LegalBoost] "${svc.name.substring(0, 40)}" +150 for legal aid`);
       }
       if (/\b(lawyer|attorney|law.*society|legal.*services|court)\b/i.test(textLower)) {
         boost += 80;
+      }
+    }
+
+    // Penalize legal services in non-legal queries (e.g., mental health counselling queries)
+    const isCounsellingQuery = /\b(counsell?ing|therapy|therap|mental health|depression|anxiety|support group)\b/i.test(queryLower);
+    if (isCounsellingQuery && !isLegalQuery) {
+      if (/\b(legal aid|pro bono|lawyer|law society|court|legal services)\b/i.test(textLower)) {
+        boost -= 200;
+        console.log(`[LegalPenalty] "${svc.name.substring(0, 40)}" -200 for legal service in counselling query`);
       }
     }
 
@@ -761,7 +958,13 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
 
     // Youth services boosting
     const isYouthQuery = /\b(teen|teenager|adolescent|youth|young adult|my kid|my child|under 18|runaway)\b/i.test(queryLower);
+    const isYouthShelterQuery = isYouthQuery && /\b(shelter|housing|homeless|place to stay|sleep)\b/i.test(queryLower);
     if (isYouthQuery) {
+      // Extra boost for youth shelter-specific services when query mentions shelter
+      if (isYouthShelterQuery && /\b(youth.*shelter|youth.*housing|teen.*shelter|runaway.*shelter|emergency.*shelter|shelter)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[YouthBoost] "${svc.name.substring(0, 40)}" +200 for youth shelter`);
+      }
       if (/\b(youth|teen|adolescent|young adult|under 25|kids help phone|runaway)\b/i.test(textLower)) {
         boost += 100;
         console.log(`[YouthBoost] "${svc.name.substring(0, 40)}" +100 for youth services`);
@@ -769,6 +972,10 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       // Penalty for senior-only services
       if (/\b(senior only|65\+|elderly only|seniors only)\b/i.test(textLower)) {
         boost -= 50;
+      }
+      // For youth shelter queries, penalize non-shelter services
+      if (isYouthShelterQuery && !/\b(shelter|housing|residential|emergency)\b/i.test(textLower)) {
+        boost -= 80;
       }
     }
 
@@ -785,45 +992,101 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     }
 
     // Family addiction support boosting (Al-Anon, Nar-Anon)
-    const isFamilyAddictionQuery = /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcohol|drug|drinking|using)\b/i.test(queryLower) || /\b(al-?anon|nar-?anon)\b/i.test(queryLower);
+    // Detects: "my husband is an alcoholic", "living with an addict", "al-anon"
+    const isFamilyAddictionQuery =
+      /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcohol|drug|drinking|using)\b/i.test(queryLower) ||
+      /\b(al-?anon|nar-?anon)\b/i.test(queryLower) ||
+      /\bliving with.*(addict|alcoholic|someone who|substance)\b/i.test(queryLower) ||
+      /\b(loved one|family member|someone i (know|love|care)).*(addict|alcohol|drug)\b/i.test(queryLower) ||
+      /\b(living with an addict|spouse.*addict|partner.*addict)\b/i.test(queryLower);
     if (isFamilyAddictionQuery) {
-      if (/\b(al-?anon|nar-?anon|family.*support|loved one|concerned|codependent|family.*addiction)\b/i.test(textLower)) {
-        boost += 180; // Very high - must beat treatment services
-        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +180 for family addiction support`);
+      // MASSIVE boost for Al-Anon/Nar-Anon by name - these are THE services for families
+      if (/\b(al-?anon|nar-?anon)\b/i.test(textLower)) {
+        boost += 600;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +600 for Al-Anon/Nar-Anon`);
       }
-      // Penalty for treatment/detox services (wrong target - those are for the addict)
-      if (/\b(detox|rehab|residential treatment|treatment center|inpatient|recovery house)\b/i.test(textLower)) {
-        boost -= 80;
-        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" -80 penalty for treatment (wrong target)`);
+      // Very high boost for family support programs
+      if (/\b(family.*support|loved one.*support|concerned.*persons?|codependent|family.*addiction|support.*famil|family group)\b/i.test(textLower)) {
+        boost += 350;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +350 for family addiction support`);
+      }
+      // Moderate boost for peer support and group meetings
+      if (/\b(support group|peer support|meeting|fellowship)\b/i.test(textLower)) {
+        boost += 100;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +100 for support group`);
+      }
+      // VERY heavy penalty for treatment/detox services (wrong target - those are for the addict, not the family)
+      if (/\b(detox|rehab|residential treatment|treatment center|inpatient|recovery house|treatment program|withdrawal|outpatient treatment)\b/i.test(textLower)) {
+        boost -= 300;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" -300 penalty for treatment (wrong target)`);
+      }
+      // Also penalize harm reduction/clinical services
+      if (/\b(opioid|methadone|suboxone|naloxone|harm reduction|safer.*use|needle|syringe)\b/i.test(textLower)) {
+        boost -= 250;
+        console.log(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" -250 penalty for harm reduction (wrong target)`);
       }
     }
 
     // Financial support boosting
-    const isFinancialQuery = /\b(debt|bills?|financial|money|can'?t afford|bankruptcy|collections?)\b/i.test(queryLower);
+    const isFinancialQuery = /\b(debt|bills?|financial|money|can'?t afford|bankruptcy|collections?|credit)\b/i.test(queryLower);
+    const isCreditCounsellingQuery = /\b(credit counsell?ing|credit.*help|debt.*counsel|financial.*counsel)\b/i.test(queryLower);
     if (isFinancialQuery) {
-      if (/\b(financial|debt|credit counsell?ing|bankruptcy|money management|budget)\b/i.test(textLower)) {
+      // Highest boost for explicit financial/credit counselling services
+      if (/\b(credit counsell?ing|financial counsell?ing|debt.*counsell?ing|money management|budget.*counsel|debt relief)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[FinancialBoost] "${svc.name.substring(0, 40)}" +200 for credit/financial counselling`);
+      }
+      if (/\b(financial|debt|bankruptcy|money management|budget|financial literacy)\b/i.test(textLower)) {
         boost += 120;
         console.log(`[FinancialBoost] "${svc.name.substring(0, 40)}" +120 for financial support`);
       }
       if (/\b(payday loan|collections?|bills|utilities assistance)\b/i.test(textLower)) {
         boost += 60;
       }
+      // Heavy penalty for mental health counselling in credit/financial queries
+      if (isCreditCounsellingQuery && /\b(mental health|psychological|therapy|psycholog|emotion|depression|anxiety)\b/i.test(textLower)) {
+        if (!/\b(financial|debt|credit|money|budget)\b/i.test(textLower)) {
+          boost -= 200;
+          console.log(`[FinancialBoost] "${svc.name.substring(0, 40)}" -200 penalty for mental health in credit query`);
+        }
+      }
     }
 
     // Caregiver support boosting
-    const isCaregiverQuery = /\b(caregiver|caregiving|caring for|looking after|respite)\b/i.test(queryLower);
+    const isCaregiverQuery = /\b(caregiver|caregiving|caring for|looking after|respite|burnout.*car|exhausted.*car)\b/i.test(queryLower);
+    const isCaregiverBurnoutQuery = /\b(caregiver.*burnout|burnout.*caregiver|exhausted.*caregiver|caregiver.*stress|caregiver.*exhaust)\b/i.test(queryLower);
     if (isCaregiverQuery) {
+      // High boost for caregiver-specific services
       if (/\b(caregiver|respite|family caregiver|caregiver support|caregiver burnout)\b/i.test(textLower)) {
-        boost += 120;
-        console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +120 for caregiver support`);
+        boost += 250;
+        console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +250 for caregiver support`);
       }
-      if (/\b(caring for|looking after|support for families)\b/i.test(textLower)) {
-        boost += 60;
+      // Boost for adult day programs (respite for caregivers)
+      if (/\b(adult day|day program|respite care|respite service)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +200 for day program/respite`);
+      }
+      if (/\b(caring for|looking after|support for families|family support)\b/i.test(textLower)) {
+        boost += 100;
+      }
+      // For burnout queries, boost mental health/counselling that mentions caregivers
+      if (isCaregiverBurnoutQuery) {
+        if (/\b(counsell?ing|therapy|mental health|support group)\b/i.test(textLower) && /\b(caregiver|family|stress)\b/i.test(textLower)) {
+          boost += 150;
+          console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +150 for caregiver counselling`);
+        }
+        // Penalty for grief-only services in burnout query (caregivers need support, not bereavement)
+        if (/\b(bereavement|grief counsell?ing|loss of|mourning)\b/i.test(textLower) && !/\b(caregiver|respite)\b/i.test(textLower)) {
+          boost -= 150;
+          console.log(`[CaregiverBoost] "${svc.name.substring(0, 40)}" -150 penalty for grief (burnout query)`);
+        }
       }
     }
 
     // LGBTQ+ services boosting
     const isLgbtqQuery = /\b(lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|coming out|pride|2slgbtq)\b/i.test(queryLower);
+    const isLgbtqSeniorQuery = isLgbtqQuery && /\b(senior|elderly|aging|older|65\+|retirement)\b/i.test(queryLower);
+    const isLgbtqHousingQuery = isLgbtqQuery && /\b(housing|shelter|place to stay|home|living)\b/i.test(queryLower);
     if (isLgbtqQuery) {
       if (/\b(lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|pride|2slgbtq)\b/i.test(textLower)) {
         boost += 150;
@@ -831,6 +1094,89 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
       if (/\b(gender affirming|hormone therapy|coming out|pride center|pride centre)\b/i.test(textLower)) {
         boost += 80;
+      }
+      // LGBTQ senior-specific boosting
+      if (isLgbtqSeniorQuery) {
+        // High boost for services that serve both LGBTQ and seniors
+        if (/\b(senior|elderly|aging|older adult|65\+)\b/i.test(textLower) && /\b(lgbtq|lgbt|queer|trans|gay|lesbian|pride)\b/i.test(textLower)) {
+          boost += 300;
+          console.log(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +300 for LGBTQ+ senior services`);
+        }
+        // Boost senior housing/care that is LGBTQ-affirming or inclusive
+        if (/\b(senior|elderly).*\b(housing|living|care)\b/i.test(textLower)) {
+          boost += 150;
+          console.log(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +150 for senior housing (LGBTQ query)`);
+        }
+        // Penalty for youth-only LGBTQ services when query is about seniors
+        if (/\b(youth only|under 25|teen|young adult)\b/i.test(textLower)) {
+          boost -= 200;
+          console.log(`[LGBTQBoost] "${svc.name.substring(0, 40)}" -200 penalty for youth-only (senior query)`);
+        }
+      }
+      // LGBTQ housing-specific boosting
+      if (isLgbtqHousingQuery) {
+        if (/\b(housing|shelter|residence|supportive housing|safe house)\b/i.test(textLower)) {
+          boost += 150;
+          console.log(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +150 for LGBTQ+ housing`);
+        }
+      }
+    }
+
+    // Veteran/military services boosting
+    const isVeteranQuery = /\b(veteran|veterans?|military|armed forces|canadian forces|ex-?military|former military|CAF|CFB|deployed|served|combat)\b/i.test(queryLower);
+    const isVeteranPTSDQuery = isVeteranQuery && /\b(PTSD|post-?traumatic|trauma)\b/i.test(queryLower);
+    const isHomelessVeteranQuery = isVeteranQuery && /\b(homeless|shelter|housing|nowhere.*stay|no.*home|street)\b/i.test(queryLower);
+    if (isVeteranQuery) {
+      // MASSIVE boost for veteran-specific services (must dominate results)
+      if (/\b(veteran|veterans?|VAC|veterans affairs|OSISS|OSI-CAN|operational stress|legion|royal canadian legion|VETS Canada|wounded warriors)\b/i.test(textLower)) {
+        boost += 500;
+        console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" +500 for veteran services`);
+      }
+      // Strong boost for military-related services
+      if (/\b(military|armed forces|canadian forces|CAF|CFB|combat|deployment|service member|first responder)\b/i.test(textLower)) {
+        boost += 350;
+        console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" +350 for military services`);
+      }
+      // Boost for PTSD-specific services when veteran query
+      if (/\b(PTSD|post-?traumatic|traumatic stress|combat stress|operational stress)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" +200 for PTSD services`);
+      }
+      // Moderate boost for general mental health with peer support (common for veterans)
+      if (/\b(peer support|support group)\b/i.test(textLower)) {
+        boost += 100;
+      }
+      // HOMELESS VETERAN handling - need both veteran services AND housing/shelter
+      if (isHomelessVeteranQuery) {
+        // Very high boost for services that serve homeless veterans specifically
+        if (/\b(veteran|military)\b/i.test(textLower) && /\b(housing|shelter|homeless|supportive housing)\b/i.test(textLower)) {
+          boost += 400;
+          console.log(`[HomelessVeteranBoost] "${svc.name.substring(0, 40)}" +400 for homeless veteran housing`);
+        }
+        // Good boost for general housing/shelter services (veterans need shelter too)
+        if (/\b(emergency shelter|homeless shelter|housing.*first|supportive housing|transitional housing|shelter)\b/i.test(textLower)) {
+          boost += 200;
+          console.log(`[HomelessVeteranBoost] "${svc.name.substring(0, 40)}" +200 for shelter (homeless veteran query)`);
+        }
+        // Don't penalize shelters for homeless veteran queries
+      } else {
+        // Only apply these penalties for non-homeless veteran queries
+        // Heavy penalty for sexual violence-specific services (wrong type of trauma for veteran query)
+        if (isVeteranPTSDQuery && /\b(sexual assault|sexual violence|rape|sexual abuse|SART|women'?s.*trauma)\b/i.test(textLower)) {
+          boost -= 300;
+          console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" -300 penalty for sexual violence (not veteran trauma)`);
+        }
+        // Heavy penalty for domestic violence services (wrong type of trauma for veteran query)
+        if (isVeteranPTSDQuery && /\b(domestic violence|domestic abuse|intimate partner|spousal abuse|abusive relationship|women'?s shelter|battered|family violence)\b/i.test(textLower)) {
+          boost -= 250;
+          console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" -250 penalty for domestic violence (not veteran trauma)`);
+        }
+        // Penalty for women-specific services in veteran query (veterans can be any gender)
+        if (isVeteranPTSDQuery && /\b(women'?s|for women|female only|women only)\b/i.test(textLower) &&
+            !/\b(veteran|military)\b/i.test(textLower)) {
+          boost -= 150;
+          console.log(`[VeteranBoost] "${svc.name.substring(0, 40)}" -150 penalty for women-specific (veteran query)`);
+        }
       }
     }
 
@@ -965,14 +1311,23 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       }
     }
 
-    // Exclusion signal penalties
+    // Exclusion signal penalties and alternative boosting
     if (exclusions.length > 0) {
       for (const exclusion of exclusions) {
         if (exclusion === 'religious' && /\b(church|faith|christian|religious|god|spiritual|prayer|ministry|bible)\b/i.test(textLower)) {
           boost -= 30;
         }
-        if (exclusion === '12step' && /\b(12.?step|twelve.?step|anonymous|AA\b|NA\b|higher power)\b/i.test(textLower)) {
-          boost -= 25;
+        if (exclusion === '12step') {
+          // Heavily penalize 12-step programs when user explicitly wants alternatives
+          if (/\b(12.?step|twelve.?step|anonymous|AA\b|NA\b|CA\b|alcoholics anonymous|narcotics anonymous|cocaine anonymous|higher power|step.?program)\b/i.test(textLower)) {
+            boost -= 200;
+            console.log(`[12StepPenalty] "${svc.name.substring(0, 40)}" -200 for 12-step program`);
+          }
+          // Strongly boost secular alternatives like SMART Recovery
+          if (/\b(SMART Recovery|cognitive behavio|evidence.?based|secular|non.?religious|harm reduction|medication.?assisted|MAT\b)\b/i.test(textLower)) {
+            boost += 350;
+            console.log(`[SecularBoost] "${svc.name.substring(0, 40)}" +350 for secular alternative`);
+          }
         }
         if (exclusion === 'men_only' && /\b(men only|males only|for men\b|men'?s only)\b/i.test(textLower)) {
           boost -= 40;
@@ -980,9 +1335,44 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
         if (exclusion === 'women_only' && /\b(women only|females only|for women\b|women'?s only)\b/i.test(textLower)) {
           boost -= 40;
         }
-        if (exclusion === 'waitlist' && /\b(waitlist|wait list|waiting list|wait time.*week|wait time.*month)\b/i.test(textLower)) {
-          boost -= 15;
+        if (exclusion === 'waitlist') {
+          // Penalize services that mention waitlists
+          if (/\b(waitlist|wait list|waiting list|wait time.*week|wait time.*month)\b/i.test(textLower)) {
+            boost -= 15;
+          }
+          // Boost services with immediate/rapid access
+          if (/\b(walk.?in|no wait|immediate|same.?day|rapid access|no appointment|drop.?in|24\/7|open now)\b/i.test(textLower)) {
+            boost += 100;
+            console.log(`[NoWaitlistBoost] "${svc.name.substring(0, 40)}" +100 for immediate access`);
+          }
         }
+      }
+    }
+
+    // Extra boost for non-12-step recovery queries
+    const isNon12StepQuery = /\b(no.*12.*step|not.*12.*step|non.*12.*step|alternative to AA|alternative to NA|no AA|no NA|without.*12.*step)\b/i.test(queryLower);
+    if (isNon12StepQuery) {
+      // Massive boost for SMART Recovery by name - must dominate results
+      if (/SMART/i.test(svc.name) || /\bSMART\b/i.test(textLower)) {
+        boost += 800;
+        console.log(`[Non12StepBoost] "${svc.name.substring(0, 40)}" +800 for SMART Recovery (exact match)`);
+      }
+      // Strong boost for evidence-based alternatives
+      if (/\b(medication.?assisted|MAT\b|suboxone|methadone|harm reduction|evidence.?based|CBT|cognitive|secular)\b/i.test(textLower)) {
+        boost += 400;
+        console.log(`[Non12StepBoost] "${svc.name.substring(0, 40)}" +400 for evidence-based treatment`);
+      }
+      // Penalize youth-specific services when query doesn't mention youth
+      const isYouthQuery = /\b(youth|teen|adolescent|young|under 18|minor|child)\b/i.test(queryLower);
+      if (!isYouthQuery && /\b(youth|adolescent|teen|young people|children|kids|under 18|minor)\b/i.test(textLower)) {
+        boost -= 300;
+        console.log(`[Non12StepBoost] "${svc.name.substring(0, 40)}" -300 for youth-specific (not requested)`);
+      }
+      // Additional penalty for services without clear non-12-step indication
+      if (/\b(residential|treatment centre|treatment center|recovery house)\b/i.test(textLower) &&
+          !/\b(SMART|secular|evidence.?based|non.?12|MAT|harm reduction)\b/i.test(textLower)) {
+        boost -= 100;
+        console.log(`[Non12StepBoost] "${svc.name.substring(0, 40)}" -100 for unclear methodology`);
       }
     }
 
@@ -1002,6 +1392,8 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
 
     // Parenting/baby support boosting
     if (intent === 'parenting_support') {
+      const isChildcareCostsQuery = /\b(childcare.*cost|daycare.*cost|childcare.*help|daycare.*help|childcare.*afford|childcare.*subsid|daycare.*subsid|afford.*childcare|afford.*daycare)\b/i.test(queryLower);
+
       if (/\b(pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support)\b/i.test(textLower)) {
         boost += 120;
         console.log(`[ParentingBoost] "${svc.name.substring(0, 40)}" boosted as parenting support`);
@@ -1009,19 +1401,85 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
       if (/\b(formula|diapers|baby supplies|car seat|crib|stroller|breastfeeding|lactation)\b/i.test(textLower)) {
         boost += 80;
       }
-      if (/\b(single parent|teen parent|young parent|childcare|daycare)\b/i.test(textLower)) {
+      if (/\b(single parent|teen parent|young parent)\b/i.test(textLower)) {
         boost += 60;
+      }
+      // Childcare/daycare cost assistance
+      if (/\b(childcare|daycare|child care)\b/i.test(textLower)) {
+        boost += 80;
+        console.log(`[ParentingBoost] "${svc.name.substring(0, 40)}" +80 for childcare`);
+      }
+      // High boost for subsidy/financial assistance related to childcare
+      if (/\b(childcare.*subsid|daycare.*subsid|subsid.*childcare|subsid.*daycare|childcare.*assist|daycare.*assist|childcare.*afford|ACCB|child.*benefit)\b/i.test(textLower)) {
+        boost += 180;
+        console.log(`[ParentingBoost] "${svc.name.substring(0, 40)}" +180 for childcare subsidy/assistance`);
+      }
+      // If specifically asking about childcare costs, penalize unrelated parenting services
+      if (isChildcareCostsQuery) {
+        if (/\b(financial|subsidy|benefit|assistance|affordable|low cost|free|help.*pay)\b/i.test(textLower)) {
+          boost += 150;
+          console.log(`[ParentingBoost] "${svc.name.substring(0, 40)}" +150 for financial childcare help`);
+        }
+        // Penalty for baby supplies in childcare cost query
+        if (/\b(diapers|formula|breastfeeding|car seat|crib)\b/i.test(textLower) && !/\b(childcare|daycare)\b/i.test(textLower)) {
+          boost -= 100;
+        }
       }
     }
 
     // Student services boosting (when intent is student_services)
     if (intent === 'student_services') {
-      if (/\b(campus|university|college|student|u of c|u of a|ucalgary|ualberta|mount royal|mru|sait|nait|macewan)\b/i.test(textLower)) {
-        boost += 120;
-        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" boosted as campus service`);
+      // Detect which university is in the query
+      const isUCalgaryQuery = /\b(u of c|uofc|ucalgary|university of calgary)\b/i.test(queryLower);
+      const isUAlbertaQuery = /\b(u of a|uofa|ualberta|university of alberta)\b/i.test(queryLower);
+      const isMRUQuery = /\b(mount royal|mru)\b/i.test(queryLower);
+
+      // Very high boost for matching university
+      if (isUCalgaryQuery && /\b(ucalgary|university of calgary|u of c|calgary)\b/i.test(textLower) && /\b(student|campus|wellness|counsell)/i.test(textLower)) {
+        boost += 400;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +400 for UCalgary-specific service`);
+      } else if (isUAlbertaQuery && /\b(ualberta|university of alberta|u of a)\b/i.test(textLower) && /\b(student|campus|wellness|counsell)/i.test(textLower)) {
+        boost += 400;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +400 for UAlberta-specific service`);
+      } else if (isMRUQuery && /\b(mount royal|mru)\b/i.test(textLower)) {
+        boost += 400;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +400 for MRU-specific service`);
       }
-      if (/\b(student.*counsell?ing|student.*wellness|student.*services)\b/i.test(textLower)) {
-        boost += 80;
+
+      // General campus service boost
+      if (/\b(campus|university|college|student)\b/i.test(textLower) && /\b(counsell?ing|wellness|mental health|support|services)\b/i.test(textLower)) {
+        boost += 200;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +200 for campus service`);
+      }
+
+      // Specific student service patterns
+      if (/\b(student.*counsell?ing|student.*wellness|student.*services|campus.*health|campus.*mental)\b/i.test(textLower)) {
+        boost += 150;
+      }
+
+      // Penalize generic community mental health for university-specific queries
+      if ((isUCalgaryQuery || isUAlbertaQuery || isMRUQuery) &&
+          !/\b(campus|university|college|student|u of c|u of a|ucalgary|ualberta|mru|mount royal)\b/i.test(textLower)) {
+        boost -= 100;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" -100 for non-campus service (university query)`);
+      }
+
+      // Penalize services from wrong university (e.g., UAlberta services for UCalgary query)
+      if (isUCalgaryQuery && /\b(ualberta|university of alberta|u of a|edmonton)\b/i.test(textLower)) {
+        boost -= 200;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" -200 for wrong university (UCalgary query, UAlberta service)`);
+      }
+      if (isUAlbertaQuery && /\b(ucalgary|university of calgary|u of c)\b/i.test(textLower)) {
+        boost -= 200;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" -200 for wrong university (UAlberta query, UCalgary service)`);
+      }
+
+      // For general mental health queries, penalize addiction-focused services
+      const isGeneralMentalHealthQuery = /\b(mental health|counsell?ing|therapy|depression|anxiety|stress)\b/i.test(queryLower) &&
+                                         !/\b(addiction|substance|alcohol|drug|recovery)\b/i.test(queryLower);
+      if (isGeneralMentalHealthQuery && /\b(addiction|substance|harm reduction|detox|recovery|alcohol|drug)\b/i.test(textLower)) {
+        boost -= 150;
+        console.log(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" -150 for addiction focus (general mental health query)`);
       }
     }
 
@@ -1166,18 +1624,39 @@ function computeRRFScore(sqlRank: number | null, semanticRank: number | null, k:
 /**
  * Apply penalty for services containing negative terms user wants to exclude
  * E.g., "shelter not religious" penalizes shelters with "religious" in their text
+ * Handles semantic terms like "12_step" → AA, NA, higher power, etc.
  */
 function applyNegativePenalty(services: LiteService[], negativeTerms: string[]): LiteService[] {
   if (negativeTerms.length === 0) return services;
+
+  // Map semantic negative terms to patterns that should be penalized
+  const semanticPatterns: Record<string, RegExp> = {
+    '12_step': /\b(12[\s-]?step|twelve[\s-]?step|AA\b|NA\b|CA\b|alcoholics\s*anonymous|narcotics\s*anonymous|cocaine\s*anonymous|higher\s*power|step\s*program|steps?\s*(?:1|2|3|4|5|6|7|8|9|10|11|12)\b)/i,
+    'religious': /\b(religious|faith[\s-]?based|christian|church|ministry|spiritual|god|prayer|bible|jesus|christ|evangelical|catholic|baptist|methodist|lutheran|presbyterian|pentecostal|salvation\s*army|rescue\s*mission|dream\s*centre|dream\s*center|life\s*centre|mission\s*centre|12[\s-]?step|AA\b|NA\b|CA\b|alcoholics\s*anonymous|narcotics\s*anonymous|higher\s*power)\b/i,
+    'faith_based': /\b(faith[\s-]?based|religious|spiritual|christian|church|ministry|god|prayer|dream\s*centre|dream\s*center)\b/i,
+  };
+
+  // Deduplicate negative terms
+  const uniqueTerms = negativeTerms.filter((term, index) => negativeTerms.indexOf(term) === index);
 
   const scored = services.map(service => {
     let penalty = 0;
     const searchText = `${service.name} ${service.description} ${service.category}`.toLowerCase();
 
-    for (const term of negativeTerms) {
-      if (searchText.includes(term)) {
-        penalty += 100; // Heavy penalty for containing excluded term
-        console.log(`[NegativeKeyword] Penalizing "${service.name}" (-100) for containing "${term}"`);
+    for (const term of uniqueTerms) {
+      // Check if this is a semantic term with expanded patterns
+      const pattern = semanticPatterns[term];
+      if (pattern) {
+        if (pattern.test(searchText)) {
+          penalty += 150; // Heavy penalty for semantic match
+          console.log(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-150) for "${term}" pattern match`);
+        }
+      } else {
+        // Direct term match
+        if (searchText.includes(term)) {
+          penalty += 100; // Heavy penalty for containing excluded term
+          console.log(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-100) for containing "${term}"`);
+        }
       }
     }
 
@@ -1188,6 +1667,60 @@ function applyNegativePenalty(services: LiteService[], negativeTerms: string[]):
   scored.sort((a, b) => a.penalty - b.penalty);
 
   return scored.map(s => s.service);
+}
+
+/**
+ * Apply category diversity for location-only queries
+ * Ensures top results include a mix of different service categories
+ * rather than being dominated by one type (e.g., mental health)
+ */
+function applyCategoryDiversity(services: LiteService[], maxPerCategory: number = 3, topN: number = 15): LiteService[] {
+  if (services.length <= topN) {
+    return services;
+  }
+
+  const topResults = services.slice(0, Math.min(topN * 2, services.length)); // Look at top 30 to find diversity
+  const rest = services.slice(topN * 2);
+
+  // Normalize categories into broader groups
+  function normalizeCategory(category: string): string {
+    const lower = category.toLowerCase();
+    if (/mental|counsell|therapy|depression|anxiety|crisis/i.test(lower)) return 'mental_health';
+    if (/addiction|substance|alcohol|drug|recovery|detox/i.test(lower)) return 'addiction';
+    if (/shelter|housing|homeless/i.test(lower)) return 'housing';
+    if (/food|meal|hungry|pantry|bank/i.test(lower)) return 'food';
+    if (/legal|lawyer|court/i.test(lower)) return 'legal';
+    if (/employment|job|career/i.test(lower)) return 'employment';
+    if (/senior|elderly|aging/i.test(lower)) return 'seniors';
+    if (/youth|teen|child/i.test(lower)) return 'youth';
+    if (/immigrant|refugee|newcomer/i.test(lower)) return 'newcomer';
+    if (/family|parent|child/i.test(lower)) return 'family';
+    if (/disability|accessibility/i.test(lower)) return 'disability';
+    return 'general';
+  }
+
+  const categoryCounts = new Map<string, number>();
+  const diversified: LiteService[] = [];
+  const demoted: LiteService[] = [];
+
+  for (const svc of topResults) {
+    const normalizedCat = normalizeCategory(svc.category);
+    const currentCount = categoryCounts.get(normalizedCat) || 0;
+
+    if (currentCount < maxPerCategory) {
+      diversified.push(svc);
+      categoryCounts.set(normalizedCat, currentCount + 1);
+    } else {
+      demoted.push(svc);
+    }
+
+    // Stop once we have enough diverse results
+    if (diversified.length >= topN) break;
+  }
+
+  console.log(`[CategoryDiversity] Top ${diversified.length} results from ${categoryCounts.size} categories`);
+
+  return [...diversified, ...demoted, ...rest];
 }
 
 /**
@@ -1242,11 +1775,11 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     // Check if this is a domain-specific intent that needs OpenAI query enhancement
     const isDomainIntent = [
-      'domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse',
+      'crisis', 'domestic_violence', 'food_insecurity', 'housing_urgent', 'substance_abuse',
       'mental_health', 'disability_support', 'grief_support', 'senior_services',
       'legal_aid', 'employment_support', 'youth_services', 'newcomer_services',
       'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services',
-      'indigenous_services', 'student_services', 'parenting_support'
+      'indigenous_services', 'student_services', 'parenting_support', 'veteran_services'
     ].includes(analysis.intent);
 
     // Check if embeddings are available (cached after first check)
@@ -1315,14 +1848,21 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
           description: this.truncateDescription(merged.description),
           location: merged.location,
           waitTimes: merged.waitTimes,
+          phone: sr.phone || undefined,
+          is24_7: (sr as any).is24_7 || undefined,
         };
       });
 
       // Apply minimal boosting and return early
       const boosted = boostByIntent(services, analysis.intent, analysis.raw, analysis);
-      const final = analysis.negativeTerms?.length
+      let final = analysis.negativeTerms?.length
         ? applyNegativePenalty(boosted, analysis.negativeTerms)
         : boosted;
+
+      // Apply category diversity for location-only queries to ensure mixed results
+      if (analysis.intent === 'location_only') {
+        final = applyCategoryDiversity(final);
+      }
 
       return {
         services: applyOrganizationDiversity(final, analysis.raw),
@@ -1532,6 +2072,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         description: this.truncateDescription(merged.description),
         location: merged.location,
         waitTimes: merged.waitTimes,
+        phone: sr.phone || undefined,
+        is24_7: sr.is24_7 || undefined,
       };
     });
 
@@ -1558,6 +2100,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         description: this.truncateDescription(merged.description),
         location: merged.location,
         waitTimes: merged.waitTimes,
+        phone: sr.phone || undefined,
+        is24_7: (sr as any).is24_7 || undefined,
       };
     });
 

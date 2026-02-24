@@ -70,6 +70,10 @@ export interface LiteService {
   description: string;
   location: string;
   waitTimes: string;
+  /** Phone number for quick contact - especially important for crisis services */
+  phone?: string;
+  /** 24/7 availability flag */
+  is24_7?: boolean;
 }
 
 /** Full service detail format for expanded view */
@@ -135,6 +139,7 @@ export interface FastSearchResult {
   phone: string | null;
   email: string | null;
   address: string | null;
+  is24_7?: boolean | null;
 }
 
 /** Result from semantic vector search */

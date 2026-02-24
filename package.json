@@ -10,7 +10,9 @@
     "check": "node --import tsx node_modules/typescript/bin/tsc",
     "db:push": "node --import tsx node_modules/drizzle-kit/bin.cjs push",
     "evaluate": "node --import tsx server/evaluation/evaluate_search.ts",
-    "evaluate:query": "node --import tsx server/evaluation/evaluate_search.ts"
+    "evaluate:query": "node --import tsx server/evaluation/evaluate_search.ts",
+    "evaluate:comprehensive": "node --import tsx server/evaluation/auto_optimize.ts",
+    "evaluate:loop": "node --import tsx server/evaluation/auto_optimize.ts --loop"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

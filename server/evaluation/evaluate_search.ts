@@ -384,16 +384,24 @@ Provide your evaluation as JSON:
 
       const parsed = JSON.parse(jsonMatch[0]);
 
+      // Ensure all scores have valid defaults
+      const scores = {
+        relevance: Number(parsed.scores?.relevance) || 70,
+        ranking: Number(parsed.scores?.ranking) || 70,
+        completeness: Number(parsed.scores?.completeness) || 70,
+        dataQuality: Number(parsed.scores?.dataQuality) || 70,
+      };
+
       // Calculate overall score (weighted average)
       const overall = Math.round(
-        parsed.scores.relevance * 0.35 +
-        parsed.scores.ranking * 0.25 +
-        parsed.scores.completeness * 0.25 +
-        parsed.scores.dataQuality * 0.15
+        scores.relevance * 0.35 +
+        scores.ranking * 0.25 +
+        scores.completeness * 0.25 +
+        scores.dataQuality * 0.15
       );
 
       return {
-        scores: { ...parsed.scores, overall },
+        scores: { ...scores, overall },
         issues: parsed.issues || [],
         suggestions: parsed.suggestions || [],
         analysis: parsed.analysis || '',

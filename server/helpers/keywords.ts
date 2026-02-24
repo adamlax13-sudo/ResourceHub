@@ -46,7 +46,14 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
 };
 
 // Common misspellings mapped to correct terms
+// Also includes identity mappings to prevent false corrections (e.g., hopeless → homeless)
 export const COMMON_MISSPELLINGS: Record<string, string> = {
+  // Identity mappings to prevent false corrections
+  'hopeless': 'hopeless',  // Not "homeless"
+  'helpless': 'helpless',  // Not "homeless"
+  'burden': 'burden',      // Emotional state word
+  'worthless': 'worthless', // Emotional state word
+  // Actual misspellings
   'addicton': 'addiction',
   'addiciton': 'addiction',
   'addction': 'addiction',
