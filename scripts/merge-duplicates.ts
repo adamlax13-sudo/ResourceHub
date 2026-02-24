@@ -149,6 +149,23 @@ const KNOWN_DUPLICATES: { canonical: string; duplicates: string[] }[] = [
       'wood-buffalo-food-bank-association-10010-centennial-drive-fort-mcmurray-ab-t9h-4a2',
     ],
   },
+  // Medicine Hat Recovery Centre (detox is program within centre, duplicate has invalid phone 111-0507)
+  {
+    canonical: 'medicine-hat-recovery-centre-medicine-hat',
+    duplicates: [
+      'medicine-hat-recovery-centre-detox-medicine-hat',
+    ],
+  },
+  // Calgary Dream Centre (men's program is subset of main centre, same phone)
+  {
+    canonical: 'calgary-dream-centre-calgary',
+    duplicates: [
+      'calgary-dream-centre-mens-calgary',
+    ],
+  },
+  // NOTE: Lethbridge Recovery Centre and Detox are NOT duplicates
+  // They have different phones ((403) 328-0955 vs (403) 388-6243)
+  // and the Detox variant is specifically a youth program (ages 12-19)
 ];
 
 async function findDuplicatesToMerge(): Promise<DuplicateGroup[]> {
