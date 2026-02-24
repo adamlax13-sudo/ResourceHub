@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v17';
+const CACHE_VERSION = 'v60';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -23,6 +23,12 @@ import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
+import {
+  isFamilyAddictionQuery,
+  isTenantLegalQuery,
+  pinAlAnonService,
+  ensureLegalAidInResults,
+} from './pinned';
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
@@ -84,6 +90,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
     }
+    if (isFamilyAddictionQuery(input.query)) {
+      pinAlAnonService(services);
+    }
+    if (isTenantLegalQuery(input.query)) {
+      ensureLegalAidInResults(services);
+    }
 
     return formatResponse(services, '', input, startTime, true);
   }
@@ -111,6 +123,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
     }
+    if (isFamilyAddictionQuery(input.query)) {
+      pinAlAnonService(services);
+    }
+    if (isTenantLegalQuery(input.query)) {
+      ensureLegalAidInResults(services);
+    }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
@@ -133,6 +151,18 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (isPchadQuery(input.query)) {
     pinPchadService(result.services);
     console.log(`[SearchOrchestrator] PCHAD query - Protection of Children Abusing Drugs pinned to top`);
+  }
+
+  // Apply Al-Anon pinning for family addiction support queries
+  if (isFamilyAddictionQuery(input.query)) {
+    pinAlAnonService(result.services);
+    console.log(`[SearchOrchestrator] Family addiction query - Al-Anon pinned to top`);
+  }
+
+  // Ensure legal aid is included for tenant/eviction legal queries
+  if (isTenantLegalQuery(input.query)) {
+    ensureLegalAidInResults(result.services);
+    console.log(`[SearchOrchestrator] Tenant legal query - Legal aid service ensured in results`);
   }
 
   // ============= LOG FAILED QUERIES =============
@@ -285,4 +315,5 @@ export { SEARCH_CONFIG } from './config';
 export { analyzeQuery } from './analyzer';
 export { pinCrisisService, isCrisisQuery } from './crisis';
 export { pinPchadService, isPchadQuery } from './pchad';
+export { pinAlAnonService, isFamilyAddictionQuery, ensureLegalAidInResults, isTenantLegalQuery } from './pinned';
 export type { SearchInput, SearchResponse, LiteService } from './types';
