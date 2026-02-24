@@ -581,10 +581,16 @@ CRITICAL RULES:
         if not current_steps:
             return {"is_generic": True, "reason": "No steps provided"}
 
-        steps_text = "\n".join([
-            f"Step {s.get('step', i+1)}: {s.get('action', 'Unknown')}"
-            for i, s in enumerate(current_steps)
-        ])
+        formatted_steps = []
+        for i, s in enumerate(current_steps):
+            if isinstance(s, dict):
+                step_text = f"Step {s.get('step', i+1)}: {s.get('action', 'Unknown')}"
+            elif isinstance(s, str):
+                step_text = f"Step {i+1}: {s}"
+            else:
+                continue
+            formatted_steps.append(step_text)
+        steps_text = "\n".join(formatted_steps)
 
         system_prompt = """You are evaluating process steps for social services.
 Determine if the steps are SPECIFIC enough to actually help someone access the service,
@@ -652,11 +658,18 @@ Consider: Do they mention specific intake processes, assessments, timelines, or 
         for i, ex in enumerate(similar_examples[:3], 1):
             steps = ex.get("process_steps", [])
             if steps:
-                steps_formatted = "\n".join([
-                    f"  Step {s.get('step', j+1)}: {s.get('action', '')}"
-                    for j, s in enumerate(steps)
-                ])
-                examples_text += f"\nExample {i}: {ex.get('name', 'Unknown')}\n{steps_formatted}\n"
+                formatted_steps = []
+                for j, s in enumerate(steps):
+                    if isinstance(s, dict):
+                        step_text = f"  Step {s.get('step', j+1)}: {s.get('action', '')}"
+                    elif isinstance(s, str):
+                        step_text = f"  Step {j+1}: {s}"
+                    else:
+                        continue
+                    formatted_steps.append(step_text)
+                if formatted_steps:
+                    steps_formatted = "\n".join(formatted_steps)
+                    examples_text += f"\nExample {i}: {ex.get('name', 'Unknown')}\n{steps_formatted}\n"
 
         system_prompt = """You are generating realistic process steps for accessing social services in Alberta, Canada.
 

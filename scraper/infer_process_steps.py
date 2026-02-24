@@ -37,13 +37,19 @@ GENERIC_PATTERNS = [
 GENERIC_REGEX = re.compile("|".join(GENERIC_PATTERNS), re.IGNORECASE)
 
 
-def has_generic_steps(process_steps: List[Dict]) -> bool:
+def has_generic_steps(process_steps: List) -> bool:
     """Check if process steps contain generic/boilerplate patterns."""
     if not process_steps:
         return False
 
     for step in process_steps:
-        action = step.get("action", "")
+        # Handle both dict format {"action": "..."} and string format
+        if isinstance(step, dict):
+            action = step.get("action", "")
+        elif isinstance(step, str):
+            action = step
+        else:
+            continue
         if GENERIC_REGEX.search(action):
             return True
     return False
