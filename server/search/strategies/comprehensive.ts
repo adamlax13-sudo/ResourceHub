@@ -191,9 +191,9 @@ function detectGenderPreference(query: string): 'women_only' | 'men_only' | null
 
 /**
  * Detect age group preference from query text
- * Returns 'youth', 'senior', or null
+ * Returns 'youth', 'adult', 'senior', or null
  */
-function detectAgeGroup(query: string): 'youth' | 'senior' | null {
+function detectAgeGroup(query: string): 'youth' | 'adult' | 'senior' | null {
   const q = query.toLowerCase();
 
   // Youth patterns
@@ -207,6 +207,14 @@ function detectAgeGroup(query: string): 'youth' | 'senior' | null {
     /\b(young|juvenile|minor)\b/,
   ];
 
+  // Adult patterns - explicit adult-only queries
+  const adultPatterns = [
+    /\badult\b/,
+    /\bover 18\b/,
+    /\b18\+\b/,
+    /\b(25|[3-5][0-9])\s*(year|yr)s?\s*old\b/, // 25-59 years old
+  ];
+
   // Senior patterns
   const seniorPatterns = [
     /\b(elderly|senior|aging|aged|older adult)\b/,
@@ -218,6 +226,7 @@ function detectAgeGroup(query: string): 'youth' | 'senior' | null {
   ];
 
   if (youthPatterns.some(p => p.test(q))) return 'youth';
+  if (adultPatterns.some(p => p.test(q))) return 'adult';
   if (seniorPatterns.some(p => p.test(q))) return 'senior';
   return null;
 }
@@ -678,13 +687,27 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     if (ageGroup) {
       const isYouthService = /youth|teen|adolescent|young|student|under 25|child|kids?|juvenile|minor|school/i.test(textLower);
       const isSeniorService = /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer/i.test(textLower);
+      const isAdultService = /\badult\b/i.test(textLower);
 
       if (ageGroup === 'youth') {
-        if (isYouthService) boost += 8;
-        if (isSeniorService) boost -= 10;
+        if (isYouthService) boost += 50;
+        if (isSeniorService) boost -= 100;
+        if (isAdultService && !isYouthService) boost -= 50;
+      } else if (ageGroup === 'adult') {
+        // Strong penalty for youth/adolescent services when user explicitly asks for adult
+        if (isYouthService && !isAdultService) {
+          boost -= 300;
+          console.log(`[AgeBoost] "${svc.name.substring(0, 40)}" -300 penalty for youth service (adult query)`);
+        }
+        // Boost adult-specific services
+        if (isAdultService) {
+          boost += 100;
+          console.log(`[AgeBoost] "${svc.name.substring(0, 40)}" +100 for adult service (adult query)`);
+        }
+        if (isSeniorService) boost -= 50; // Mild penalty for senior-only
       } else if (ageGroup === 'senior') {
-        if (isSeniorService) boost += 8;
-        if (isYouthService && /only|exclusive/i.test(textLower)) boost -= 10;
+        if (isSeniorService) boost += 50;
+        if (isYouthService && /only|exclusive/i.test(textLower)) boost -= 100;
       }
     }
 
