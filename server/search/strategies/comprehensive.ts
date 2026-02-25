@@ -436,6 +436,16 @@ function detectExclusions(query: string): string[] {
   if (patterns.freeOnly.test(query)) exclusions.push('paid');
   if (patterns.noWaitlist.test(query)) exclusions.push('waitlist');
 
+  // For addiction/recovery queries, "not religious" implies "no 12-step" too
+  // since 12-step programs involve spiritual concepts ("higher power")
+  if (exclusions.includes('religious') && !exclusions.includes('12step')) {
+    const isAddictionQuery = /\b(addiction|recovery|rehab|detox|substance|drug|alcohol|sober|sobriety|clean|treatment)\b/i.test(query);
+    if (isAddictionQuery) {
+      exclusions.push('12step');
+      console.log(`[Exclusions] "not religious" + addiction query → also excluding 12-step programs`);
+    }
+  }
+
   return exclusions;
 }
 
@@ -597,6 +607,20 @@ function boostByIntent(services: LiteService[], intent: QueryIntent, rawQuery: s
     let boost = 0;
     const text = `${svc.name} ${svc.category} ${svc.description}`;
     const textLower = text.toLowerCase();
+    const nameLower = svc.name.toLowerCase();
+
+    // Direct name match boost: when query keywords appear in service name
+    // This helps queries like "SMART Recovery" find the exact service
+    const queryWords = rawQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+    const nameMatchCount = queryWords.filter(w => nameLower.includes(w)).length;
+    if (nameMatchCount >= 2 && queryWords.length >= 2) {
+      // Strong boost for multi-word matches (e.g., "SMART Recovery" matches "SMART Recovery Calgary")
+      boost += 500;
+      console.log(`[NameMatch] "${svc.name.substring(0, 40)}" +500 for direct name match (${nameMatchCount}/${queryWords.length} words)`);
+    } else if (nameMatchCount >= 1) {
+      // Moderate boost for partial matches
+      boost += 100;
+    }
 
     // Intent-based boosting (if applicable)
     if (intentConfig) {
