@@ -6,7 +6,7 @@
  * to ensure balanced, relevant search results.
  */
 
-import type { LiteService } from '../types';
+import type { LiteService, Exclusions } from '../types';
 import { detectOrganizationSearch, extractOrganization } from './detectors';
 import type { AgeGroupDetection } from './detectors';
 
@@ -316,4 +316,77 @@ export function applyAgeFilter(
 
   // Medium confidence: no filtering, handled by scoring penalties
   return services;
+}
+
+/**
+ * Apply hard exclusion filters based on database boolean columns.
+ * Services matching exclusion criteria are completely removed (not penalized).
+ *
+ * This is the primary exclusion mechanism - use database columns for reliable filtering.
+ * The old filterByExclusions() is kept as fallback for services without column data.
+ */
+export function applyExclusionFilter(
+  services: LiteService[],
+  exclusions: Exclusions
+): LiteService[] {
+  // No exclusions detected = no filtering
+  if (!exclusions.religious && !exclusions.twelveStep && !exclusions.genderRestricted) {
+    return services;
+  }
+
+  const before = services.length;
+
+  const filtered = services.filter(svc => {
+    // Cast to access database columns
+    const service = svc as any;
+
+    // Filter faith-based services when religious exclusion detected
+    if (exclusions.religious && service.is_faith_based === true) {
+      return false;
+    }
+
+    // Filter 12-step services when twelveStep exclusion detected
+    if (exclusions.twelveStep && service.is_12_step === true) {
+      return false;
+    }
+
+    // Filter gender-restricted services
+    if (exclusions.genderRestricted) {
+      const svcGender = service.gender_restriction || service.genderRestriction;
+      if (svcGender === exclusions.genderRestricted) {
+        return false;
+      }
+    }
+
+    // Fallback: text-based filtering for services without database flags
+    // This catches services not yet classified by migration script
+    const text = `${svc.name} ${svc.category} ${svc.description}`.toLowerCase();
+
+    if (exclusions.religious && service.is_faith_based === undefined) {
+      // Strong religious indicators - hard filter
+      if (/\b(church|ministry|mission|evangelical|faith-?based|christian|catholic|baptist|lutheran|salvation army|dream centre|dream center)\b/i.test(text)) {
+        return false;
+      }
+    }
+
+    if (exclusions.twelveStep && service.is_12_step === undefined) {
+      // 12-step indicators - hard filter
+      if (/\b(12[\s-]?step|twelve[\s-]?step|\bAA\b|\bNA\b|\bCA\b|alcoholics anonymous|narcotics anonymous|higher power|celebrate recovery)\b/i.test(text)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const removed = before - filtered.length;
+  if (removed > 0) {
+    const reasons: string[] = [];
+    if (exclusions.religious) reasons.push('faith-based');
+    if (exclusions.twelveStep) reasons.push('12-step');
+    if (exclusions.genderRestricted) reasons.push(`${exclusions.genderRestricted}`);
+    console.log(`[ExclusionFilter] Removed ${removed} services (${reasons.join(', ')}): ${before} → ${filtered.length}`);
+  }
+
+  return filtered;
 }
