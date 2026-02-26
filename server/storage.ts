@@ -224,10 +224,18 @@ export class DatabaseStorage implements IStorage {
       const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       if (locations.length === 1) {
         // Single location - include specified location + province-wide services
+        // IMPORTANT: Don't match "%alberta%" - that matches every address like "Calgary, Alberta"
+        // Instead, match specific province-wide patterns
         locationFilter = sql`AND (
           location ILIKE ${'%' + locations[0] + '%'}
-          OR location ILIKE '%alberta%'
-          OR location ILIKE '%province%'
+          OR location ILIKE '%alberta-wide%'
+          OR location ILIKE '%province-wide%'
+          OR location ILIKE '%canada-wide%'
+          OR location ILIKE '%nationwide%'
+          OR location ILIKE '%all of alberta%'
+          OR location ILIKE '%across alberta%'
+          OR location = 'Alberta'
+          OR location = 'Province of Alberta'
           OR location IS NULL
           OR location = ''
         )`;
@@ -237,8 +245,14 @@ export class DatabaseStorage implements IStorage {
         const locationClauses = locations.map(l => sql`location ILIKE ${'%' + l + '%'}`);
         locationFilter = sql`AND (
           ${sql.join(locationClauses, sql` OR `)}
-          OR location ILIKE '%alberta%'
-          OR location ILIKE '%province%'
+          OR location ILIKE '%alberta-wide%'
+          OR location ILIKE '%province-wide%'
+          OR location ILIKE '%canada-wide%'
+          OR location ILIKE '%nationwide%'
+          OR location ILIKE '%all of alberta%'
+          OR location ILIKE '%across alberta%'
+          OR location = 'Alberta'
+          OR location = 'Province of Alberta'
           OR location IS NULL
           OR location = ''
         )`;
@@ -481,12 +495,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get all aliases as a lookup map (alias -> serviceId)
+  // Cached in memory — aliases rarely change
+  private aliasLookupCache: Map<string, string> | null = null;
+
   async getAliasLookup(): Promise<Map<string, string>> {
+    if (this.aliasLookupCache) return this.aliasLookupCache;
     const aliases = await db.select().from(serviceAliases);
     const map = new Map<string, string>();
     for (const alias of aliases) {
       map.set(alias.alias.toLowerCase(), alias.serviceId);
     }
+    this.aliasLookupCache = map;
     return map;
   }
 

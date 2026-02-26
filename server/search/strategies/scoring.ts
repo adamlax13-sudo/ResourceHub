@@ -28,6 +28,26 @@ export { SCORING_CONFIG };
 // Alias for backwards compatibility (deprecated - use SCORING_CONFIG instead)
 export const BOOST_CONFIG = SCORING_CONFIG;
 
+// Cached reverse alias map (serviceId -> aliases), rebuilt only when forward map changes
+let cachedReverseAliasMap: Map<string, Set<string>> | null = null;
+let cachedAliasLookupRef: Map<string, string> | null = null;
+
+function getReverseAliasMap(aliasLookup: Map<string, string>): Map<string, Set<string>> {
+  if (cachedReverseAliasMap && cachedAliasLookupRef === aliasLookup) {
+    return cachedReverseAliasMap;
+  }
+  const reverseMap = new Map<string, Set<string>>();
+  aliasLookup.forEach((serviceId, alias) => {
+    if (!reverseMap.has(serviceId)) {
+      reverseMap.set(serviceId, new Set());
+    }
+    reverseMap.get(serviceId)!.add(alias);
+  });
+  cachedReverseAliasMap = reverseMap;
+  cachedAliasLookupRef = aliasLookup;
+  return reverseMap;
+}
+
 /**
  * Boost services by name/alias match. Runs BEFORE boostByIntent.
  *
@@ -46,14 +66,8 @@ export function boostByNameMatch(
   const trackExplanations = options?.trackExplanations ?? false;
   const queryLower = rawQuery.toLowerCase().trim();
 
-  // Build reverse alias map: serviceId -> set of aliases
-  const serviceAliases = new Map<string, Set<string>>();
-  aliasLookup.forEach((serviceId, alias) => {
-    if (!serviceAliases.has(serviceId)) {
-      serviceAliases.set(serviceId, new Set());
-    }
-    serviceAliases.get(serviceId)!.add(alias);
-  });
+  // Get cached reverse alias map: serviceId -> set of aliases
+  const serviceAliases = getReverseAliasMap(aliasLookup);
 
   // Stoplist for partial match filtering
   const commonWordStoplist = new Set([

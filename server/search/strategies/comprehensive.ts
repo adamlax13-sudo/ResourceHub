@@ -64,15 +64,9 @@ const embeddingCache = new LRUCache<string, number[]>({
   ttl: 1000 * 60 * 60 * 24,      // 24 hour TTL
 });
 
-// Cached alias lookup map: alias -> serviceId (loaded once from DB)
-let aliasLookupCache: Map<string, string> | null = null;
-
+// Alias lookup loaded from storage (storage caches internally)
 async function getAliasLookup(): Promise<Map<string, string>> {
-  if (!aliasLookupCache) {
-    aliasLookupCache = await storage.getAliasLookup();
-    console.log(`[ComprehensiveSearch] Loaded ${aliasLookupCache.size} aliases from database`);
-  }
-  return aliasLookupCache;
+  return storage.getAliasLookup();
 }
 
 // Enhanced query result from OpenAI
