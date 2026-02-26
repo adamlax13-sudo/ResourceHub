@@ -49,6 +49,7 @@ export const services = pgTable("services", {
   // Category columns still in use
   genderRestriction: varchar("gender_restriction", { length: 50 }), // women_only, men_only, all
   is24_7: boolean("is_24_7").default(false),
+  ageGroup: varchar("age_group", { length: 20 }).default('all_ages'),
 });
 
 // Archive table for feature columns (created by archive_feature_columns.sql)
