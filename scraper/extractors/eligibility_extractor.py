@@ -35,6 +35,7 @@ class EligibilityCriteria:
     insurance_accepted: List[str] = field(default_factory=list)
     languages_available: List[str] = field(default_factory=list)
     source_url: Optional[str] = None
+    age_group: Optional[str] = None  # 'youth', 'youth_and_adult', 'adult', 'senior', 'all_ages'
 
     def to_text(self) -> str:
         """Convert to readable text for database storage."""
@@ -70,6 +71,36 @@ class EligibilityCriteria:
         """Check if we have meaningful eligibility information."""
         return bool(self.summary or self.age_requirements or
                    self.geographic_requirements or self.priority_populations)
+
+    def compute_age_group(self) -> str:
+        """Compute age_group from age_min/age_max."""
+        if self.age_group:
+            return self.age_group
+        return map_age_range_to_group(self.age_min, self.age_max)
+
+
+def map_age_range_to_group(age_min: Optional[int], age_max: Optional[int]) -> str:
+    """Map age_min/age_max to age_group enum value."""
+    # Check youth_and_adult first — meaningfully spans into adulthood
+    if age_min is not None and age_max is not None:
+        if age_min < 22 and age_max > 25 and age_max <= 40:
+            return 'youth_and_adult'
+
+    # Youth — clearly youth-only, max is 25 or under
+    if age_max is not None and age_max <= 25:
+        if age_min is None or age_min < 18:
+            return 'youth'
+
+    # Senior — 55+ or 65+
+    if age_min is not None and age_min >= 55:
+        return 'senior'
+
+    # Adult — explicitly 18+ with no upper bound or high upper bound
+    if age_min is not None and age_min >= 18:
+        if age_max is None or age_max > 40:
+            return 'adult'
+
+    return 'all_ages'
 
 
 class EligibilityExtractor:
@@ -441,6 +472,9 @@ Be specific. Use null if information not found."""
         result.age_requirements = ai.age_requirements or heuristic.age_requirements
         result.age_min = ai.age_min or heuristic.age_min
         result.age_max = ai.age_max or heuristic.age_max
+
+        # Compute age_group from merged age range
+        result.age_group = map_age_range_to_group(result.age_min, result.age_max)
 
         # Gender - prefer heuristic (more reliable pattern matching)
         result.gender_requirements = heuristic.gender_requirements or ai.gender_requirements
