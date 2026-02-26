@@ -16,3 +16,6 @@ anthropic>=0.40.0
 
 # Utilities
 python-dotenv>=1.0.0
+
+# Browser automation (for 211 Alberta direct scraping)
+playwright>=1.40.0
