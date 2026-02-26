@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+// Score explanation schema (only populated in debug mode)
+export const scoreExplanationSchema = z.object({
+  factor: z.string(),
+  value: z.number(),
+  reason: z.string(),
+});
+
 // Lite schema for search results (card display only) - FAST
 export const serviceSummarySchema = z.object({
   id: z.string(),
@@ -8,6 +15,8 @@ export const serviceSummarySchema = z.object({
   description: z.string(),  // Truncated for card display
   location: z.string(),
   waitTimes: z.string(),
+  // Debug mode only - shows scoring breakdown
+  scoreExplanation: z.array(scoreExplanationSchema).optional(),
 });
 
 // Full schema with all details (loaded on demand when user expands)
@@ -51,6 +60,8 @@ export const api = {
         // Pagination parameters (defaults applied server-side)
         page: z.number().int().min(1).optional(),
         pageSize: z.number().int().min(1).max(50).optional(),
+        // Debug mode - includes score explanations in response
+        debug: z.boolean().optional(),
       }),
       responses: {
         // Now returns lite summaries for fast display
@@ -90,3 +101,4 @@ export type SearchResponse = z.infer<typeof api.search.query.responses[200]>;
 export type ServiceSummary = z.infer<typeof serviceSummarySchema>;
 export type ServiceDetail = z.infer<typeof serviceDetailSchema>;
 export type Pagination = z.infer<typeof paginationSchema>;
+export type ScoreExplanation = z.infer<typeof scoreExplanationSchema>;

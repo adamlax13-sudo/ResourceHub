@@ -52,6 +52,7 @@ export async function registerRoutes(
         location: input.location,
         page: input.page ?? 1,
         pageSize: input.pageSize ?? 20,
+        debug: input.debug,
       });
 
       res.json(result);
