@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v68'; // Bumped for location filter fix + noWaitlistBoost (v67 had error)
+const CACHE_VERSION = 'v69'; // Bumped for name-match boosting (boostByNameMatch before intent boosting)
 
 import { SEARCH_CONFIG } from './config';
 import type {
