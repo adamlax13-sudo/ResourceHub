@@ -48,12 +48,12 @@ export function boostByNameMatch(
 
   // Build reverse alias map: serviceId -> set of aliases
   const serviceAliases = new Map<string, Set<string>>();
-  for (const [alias, serviceId] of aliasLookup) {
+  aliasLookup.forEach((serviceId, alias) => {
     if (!serviceAliases.has(serviceId)) {
       serviceAliases.set(serviceId, new Set());
     }
     serviceAliases.get(serviceId)!.add(alias);
-  }
+  });
 
   // Stoplist for partial match filtering
   const commonWordStoplist = new Set([
@@ -70,7 +70,7 @@ export function boostByNameMatch(
   const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
   const nonStoplistWords = queryWords.filter(w => !commonWordStoplist.has(w));
 
-  return services.map(svc => {
+  const scored = services.map(svc => {
     let boost = 0;
     const explanations: ScoreExplanation[] = [];
     const nameLower = svc.name.toLowerCase();
@@ -105,20 +105,29 @@ export function boostByNameMatch(
       }
     }
 
-    if (boost === 0) return svc;
+    return { svc, boost, explanations };
+  });
 
-    const result = {
-      ...svc,
-      score: (svc.score || 0) + boost,
-    };
-    if (trackExplanations) {
-      (result as LiteServiceWithDebug).scoreExplanation = [
-        ...((svc as LiteServiceWithDebug).scoreExplanation || []),
-        ...explanations,
-      ];
-    }
-    return result;
-  }).sort((a, b) => (b.score || 0) - (a.score || 0));
+  // Sort by boost (highest first) while preserving relative order for equal boosts
+  scored.sort((a, b) => b.boost - a.boost);
+
+  const boostedCount = scored.filter(s => s.boost > 0).length;
+  if (boostedCount > 0) {
+    console.log(`[NameMatch] ${boostedCount} services boosted by name match`);
+  }
+
+  // Return services with explanations attached if tracking is enabled
+  if (trackExplanations) {
+    return scored.map(s => ({
+      ...s.svc,
+      scoreExplanation: [
+        ...((s.svc as LiteServiceWithDebug).scoreExplanation || []),
+        ...s.explanations,
+      ],
+    })) as LiteServiceWithDebug[];
+  }
+
+  return scored.map(s => s.svc);
 }
 
 /**
