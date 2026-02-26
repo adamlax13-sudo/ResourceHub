@@ -9,6 +9,19 @@ import type { SearchType, QueryIntent, SubstanceType } from './config';
 // Re-export types from config for convenience
 export type { SearchType, QueryIntent, SubstanceType };
 
+/**
+ * Structured exclusion signals detected from user query.
+ * Used for hard filtering services that don't match user preferences.
+ */
+export interface Exclusions {
+  /** User wants non-religious services ("not religious", "secular") */
+  religious: boolean;
+  /** User wants non-12-step programs ("no 12-step", or implied by religious + addiction context) */
+  twelveStep: boolean;
+  /** User wants to exclude specific gender-restricted services */
+  genderRestricted: 'men_only' | 'women_only' | null;
+}
+
 // === SESSION CONTEXT ===
 
 /** Session context for personalized search */
@@ -82,6 +95,10 @@ export interface LiteService {
   rrfScore?: number;
   /** Age group this service targets */
   age_group?: 'youth' | 'youth_and_adult' | 'adult' | 'senior' | 'all_ages';
+  /** True if service is faith-based */
+  is_faith_based?: boolean;
+  /** True if service uses 12-step methodology */
+  is_12_step?: boolean;
 }
 
 /** Full service detail format for expanded view */
