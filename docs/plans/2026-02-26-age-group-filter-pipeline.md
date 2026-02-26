@@ -288,12 +288,25 @@ Replace lines 41-51:
   },
 ```
 
-**Step 2: Verify TypeScript compiles**
+**Step 2: Verify no double-penalization**
+
+After this change, the scoring logic in `scoring.ts` will have two paths:
+- **Legacy path:** Uses `adultForYouthPenalty` etc. based on text pattern matching (existing code ~lines 266-289)
+- **New path:** Should use `mediumConfidencePenalty` for medium-confidence age mismatches
+
+For now, keep both — the legacy penalties apply when `detectAgeGroup()` returns medium confidence AND the service text matches age patterns. This is intentional layering, not double-penalization, because:
+1. High-confidence queries → hard filter (no penalty needed)
+2. Medium-confidence queries → `mediumConfidencePenalty` applies via the new filter pipeline
+3. Legacy text-based penalties → still apply for edge cases where age is in service text but not in `age_group` column
+
+**TODO for future cleanup:** Once `age_group` column is fully populated and trusted, remove the legacy text-based age penalties in `scoring.ts` lines 266-289.
+
+**Step 3: Verify TypeScript compiles**
 
 Run: `npx tsc --noEmit`
 Expected: No errors
 
-**Step 3: Commit**
+**Step 4: Commit**
 
 ```bash
 git add server/search/config.ts
