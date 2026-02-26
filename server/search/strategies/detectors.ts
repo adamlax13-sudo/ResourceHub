@@ -10,7 +10,8 @@
  */
 
 import { SEARCH_CONFIG } from '../config';
-import type { SubstanceType } from '../config';
+import type { SubstanceType, QueryIntent } from '../config';
+import type { Exclusions } from '../types';
 
 /**
  * Student context with optional specific institution
@@ -320,28 +321,51 @@ export function detectFamilyContext(query: string): 'immediate' | 'extended' | '
 }
 
 /**
- * Detect exclusion signals - things the user wants to avoid
- * Returns array of exclusion types
+ * Detect exclusion signals from query text.
+ * Returns structured Exclusions object for hard filtering.
+ *
+ * Key behavior: When religious === true AND query has addiction context,
+ * automatically set twelveStep = true (12-step programs involve "higher power").
  */
-export function detectExclusions(query: string): string[] {
-  const exclusions: string[] = [];
-  const patterns = SEARCH_CONFIG.exclusionPatterns;
+export function detectExclusions(query: string, intent?: QueryIntent): Exclusions {
+  const q = query.toLowerCase();
 
-  if (patterns.secular.test(query)) exclusions.push('religious');
-  if (patterns.non12Step.test(query)) exclusions.push('12step');
-  if (patterns.notMenOnly.test(query)) exclusions.push('men_only');
-  if (patterns.notWomenOnly.test(query)) exclusions.push('women_only');
-  if (patterns.freeOnly.test(query)) exclusions.push('paid');
-  if (patterns.noWaitlist.test(query)) exclusions.push('waitlist');
+  // Detect religious exclusion signals
+  const religious = /\b(not religious|non-?religious|secular|no.*religion|no.*faith|no.*church|no.*god|atheist|agnostic|secular only)\b/i.test(q);
 
-  // For addiction/recovery queries, "not religious" implies "no 12-step" too
-  // since 12-step programs involve spiritual concepts ("higher power")
-  if (exclusions.includes('religious') && !exclusions.includes('12step')) {
-    const isAddictionQuery = /\b(addiction|recovery|rehab|detox|substance|drug|alcohol|sober|sobriety|clean|treatment)\b/i.test(query);
-    if (isAddictionQuery) {
-      exclusions.push('12step');
-      console.log(`[Exclusions] "not religious" + addiction query → also excluding 12-step programs`);
+  // Detect explicit 12-step exclusion
+  let twelveStep = /\b(not.*12.*step|no.*12.*step|non.*12.*step|alternative to AA|alternative to NA|no AA|no NA|without.*12.*step)\b/i.test(q);
+
+  // Auto-set twelveStep when religious exclusion + addiction context
+  if (religious && !twelveStep) {
+    const isAddictionContext =
+      intent === 'substance_abuse' ||
+      intent === 'family_addiction_support' ||
+      /\b(addiction|recovery|rehab|detox|substance|drug|alcohol|sober|sobriety|clean|treatment|relapse)\b/i.test(q);
+
+    if (isAddictionContext) {
+      twelveStep = true;
+      console.log(`[Exclusions] "not religious" + addiction context → auto-excluding 12-step programs`);
     }
+  }
+
+  // Detect gender exclusions
+  let genderRestricted: 'men_only' | 'women_only' | null = null;
+  if (/\b(not.*men only|no.*men|not just men|not.*male only|exclude.*men)\b/i.test(q)) {
+    genderRestricted = 'men_only';
+  } else if (/\b(not.*women only|no.*women|not just women|not.*female only|exclude.*women)\b/i.test(q)) {
+    genderRestricted = 'women_only';
+  }
+
+  const exclusions: Exclusions = { religious, twelveStep, genderRestricted };
+
+  // Log detected exclusions
+  const detected: string[] = [];
+  if (religious) detected.push('religious');
+  if (twelveStep) detected.push('twelveStep');
+  if (genderRestricted) detected.push(`gender:${genderRestricted}`);
+  if (detected.length > 0) {
+    console.log(`[Exclusions] Detected: ${detected.join(', ')}`);
   }
 
   return exclusions;
