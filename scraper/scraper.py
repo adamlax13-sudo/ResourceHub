@@ -86,6 +86,17 @@ except ImportError:
     def calculate_confidence_score(*args, **kwargs): return 50
     def get_confidence_level(score): return "medium"
 
+# Directory source scrapers - optional
+try:
+    from sources.veterans_affairs import VeteransAffairsScraper
+    from sources.acds import ACDSScraper
+    from sources.homeless_hub import HomelessHubScraper
+    from sources.ahs_findhealth import AHSFindHealthScraper
+    from sources.ab211_direct import AB211DirectScraper
+    HAS_DIRECTORY_SCRAPERS = True
+except ImportError:
+    HAS_DIRECTORY_SCRAPERS = False
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -1437,6 +1448,18 @@ def phase_informalberta_enrich(session, client: Any, log: ScraperLog, claude_cli
             logger.error(f"Failed: {e}")
 
 
+def phase_directory_scraper(session, log: ScraperLog, scraper_class, dry_run: bool = False):
+    """Generic phase runner for directory scrapers."""
+    if not HAS_DIRECTORY_SCRAPERS:
+        logger.warning("Directory scraper modules not available - skipping")
+        return
+    try:
+        scraper = scraper_class(session=session, log=log, dry_run=dry_run)
+        scraper.run()
+    except Exception as e:
+        logger.error(f"[{scraper_class.SOURCE_NAME}] Phase failed: {e}")
+
+
 def phase_normalize_contacts(session, log: ScraperLog, dry_run: bool = False):
     """Phase 6: Normalize contact information (extract phone, email, address)."""
     logger.info("=== Phase 6: Normalize Contacts ===")
@@ -1936,6 +1959,18 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
         if (all_phases or "informalberta" in phase_set) and client:
             phase_informalberta_enrich(session, client, log, claude_client)
 
+        # Directory source scrapers
+        if (all_phases or "veterans" in phase_set) and HAS_DIRECTORY_SCRAPERS:
+            phase_directory_scraper(session, log, VeteransAffairsScraper, dry_run)
+        if (all_phases or "acds" in phase_set) and HAS_DIRECTORY_SCRAPERS:
+            phase_directory_scraper(session, log, ACDSScraper, dry_run)
+        if (all_phases or "homelesshub" in phase_set) and HAS_DIRECTORY_SCRAPERS:
+            phase_directory_scraper(session, log, HomelessHubScraper, dry_run)
+        if (all_phases or "ahs" in phase_set) and HAS_DIRECTORY_SCRAPERS:
+            phase_directory_scraper(session, log, AHSFindHealthScraper, dry_run)
+        if "211direct" in phase_set and HAS_DIRECTORY_SCRAPERS:
+            phase_directory_scraper(session, log, AB211DirectScraper, dry_run)
+
         # Data quality phases
         if all_phases or "normalize" in phase_set:
             phase_normalize_contacts(session, log, dry_run)
@@ -1981,7 +2016,9 @@ if __name__ == "__main__":
     parser.add_argument("--phase", nargs="+", choices=[
         "211", "enrich", "websites", "deepcrawl", "extract",
         "informalberta", "normalize", "tags", "embeddings", "dedupe",
-        "recover", "refresh"
+        "recover", "refresh",
+        # Directory source scrapers
+        "veterans", "acds", "homelesshub", "ahs", "211direct",
     ], help="Run specific phase(s)")
     parser.add_argument("--limit", type=int, default=100, help="Limit services to process")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes without saving")
