@@ -30,6 +30,8 @@ export interface SearchInput {
   pageSize: number;
   /** Optional session context for personalization */
   session?: SessionContext;
+  /** Enable debug mode to include score explanations */
+  debug?: boolean;
 }
 
 // === QUERY ANALYSIS ===
@@ -74,6 +76,12 @@ export interface LiteService {
   phone?: string;
   /** 24/7 availability flag */
   is24_7?: boolean;
+  /** Source of this result in search */
+  matchType?: 'sql' | 'semantic' | 'both';
+  /** RRF score from merge (higher = better) */
+  rrfScore?: number;
+  /** Age group this service targets */
+  age_group?: 'youth' | 'youth_and_adult' | 'adult' | 'senior' | 'all_ages';
 }
 
 /** Full service detail format for expanded view */
@@ -88,25 +96,41 @@ export interface FullService extends LiteService {
   address: string;
 }
 
+/** Individual score factor explanation */
+export interface ScoreExplanation {
+  factor: string;
+  value: number;
+  reason: string;
+}
+
 /** Service with relevance score for ranking */
 export interface ScoredService {
   service: LiteService;
   score: number;
   /** Source of this result */
   source: 'sql' | 'semantic' | 'openai';
+  /** Detailed breakdown of scoring factors (only populated in debug mode) */
+  scoreExplanation?: ScoreExplanation[];
+}
+
+/** LiteService with optional score explanation for debug mode */
+export interface LiteServiceWithDebug extends LiteService {
+  scoreExplanation?: ScoreExplanation[];
 }
 
 // === SEARCH RESULT TYPES ===
 
 export interface SearchResult {
   services: LiteService[];
+  /** Services with score explanations (populated in debug mode) */
+  servicesWithDebug?: LiteServiceWithDebug[];
   summary: string;
   searchType: SearchType;
   totalResults: number;
 }
 
 export interface SearchResponse {
-  services: LiteService[];
+  services: LiteService[] | LiteServiceWithDebug[];
   summary: string;
   pagination: {
     page: number;
