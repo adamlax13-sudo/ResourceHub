@@ -18,6 +18,10 @@ async function testQueries() {
     'young adult housing calgary',
     // False positive test - should NOT trigger adult filter
     'adult children of alcoholics calgary',
+    // Exclusion system tests
+    'addiction help not religious calgary',
+    'secular counselling edmonton',
+    'recovery support no 12 step calgary',
   ];
 
   for (const q of queries) {
@@ -33,6 +37,8 @@ async function testQueries() {
       console.log('  *', svc.name);
       console.log('    Age Group:', (svc as any).age_group || 'N/A');
       console.log('    Phone:', svc.phone || 'N/A');
+      if ((svc as any).is_12_step) console.log('    [12-STEP]');
+      if ((svc as any).is_faith_based) console.log('    [FAITH-BASED]');
     }
   }
 
