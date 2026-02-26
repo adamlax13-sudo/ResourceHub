@@ -10,12 +10,11 @@
  * All numeric values used in scoring logic are defined here for easy tuning
  */
 export const SCORING_CONFIG = {
-  // Direct name match boosts
-  directNameMatch: {
-    multiWord: 500,     // Multi-word match (e.g., "SMART Recovery" matches "SMART Recovery Calgary")
-    singleWord: 100,    // Single word match (uncommon/proper nouns only)
-    singleWordCommon: 20, // Single word match for common English words (meals, help, support, etc.)
-    minWords: 2,        // Minimum words needed for multi-word match boost
+  // Name match boosts (applied before intent boosting)
+  nameMatch: {
+    exact: 500,       // Exact service name match (case-insensitive)
+    alias: 500,       // Known alias match from service_aliases table
+    partial: 250,     // All query words (2+ non-stoplist) appear in name
   },
 
   // Intent-based boosts

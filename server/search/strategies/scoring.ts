@@ -29,6 +29,99 @@ export { SCORING_CONFIG };
 export const BOOST_CONFIG = SCORING_CONFIG;
 
 /**
+ * Boost services by name/alias match. Runs BEFORE boostByIntent.
+ *
+ * Tiers:
+ * 1. Exact name match (case-insensitive): +500
+ * 2. Alias match (from service_aliases DB table): +500
+ * 3. Partial name match (all 2+ non-stoplist query words in name): +250
+ */
+export function boostByNameMatch(
+  services: LiteService[],
+  rawQuery: string,
+  aliasLookup: Map<string, string>,
+  options?: BoostOptions
+): LiteService[] {
+  const cfg = SCORING_CONFIG;
+  const trackExplanations = options?.trackExplanations ?? false;
+  const queryLower = rawQuery.toLowerCase().trim();
+
+  // Build reverse alias map: serviceId -> set of aliases
+  const serviceAliases = new Map<string, Set<string>>();
+  for (const [alias, serviceId] of aliasLookup) {
+    if (!serviceAliases.has(serviceId)) {
+      serviceAliases.set(serviceId, new Set());
+    }
+    serviceAliases.get(serviceId)!.add(alias);
+  }
+
+  // Stoplist for partial match filtering
+  const commonWordStoplist = new Set([
+    'meals', 'meal', 'help', 'support', 'community', 'family', 'families',
+    'service', 'services', 'center', 'centre', 'program', 'programs',
+    'care', 'health', 'mental', 'housing', 'shelter', 'food', 'free',
+    'counselling', 'counseling', 'therapy', 'group', 'groups', 'crisis',
+    'emergency', 'assistance', 'resource', 'resources', 'outreach',
+    'youth', 'adult', 'seniors', 'senior', 'women', 'men', 'children',
+    'calgary', 'alberta', 'society', 'foundation', 'association',
+  ]);
+
+  // Pre-compute query words for partial matching
+  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+  const nonStoplistWords = queryWords.filter(w => !commonWordStoplist.has(w));
+
+  return services.map(svc => {
+    let boost = 0;
+    const explanations: ScoreExplanation[] = [];
+    const nameLower = svc.name.toLowerCase();
+
+    const addFactor = (factor: string, value: number, reason: string) => {
+      boost += value;
+      if (trackExplanations) {
+        explanations.push({ factor, value, reason });
+      }
+    };
+
+    // Tier 1: Exact name match
+    if (queryLower === nameLower) {
+      addFactor('nameMatch.exact', cfg.nameMatch.exact, `Exact name match: "${svc.name}"`);
+      console.log(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.exact} exact name match`);
+    }
+    // Tier 2: Alias match
+    else if (serviceAliases.has(svc.id)) {
+      const aliases = serviceAliases.get(svc.id)!;
+      if (aliases.has(queryLower)) {
+        addFactor('nameMatch.alias', cfg.nameMatch.alias, `Alias match: "${queryLower}" -> "${svc.name}"`);
+        console.log(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.alias} alias match for "${queryLower}"`);
+      }
+    }
+
+    // Tier 3: Partial name match (requires 2+ non-stoplist words, ALL must appear in name)
+    if (boost === 0 && nonStoplistWords.length >= 2) {
+      const allMatch = nonStoplistWords.every(w => nameLower.includes(w));
+      if (allMatch) {
+        addFactor('nameMatch.partial', cfg.nameMatch.partial, `Partial name match: all ${nonStoplistWords.length} words in name`);
+        console.log(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.partial} partial match (${nonStoplistWords.join(', ')})`);
+      }
+    }
+
+    if (boost === 0) return svc;
+
+    const result = {
+      ...svc,
+      score: (svc.score || 0) + boost,
+    };
+    if (trackExplanations) {
+      (result as LiteServiceWithDebug).scoreExplanation = [
+        ...((svc as LiteServiceWithDebug).scoreExplanation || []),
+        ...explanations,
+      ];
+    }
+    return result;
+  }).sort((a, b) => (b.score || 0) - (a.score || 0));
+}
+
+/**
  * Map query intent to expected service types and boost patterns
  */
 export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
@@ -183,7 +276,6 @@ export function boostByIntent(
     const explanations: ScoreExplanation[] = [];
     const text = `${svc.name} ${svc.category} ${svc.description}`;
     const textLower = text.toLowerCase();
-    const nameLower = svc.name.toLowerCase();
 
     // Helper to add a scoring factor
     const addFactor = (factor: string, value: number, reason: string) => {
@@ -192,35 +284,6 @@ export function boostByIntent(
         explanations.push({ factor, value, reason });
       }
     };
-
-    // Direct name match boost: when query keywords appear in service name
-    // Stoplist of common English words that shouldn't trigger full +100 boost
-    const commonWordStoplist = new Set([
-      'meals', 'meal', 'help', 'support', 'community', 'family', 'families',
-      'service', 'services', 'center', 'centre', 'program', 'programs',
-      'care', 'health', 'mental', 'housing', 'shelter', 'food', 'free',
-      'counselling', 'counseling', 'therapy', 'group', 'groups', 'crisis',
-      'emergency', 'assistance', 'resource', 'resources', 'outreach',
-      'youth', 'adult', 'seniors', 'senior', 'women', 'men', 'children',
-      'calgary', 'alberta', 'society', 'foundation', 'association',
-    ]);
-
-    const queryWords = rawQuery.toLowerCase().split(/\s+/).filter(w => w.length > 2);
-    const nameMatchCount = queryWords.filter(w => nameLower.includes(w)).length;
-    if (nameMatchCount >= cfg.directNameMatch.minWords && queryWords.length >= cfg.directNameMatch.minWords) {
-      addFactor('directNameMatch.multiWord', cfg.directNameMatch.multiWord, `Direct name match (${nameMatchCount}/${queryWords.length} words)`);
-      console.log(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.directNameMatch.multiWord} for direct name match (${nameMatchCount}/${queryWords.length} words)`);
-    } else if (nameMatchCount >= 1) {
-      // Check if any matched word is an uncommon/proper noun (not in stoplist)
-      const matchedWords = queryWords.filter(w => nameLower.includes(w));
-      const hasUncommonMatch = matchedWords.some(w => !commonWordStoplist.has(w));
-      if (hasUncommonMatch) {
-        addFactor('directNameMatch.singleWord', cfg.directNameMatch.singleWord, `Single word name match (uncommon term)`);
-      } else {
-        // Common word match - reduced boost
-        addFactor('directNameMatch.singleWordCommon', cfg.directNameMatch.singleWordCommon, `Single word name match (common term: ${matchedWords.join(', ')})`);
-      }
-    }
 
     // Intent-based boosting (if applicable)
     if (intentConfig) {
@@ -299,6 +362,21 @@ export function boostByIntent(
       }
       if (/appointment required|waitlist|intake process|wait time|waiting list/i.test(textLower)) {
         addFactor('urgency.appointmentPenalty', cfg.urgency.appointmentPenalty, `Requires appointment for urgent query`);
+      }
+    }
+
+    // "No waitlist" query boosting - applies noWaitlistBoost to walk-in/immediate access services
+    const rawQueryLower = rawQuery.toLowerCase();
+    const isNoWaitlistQuery = /\b(no wait|no waitlist|without wait|walk[\s-]?in|immediate|can'?t wait)\b/i.test(rawQueryLower);
+    if (isNoWaitlistQuery) {
+      if (/walk-?in|no appointment|same day|drop-?in|immediate access|no wait|open now|24\/7|24 hour/i.test(textLower)) {
+        addFactor('exclusion.noWaitlistBoost', cfg.exclusion.noWaitlistBoost, `Walk-in/immediate access for no-waitlist query`);
+        console.log(`[NoWaitlistBoost] "${svc.name.substring(0, 40)}" +${cfg.exclusion.noWaitlistBoost} for immediate access`);
+      }
+      // Penalize services that explicitly mention waitlists
+      if (/waitlist|waiting list|wait time|intake process|referral required/i.test(textLower)) {
+        addFactor('exclusion.waitlist', cfg.exclusion.waitlist, `Has waitlist for no-waitlist query`);
+        console.log(`[NoWaitlistPenalty] "${svc.name.substring(0, 40)}" ${cfg.exclusion.waitlist} for waitlist mention`);
       }
     }
 
