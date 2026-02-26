@@ -33,6 +33,7 @@ import {
   detectUrgency,
   detectFamilySituation,
   detectCommunityPreference,
+  detectExclusions,
   type AgeGroupDetection,
 } from './detectors';
 
@@ -46,6 +47,7 @@ import {
   applyCategoryDiversity,
   applyOrganizationDiversity,
   applyAgeFilter,
+  applyExclusionFilter,
 } from './filters';
 
 import {
@@ -411,6 +413,10 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       semanticResults,
       analysis
     );
+
+    // Apply exclusion filter for hard filtering (must happen before scoring)
+    const exclusions = detectExclusions(analysis.raw, analysis.intent);
+    services = applyExclusionFilter(services, exclusions);
 
     // Apply age-based filtering for high-confidence queries
     const ageDetection = detectAgeGroup(analysis.raw);
