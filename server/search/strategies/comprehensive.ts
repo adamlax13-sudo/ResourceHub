@@ -39,6 +39,7 @@ import {
 
 import {
   boostByIntent,
+  boostByNameMatch,
   applyNegativePenalty,
   type BoostOptions,
 } from './scoring';
@@ -62,6 +63,17 @@ const embeddingCache = new LRUCache<string, number[]>({
   max: 500,                      // Max 500 cached embeddings
   ttl: 1000 * 60 * 60 * 24,      // 24 hour TTL
 });
+
+// Cached alias lookup map: alias -> serviceId (loaded once from DB)
+let aliasLookupCache: Map<string, string> | null = null;
+
+async function getAliasLookup(): Promise<Map<string, string>> {
+  if (!aliasLookupCache) {
+    aliasLookupCache = await storage.getAliasLookup();
+    console.log(`[ComprehensiveSearch] Loaded ${aliasLookupCache.size} aliases from database`);
+  }
+  return aliasLookupCache;
+}
 
 // Enhanced query result from OpenAI
 interface EnhancedQuery {
@@ -303,8 +315,12 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         };
       });
 
-      // Apply minimal boosting and return early
-      const boosted = boostByIntent(services, analysis.intent, analysis.raw, analysis, boostOptions);
+      // Apply name-match boosting first
+      const aliasMap = await getAliasLookup();
+      const nameMatched = boostByNameMatch(services, analysis.raw, aliasMap, boostOptions);
+
+      // Apply minimal intent boosting and return early
+      const boosted = boostByIntent(nameMatched, analysis.intent, analysis.raw, analysis, boostOptions);
       let final = analysis.negativeTerms?.length
         ? applyNegativePenalty(boosted, analysis.negativeTerms, boostOptions)
         : boosted;
@@ -421,6 +437,10 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Apply age-based filtering for high-confidence queries
     const ageDetection = detectAgeGroup(analysis.raw);
     services = applyAgeFilter(services, ageDetection);
+
+    // Apply name-match boosting (before intent boosting so it's not diluted)
+    const aliasMap = await getAliasLookup();
+    services = boostByNameMatch(services, analysis.raw, aliasMap, boostOptions);
 
     // Apply intent-based boosting for domain intents or when any preference is detected
     const hasGenderPreference = detectGenderPreference(analysis.raw) !== null;

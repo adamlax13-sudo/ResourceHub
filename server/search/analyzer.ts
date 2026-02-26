@@ -28,7 +28,8 @@ import {
  */
 export function analyzeQuery(
   query: string,
-  userSelectedLocation?: string | null
+  userSelectedLocation?: string | null,
+  aliasLookup?: Map<string, string>
 ): QueryAnalysis {
   // Normalize and correct typos (Levenshtein-based)
   const { corrected, corrections } = correctTypos(query);
@@ -76,7 +77,7 @@ export function analyzeQuery(
   const isCrisis = detectCrisis(normalized);
 
   // Find alias matches (e.g., "CMHA" -> service ID)
-  const aliasMatch = findAliasMatch(rawKeywords);
+  const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
 
   // Determine query intent
   const intent = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
@@ -132,12 +133,12 @@ function detectCrisis(normalizedQuery: string): boolean {
 }
 
 /**
- * Find if any keyword matches a known service alias
+ * Find if any keyword matches a known service alias.
+ * Uses database-backed alias lookup when available, falls back to hardcoded map.
  */
-function findAliasMatch(keywords: string[]): string | null {
-  // This would check against the service_aliases table
-  // For now, check against common hardcoded aliases
-  const KNOWN_ALIASES: Record<string, string> = {
+function findAliasMatch(keywords: string[], aliasLookup?: Map<string, string>): string | null {
+  // Fallback aliases for when DB lookup isn't available (e.g., precomputed path)
+  const FALLBACK_ALIASES: Record<string, string> = {
     'cmha': 'cmha-calgary',
     '988': '988-suicide-crisis-helpline',
     'aa': 'alcoholics-anonymous',
@@ -145,12 +146,25 @@ function findAliasMatch(keywords: string[]): string | null {
     '211': '211-alberta',
   };
 
+  // Check individual keywords
   for (const kw of keywords) {
     const lower = kw.toLowerCase();
-    if (KNOWN_ALIASES[lower]) {
-      return KNOWN_ALIASES[lower];
+    if (aliasLookup) {
+      const serviceId = aliasLookup.get(lower);
+      if (serviceId) return serviceId;
+    }
+    if (FALLBACK_ALIASES[lower]) {
+      return FALLBACK_ALIASES[lower];
     }
   }
+
+  // Check multi-word combinations (e.g., "kids help phone" as full phrase)
+  if (aliasLookup && keywords.length > 1) {
+    const fullPhrase = keywords.join(' ').toLowerCase();
+    const phraseMatch = aliasLookup.get(fullPhrase);
+    if (phraseMatch) return phraseMatch;
+  }
+
   return null;
 }
 

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v63';
+const CACHE_VERSION = 'v68'; // Bumped for location filter fix + noWaitlistBoost (v67 had error)
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -15,6 +15,7 @@ import type {
   SearchResponse,
   SearchResult,
   LiteService,
+  LiteServiceWithDebug,
   SearchType,
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
@@ -103,8 +104,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Get database hash for cache key
   const databaseHash = await getDatabaseHash();
 
+  // Load alias map for query analysis
+  const aliasMap = await storage.getAliasLookup();
+
   // Analyze the query
-  const analysis = analyzeQuery(input.query, input.location);
+  const analysis = analyzeQuery(input.query, input.location, aliasMap);
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${analysis.intent}, Location: ${analysis.location.specified || 'none'}`);
 
   // Check regular cache - include version and substance type in key to bust cache for new features
@@ -183,7 +187,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     results: { services: result.services, summary: result.summary },
   });
 
-  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType);
+  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
 }
 
 /**
@@ -195,15 +199,21 @@ function formatResponse(
   input: SearchInput,
   startTime: number,
   cached: boolean,
-  searchType?: SearchType
+  searchType?: SearchType,
+  servicesWithDebug?: LiteServiceWithDebug[]
 ): SearchResponse {
   const totalResults = services.length;
   const totalPages = Math.ceil(totalResults / input.pageSize);
   const startIndex = (input.page - 1) * input.pageSize;
   const paginatedServices = services.slice(startIndex, startIndex + input.pageSize);
 
+  // When debug mode is enabled, return services with score explanations
+  const responseServices = input.debug && servicesWithDebug
+    ? servicesWithDebug.slice(startIndex, startIndex + input.pageSize)
+    : paginatedServices;
+
   return {
-    services: paginatedServices,
+    services: responseServices,
     summary,
     pagination: {
       page: input.page,
