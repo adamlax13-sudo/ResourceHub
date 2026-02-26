@@ -184,7 +184,10 @@ function determineAgeGroup(service: Service): { ageGroup: AgeGroupValue; source:
 }
 
 async function main() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
 
   try {
     // Get all services
