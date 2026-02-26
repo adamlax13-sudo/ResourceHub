@@ -50,6 +50,8 @@ export const services = pgTable("services", {
   genderRestriction: varchar("gender_restriction", { length: 50 }), // women_only, men_only, all
   is24_7: boolean("is_24_7").default(false),
   ageGroup: varchar("age_group", { length: 20 }).default('all_ages'),
+  isFaithBased: boolean("is_faith_based").default(false),
+  is12Step: boolean("is_12_step").default(false),
 });
 
 // Archive table for feature columns (created by archive_feature_columns.sql)
