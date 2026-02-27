@@ -26,9 +26,6 @@ import {
 // Re-export SCORING_CONFIG for backwards compatibility
 export { SCORING_CONFIG };
 
-// Alias for backwards compatibility (deprecated - use SCORING_CONFIG instead)
-export const BOOST_CONFIG = SCORING_CONFIG;
-
 // Cached reverse alias map (serviceId -> aliases), rebuilt only when forward map changes
 let cachedReverseAliasMap: Map<string, Set<string>> | null = null;
 let cachedAliasLookupRef: Map<string, string> | null = null;
