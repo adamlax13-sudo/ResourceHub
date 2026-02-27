@@ -513,12 +513,28 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
         location=service.get("location", "Alberta"),
     )
 
-    if result and (result.get("process_steps") or result.get("required_docs")):
-        return {
-            "process_steps": result.get("process_steps"),
-            "required_docs": result.get("required_docs"),
-            "source_urls": result.get("source_urls", []),
-        }
+    if result:
+        has_useful = (
+            result.get("process_steps") or result.get("required_docs")
+            or result.get("eligibility") or result.get("phone")
+            or result.get("email") or result.get("hours_of_operation")
+        )
+        if has_useful:
+            return {
+                "process_steps": result.get("process_steps"),
+                "required_docs": result.get("required_docs"),
+                "eligibility": result.get("eligibility"),
+                "phone": result.get("phone"),
+                "email": result.get("email"),
+                "hours_of_operation": result.get("hours_of_operation"),
+                "address": result.get("address"),
+                "description": result.get("description"),
+                "source_urls": result.get("source_urls", []),
+                "process_source": result.get("process_source"),
+                "eligibility_source": result.get("eligibility_source"),
+                "docs_source": result.get("docs_source"),
+                "hours_source": result.get("hours_source"),
+            }
 
     # Fallback: DuckDuckGo scraping (may hit CAPTCHAs)
     if searcher and not searcher.captcha_blocked:
@@ -742,36 +758,37 @@ def run_enrich_process_steps(
         if 1 in enabled_tiers and svc.get("website_url") and crawler:
             try:
                 result = tier1_website_crawl(svc, crawler, claude_client)
-                if result and result.get("process_steps"):
+                if result:
                     if apply_enrichment(
                         session, svc["service_id"], result, tier=1, dry_run=dry_run
                     ):
                         stats["tier1_enriched"] += 1
                         enriched = True
+                        steps = result.get("process_steps", [])
+                        extra = [f for f in ("required_docs", "eligibility", "phone", "email", "hours_of_operation") if result.get(f)]
+                        extra_str = f" +{','.join(extra)}" if extra else ""
                         logger.info(
-                            f"  Tier 1 OK: {len(result['process_steps'])} steps from website"
+                            f"  Tier 1 OK: {len(steps) if steps else 0} steps from website{extra_str}"
                         )
             except Exception as e:
                 logger.error(f"  Tier 1 error: {e}")
                 session.rollback()
 
         # --- Tier 2: Web Search ---
-        if (
-            not enriched
-            and 2 in enabled_tiers
-            and searcher
-            and not searcher.captcha_blocked
-        ):
+        if not enriched and 2 in enabled_tiers:
             try:
                 result = tier2_web_search(svc, searcher, claude_client)
-                if result and result.get("process_steps"):
+                if result:
                     if apply_enrichment(
                         session, svc["service_id"], result, tier=2, dry_run=dry_run
                     ):
                         stats["tier2_enriched"] += 1
                         enriched = True
+                        steps = result.get("process_steps", [])
+                        extra = [f for f in ("required_docs", "eligibility", "phone", "email", "hours_of_operation") if result.get(f)]
+                        extra_str = f" +{','.join(extra)}" if extra else ""
                         logger.info(
-                            f"  Tier 2 OK: {len(result['process_steps'])} steps from web search"
+                            f"  Tier 2 OK: {len(steps) if steps else 0} steps from web search{extra_str}"
                         )
             except Exception as e:
                 logger.error(f"  Tier 2 error: {e}")
@@ -785,14 +802,15 @@ def run_enrich_process_steps(
         if not enriched and 3 in enabled_tiers:
             try:
                 result = tier3_inference(svc, session, claude_client)
-                if result and result.get("process_steps"):
+                if result:
                     if apply_enrichment(
                         session, svc["service_id"], result, tier=3, dry_run=dry_run
                     ):
                         stats["tier3_inferred"] += 1
                         enriched = True
+                        steps = result.get("process_steps", [])
                         logger.info(
-                            f"  Tier 3 OK: {len(result['process_steps'])} steps inferred"
+                            f"  Tier 3 OK: {len(steps) if steps else 0} steps inferred"
                         )
             except Exception as e:
                 logger.error(f"  Tier 3 error: {e}")
