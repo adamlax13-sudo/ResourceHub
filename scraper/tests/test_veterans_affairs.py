@@ -10,28 +10,34 @@ from sources.veterans_affairs import VeteransAffairsScraper
 
 SAMPLE_HTML = """
 <html><body>
-<h2 id="ab">Alberta</h2>
-<div class="col-md-6">
-  <h3>Calgary Area Office</h3>
-  <p>Harry Chicken Chicken Chicken Building<br>
-  220 4th Avenue SE, Suite 410<br>
-  Calgary, Alberta T2G 4X3</p>
-  <p>Monday to Friday, 8:30 to 4:30, local time</p>
-  <p><a href="tel:1-866-522-2122">1-866-522-2122</a></p>
-</div>
-<div class="col-md-6">
-  <h3>Edmonton Area Office</h3>
-  <p>Canada Place<br>
-  9700 Jasper Avenue NW, Suite 260<br>
-  Edmonton, Alberta T5J 4C3</p>
-  <p>Monday to Friday, 8:30 to 4:30, local time</p>
-  <p><a href="tel:1-866-522-2122">1-866-522-2122</a></p>
-</div>
-<h2 id="bc">British Columbia</h2>
-<div class="col-md-6">
-  <h3>Vancouver Office</h3>
-  <p>Some address</p>
-</div>
+<details class="brdr-0">
+  <summary class="brdr-0">Alberta</summary>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6">
+      <h3 class="h4 mrgn-tp-md">Calgary Area Office</h3>
+      <p>470-220 4<sup>th</sup> Avenue South East<br/>Calgary, AB T2G 4X3</p>
+      <p><span class="bold">Hours:</span> <em>Monday to Friday, 8:30 to 4:30, local time.</em><br/>
+         <span class="bold">Telephone:</span> <a href="tel:1-866-522-2122">1-866-522-2122</a><br/>
+         <span class="bold">Language Offered:</span> English</p>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <h3 class="h4 mrgn-tp-md">Edmonton Area Office</h3>
+      <p>Canada Place<br/>9700 Jasper Avenue NW, Suite 260<br/>Edmonton, AB T5J 4C3</p>
+      <p><span class="bold">Hours:</span> <em>Monday to Friday, 8:30 to 4:30, local time.</em><br/>
+         <span class="bold">Telephone:</span> <a href="tel:1-866-522-2122">1-866-522-2122</a><br/>
+         <span class="bold">Language Offered:</span> English</p>
+    </div>
+  </div>
+</details>
+<details class="brdr-0">
+  <summary class="brdr-0">British Columbia</summary>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6">
+      <h3 class="h4 mrgn-tp-md">Vancouver Office</h3>
+      <p>Some address in Vancouver, BC</p>
+    </div>
+  </div>
+</details>
 </body></html>
 """
 

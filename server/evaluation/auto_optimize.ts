@@ -339,18 +339,18 @@ Provide your evaluation as JSON:
       r.query.intent !== r.detectedIntent && r.query.intent !== 'general'
     );
     if (mismatches.length > 0) {
-      const intents = [...new Set(mismatches.map(m => m.query.intent))];
+      const intents = Array.from(new Set(mismatches.map(m => m.query.intent)));
       recommendations.push(`INTENT DETECTION: Fix detection for intents: ${intents.join(', ')}`);
     }
 
     // Recommend fixes for each problematic intent group
-    for (const [intent, queries] of intentGroups) {
+    for (const [intent, queries] of Array.from(intentGroups)) {
       if (queries.length >= 2) {
         recommendations.push(`BOOSTING: Multiple ${intent} queries failing - review ${intent} boosting patterns`);
       }
 
       // Check for common issues
-      const allIssues = queries.flatMap(q => q.issues);
+      const allIssues = queries.flatMap((q: EvaluationResult) => q.issues);
       const issueCount = new Map<string, number>();
       for (const issue of allIssues) {
         const normalized = issue.toLowerCase();
@@ -377,7 +377,7 @@ Provide your evaluation as JSON:
     }
 
     // Deduplicate recommendations
-    return [...new Set(recommendations)];
+    return Array.from(new Set(recommendations));
   }
 
   private printIterationSummary(report: IterationReport): void {

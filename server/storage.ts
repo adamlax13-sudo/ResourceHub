@@ -189,19 +189,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get full service details by ID (for lazy loading modal/expanded view)
+  // Only returns active services — deactivated services are treated as not found
   async getServiceById(serviceId: string): Promise<{
     service: Service | null;
     enrichment: AiServiceEnrichment | null;
   }> {
     // Fetch service and enrichment in parallel
     const [serviceResult, enrichmentResult] = await Promise.all([
-      db.select().from(services).where(eq(services.serviceId, serviceId)).limit(1),
+      db.select().from(services).where(
+        and(eq(services.serviceId, serviceId), eq(services.isActive, true))
+      ).limit(1),
       db.select().from(aiServiceEnrichments).where(eq(aiServiceEnrichments.serviceId, serviceId)).limit(1),
     ]);
 
     return {
       service: serviceResult[0] || null,
-      enrichment: enrichmentResult[0] || null,
+      enrichment: serviceResult[0] ? (enrichmentResult[0] || null) : null,
     };
   }
 

@@ -7,7 +7,7 @@
  */
 
 import { SEARCH_CONFIG } from './config';
-import type { QueryAnalysis, QueryIntent, SubstanceType } from './types';
+import type { QueryAnalysis, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
 import {
   extractLocationContext,
   ALBERTA_LOCATIONS,
@@ -79,11 +79,15 @@ export function analyzeQuery(
   // Find alias matches (e.g., "CMHA" -> service ID)
   const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
 
-  // Determine query intent
-  const intent = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
+  // Determine query intent(s) with confidence scores
+  const intents = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
+  const intent = intents.primary.intent; // Backward compat
 
-  // Detect specific substance type for substance_abuse intent
-  const substanceType = intent === 'substance_abuse' ? detectSubstanceType(query) : null;
+  // Detect specific substance type if any intent is substance_abuse
+  const hasSubstanceIntent = intent === 'substance_abuse' ||
+    intents.secondary?.intent === 'substance_abuse' ||
+    intents.tertiary?.intent === 'substance_abuse';
+  const substanceType = hasSubstanceIntent ? detectSubstanceType(query) : null;
   if (substanceType) {
     console.log(`[QueryAnalyzer] Substance type detected: ${substanceType}`);
   }
@@ -93,6 +97,7 @@ export function analyzeQuery(
     normalized,
     keywords,
     intent,
+    intents,
     location: {
       specified: effectiveLocation,
       isProvinceWide: !effectiveLocation || locationContext.isProvinceWide,
@@ -168,217 +173,87 @@ function findAliasMatch(keywords: string[], aliasLookup?: Map<string, string>): 
   return null;
 }
 
+// === MULTI-INTENT CONFIDENCE SCORING ===
+
+/** Internal type for raw intent scores before normalization */
+interface IntentScore {
+  intent: QueryIntent;
+  score: number;
+  matchCount: number;
+}
+
+/** Mapping from categoryIndicator keys to QueryIntent values */
+const INDICATOR_TO_INTENT: Record<string, { intent: QueryIntent; requiresDistress: boolean }> = {
+  housing: { intent: 'housing_urgent', requiresDistress: true },
+  food: { intent: 'food_insecurity', requiresDistress: true },
+  mental_health: { intent: 'mental_health', requiresDistress: false },
+  disability: { intent: 'disability_support', requiresDistress: false },
+  domestic_violence: { intent: 'domestic_violence', requiresDistress: false },
+  financial: { intent: 'financial_support', requiresDistress: true },
+  legal: { intent: 'legal_aid', requiresDistress: true },
+  student: { intent: 'student_services', requiresDistress: true },
+  grief: { intent: 'grief_support', requiresDistress: false },
+  senior: { intent: 'senior_services', requiresDistress: false },
+  youth: { intent: 'youth_services', requiresDistress: true },
+  newcomer: { intent: 'newcomer_services', requiresDistress: false },
+  family_addiction: { intent: 'family_addiction_support', requiresDistress: false },
+  caregiver: { intent: 'caregiver_support', requiresDistress: false },
+  lgbtq: { intent: 'lgbtq_services', requiresDistress: false },
+  indigenous: { intent: 'indigenous_services', requiresDistress: false },
+  parenting: { intent: 'parenting_support', requiresDistress: false },
+};
+
 /**
- * Detect domain-specific intent from query patterns
- * Returns null if no specific domain intent detected
+ * Score all domain intents independently instead of first-match.
+ * Each intent is scored based on how many of its patterns match the query.
+ * Returns all intents with score > 0, sorted by score descending.
  */
-function detectDomainIntent(query: string): QueryIntent | null {
+function scoreAllDomainIntents(query: string): IntentScore[] {
   const patterns = SEARCH_CONFIG.domainPatterns;
   const substancePatterns = SEARCH_CONFIG.substancePatterns;
-
-  // Check domestic violence FIRST (safety priority)
-  for (const pattern of patterns.domestic_violence) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: domestic_violence`);
-      return 'domestic_violence';
-    }
-  }
-
-  // PRE-CHECK: If query explicitly mentions food/meals, prioritize food_insecurity
-  // even if it also mentions "homeless" (e.g., "free meals for homeless")
-  const isFoodQuery = /\b(meals?|food|hungry|eat|groceries|food bank|pantry|soup kitchen|hamper)\b/i.test(query);
-  if (isFoodQuery) {
-    for (const pattern of patterns.food_insecurity) {
-      if (pattern.test(query)) {
-        console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity (food-specific query)`);
-        return 'food_insecurity';
-      }
-    }
-  }
-
-  // PRE-CHECK: If query explicitly mentions veteran/military, prioritize veteran_services
-  // even if it also mentions "homeless" or housing (e.g., "homeless veteran with PTSD")
-  const isVeteranQuery = /\b(veteran|veterans?|military|armed forces|ex-?military|former military|CAF|PTSD.*(?:combat|military|veteran)|(?:combat|military|veteran).*PTSD)\b/i.test(query);
-  if (isVeteranQuery) {
-    for (const pattern of patterns.veteran_services) {
-      if (pattern.test(query)) {
-        console.log(`[QueryAnalyzer] Domain intent detected: veteran_services (veteran-specific query)`);
-        return 'veteran_services';
-      }
-    }
-  }
-
-  // PRE-CHECK: If query explicitly mentions indigenous, prioritize indigenous_services
-  // even if it also mentions addiction or other services
-  const isIndigenousQuery = /\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i.test(query);
-  if (isIndigenousQuery) {
-    for (const pattern of patterns.indigenous_services) {
-      if (pattern.test(query)) {
-        console.log(`[QueryAnalyzer] Domain intent detected: indigenous_services (indigenous-specific query)`);
-        return 'indigenous_services';
-      }
-    }
-  }
-
-  // PRE-CHECK: If query mentions tenant rights or eviction in legal context, prioritize legal_aid
-  // before housing_urgent (e.g., "tenant rights eviction" vs "getting evicted need shelter")
-  const isLegalEvictionQuery = /\b(tenant rights|eviction.*(?:legal|help|lawyer|rights)|(?:legal|lawyer|rights).*eviction)\b/i.test(query);
-  if (isLegalEvictionQuery) {
-    for (const pattern of patterns.legal_aid) {
-      if (pattern.test(query)) {
-        console.log(`[QueryAnalyzer] Domain intent detected: legal_aid (eviction legal query)`);
-        return 'legal_aid';
-      }
-    }
-  }
-
-  // Check housing urgent (urgent need)
-  for (const pattern of patterns.housing_urgent) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent`);
-      return 'housing_urgent';
-    }
-  }
-
-  // Check food insecurity (basic need) - for queries that weren't caught by pre-check
-  for (const pattern of patterns.food_insecurity) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity`);
-      return 'food_insecurity';
-    }
-  }
-
-  // Check family addiction support patterns FIRST (before substance_abuse)
-  // This ensures "my husband is an alcoholic" routes to family support (Al-Anon), not treatment
-  for (const pattern of patterns.family_addiction_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: family_addiction_support`);
-      return 'family_addiction_support';
-    }
-  }
-
-  // Check substance abuse patterns
-  for (const pattern of patterns.substance_abuse) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: substance_abuse`);
-      return 'substance_abuse';
-    }
-  }
-
-  // Check LGBTQ+ services patterns (identity-specific needs)
-  for (const pattern of patterns.lgbtq_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: lgbtq_services`);
-      return 'lgbtq_services';
-    }
-  }
-
-  // Check veteran/military services patterns
-  for (const pattern of patterns.veteran_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: veteran_services`);
-      return 'veteran_services';
-    }
-  }
-
-  // Check legal aid patterns
-  for (const pattern of patterns.legal_aid) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: legal_aid`);
-      return 'legal_aid';
-    }
-  }
-
-  // Check employment support patterns
-  for (const pattern of patterns.employment_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: employment_support`);
-      return 'employment_support';
-    }
-  }
-
-  // Check financial support patterns
-  for (const pattern of patterns.financial_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: financial_support`);
-      return 'financial_support';
-    }
-  }
-
-  // Check grief support patterns
-  for (const pattern of patterns.grief_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: grief_support`);
-      return 'grief_support';
-    }
-  }
-
-  // Check caregiver support patterns
-  for (const pattern of patterns.caregiver_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: caregiver_support`);
-      return 'caregiver_support';
-    }
-  }
-
-  // Check senior services patterns
-  for (const pattern of patterns.senior_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: senior_services`);
-      return 'senior_services';
-    }
-  }
-
-  // Check youth services patterns
-  for (const pattern of patterns.youth_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: youth_services`);
-      return 'youth_services';
-    }
-  }
-
-  // Check newcomer services patterns
-  for (const pattern of patterns.newcomer_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: newcomer_services`);
-      return 'newcomer_services';
-    }
-  }
-
-  // Check disability support patterns FIRST (before mental_health)
-  // This ensures autism + social difficulty queries get proper disability routing
-  for (const pattern of patterns.disability_support) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: disability_support`);
-      return 'disability_support';
-    }
-  }
-
-  // Check student services patterns BEFORE mental_health
-  // This ensures "UCalgary mental health" routes to student_services not general mental_health
-  for (const pattern of patterns.student_services) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: student_services`);
-      return 'student_services';
-    }
-  }
-
-  // Check mental health patterns
-  for (const pattern of patterns.mental_health) {
-    if (pattern.test(query)) {
-      console.log(`[QueryAnalyzer] Domain intent detected: mental_health`);
-      return 'mental_health';
-    }
-  }
-
-  // === FALLBACK: Category indicators + distress detection ===
-  // If explicit patterns didn't match, check for category terms + distress signals
-  const q = query.toLowerCase();
   const categoryIndicators = SEARCH_CONFIG.categoryIndicators;
-  const distressPattern = SEARCH_CONFIG.distressIndicators;
-  const hasDistress = distressPattern.test(q);
+  const q = query.toLowerCase();
+  const hasDistress = SEARCH_CONFIG.distressIndicators.test(q);
 
-  // Check substance/gambling indicators (betting sites, drug names, etc.)
+  const scores = new Map<QueryIntent, IntentScore>();
+
+  function addScore(intent: QueryIntent, points: number) {
+    const existing = scores.get(intent);
+    if (existing) {
+      existing.score += points;
+      existing.matchCount += 1;
+    } else {
+      scores.set(intent, { intent, score: points, matchCount: 1 });
+    }
+  }
+
+  // Phase 1: Domain pattern matching - test ALL intent pattern groups
+  // Use lowercased query for consistency (domain patterns have /i flag but this is safer)
+  const domainKeys = Object.keys(patterns) as Array<keyof typeof patterns>;
+  for (const domain of domainKeys) {
+    const domainPatternList = patterns[domain];
+    for (const pattern of domainPatternList) {
+      if (pattern.test(q)) {
+        addScore(domain as QueryIntent, 1.0);
+      }
+    }
+  }
+
+  // Phase 2: Category indicator matching (weaker signals)
+  for (const [key, config] of Object.entries(INDICATOR_TO_INTENT)) {
+    const indicators = categoryIndicators[key as keyof typeof categoryIndicators];
+    if (!indicators) continue;
+    const matched = (indicators as readonly RegExp[]).some((p: RegExp) => p.test(q));
+    if (matched) {
+      if (config.requiresDistress && !hasDistress) {
+        addScore(config.intent, 0.3);
+      } else {
+        addScore(config.intent, 0.6);
+      }
+    }
+  }
+
+  // Phase 3: Substance indicator fallback
   const hasSubstanceIndicator =
     substancePatterns.alcohol.some(p => p.test(q)) ||
     substancePatterns.opioid.some(p => p.test(q)) ||
@@ -386,119 +261,35 @@ function detectDomainIntent(query: string): QueryIntent | null {
     substancePatterns.cannabis.some(p => p.test(q)) ||
     substancePatterns.gambling.some(p => p.test(q));
 
-  if (hasSubstanceIndicator && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: substance_abuse (via substance + distress)`);
-    return 'substance_abuse';
+  if (hasSubstanceIndicator) {
+    addScore('substance_abuse', hasDistress ? 0.7 : 0.4);
   }
 
-  // Check housing indicators
-  if (categoryIndicators.housing.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: housing_urgent (via housing + distress)`);
-    return 'housing_urgent';
-  }
-
-  // Check food indicators
-  if (categoryIndicators.food.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: food_insecurity (via food + distress)`);
-    return 'food_insecurity';
-  }
-
-  // Check family addiction indicators (Al-Anon, Nar-Anon)
-  if (categoryIndicators.family_addiction?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: family_addiction_support (via family addiction indicator)`);
-    return 'family_addiction_support';
-  }
-
-  // Check LGBTQ+ indicators
-  if (categoryIndicators.lgbtq?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: lgbtq_services (via LGBTQ indicator)`);
-    return 'lgbtq_services';
-  }
-
-  // Check legal indicators
-  if (categoryIndicators.legal?.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: legal_aid (via legal indicator)`);
-    return 'legal_aid';
-  }
-
-  // Check financial indicators
-  if (categoryIndicators.financial?.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: financial_support (via financial indicator)`);
-    return 'financial_support';
-  }
-
-  // Check grief indicators
-  if (categoryIndicators.grief?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: grief_support (via grief indicator)`);
-    return 'grief_support';
-  }
-
-  // Check caregiver indicators
-  if (categoryIndicators.caregiver?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: caregiver_support (via caregiver indicator)`);
-    return 'caregiver_support';
-  }
-
-  // Check senior indicators
-  if (categoryIndicators.senior?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: senior_services (via senior indicator)`);
-    return 'senior_services';
-  }
-
-  // Check youth indicators
-  if (categoryIndicators.youth?.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: youth_services (via youth indicator)`);
-    return 'youth_services';
-  }
-
-  // Check newcomer indicators
-  if (categoryIndicators.newcomer?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: newcomer_services (via newcomer indicator)`);
-    return 'newcomer_services';
-  }
-
-  // Check indigenous indicators
-  if (categoryIndicators.indigenous?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: indigenous_services (via indigenous indicator)`);
-    return 'indigenous_services';
-  }
-
-  // Check student/campus indicators
-  if (categoryIndicators.student?.some(p => p.test(q)) && hasDistress) {
-    console.log(`[QueryAnalyzer] Domain intent detected: student_services (via student indicator + distress)`);
-    return 'student_services';
-  }
-
-  // Check parenting indicators
-  if (categoryIndicators.parenting?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: parenting_support (via parenting indicator)`);
-    return 'parenting_support';
-  }
-
-  // Check mental health indicators (even without explicit distress - symptoms are distress)
-  if (categoryIndicators.mental_health.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: mental_health (via mental health indicator)`);
-    return 'mental_health';
-  }
-
-  // Check disability/neurodivergent indicators - route to disability_support
-  // These queries need specialized disability services, not generic mental health
-  if (categoryIndicators.disability?.some(p => p.test(q))) {
-    console.log(`[QueryAnalyzer] Domain intent detected: disability_support (via disability indicator)`);
-    return 'disability_support';
-  }
-
-  // Check domestic violence indicators
-  const hasDVIndicator = categoryIndicators.domestic_violence.some(p => p.test(q));
-  // DV needs both relationship terms AND violence/safety terms
+  // Phase 4: DV compound check (relationship + violence terms)
+  const hasDVIndicator = categoryIndicators.domestic_violence?.some(p => p.test(q));
   const hasRelationship = /\b(partner|husband|wife|boyfriend|girlfriend|spouse|ex|he|she)\b/i.test(q);
   const hasViolence = /\b(hit|hurt|abuse|violent|attack|threat|scar|afraid|escape|safe)\b/i.test(q);
-  if (hasDVIndicator && (hasRelationship && hasViolence)) {
-    console.log(`[QueryAnalyzer] Domain intent detected: domestic_violence (via DV indicator)`);
-    return 'domestic_violence';
+  if (hasDVIndicator && hasRelationship && hasViolence) {
+    addScore('domestic_violence', 0.8);
   }
 
-  return null;
+  return Array.from(scores.values())
+    .filter(s => s.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Convert raw scores to 0-1 confidence values using sigmoid normalization.
+ * confidence = score / (score + k), where k=1.5 controls steepness.
+ *
+ * Mapping: 1.0 → 0.40, 2.0 → 0.57, 3.0 → 0.67, 4.0 → 0.73
+ */
+function normalizeToConfidence(scores: IntentScore[]): ScoredIntent[] {
+  const k = 1.5;
+  return scores.map(s => ({
+    intent: s.intent,
+    confidence: Math.round((s.score / (s.score + k)) * 100) / 100,
+  }));
 }
 
 /**
@@ -523,7 +314,8 @@ function detectSubstanceType(query: string): SubstanceType {
 }
 
 /**
- * Determine the intent behind a query
+ * Determine the intent(s) behind a query with confidence scores.
+ * Returns an IntentResult with primary and optional secondary/tertiary intents.
  */
 function determineIntent(
   keywords: string[],
@@ -531,30 +323,63 @@ function determineIntent(
   isCrisis: boolean,
   aliasMatch: string | null,
   rawQuery: string
-): QueryIntent {
-  // Crisis is highest priority
+): IntentResult {
+  // Crisis short-circuits (safety priority)
   if (isCrisis) {
-    return 'crisis';
+    return { primary: { intent: 'crisis', confidence: 1.0 } };
   }
 
-  // Direct alias lookup (user searching for specific service)
+  // Alias short-circuits (UX)
   if (aliasMatch) {
-    return 'alias';
+    return { primary: { intent: 'alias', confidence: 1.0 } };
   }
 
-  // Check for domain-specific intents (substance abuse, mental health, housing)
-  const domainIntent = detectDomainIntent(rawQuery);
-  if (domainIntent) {
-    return domainIntent;
+  // Score all domain intents independently
+  const scores = scoreAllDomainIntents(rawQuery);
+  const confidences = normalizeToConfidence(scores);
+
+  if (confidences.length === 0) {
+    // Location-only or general
+    if (location && keywords.length === 0) {
+      return { primary: { intent: 'location_only', confidence: 0.9 } };
+    }
+    return { primary: { intent: 'general', confidence: 0.5 } };
   }
 
-  // Location-only query (no topic keywords, just a city name)
-  if (location && keywords.length === 0) {
-    return 'location_only';
+  const result: IntentResult = {
+    primary: confidences[0],
+  };
+
+  // Include secondary if confidence is meaningful (>= 0.2) and
+  // at least 40% of primary's confidence (not noise)
+  const minConfidence = 0.2;
+  const minRatio = 0.4;
+
+  if (confidences.length >= 2 &&
+      confidences[1].confidence >= minConfidence &&
+      confidences[1].confidence >= confidences[0].confidence * minRatio) {
+    result.secondary = confidences[1];
   }
 
-  // General search
-  return 'general';
+  if (confidences.length >= 3 &&
+      confidences[2].confidence >= minConfidence &&
+      confidences[2].confidence >= confidences[0].confidence * minRatio) {
+    result.tertiary = confidences[2];
+  }
+
+  // Log multi-intent detection
+  if (result.secondary) {
+    const parts = [`primary: ${result.primary.intent}(${result.primary.confidence})`];
+    parts.push(`secondary: ${result.secondary.intent}(${result.secondary.confidence})`);
+    if (result.tertiary) {
+      parts.push(`tertiary: ${result.tertiary.intent}(${result.tertiary.confidence})`);
+    }
+    console.log(`[QueryAnalyzer] Multi-intent detected: ${parts.join(', ')}`);
+  } else {
+    console.log(`[QueryAnalyzer] Domain intent detected: ${result.primary.intent}(${result.primary.confidence})`);
+  }
+
+  return result;
 }
 
 /**
@@ -666,4 +491,4 @@ function extractNegativeTerms(query: string): string[] {
 }
 
 // Re-export types for convenience
-export type { QueryAnalysis, QueryIntent, SubstanceType };
+export type { QueryAnalysis, QueryIntent, SubstanceType, IntentResult, ScoredIntent };

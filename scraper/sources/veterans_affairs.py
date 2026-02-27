@@ -28,73 +28,85 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
         return self.parse_offices(soup)
 
     def parse_offices(self, soup: BeautifulSoup) -> List[Dict]:
-        """Parse Alberta offices from the VAC contact page."""
+        """Parse Alberta offices from the VAC contact page.
+
+        The real page uses <details>/<summary> accordions for each province.
+        Offices are <h3> elements inside the Alberta <details> block.
+        """
         results = []
-        in_alberta = False
 
-        for element in soup.find_all(["h2", "h3", "div"]):
-            if element.name == "h2":
-                heading_text = element.get_text(strip=True).lower()
-                in_alberta = "alberta" in heading_text or element.get("id") == "ab"
+        # Find the <details> block whose <summary> contains "Alberta"
+        for details in soup.find_all("details"):
+            summary = details.find("summary")
+            if not summary:
+                continue
+            if "alberta" not in summary.get_text(strip=True).lower():
                 continue
 
-            if not in_alberta:
-                continue
-
-            if element.name == "h3":
-                office_name = element.get_text(strip=True)
-                office_data = self._extract_office_data(element, office_name)
+            # Found Alberta section — extract all offices
+            for h3 in details.find_all("h3"):
+                office_name = h3.get_text(strip=True)
+                office_data = self._extract_office_data(h3, office_name)
                 if office_data:
                     results.append(office_data)
+            break  # Only need the Alberta section
 
         logger.info(f"[VAC] Found {len(results)} Alberta offices")
         return results
 
     def _extract_office_data(self, h3_tag: Tag, office_name: str) -> Optional[Dict]:
-        """Extract office details from the elements following an h3."""
-        parent = h3_tag.parent
-        if not parent:
-            return None
+        """Extract office details from the container around an h3.
 
-        full_text = parent.get_text(separator="\n", strip=True)
-        lines = [l.strip() for l in full_text.split("\n") if l.strip()]
+        Real structure: h3 and sibling <p> tags live inside a col div.
+        Address is in the first <p>, hours/phone/language in subsequent <p> tags.
+        Phone is in <a href="tel:...">, hours after <span class="bold">Hours:</span>.
+        """
+        # Walk up to the column container that holds this office's info
+        container = h3_tag.parent
+        if not container:
+            return None
 
         # Extract phone from tel: links
         phone = ""
-        tel_link = parent.find("a", href=re.compile(r"^tel:"))
+        tel_link = container.find("a", href=re.compile(r"^tel:"))
         if tel_link:
             phone = tel_link.get_text(strip=True)
 
-        # Extract address (lines between name and hours/phone)
-        address_lines = []
-        found_name = False
-        for line in lines:
-            if office_name in line:
-                found_name = True
-                continue
-            if found_name:
-                if "monday" in line.lower() or "tel" in line.lower() or line == phone:
-                    break
-                address_lines.append(line)
+        # Extract address from the first <p> after the h3
+        address = ""
+        first_p = h3_tag.find_next_sibling("p")
+        if first_p:
+            # Check if this <p> contains hours/telephone labels — if so, skip it
+            p_text = first_p.get_text(strip=True)
+            if "hours:" not in p_text.lower() and "telephone:" not in p_text.lower():
+                address = first_p.get_text(separator=", ", strip=True)
 
-        address = ", ".join(address_lines) if address_lines else ""
-
-        # Extract hours
+        # Extract hours from bold-labeled span
         hours = ""
-        for line in lines:
-            if "monday" in line.lower() or "hours" in line.lower():
-                hours = line
+        for span in container.find_all("span"):
+            span_text = span.get_text(strip=True).lower()
+            if "hours" in span_text:
+                # Hours text is in the next sibling (often an <em> tag)
+                em = span.find_next_sibling("em")
+                if em:
+                    hours = em.get_text(strip=True)
+                else:
+                    # Fall back to next text node
+                    next_text = span.next_sibling
+                    if next_text:
+                        hours = str(next_text).strip().lstrip(":").strip()
                 break
 
-        # Determine city from address
+        # Determine city from address or office name
         city = "Alberta"
-        if "calgary" in address.lower():
+        combined = (address + " " + office_name).lower()
+        if "calgary" in combined:
             city = "Calgary"
-        elif "edmonton" in address.lower():
+        elif "edmonton" in combined:
             city = "Edmonton"
-        elif "lethbridge" in address.lower():
+        elif "lethbridge" in combined:
             city = "Lethbridge"
-        elif "red deer" in address.lower():
+        elif "red deer" in combined:
             city = "Red Deer"
 
         return self.build_service_data(

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v69'; // Bumped for name-match boosting (boostByNameMatch before intent boosting)
+const CACHE_VERSION = 'v70'; // Bumped for multi-intent confidence-based detection
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -37,34 +37,50 @@ import type { Service } from '@shared/schema';
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
 
-// In-memory services cache for generating database hash
+// In-memory services cache for generating database hash and active ID set
 interface ServicesCacheData {
   hash: string;
+  activeIds: Set<string>;
   lastFetched: number;
 }
 let servicesCacheData: ServicesCacheData | null = null;
 
-async function getDatabaseHash(): Promise<string> {
+async function refreshServicesCache(): Promise<ServicesCacheData> {
   const now = Date.now();
   if (servicesCacheData && (now - servicesCacheData.lastFetched) < SEARCH_CONFIG.cache.servicesCacheTTL) {
-    return servicesCacheData.hash;
+    return servicesCacheData;
   }
 
   try {
-    const services = await storage.getAllActiveServices();
-    const latestUpdate = services.length > 0
-      ? Math.max(...services.map((s: Service) => s.lastUpdated?.getTime() || 0))
+    const activeServices = await storage.getAllActiveServices();
+    const latestUpdate = activeServices.length > 0
+      ? Math.max(...activeServices.map((s: Service) => s.lastUpdated?.getTime() || 0))
       : 0;
     const hash = createHash('md5')
-      .update(`${services.length}-${latestUpdate}`)
+      .update(`${activeServices.length}-${latestUpdate}`)
       .digest('hex')
       .slice(0, 8);
+    const activeIds = new Set(activeServices.map((s: Service) => s.serviceId));
 
-    servicesCacheData = { hash, lastFetched: now };
-    return hash;
+    servicesCacheData = { hash, activeIds, lastFetched: now };
+    return servicesCacheData;
   } catch {
-    return 'default';
+    return servicesCacheData || { hash: 'default', activeIds: new Set(), lastFetched: now };
   }
+}
+
+/**
+ * Filter out deactivated services from cached/precomputed results.
+ * This prevents stale caches from returning services that were deactivated
+ * after the cache was populated.
+ */
+function filterActiveServices(services: LiteService[], activeIds: Set<string>): LiteService[] {
+  if (activeIds.size === 0) return services; // No data yet, don't filter
+  const filtered = services.filter(s => activeIds.has(s.id));
+  if (filtered.length < services.length) {
+    console.log(`[SearchOrchestrator] Filtered out ${services.length - filtered.length} inactive service(s) from cached results`);
+  }
+  return filtered;
 }
 
 /**
@@ -76,12 +92,17 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Normalize query for precomputed cache lookup
   const normalizedQuery = normalizeForCache(input.query);
 
+  // Load active service IDs for filtering stale cache entries
+  const servicesCache = await refreshServicesCache();
+  const databaseHash = servicesCache.hash;
+
   // ============= CHECK PRECOMPUTED CACHE FIRST =============
   // Popular queries have precomputed results for instant response (<10ms)
   const precomputed = await storage.getPrecomputedSearch(normalizedQuery);
   if (precomputed && precomputed.results.length > 0) {
     console.log(`[SearchOrchestrator] Precomputed HIT for: "${normalizedQuery}" (${precomputed.resultCount} results)`);
-    const services = [...precomputed.results] as LiteService[];
+    // Filter out any deactivated services from precomputed cache
+    const services = filterActiveServices([...precomputed.results] as LiteService[], servicesCache.activeIds);
 
     // Still apply pinning for precomputed results
     const analysis = analyzeQuery(input.query, input.location);
@@ -101,24 +122,26 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     return formatResponse(services, '', input, startTime, true);
   }
 
-  // Get database hash for cache key
-  const databaseHash = await getDatabaseHash();
-
   // Load alias map for query analysis
   const aliasMap = await storage.getAliasLookup();
 
   // Analyze the query
   const analysis = analyzeQuery(input.query, input.location, aliasMap);
-  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${analysis.intent}, Location: ${analysis.location.specified || 'none'}`);
+  const intentLog = analysis.intents.secondary
+    ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
+    : `${analysis.intent}(${analysis.intents.primary.confidence})`;
+  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}`);
 
-  // Check regular cache - include version and substance type in key to bust cache for new features
+  // Check regular cache - include version, substance type, and secondary intent in key
   const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
-  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}`;
+  const secondaryKey = analysis.intents.secondary ? `:sec:${analysis.intents.secondary.intent}` : '';
+  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}${secondaryKey}`;
   const cached = await storage.getSearchByQuery(cacheKey);
   if (cached) {
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
-    const services = [...cachedResults.services]; // Clone to avoid mutating cache
+    // Filter out any deactivated services from cached results
+    const services = filterActiveServices([...cachedResults.services], servicesCache.activeIds);
 
     // Apply pinning even for cached results
     if (analysis.isCrisis) {

@@ -8,7 +8,7 @@
 
 import { SCORING_CONFIG } from '../config';
 import type { QueryIntent } from '../config';
-import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation } from '../types';
+import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation, ScoredIntent } from '../types';
 import {
   detectGenderPreference,
   detectAgeGroup,
@@ -235,6 +235,16 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
 };
 
+/**
+ * Check if a specific intent is present in any slot (primary, secondary, or tertiary).
+ */
+function hasIntent(analysis: QueryAnalysis | undefined, target: QueryIntent, primaryIntent: QueryIntent): boolean {
+  if (primaryIntent === target) return true;
+  if (!analysis?.intents) return false;
+  return analysis.intents.secondary?.intent === target ||
+         analysis.intents.tertiary?.intent === target || false;
+}
+
 /** Options for boost function */
 export interface BoostOptions {
   /** Enable tracking of score explanations */
@@ -277,7 +287,7 @@ export function boostByIntent(
   // Log detected preferences
   const detections: string[] = [];
   if (genderPref) detections.push(`gender:${genderPref}`);
-  if (ageGroup) detections.push(`age:${ageGroup}`);
+  if (ageGroup) detections.push(`age:${ageGroup.ageGroup}`);
   if (urgency) detections.push(`urgency:${urgency}`);
   if (familySituations.length > 0) detections.push(`family:${familySituations.join(',')}`);
   if (communityPref) detections.push(`community:${communityPref}`);
@@ -308,17 +318,33 @@ export function boostByIntent(
       }
     };
 
-    // Intent-based boosting (if applicable)
-    if (intentConfig) {
-      if (intentConfig.categoryPatterns.test(text)) {
-        addFactor('intent.categoryPattern', cfg.intent.categoryPattern, `Matches ${intent} category pattern`);
+    // Intent-based boosting - apply for all detected intents scaled by confidence
+    const allIntents: ScoredIntent[] = [];
+    if (analysis?.intents) {
+      allIntents.push(analysis.intents.primary);
+      if (analysis.intents.secondary) allIntents.push(analysis.intents.secondary);
+      if (analysis.intents.tertiary) allIntents.push(analysis.intents.tertiary);
+    } else {
+      // Fallback for backward compat
+      allIntents.push({ intent, confidence: 1.0 });
+    }
+
+    for (const { intent: thisIntent, confidence } of allIntents) {
+      const config = INTENT_SERVICE_MAP[thisIntent];
+      if (!config) continue;
+
+      if (config.categoryPatterns.test(text)) {
+        const value = Math.round(cfg.intent.categoryPattern * confidence);
+        addFactor(`intent.categoryPattern.${thisIntent}`, value, `Matches ${thisIntent} pattern (conf: ${confidence})`);
       }
       const category = svc.category.toLowerCase();
-      if (intentConfig.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
-        addFactor('intent.categoryName', cfg.intent.categoryName, `Category matches ${intent} service type`);
+      if (config.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
+        const value = Math.round(cfg.intent.categoryName * confidence);
+        addFactor(`intent.categoryName.${thisIntent}`, value, `Category matches ${thisIntent} type (conf: ${confidence})`);
       }
-      if (['housing_urgent', 'domestic_violence'].includes(intent) && /24\/7|24 hour/i.test(text)) {
-        addFactor('intent.urgentService', cfg.intent.urgentService, `24/7 service for urgent intent`);
+      if (['housing_urgent', 'domestic_violence'].includes(thisIntent) && /24\/7|24 hour/i.test(text)) {
+        const value = Math.round(cfg.intent.urgentService * confidence);
+        addFactor(`intent.urgentService.${thisIntent}`, value, `24/7 service for urgent ${thisIntent} (conf: ${confidence})`);
       }
     }
 
@@ -358,11 +384,11 @@ export function boostByIntent(
       const isSeniorService = /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer/i.test(textLower);
       const isAdultService = /\badult\b/i.test(textLower);
 
-      if (ageGroup === 'youth') {
+      if (ageGroup.ageGroup === 'youth') {
         if (isYouthService) addFactor('ageGroup.youthMatch', cfg.ageGroup.youthMatch, `Youth service matches youth query`);
         if (isSeniorService) addFactor('ageGroup.youthForSeniorPenalty', cfg.ageGroup.youthForSeniorPenalty, `Senior service for youth query`);
         if (isAdultService && !isYouthService) addFactor('ageGroup.youthForAdultPenalty', cfg.ageGroup.youthForAdultPenalty, `Adult-only service for youth query`);
-      } else if (ageGroup === 'adult') {
+      } else if (ageGroup.ageGroup === 'adult') {
         if (isYouthService && !isAdultService) {
           addFactor('ageGroup.adultForYouthPenalty', cfg.ageGroup.adultForYouthPenalty, `Youth-only service for adult query`);
           console.log(`[AgeBoost] "${svc.name.substring(0, 40)}" ${cfg.ageGroup.adultForYouthPenalty} penalty for youth service (adult query)`);
@@ -372,7 +398,7 @@ export function boostByIntent(
           console.log(`[AgeBoost] "${svc.name.substring(0, 40)}" +${cfg.ageGroup.adultMatch} for adult service (adult query)`);
         }
         if (isSeniorService) addFactor('ageGroup.adultForSeniorPenalty', cfg.ageGroup.adultForSeniorPenalty, `Senior service for adult query`);
-      } else if (ageGroup === 'senior') {
+      } else if (ageGroup.ageGroup === 'senior') {
         if (isSeniorService) addFactor('ageGroup.seniorMatch', cfg.ageGroup.seniorMatch, `Senior service matches senior query`);
         if (isYouthService && /only|exclusive/i.test(textLower)) addFactor('ageGroup.seniorYouthOnlyPenalty', cfg.ageGroup.seniorYouthOnlyPenalty, `Youth-only service for senior query`);
       }
@@ -1000,7 +1026,7 @@ export function boostByIntent(
     }
 
     // Indigenous services boosting
-    if (intent === 'indigenous_services') {
+    if (hasIntent(analysis, 'indigenous_services', intent)) {
       if (/\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i.test(textLower)) {
         addFactor('indigenous.indigenousService', cfg.indigenous.indigenousService, `Indigenous service`);
         console.log(`[IndigenousBoost] "${svc.name.substring(0, 40)}" boosted as indigenous service`);
@@ -1014,7 +1040,7 @@ export function boostByIntent(
     }
 
     // Parenting/baby support boosting
-    if (intent === 'parenting_support') {
+    if (hasIntent(analysis, 'parenting_support', intent)) {
       const isChildcareCostsQuery = /\b(childcare.*cost|daycare.*cost|childcare.*help|daycare.*help|childcare.*afford|childcare.*subsid|daycare.*subsid|afford.*childcare|afford.*daycare)\b/i.test(queryLower);
 
       if (/\b(pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support)\b/i.test(textLower)) {
@@ -1047,7 +1073,7 @@ export function boostByIntent(
     }
 
     // Student services boosting (when intent is student_services)
-    if (intent === 'student_services') {
+    if (hasIntent(analysis, 'student_services', intent)) {
       const isUCalgaryQuery = /\b(u of c|uofc|ucalgary|university of calgary)\b/i.test(queryLower);
       const isUAlbertaQuery = /\b(u of a|uofa|ualberta|university of alberta)\b/i.test(queryLower);
       const isMRUQuery = /\b(mount royal|mru)\b/i.test(queryLower);
@@ -1096,7 +1122,7 @@ export function boostByIntent(
     }
 
     // Substance-specific boosting (for substance_abuse intent)
-    if (intent === 'substance_abuse' && analysis?.substanceType) {
+    if (hasIntent(analysis, 'substance_abuse', intent) && analysis?.substanceType) {
       const querySubstance = analysis.substanceType;
       const serviceSubstance = detectServiceSubstanceType(svc.name, svc.description, svc.category);
 

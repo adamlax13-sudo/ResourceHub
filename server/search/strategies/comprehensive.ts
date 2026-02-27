@@ -235,8 +235,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const startTime = Date.now();
     const boostOptions: BoostOptions = { trackExplanations: input.debug ?? false };
 
-    // Check if this is a domain-specific intent that needs OpenAI query enhancement
-    const isDomainIntent = DOMAIN_INTENTS.includes(analysis.intent);
+    // Check if any detected intent is domain-specific (primary or secondary)
+    const isDomainIntent = DOMAIN_INTENTS.includes(analysis.intent) ||
+      (analysis.intents.secondary ? DOMAIN_INTENTS.includes(analysis.intents.secondary.intent) : false);
 
     // Check if embeddings are available (cached after first check)
     const hasEmbeddings = await checkEmbeddingsAvailable();
@@ -402,7 +403,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // ============= FALLBACK: Domain-specific terms =============
     // If still no results for domain intents, try broad domain terms
     if (sqlResults.length === 0 && semanticResults.length === 0 && isDomainIntent) {
-      const fallbackTerms = DOMAIN_FALLBACK_TERMS[analysis.intent];
+      const fallbackTerms = DOMAIN_FALLBACK_TERMS[analysis.intent] ||
+        (analysis.intents.secondary ? DOMAIN_FALLBACK_TERMS[analysis.intents.secondary.intent] : undefined);
       if (fallbackTerms) {
         console.log(`[ComprehensiveSearch] Zero results, trying domain fallback: "${fallbackTerms}"`);
 

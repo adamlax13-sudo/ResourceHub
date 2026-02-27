@@ -1971,6 +1971,18 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
         if "211direct" in phase_set and HAS_DIRECTORY_SCRAPERS:
             phase_directory_scraper(session, log, AB211DirectScraper, dry_run)
 
+        # Process steps enrichment (explicit only — not in all_phases)
+        if "enrich_steps" in phase_set:
+            try:
+                from enrich_process_steps import run_enrich_process_steps
+                run_enrich_process_steps(
+                    session, claude_client, log,
+                    limit=100,
+                    dry_run=dry_run,
+                )
+            except ImportError:
+                logger.warning("enrich_process_steps module not available")
+
         # Data quality phases
         if all_phases or "normalize" in phase_set:
             phase_normalize_contacts(session, log, dry_run)
@@ -2019,6 +2031,8 @@ if __name__ == "__main__":
         "recover", "refresh",
         # Directory source scrapers
         "veterans", "acds", "homelesshub", "ahs", "211direct",
+        # Process steps enrichment
+        "enrich_steps",
     ], help="Run specific phase(s)")
     parser.add_argument("--limit", type=int, default=100, help="Limit services to process")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes without saving")

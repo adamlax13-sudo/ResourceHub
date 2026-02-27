@@ -9,6 +9,20 @@ import type { SearchType, QueryIntent, SubstanceType } from './config';
 // Re-export types from config for convenience
 export type { SearchType, QueryIntent, SubstanceType };
 
+/** A single scored intent with confidence */
+export interface ScoredIntent {
+  intent: QueryIntent;
+  /** Confidence score from 0.0 to 1.0 */
+  confidence: number;
+}
+
+/** Multi-intent detection result with primary and optional secondary/tertiary */
+export interface IntentResult {
+  primary: ScoredIntent;
+  secondary?: ScoredIntent;
+  tertiary?: ScoredIntent;
+}
+
 /**
  * Structured exclusion signals detected from user query.
  * Used for hard filtering services that don't match user preferences.
@@ -56,8 +70,10 @@ export interface QueryAnalysis {
   normalized: string;
   /** Extracted keywords (non-location) */
   keywords: string[];
-  /** Detected query intent */
+  /** Detected query intent (primary intent for backward compatibility) */
   intent: QueryIntent;
+  /** Multi-intent detection with confidence scores */
+  intents: IntentResult;
   /** Location information */
   location: {
     /** User-specified or query-extracted location */
