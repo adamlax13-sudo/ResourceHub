@@ -306,7 +306,6 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
           location: merged.location,
           waitTimes: merged.waitTimes,
           phone: sr.phone || undefined,
-          is24_7: (sr as any).is24_7 || undefined,
         };
       });
 

@@ -159,7 +159,7 @@ export async function convertSemanticToLiteServices(
       location: merged.location,
       waitTimes: merged.waitTimes || '',
       phone: sr.phone || undefined,
-      is24_7: (sr as any).is24_7 || undefined,
+      is24_7: sr.is24_7 || undefined,
     };
   });
 }
