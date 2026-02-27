@@ -352,18 +352,27 @@ class DeepCrawler:
         return f"{parsed.scheme}://{parsed.netloc}{path}"
 
     def _check_robots(self, url: str) -> bool:
-        """Check if URL is allowed by robots.txt."""
+        """Check if URL is allowed by robots.txt.
+
+        Fetches robots.txt using our requests session (with browser UA)
+        instead of urllib's default UA which gets 403'd by most sites.
+        """
         parsed = urlparse(url)
         robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
 
         if robots_url not in self._robots_cache:
             rp = RobotFileParser()
+            rp.set_url(robots_url)
             try:
-                rp.set_url(robots_url)
-                rp.read()
+                resp = self.session.get(robots_url, timeout=10)
+                if resp.status_code == 200 and 'text' in resp.headers.get('content-type', ''):
+                    rp.parse(resp.text.splitlines())
+                else:
+                    # No valid robots.txt (404, 403, etc.) — assume allowed
+                    rp.allow_all = True
             except Exception:
-                # If can't read robots.txt, assume allowed
-                rp = RobotFileParser()
+                # Network error fetching robots.txt — assume allowed
+                rp.allow_all = True
 
             self._robots_cache[robots_url] = rp
 

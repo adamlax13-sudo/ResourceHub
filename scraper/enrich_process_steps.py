@@ -48,9 +48,15 @@ CLAUDE_REQUEST_DELAY = 0.5
 # ---------------------------------------------------------------------------
 
 class DuckDuckGoSearcher:
-    """Search DuckDuckGo HTML endpoint with rate limiting and UA rotation."""
+    """Search DuckDuckGo with Lite endpoint (primary) and HTML fallback.
 
-    DDG_URL = "https://html.duckduckgo.com/html/"
+    The Lite endpoint (lite.duckduckgo.com) is a text-only interface that
+    triggers far fewer CAPTCHAs than the HTML endpoint. Falls back to the
+    HTML endpoint if Lite returns no results.
+    """
+
+    DDG_LITE_URL = "https://lite.duckduckgo.com/lite/"
+    DDG_HTML_URL = "https://html.duckduckgo.com/html/"
 
     USER_AGENTS = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -60,7 +66,7 @@ class DuckDuckGoSearcher:
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     ]
 
-    def __init__(self, request_delay: float = 2.0):
+    def __init__(self, request_delay: float = 3.0):
         self.request_delay = request_delay
         self.session = requests.Session()
         self._last_request_time = 0.0
@@ -69,10 +75,49 @@ class DuckDuckGoSearcher:
     def search(self, query: str, max_results: int = 5) -> List[Dict[str, str]]:
         """Search DuckDuckGo and return [{title, url, snippet}, ...].
 
+        Tries Lite endpoint first, falls back to HTML endpoint.
         Returns empty list if CAPTCHA encountered or request fails.
         """
-        self._wait_for_rate_limit()
+        # Try Lite endpoint first (much less CAPTCHA-prone)
+        results = self._search_lite(query, max_results)
+        if results:
+            return results
 
+        # Fallback to HTML endpoint
+        return self._search_html(query, max_results)
+
+    def _search_lite(self, query: str, max_results: int) -> List[Dict[str, str]]:
+        """Search using the Lite (text-only) endpoint."""
+        self._wait_for_rate_limit()
+        headers = {
+            "User-Agent": random.choice(self.USER_AGENTS),
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+        try:
+            response = self.session.get(
+                self.DDG_LITE_URL,
+                params={"q": query},
+                headers=headers,
+                timeout=15,
+            )
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            if self._is_captcha(soup):
+                self._captcha_count += 1
+                logger.warning(f"DDG Lite CAPTCHA (count: {self._captcha_count})")
+                return []
+
+            return self._parse_lite_results(soup, max_results)
+
+        except requests.RequestException as e:
+            logger.warning(f"DDG Lite search failed: {e}")
+            return []
+
+    def _search_html(self, query: str, max_results: int) -> List[Dict[str, str]]:
+        """Search using the HTML endpoint (fallback)."""
+        self._wait_for_rate_limit()
         headers = {
             "User-Agent": random.choice(self.USER_AGENTS),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -80,29 +125,25 @@ class DuckDuckGoSearcher:
             "Referer": "https://html.duckduckgo.com/",
             "Content-Type": "application/x-www-form-urlencoded",
         }
-
         try:
             response = self.session.post(
-                self.DDG_URL,
+                self.DDG_HTML_URL,
                 data={"q": query, "b": ""},
                 headers=headers,
                 timeout=15,
             )
             response.raise_for_status()
-
             soup = BeautifulSoup(response.text, "html.parser")
 
             if self._is_captcha(soup):
                 self._captcha_count += 1
-                logger.warning(
-                    f"DuckDuckGo CAPTCHA detected (count: {self._captcha_count})"
-                )
+                logger.warning(f"DDG HTML CAPTCHA (count: {self._captcha_count})")
                 return []
 
-            return self._parse_results(soup, max_results)
+            return self._parse_html_results(soup, max_results)
 
         except requests.RequestException as e:
-            logger.warning(f"DuckDuckGo search failed: {e}")
+            logger.warning(f"DDG HTML search failed: {e}")
             return []
 
     def _is_captcha(self, soup: BeautifulSoup) -> bool:
@@ -113,9 +154,52 @@ class DuckDuckGoSearcher:
             or "please try again" in text
         )
 
-    def _parse_results(
+    def _parse_lite_results(
         self, soup: BeautifulSoup, max_results: int
     ) -> List[Dict[str, str]]:
+        """Parse results from the Lite endpoint.
+
+        Lite format: <a> tags with DDG redirect URLs (//duckduckgo.com/l/?uddg=...)
+        followed by snippet text in adjacent <td> elements.
+        """
+        results = []
+        for link in soup.find_all("a"):
+            href = link.get("href", "")
+            if "uddg=" not in href and not href.startswith("http"):
+                continue
+            if "duckduckgo.com" in href and "uddg=" not in href:
+                continue
+
+            url = self._clean_url(href)
+            if not url:
+                continue
+
+            title = link.get_text(strip=True)
+            if not title:
+                continue
+
+            # Get snippet from next sibling or parent's next row
+            snippet = ""
+            snippet_td = link.find_parent("td")
+            if snippet_td:
+                next_row = snippet_td.find_parent("tr")
+                if next_row:
+                    next_sibling = next_row.find_next_sibling("tr")
+                    if next_sibling:
+                        snippet_cell = next_sibling.find("td", class_="result-snippet")
+                        if snippet_cell:
+                            snippet = snippet_cell.get_text(strip=True)
+
+            results.append({"title": title, "url": url, "snippet": snippet})
+            if len(results) >= max_results:
+                break
+
+        return results
+
+    def _parse_html_results(
+        self, soup: BeautifulSoup, max_results: int
+    ) -> List[Dict[str, str]]:
+        """Parse results from the HTML endpoint."""
         results = []
         for element in soup.select("#links .result")[:max_results]:
             try:
@@ -158,8 +242,8 @@ class DuckDuckGoSearcher:
 
     @property
     def captcha_blocked(self) -> bool:
-        """True after 3+ CAPTCHAs — stop using Tier 2."""
-        return self._captcha_count >= 3
+        """True after 5+ CAPTCHAs — stop using Tier 2."""
+        return self._captcha_count >= 5
 
 
 # ---------------------------------------------------------------------------
@@ -347,53 +431,63 @@ def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]
 
 
 def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
-    """Tier 2: Search the web for application process info and extract."""
-    name = service["name"]
+    """Tier 2: Use Claude's built-in web search to find process steps.
 
-    # Primary query — quoted name for precision
-    query = f'"{name}" how to apply process steps required documents Alberta'
-    search_results = searcher.search(query, max_results=5)
-
-    if not search_results:
-        # Broader fallback without quotes
-        query = f"{name} application process requirements Alberta"
-        search_results = searcher.search(query, max_results=5)
-
-    if not search_results:
-        return None
-
-    # Fetch top result pages
-    combined_content = ""
-    source_urls = []
-
-    for result in search_results[:3]:
-        url = result["url"]
-        content = fetch_page_content(url)
-        if content and len(content) > 200:
-            combined_content += f"\n\n=== FROM {url} ===\n{content[:4000]}"
-            source_urls.append(url)
-            time.sleep(WEB_REQUEST_DELAY)
-
-    if not combined_content:
-        return None
-
-    extraction = claude_client.extract_full_service(
-        page_content=combined_content,
+    Claude searches the web server-side (no CAPTCHA issues), reads the pages,
+    and extracts structured process steps — all in one API call.
+    Falls back to DuckDuckGo scraping if Claude web search is unavailable.
+    """
+    # Try Claude's built-in web search first (reliable, no CAPTCHAs)
+    result = claude_client.web_search_extract_steps(
         service_name=service["name"],
         category=service.get("category", ""),
-        source_url=source_urls[0] if source_urls else None,
+        description=service.get("description", ""),
+        location=service.get("location", "Alberta"),
     )
 
-    if not extraction or not extraction.get("process_steps"):
-        return None
+    if result and result.get("process_steps"):
+        return {
+            "process_steps": result["process_steps"],
+            "required_docs": result.get("required_docs"),
+            "source_urls": result.get("source_urls", []),
+        }
 
-    return {
-        "process_steps": extraction["process_steps"],
-        "required_docs": extraction.get("required_docs"),
-        "source_urls": source_urls,
-        "process_source": extraction.get("process_source"),
-        "docs_source": extraction.get("docs_source"),
-    }
+    # Fallback: DuckDuckGo scraping (may hit CAPTCHAs)
+    if searcher and not searcher.captcha_blocked:
+        name = service["name"]
+        query = f'"{name}" how to apply process steps required documents Alberta'
+        search_results = searcher.search(query, max_results=5)
+
+        if not search_results:
+            query = f"{name} application process requirements Alberta"
+            search_results = searcher.search(query, max_results=5)
+
+        if search_results:
+            combined_content = ""
+            source_urls = []
+            for sr in search_results[:3]:
+                url = sr["url"]
+                content = fetch_page_content(url)
+                if content and len(content) > 200:
+                    combined_content += f"\n\n=== FROM {url} ===\n{content[:4000]}"
+                    source_urls.append(url)
+                    time.sleep(WEB_REQUEST_DELAY)
+
+            if combined_content:
+                extraction = claude_client.extract_full_service(
+                    page_content=combined_content,
+                    service_name=service["name"],
+                    category=service.get("category", ""),
+                    source_url=source_urls[0] if source_urls else None,
+                )
+                if extraction and extraction.get("process_steps"):
+                    return {
+                        "process_steps": extraction["process_steps"],
+                        "required_docs": extraction.get("required_docs"),
+                        "source_urls": source_urls,
+                    }
+
+    return None
 
 
 def tier3_inference(service: Dict, session, claude_client) -> Optional[Dict]:

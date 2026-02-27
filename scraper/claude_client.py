@@ -8,6 +8,7 @@ Keeps OpenAI for web search and embeddings.
 import json
 import logging
 import os
+import re
 import time
 from typing import Any, Dict, List, Optional
 
@@ -728,6 +729,117 @@ Generate 4-6 specific process steps for accessing this service."""
         if result and "process_steps" in result:
             return result["process_steps"]
         return None
+
+    def web_search_extract_steps(
+        self,
+        service_name: str,
+        category: str,
+        description: str = "",
+        location: str = "Alberta",
+    ) -> Optional[Dict[str, Any]]:
+        """Use Claude's built-in web search to find and extract process steps.
+
+        Two-phase approach:
+        1. Claude web search gathers information about how to access the service
+        2. extract_full_service structures the gathered text into process steps
+
+        Returns:
+            Dict with process_steps, required_docs, source_urls, or None
+        """
+        _rate_limit()
+
+        user_prompt = f"""Find the application/intake process for this service.
+
+Service: {service_name}
+Category: {category}
+Location: {location}
+Description: {description[:500] if description else 'N/A'}
+
+Search for how someone would access or apply for this service. Look for:
+1. The official website of this service
+2. Application/intake/how-to-access pages
+3. Required documents or eligibility requirements
+
+Summarize what you find about:
+- Step-by-step process to access this service
+- Required documents or ID
+- Contact information for intake
+- Eligibility requirements
+
+If you cannot find specific process information for this exact service, say "NO PROCESS INFO FOUND"."""
+
+        try:
+            response = self.client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=2048,
+                tools=[{
+                    "type": "web_search_20250305",
+                    "name": "web_search",
+                    "max_uses": 3,
+                    "user_location": {
+                        "type": "approximate",
+                        "region": "Alberta",
+                        "country": "CA",
+                        "timezone": "America/Edmonton",
+                    },
+                }],
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+
+            # Collect text and source URLs from the response
+            text_content = ""
+            source_urls = []
+
+            for block in response.content:
+                if not hasattr(block, "type"):
+                    continue
+                if block.type == "text":
+                    text_content += block.text
+                    if hasattr(block, "citations") and block.citations:
+                        for cite in block.citations:
+                            if hasattr(cite, "url") and cite.url:
+                                source_urls.append(cite.url)
+                elif block.type == "web_search_tool_result":
+                    if hasattr(block, "content"):
+                        for item in block.content:
+                            if hasattr(item, "url"):
+                                source_urls.append(item.url)
+
+            # Deduplicate URLs
+            source_urls = list(dict.fromkeys(source_urls))[:5]
+
+            if not text_content or len(text_content) < 100:
+                return None
+
+            if "NO PROCESS INFO FOUND" in text_content:
+                return None
+
+            # Phase 2: Structure the gathered text using extract_full_service
+            # Prefix with source URLs so the extractor knows where data came from
+            structured_content = f"=== WEB SEARCH RESULTS FOR {service_name} ===\n"
+            if source_urls:
+                structured_content += f"Sources: {', '.join(source_urls[:3])}\n\n"
+            structured_content += text_content[:6000]
+
+            extraction = self.extract_full_service(
+                page_content=structured_content,
+                service_name=service_name,
+                category=category,
+                source_url=source_urls[0] if source_urls else None,
+            )
+
+            if extraction and extraction.get("process_steps"):
+                return {
+                    "process_steps": extraction["process_steps"],
+                    "required_docs": extraction.get("required_docs"),
+                    "source_urls": source_urls,
+                }
+
+            return None
+
+        except Exception as e:
+            logger.error(f"Claude web search failed: {e}")
+            return None
 
 
 def init_claude() -> Optional[ClaudeClient]:
