@@ -22,6 +22,7 @@ vite.config.ts.*
 __pycache__/
 *.pyc
 scraper/venv/
+.venv/
 *.egg-info/
 
 # Replit files (legacy)
