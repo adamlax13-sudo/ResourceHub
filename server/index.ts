@@ -41,12 +41,15 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
-// CORS: restrict API access to your Render domain and localhost dev
-const allowedOrigins = [
+// CORS: restrict API access to known origins (configurable via env var)
+const defaultOrigins = [
   'https://resourcehub-wwg6.onrender.com',
   'https://recoveryoncampusalberta.ca',
   'https://www.recoveryoncampusalberta.ca',
 ];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : defaultOrigins;
 if (process.env.NODE_ENV !== 'production') {
   allowedOrigins.push('http://localhost:5000', 'http://localhost:5173');
 }
