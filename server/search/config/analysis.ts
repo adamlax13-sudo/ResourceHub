@@ -1,302 +1,19 @@
 /**
- * Search Configuration
+ * Query Analysis Configuration
  *
- * All search-related constants in one place.
- * This replaces magic numbers scattered throughout routes.ts.
+ * Main search configuration including query analysis parameters,
+ * intent detection patterns, substance patterns, category indicators,
+ * typo dictionaries, location data, exclusion patterns, and more.
  */
 
-/**
- * Centralized scoring boost/penalty configuration
- * All numeric values used in scoring logic are defined here for easy tuning
- */
-export const SCORING_CONFIG = {
-  // Name match boosts (applied before intent boosting)
-  nameMatch: {
-    exact: 500,       // Exact service name match (case-insensitive)
-    alias: 500,       // Known alias match from service_aliases table
-    partial: 250,     // All query words (2+ non-stoplist) appear in name
-  },
-
-  // Intent-based boosts
-  intent: {
-    categoryPattern: 10,  // Text pattern matching for intent
-    categoryName: 5,      // Category name contains relevant keywords
-    urgentService: 2,     // 24/7 services for urgent intents
-  },
-
-  // Location-only boosts
-  locationOnly: {
-    generalInfo: 200,     // General information/referral services
-    multiService: 50,     // Multi-service agencies
-    specializedPenalty: -30,  // Penalty for very specialized services
-  },
-
-  // Gender-based boosts
-  gender: {
-    matchBoost: 8,        // Service matches user's gender preference
-    mismatchPenalty: -15, // Service is opposite gender only
-  },
-
-  // Age group boosts
-  ageGroup: {
-    youthMatch: 50,
-    youthForSeniorPenalty: -100,
-    youthForAdultPenalty: -50,
-    adultForYouthPenalty: -200,      // Changed from -300 for medium confidence
-    adultMatch: 100,
-    adultForSeniorPenalty: -50,
-    seniorMatch: 50,
-    seniorYouthOnlyPenalty: -100,
-    mediumConfidencePenalty: -200,   // New: penalty for medium confidence mismatches
-  },
-
-  // Urgency boosts
-  urgency: {
-    immediateAccess: 10,
-    appointmentPenalty: -3,
-  },
-
-  // Disability/Autism boosts
-  disability: {
-    autismMatch: 150,
-    disabilityServices: 120,
-    neurodivergentMatch: 100,
-    socialSupport: 80,
-    supportGroup: 40,
-    genericMentalHealthPenalty: -30,
-  },
-
-  // ADHD boosts
-  adhd: {
-    adhdSpecific: 200,
-    assessmentServices: 150,
-    coachingSkills: 100,
-    psychiatry: 80,
-    unrelatedPenalty: -100,
-  },
-
-  // Crisis boosts
-  crisis: {
-    crisisHelpline: 500,
-    crisisCategory: 400,
-    crisisSupport: 300,
-    mentalHealthCrisis: 100,
-    griefPenalty: -350,
-    addictionTreatmentPenalty: -200,
-    gamblingPenalty: -300,
-    dayProgramPenalty: -150,
-  },
-
-  // Grief boosts
-  grief: {
-    generalGrief: 150,
-    pregnancyInfantLoss: 250,
-    petLoss: 250,
-    violentLoss: 150,
-    supportGroup: 60,
-    genericMentalHealthPenalty: -20,
-    crisisShelterPenalty: -100,
-  },
-
-  // Postpartum boosts
-  postpartum: {
-    postpartumSpecific: 250,
-    womensMentalHealth: 200,
-    pregnancyMentalHealth: 150,
-    generalMentalHealth: 80,
-    unrelatedPenalty: -150,
-  },
-
-  // Senior boosts
-  senior: {
-    seniorServices: 120,
-    additionalSenior: 80,
-    youthOnlyPenalty: -50,
-  },
-
-  // Legal boosts
-  legal: {
-    tenantEviction: 300,
-    legalAidEviction: 300,
-    housingLegal: 200,
-    urgentEviction: 200,
-    shelterInTenantPenalty: -250,
-    legalAid: 150,
-    lawyerGeneral: 80,
-    legalInCounsellingPenalty: -200,
-  },
-
-  // Employment boosts
-  employment: {
-    employmentSupport: 120,
-    additionalEmployment: 60,
-  },
-
-  // Youth boosts
-  youth: {
-    youthShelter: 200,
-    youthServices: 100,
-    seniorOnlyPenalty: -50,
-    nonShelterPenalty: -80,
-  },
-
-  // Newcomer boosts
-  newcomer: {
-    newcomerServices: 120,
-    additionalNewcomer: 80,
-  },
-
-  // Family addiction support boosts
-  familyAddiction: {
-    alAnon: 600,
-    familySupport: 350,
-    supportGroup: 100,
-    treatmentPenalty: -300,
-    harmReductionPenalty: -250,
-  },
-
-  // Financial boosts
-  financial: {
-    creditCounselling: 200,
-    financialSupport: 120,
-    additional: 60,
-    mentalHealthPenalty: -200,
-  },
-
-  // Caregiver boosts
-  caregiver: {
-    caregiverSupport: 250,
-    dayProgramRespite: 200,
-    familySupport: 100,
-    caregiverCounselling: 150,
-    griefPenalty: -150,
-  },
-
-  // LGBTQ boosts
-  lgbtq: {
-    lgbtqServices: 150,
-    genderAffirming: 80,
-    lgbtqSenior: 300,
-    seniorHousing: 150,
-    youthOnlyPenalty: -200,
-    lgbtqHousing: 150,
-  },
-
-  // Veteran boosts
-  veteran: {
-    veteranServices: 500,
-    militaryServices: 350,
-    ptsdServices: 200,
-    peerSupport: 100,
-    homelessVeteranHousing: 400,
-    generalShelter: 200,
-    sexualViolencePenalty: -300,
-    domesticViolencePenalty: -250,
-    womenSpecificPenalty: -150,
-  },
-
-  // Family situation boosts
-  familySituation: {
-    singleParent: 6,
-    familyLegal: 8,
-    pregnancy: 8,
-    familyGeneral: 4,
-  },
-
-  // Community preference boosts
-  community: {
-    match: 10,
-  },
-
-  // Student boosts
-  student: {
-    institutionMatch: 100,
-    genericStudent: 30,
-    studentService: 50,
-    youthService: 15,
-  },
-
-  // Language preference boosts
-  language: {
-    langMatch: 25,
-    multilingual: 15,
-  },
-
-  // Family context boosts
-  familyContext: {
-    familySupport: 20,
-    intervention: 15,
-  },
-
-  // Exclusion penalties
-  exclusion: {
-    religious: -30,
-    twelveStep: -200,
-    secularBoost: 350,
-    genderOnly: -40,
-    waitlist: -15,
-    noWaitlistBoost: 100,
-  },
-
-  // Non-12-step boosts
-  non12Step: {
-    smartRecovery: 800,
-    evidenceBased: 400,
-    youthPenalty: -300,
-    unclearMethodology: -100,
-  },
-
-  // Indigenous boosts
-  indigenous: {
-    indigenousService: 120,
-    traditionalHealing: 80,
-    treatyReserve: 60,
-  },
-
-  // Parenting boosts
-  parenting: {
-    parentingSupport: 120,
-    babySupplies: 80,
-    parentType: 60,
-    childcare: 80,
-    childcareSubsidy: 180,
-    financialChildcare: 150,
-    babySuppliesPenalty: -100,
-  },
-
-  // Student services (intent-based)
-  studentServices: {
-    universityMatch: 400,
-    campusService: 200,
-    studentCounselling: 150,
-    nonCampusPenalty: -100,
-    wrongUniversityPenalty: -200,
-    addictionFocusPenalty: -150,
-  },
-
-  // Substance-specific boosts
-  substance: {
-    exactMatch: 80,
-    peerSupport: 40,
-    generalPenalty: -30,
-    generalServiceBoost: 20,
-    mismatchPenalty: -15,
-  },
-
-  // Negative keyword penalties
-  negativeKeyword: {
-    semanticMatch: 150,
-    directMatch: 100,
-  },
-
-  // RRF scoring constant
-  rrf: {
-    k: 60,  // RRF k parameter
-  },
-} as const;
-
-// Type export for SCORING_CONFIG
-export type ScoringConfigType = typeof SCORING_CONFIG;
+import {
+  CRISIS_PINNED_SERVICE_ID,
+  CRISIS_PINNED_SERVICE_LITE,
+  CRISIS_PINNED_SERVICE_FULL,
+  PCHAD_PINNED_SERVICE_ID,
+  PCHAD_PINNED_SERVICE_LITE,
+  PCHAD_PINNED_SERVICE_FULL,
+} from './pinned';
 
 export const SEARCH_CONFIG = {
   // === SEARCH SETTINGS ===
@@ -400,39 +117,9 @@ export const SEARCH_CONFIG = {
       /\bwish\s+i\s+(was\s+)?never\s+born\b/i,
       /\bshouldn'?t\s+(be here|exist|have been born)\b/i,
     ],
-    pinnedServiceId: '988-suicide-crisis-helpline',
-    pinnedServiceLite: {
-      id: '988-suicide-crisis-helpline',
-      name: '988 Suicide Crisis Helpline',
-      category: '24/7 Crisis Line',
-      description: 'Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988.',
-      location: 'Canada-wide (available in Alberta)',
-      waitTimes: 'Immediate - 24/7 availability',
-      phone: '988',
-      is24_7: true,
-    },
-    pinnedServiceFull: {
-      id: '988-suicide-crisis-helpline',
-      name: '988 Suicide Crisis Helpline',
-      category: '24/7 Crisis Line',
-      description: 'Free, confidential 24/7 support for people in suicidal crisis or emotional distress. Call or text 988 to connect with a trained crisis counselor immediately. Available in English and French.',
-      location: 'Canada-wide (available in Alberta)',
-      contact: 'Call or text 988',
-      websiteUrl: '',
-      eligibility: 'Anyone experiencing suicidal thoughts, emotional distress, or supporting someone in crisis',
-      process: [
-        'Call or text 988 from any phone - available 24/7',
-        'You will be connected to a trained crisis counselor',
-        'Share what you\'re going through at your own pace',
-        'The counselor will provide immediate support and safety planning',
-        'You may be connected to local resources for ongoing support',
-      ],
-      waitTimes: 'Immediate - 24/7 availability',
-      requiredDocs: ['None - anonymous and confidential'],
-      phone: '988',
-      email: '',
-      address: '',
-    },
+    pinnedServiceId: CRISIS_PINNED_SERVICE_ID,
+    pinnedServiceLite: CRISIS_PINNED_SERVICE_LITE,
+    pinnedServiceFull: CRISIS_PINNED_SERVICE_FULL,
   },
 
   // === PCHAD (Protection of Children Abusing Drugs) ===
@@ -458,45 +145,9 @@ export const SEARCH_CONFIG = {
       /\b(youth|minor|underage)\b.*\b(addict|addiction|drug|substance)\b.*\b(help|intervention|treatment)\b/i,
       /\b(force|make|get)\b.*\b(my|our)\s+(?:\w+\s+)*(child|kid|son|daughter|teen)\b.*\b(treatment|rehab|help)\b/i,
     ],
-    pinnedServiceId: 'pchad-alberta',
-    pinnedServiceLite: {
-      id: 'pchad-alberta',
-      name: 'PCHAD - Protection of Children Abusing Drugs Program',
-      category: 'Youth Addiction Intervention',
-      description: 'Alberta program allowing parents/guardians to get a court order to place their child (under 18) in a protective safe house for up to 5 days for addiction assessment and treatment planning. Available 24/7.',
-      location: 'Alberta-wide',
-      waitTimes: '24/7 availability - Immediate response',
-      phone: '211',
-      is24_7: true,
-    },
-    pinnedServiceFull: {
-      id: 'pchad-alberta',
-      name: 'PCHAD - Protection of Children Abusing Drugs Program',
-      category: 'Youth Addiction Intervention',
-      description: 'The Protection of Children Abusing Drugs (PCHAD) Act allows parents or guardians in Alberta to apply for a court order to confine their child (under 18 years old) in a protective safe house for up to 5 days. During this time, the child receives assessment, stabilization, and treatment planning for substance abuse. This program is designed for situations where a child\'s drug use poses a serious threat to their health and safety, and voluntary treatment has not been successful.',
-      location: 'Alberta-wide',
-      contact: 'Call 211 or contact Alberta Health Services',
-      websiteUrl: 'https://www.alberta.ca/protection-of-children-abusing-drugs-act',
-      eligibility: 'Parents or guardians of children under 18 years old who are abusing drugs or alcohol and whose substance use poses a serious risk to their safety',
-      process: [
-        'Contact a PCHAD coordinator through Alberta Health Services or call 211',
-        'Discuss your situation and determine if PCHAD is appropriate',
-        'If eligible, apply for a court order (can be done without the child present)',
-        'Once granted, the child is taken to a protective safe house',
-        'Child receives up to 5 days of assessment and stabilization',
-        'Treatment plan and aftercare recommendations are developed',
-        'Follow-up support and resources are provided to the family',
-      ],
-      waitTimes: '24/7 availability - Emergency applications can be processed quickly',
-      requiredDocs: [
-        'Proof of guardianship or parental status',
-        'Information about the child\'s substance use history',
-        'Any relevant medical or treatment records (if available)',
-      ],
-      phone: '211',
-      email: '',
-      address: 'Alberta-wide service - multiple locations',
-    },
+    pinnedServiceId: PCHAD_PINNED_SERVICE_ID,
+    pinnedServiceLite: PCHAD_PINNED_SERVICE_LITE,
+    pinnedServiceFull: PCHAD_PINNED_SERVICE_FULL,
   },
 
   // === CACHE SETTINGS ===
@@ -731,7 +382,7 @@ export const SEARCH_CONFIG = {
       /\b(?:pride|gender affirming|hormone therapy|gender identity)\b/i,
       /\b(?:lgbtq|lgbt|queer|trans).*(?:youth|teen|senior|elder)\b/i,
     ],
-    // Indigenous services (First Nations, Métis, Inuit)
+    // Indigenous services (First Nations, Metis, Inuit)
     indigenous_services: [
       /\b(?:indigenous|first nations?|métis|metis|inuit|native|aboriginal).*(?:services?|support|help|resources?)/i,
       /\b(?:treaty|reserve|band office|status card|status indian)\b/i,
