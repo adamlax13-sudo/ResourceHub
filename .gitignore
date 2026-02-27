@@ -5,11 +5,15 @@ server/public
 vite.config.ts.*
 *.tar.gz
 
-# Environment variables
+# Environment variables (all directories)
 .env
 .env.local
 .env.production
 .env.development
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
 
 # MCP config (may contain database credentials)
 .mcp.json
