@@ -77,19 +77,15 @@ export function csrfProtection(allowedOrigins: string[]) {
     const sessionId = req.headers['x-session-id'] as string;
     const csrfToken = req.headers['x-csrf-token'] as string;
 
-    // If session provides a token, validate it
+    // CSRF validation: log-only mode. Token mismatch is logged but not blocked.
+    // To enforce strict CSRF, use strictCsrfProtection middleware instead.
     if (sessionId && csrfToken) {
       const stored = csrfTokens.get(sessionId);
       if (!stored || stored.token !== csrfToken || stored.expires < Date.now()) {
-        // Don't block - just log for now (gradual rollout)
         console.warn(`[CSRF] Invalid token for session: ${sessionId}`);
-        // In strict mode, uncomment:
-        // return res.status(403).json({ message: 'Invalid CSRF token' });
       }
     }
 
-    // For now, allow requests that pass origin check
-    // This provides defense-in-depth with CORS
     next();
   };
 }
