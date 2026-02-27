@@ -21,6 +21,7 @@ import {
   stem,
   correctQueryPhonetic,
 } from '../helpers/keywords';
+import { scrubPii } from '../helpers/pii';
 
 /**
  * Analyze a search query and extract all relevant information.
@@ -31,8 +32,12 @@ export function analyzeQuery(
   userSelectedLocation?: string | null,
   aliasLookup?: Map<string, string>
 ): QueryAnalysis {
+  // Strip PII (phone numbers, addresses, postal codes, emails) before any downstream processing.
+  // The raw query is preserved as analysis.raw for display purposes.
+  const sanitized = scrubPii(query);
+
   // Normalize and correct typos (Levenshtein-based)
-  const { corrected, corrections } = correctTypos(query);
+  const { corrected, corrections } = correctTypos(sanitized);
   if (corrections.length > 0) {
     console.log(`[QueryAnalyzer] Typo corrections: ${corrections.join(', ')}`);
   }
@@ -46,7 +51,7 @@ export function analyzeQuery(
   const normalized = normalizeForCache(phoneticCorrected);
 
   // Extract negative terms (words user wants to exclude)
-  const negativeTerms = extractNegativeTerms(query);
+  const negativeTerms = extractNegativeTerms(sanitized);
 
   // Extract keywords (non-stop words, non-location terms)
   const rawKeywords = extractKeywords(corrected);
@@ -80,14 +85,14 @@ export function analyzeQuery(
   const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
 
   // Determine query intent(s) with confidence scores
-  const intents = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, query);
+  const intents = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, sanitized);
   const intent = intents.primary.intent; // Backward compat
 
   // Detect specific substance type if any intent is substance_abuse
   const hasSubstanceIntent = intent === 'substance_abuse' ||
     intents.secondary?.intent === 'substance_abuse' ||
     intents.tertiary?.intent === 'substance_abuse';
-  const substanceType = hasSubstanceIntent ? detectSubstanceType(query) : null;
+  const substanceType = hasSubstanceIntent ? detectSubstanceType(sanitized) : null;
   if (substanceType) {
     console.log(`[QueryAnalyzer] Substance type detected: ${substanceType}`);
   }
