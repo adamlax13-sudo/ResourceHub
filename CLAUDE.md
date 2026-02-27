@@ -1,5 +1,9 @@
 # CLAUDE.md — Project Context for AI Sessions
 
+<!-- LIVING DOCUMENT: Claude should update this file when discovering new key files,
+     commands, conventions, architecture changes, or important patterns during sessions.
+     Keep sections concise. Only add information that would help future sessions. -->
+
 ## What This Project Is
 
 ResourceHub is an Alberta social services directory. Users search for recovery, support, housing, disability, healthcare, and emergency services. The search is AI-powered with semantic understanding, intent detection, and crisis service pinning.
@@ -101,3 +105,14 @@ See `.env.example` for required variables. Key ones:
 ## Deployment
 
 Render.com with `render.yaml` blueprint. Auto-deploys on push to main. Monthly scraper cron job runs on the 1st at 2 AM UTC. See DEPLOYMENT.md for full details.
+
+## Maintaining This File
+
+This is a living document. Update it when you discover:
+- New key files or modules that future sessions should know about
+- New commands, scripts, or workflow changes
+- Architecture changes (new pipeline phases, new tables, new endpoints)
+- Coding conventions or patterns established during implementation
+- Important gotchas or non-obvious behaviors
+
+Keep each section concise. Remove outdated information rather than letting it accumulate.
