@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Three-tier process steps enrichment.
+"""Three-tier service data enrichment.
 
-Systematically enriches services missing process_steps and required_docs:
-  Tier 1: Deep crawl the service's website, extract with Claude
-  Tier 2: Web search (DuckDuckGo) for application process info, extract with Claude
-  Tier 3: AI inference from similar services in the same category
+Systematically enriches services missing key fields (process_steps,
+required_docs, eligibility, contact info, hours) using a waterfall strategy:
+  Tier 1: Deep crawl the service's website, extract all fields with Claude
+  Tier 2: Web search (Claude API) for service info, extract with Claude
+  Tier 3: AI inference for process steps from similar services
 
 Usage:
   python enrich_process_steps.py --dry-run --limit 5
@@ -279,37 +280,46 @@ def fetch_page_content(url: str, timeout: int = 15) -> Optional[str]:
 def get_candidate_services(
     session, limit: int = 100, include_generic: bool = True
 ) -> List[Dict]:
-    """Get active services needing process_steps enrichment.
+    """Get active services needing data enrichment.
 
-    Targets three groups (in priority order):
+    Targets services missing any key field (in priority order):
       1. Missing process_steps entirely
-      2. AI-inferred steps (process_steps_inferred = TRUE) — replace with real data
-      3. Steps with no source citation (field_sources missing process_steps key)
+      2. AI-inferred steps (process_steps_inferred = TRUE)
+      3. Missing required_docs, eligibility, or contact info
+      4. Steps with no source citation
     """
     if include_generic:
         query = text("""
             SELECT service_id, name, category, description, eligibility,
-                   location, website_url, confidence_score
+                   location, website_url, confidence_score,
+                   required_docs, phone, email, hours_of_operation
             FROM services
             WHERE is_active = TRUE
               AND (
-                -- Group 1: missing entirely
+                -- Group 1: missing process_steps
                 process_steps IS NULL
                 OR process_steps::text = '[]'
                 OR process_steps::text = 'null'
-                -- Group 2: AI-inferred (prefer real data)
+                -- Group 2: AI-inferred steps (prefer real data)
                 OR process_steps_inferred = TRUE
-                -- Group 3: no source citation
+                -- Group 3: missing key fields
+                OR required_docs IS NULL
+                OR required_docs::text IN ('[]', 'null')
+                OR eligibility IS NULL
+                OR length(eligibility) < 10
+                -- Group 4: no source citation for process_steps
                 OR field_sources IS NULL
                 OR field_sources::text NOT LIKE '%process_steps%'
               )
             ORDER BY
-              -- Prioritize: missing first, then inferred, then unsourced
               CASE
                 WHEN process_steps IS NULL OR process_steps::text IN ('[]', 'null')
                   THEN 0
                 WHEN process_steps_inferred = TRUE THEN 1
-                ELSE 2
+                WHEN required_docs IS NULL OR required_docs::text IN ('[]', 'null')
+                  OR eligibility IS NULL OR length(eligibility) < 10
+                  THEN 2
+                ELSE 3
               END,
               confidence_score ASC NULLS FIRST
             LIMIT :limit
@@ -317,7 +327,8 @@ def get_candidate_services(
     else:
         query = text("""
             SELECT service_id, name, category, description, eligibility,
-                   location, website_url, confidence_score
+                   location, website_url, confidence_score,
+                   required_docs, phone, email, hours_of_operation
             FROM services
             WHERE is_active = TRUE
               AND (
@@ -341,6 +352,10 @@ def get_candidate_services(
             "location": r[5],
             "website_url": r[6],
             "confidence_score": r[7],
+            "required_docs": r[8],
+            "phone": r[9],
+            "email": r[10],
+            "hours_of_operation": r[11],
         }
         for r in result
     ]
@@ -389,7 +404,7 @@ def get_similar_services(
 
 
 def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]:
-    """Tier 1: Deep crawl the service website and extract with Claude."""
+    """Tier 1: Deep crawl the service website and extract all fields with Claude."""
     if not service.get("website_url"):
         return None
 
@@ -418,23 +433,76 @@ def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]
         source_url=source_urls[0] if source_urls else None,
     )
 
-    if not extraction or not extraction.get("process_steps"):
+    if not extraction:
+        return None
+
+    # Succeed if any useful field was extracted
+    has_useful_data = (
+        extraction.get("process_steps")
+        or extraction.get("required_docs")
+        or extraction.get("eligibility")
+        or extraction.get("phone")
+        or extraction.get("email")
+        or extraction.get("hours_of_operation")
+    )
+    if not has_useful_data:
         return None
 
     return {
-        "process_steps": extraction["process_steps"],
+        "process_steps": extraction.get("process_steps"),
         "required_docs": extraction.get("required_docs"),
+        "eligibility": extraction.get("eligibility"),
+        "phone": extraction.get("phone"),
+        "email": extraction.get("email"),
+        "hours_of_operation": extraction.get("hours_of_operation"),
+        "address": extraction.get("address"),
+        "description": extraction.get("description"),
         "source_urls": source_urls,
         "process_source": extraction.get("process_source"),
+        "eligibility_source": extraction.get("eligibility_source"),
         "docs_source": extraction.get("docs_source"),
+        "hours_source": extraction.get("hours_source"),
+    }
+
+
+def _build_enrichment_from_extraction(extraction: Dict, source_urls: List[str]) -> Optional[Dict]:
+    """Build a unified enrichment result dict from a Claude extraction."""
+    if not extraction:
+        return None
+
+    has_useful_data = (
+        extraction.get("process_steps")
+        or extraction.get("required_docs")
+        or extraction.get("eligibility")
+        or extraction.get("phone")
+        or extraction.get("email")
+        or extraction.get("hours_of_operation")
+    )
+    if not has_useful_data:
+        return None
+
+    return {
+        "process_steps": extraction.get("process_steps"),
+        "required_docs": extraction.get("required_docs"),
+        "eligibility": extraction.get("eligibility"),
+        "phone": extraction.get("phone"),
+        "email": extraction.get("email"),
+        "hours_of_operation": extraction.get("hours_of_operation"),
+        "address": extraction.get("address"),
+        "description": extraction.get("description"),
+        "source_urls": source_urls,
+        "process_source": extraction.get("process_source"),
+        "eligibility_source": extraction.get("eligibility_source"),
+        "docs_source": extraction.get("docs_source"),
+        "hours_source": extraction.get("hours_source"),
     }
 
 
 def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
-    """Tier 2: Use Claude's built-in web search to find process steps.
+    """Tier 2: Use Claude's built-in web search to find service data.
 
     Claude searches the web server-side (no CAPTCHA issues), reads the pages,
-    and extracts structured process steps — all in one API call.
+    and extracts all available service fields — all in one API call.
     Falls back to DuckDuckGo scraping if Claude web search is unavailable.
     """
     # Try Claude's built-in web search first (reliable, no CAPTCHAs)
@@ -445,9 +513,9 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
         location=service.get("location", "Alberta"),
     )
 
-    if result and result.get("process_steps"):
+    if result and (result.get("process_steps") or result.get("required_docs")):
         return {
-            "process_steps": result["process_steps"],
+            "process_steps": result.get("process_steps"),
             "required_docs": result.get("required_docs"),
             "source_urls": result.get("source_urls", []),
         }
@@ -455,11 +523,11 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
     # Fallback: DuckDuckGo scraping (may hit CAPTCHAs)
     if searcher and not searcher.captcha_blocked:
         name = service["name"]
-        query = f'"{name}" how to apply process steps required documents Alberta'
+        query = f'"{name}" eligibility requirements how to apply Alberta'
         search_results = searcher.search(query, max_results=5)
 
         if not search_results:
-            query = f"{name} application process requirements Alberta"
+            query = f"{name} services eligibility application process Alberta"
             search_results = searcher.search(query, max_results=5)
 
         if search_results:
@@ -480,12 +548,9 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
                     category=service.get("category", ""),
                     source_url=source_urls[0] if source_urls else None,
                 )
-                if extraction and extraction.get("process_steps"):
-                    return {
-                        "process_steps": extraction["process_steps"],
-                        "required_docs": extraction.get("required_docs"),
-                        "source_urls": source_urls,
-                    }
+                result = _build_enrichment_from_extraction(extraction, source_urls)
+                if result:
+                    return result
 
     return None
 
@@ -518,15 +583,26 @@ def tier3_inference(service: Dict, session, claude_client) -> Optional[Dict]:
 def apply_enrichment(
     session, service_id: str, enrichment: Dict, tier: int, dry_run: bool
 ) -> bool:
-    """Write enrichment results to the database."""
+    """Write enrichment results to the database.
+
+    Writes all extracted fields (process_steps, required_docs, eligibility,
+    phone, email, hours, address) — only filling empty fields to avoid
+    overwriting existing data.
+    """
     tier_label = {1: "website_crawl", 2: "web_search", 3: "ai_inference"}[tier]
 
     if dry_run:
         steps = enrichment.get("process_steps", [])
         docs = enrichment.get("required_docs", [])
+        extra = []
+        for f in ("eligibility", "phone", "email", "hours_of_operation"):
+            if enrichment.get(f):
+                extra.append(f)
+        extra_str = f", +{','.join(extra)}" if extra else ""
         logger.info(
             f"  [DRY RUN] Would update via Tier {tier} ({tier_label}): "
-            f"{len(steps)} steps, {len(docs) if docs else 0} docs"
+            f"{len(steps) if steps else 0} steps, "
+            f"{len(docs) if docs else 0} docs{extra_str}"
         )
         return True
 
@@ -534,14 +610,28 @@ def apply_enrichment(
     if not service:
         return False
 
-    # Overwrite process_steps — candidate query already filtered to services
-    # that need improvement (missing, inferred, or unsourced)
-    service.process_steps = enrichment["process_steps"]
+    updated_fields = []
 
+    # Process steps: overwrite if missing, inferred, or unsourced
+    if enrichment.get("process_steps"):
+        service.process_steps = enrichment["process_steps"]
+        updated_fields.append("process_steps")
+
+    # Required docs: fill if empty or if replacing inferred data
     if enrichment.get("required_docs"):
-        # Overwrite if currently empty or if we're replacing inferred data
         if should_enrich_field(service, "required_docs") or service.process_steps_inferred:
             service.required_docs = enrichment["required_docs"]
+            updated_fields.append("required_docs")
+
+    # Other fields: only fill if currently empty (never overwrite)
+    enrichable_fields = ("eligibility", "phone", "email", "hours_of_operation", "address", "description")
+    for field in enrichable_fields:
+        if enrichment.get(field) and should_enrich_field(service, field):
+            setattr(service, field, enrichment[field])
+            updated_fields.append(field)
+
+    if not updated_fields:
+        return False
 
     # Mark inferred only for Tier 3
     service.process_steps_inferred = bool(enrichment.get("inferred"))
@@ -551,19 +641,23 @@ def apply_enrichment(
 
     if enrichment.get("source_urls"):
         primary_url = enrichment["source_urls"][0]
-        field_sources["process_steps"] = {
-            "source": tier_label,
-            "url": primary_url,
-            "quote": enrichment.get("process_source"),
-            "extracted_at": datetime.now().isoformat(),
+        now_iso = datetime.now().isoformat()
+
+        # Track source for each updated field
+        source_quote_map = {
+            "process_steps": enrichment.get("process_source"),
+            "required_docs": enrichment.get("docs_source"),
+            "eligibility": enrichment.get("eligibility_source"),
+            "hours_of_operation": enrichment.get("hours_source"),
         }
-        if enrichment.get("required_docs"):
-            field_sources["required_docs"] = {
+        for field in updated_fields:
+            field_sources[field] = {
                 "source": tier_label,
                 "url": primary_url,
-                "quote": enrichment.get("docs_source"),
-                "extracted_at": datetime.now().isoformat(),
+                "quote": source_quote_map.get(field),
+                "extracted_at": now_iso,
             }
+
         service.source_urls = list(
             set((service.source_urls or []) + enrichment["source_urls"])
         )

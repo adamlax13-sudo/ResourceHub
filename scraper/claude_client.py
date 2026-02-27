@@ -737,36 +737,38 @@ Generate 4-6 specific process steps for accessing this service."""
         description: str = "",
         location: str = "Alberta",
     ) -> Optional[Dict[str, Any]]:
-        """Use Claude's built-in web search to find and extract process steps.
+        """Use Claude's built-in web search to find and extract service data.
 
         Two-phase approach:
-        1. Claude web search gathers information about how to access the service
-        2. extract_full_service structures the gathered text into process steps
+        1. Claude web search gathers information about the service
+        2. extract_full_service structures the gathered text into all fields
 
         Returns:
             Dict with process_steps, required_docs, source_urls, or None
         """
         _rate_limit()
 
-        user_prompt = f"""Find the application/intake process for this service.
+        user_prompt = f"""Find detailed information about this social service.
 
 Service: {service_name}
 Category: {category}
 Location: {location}
 Description: {description[:500] if description else 'N/A'}
 
-Search for how someone would access or apply for this service. Look for:
-1. The official website of this service
-2. Application/intake/how-to-access pages
-3. Required documents or eligibility requirements
+Search for the official website of this service. Look for pages about:
+1. How to access/apply/intake process
+2. Eligibility criteria (who can use this service)
+3. Required documents
+4. Contact information and hours
 
 Summarize what you find about:
 - Step-by-step process to access this service
+- Eligibility requirements (age, income, residency, etc.)
 - Required documents or ID
-- Contact information for intake
-- Eligibility requirements
+- Phone, email, hours of operation
+- Any other key service details
 
-If you cannot find specific process information for this exact service, say "NO PROCESS INFO FOUND"."""
+If you cannot find information about this specific service, say "NO INFO FOUND"."""
 
         try:
             response = self.client.messages.create(
@@ -811,7 +813,7 @@ If you cannot find specific process information for this exact service, say "NO 
             if not text_content or len(text_content) < 100:
                 return None
 
-            if "NO PROCESS INFO FOUND" in text_content:
+            if "NO INFO FOUND" in text_content or "NO PROCESS INFO FOUND" in text_content:
                 return None
 
             # Phase 2: Structure the gathered text using extract_full_service
@@ -828,14 +830,36 @@ If you cannot find specific process information for this exact service, say "NO 
                 source_url=source_urls[0] if source_urls else None,
             )
 
-            if extraction and extraction.get("process_steps"):
-                return {
-                    "process_steps": extraction["process_steps"],
-                    "required_docs": extraction.get("required_docs"),
-                    "source_urls": source_urls,
-                }
+            if not extraction:
+                return None
 
-            return None
+            # Succeed if any useful field was extracted
+            has_useful_data = (
+                extraction.get("process_steps")
+                or extraction.get("required_docs")
+                or extraction.get("eligibility")
+                or extraction.get("phone")
+                or extraction.get("email")
+                or extraction.get("hours_of_operation")
+            )
+            if not has_useful_data:
+                return None
+
+            return {
+                "process_steps": extraction.get("process_steps"),
+                "required_docs": extraction.get("required_docs"),
+                "eligibility": extraction.get("eligibility"),
+                "phone": extraction.get("phone"),
+                "email": extraction.get("email"),
+                "hours_of_operation": extraction.get("hours_of_operation"),
+                "address": extraction.get("address"),
+                "description": extraction.get("description"),
+                "source_urls": source_urls,
+                "process_source": extraction.get("process_source"),
+                "eligibility_source": extraction.get("eligibility_source"),
+                "docs_source": extraction.get("docs_source"),
+                "hours_source": extraction.get("hours_source"),
+            }
 
         except Exception as e:
             logger.error(f"Claude web search failed: {e}")
