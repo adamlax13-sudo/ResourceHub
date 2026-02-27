@@ -1,15 +1,18 @@
 /**
- * Scoring Module
+ * Intent-Based Scoring Module
  *
- * Contains all boost and penalty logic for search result ranking.
- * Boost values are configurable via SCORING_CONFIG in config.ts.
- * Includes intent-based boosting, RRF scoring, and negative keyword penalties.
+ * Contains intent-based boosting, category relevance, crisis/grief/substance
+ * scoring, and RRF (Reciprocal Rank Fusion) computation.
+ *
+ * The main boostByIntent function delegates demographic-specific logic
+ * (gender, age, student, community, language, family) to helpers in
+ * demographic-boost.ts.
  */
 
-import { SCORING_CONFIG } from '../config';
-import type { QueryIntent } from '../config';
-import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation, ScoredIntent } from '../types';
-import { searchLog } from '../logger';
+import { SCORING_CONFIG } from '../../config';
+import type { QueryIntent } from '../../config';
+import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation, ScoredIntent } from '../../types';
+import { searchLog } from '../../logger';
 import {
   detectGenderPreference,
   detectAgeGroup,
@@ -21,126 +24,22 @@ import {
   detectFamilyContext,
   detectExclusions,
   detectServiceSubstanceType,
-} from './detectors';
+} from '../detectors';
+import {
+  applyGenderBoost,
+  applyAgeGroupBoost,
+  applyUrgencyBoost,
+  applyNoWaitlistBoost,
+  applyFamilySituationBoost,
+  applyCommunityBoost,
+  applyStudentBoost,
+  applyLanguageBoost,
+  applyFamilyContextBoost,
+} from './demographic-boost';
 
-// Re-export SCORING_CONFIG for backwards compatibility
-export { SCORING_CONFIG };
-
-// Cached reverse alias map (serviceId -> aliases), rebuilt only when forward map changes
-let cachedReverseAliasMap: Map<string, Set<string>> | null = null;
-let cachedAliasLookupRef: Map<string, string> | null = null;
-
-function getReverseAliasMap(aliasLookup: Map<string, string>): Map<string, Set<string>> {
-  if (cachedReverseAliasMap && cachedAliasLookupRef === aliasLookup) {
-    return cachedReverseAliasMap;
-  }
-  const reverseMap = new Map<string, Set<string>>();
-  aliasLookup.forEach((serviceId, alias) => {
-    if (!reverseMap.has(serviceId)) {
-      reverseMap.set(serviceId, new Set());
-    }
-    reverseMap.get(serviceId)!.add(alias);
-  });
-  cachedReverseAliasMap = reverseMap;
-  cachedAliasLookupRef = aliasLookup;
-  return reverseMap;
-}
-
-/**
- * Boost services by name/alias match. Runs BEFORE boostByIntent.
- *
- * Tiers:
- * 1. Exact name match (case-insensitive): +500
- * 2. Alias match (from service_aliases DB table): +500
- * 3. Partial name match (all 2+ non-stoplist query words in name): +250
- */
-export function boostByNameMatch(
-  services: LiteService[],
-  rawQuery: string,
-  aliasLookup: Map<string, string>,
-  options?: BoostOptions
-): LiteService[] {
-  const cfg = SCORING_CONFIG;
-  const trackExplanations = options?.trackExplanations ?? false;
-  const queryLower = rawQuery.toLowerCase().trim();
-
-  // Get cached reverse alias map: serviceId -> set of aliases
-  const serviceAliases = getReverseAliasMap(aliasLookup);
-
-  // Stoplist for partial match filtering
-  const commonWordStoplist = new Set([
-    'meals', 'meal', 'help', 'support', 'community', 'family', 'families',
-    'service', 'services', 'center', 'centre', 'program', 'programs',
-    'care', 'health', 'mental', 'housing', 'shelter', 'food', 'free',
-    'counselling', 'counseling', 'therapy', 'group', 'groups', 'crisis',
-    'emergency', 'assistance', 'resource', 'resources', 'outreach',
-    'youth', 'adult', 'seniors', 'senior', 'women', 'men', 'children',
-    'calgary', 'alberta', 'society', 'foundation', 'association',
-  ]);
-
-  // Pre-compute query words for partial matching
-  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
-  const nonStoplistWords = queryWords.filter(w => !commonWordStoplist.has(w));
-
-  const scored = services.map(svc => {
-    let boost = 0;
-    const explanations: ScoreExplanation[] = [];
-    const nameLower = svc.name.toLowerCase();
-
-    const addFactor = (factor: string, value: number, reason: string) => {
-      boost += value;
-      if (trackExplanations) {
-        explanations.push({ factor, value, reason });
-      }
-    };
-
-    // Tier 1: Exact name match
-    if (queryLower === nameLower) {
-      addFactor('nameMatch.exact', cfg.nameMatch.exact, `Exact name match: "${svc.name}"`);
-      searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.exact} exact name match`);
-    }
-    // Tier 2: Alias match
-    else if (serviceAliases.has(svc.id)) {
-      const aliases = serviceAliases.get(svc.id)!;
-      if (aliases.has(queryLower)) {
-        addFactor('nameMatch.alias', cfg.nameMatch.alias, `Alias match: "${queryLower}" -> "${svc.name}"`);
-        searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.alias} alias match for "${queryLower}"`);
-      }
-    }
-
-    // Tier 3: Partial name match (requires 2+ non-stoplist words, ALL must appear in name)
-    if (boost === 0 && nonStoplistWords.length >= 2) {
-      const allMatch = nonStoplistWords.every(w => nameLower.includes(w));
-      if (allMatch) {
-        addFactor('nameMatch.partial', cfg.nameMatch.partial, `Partial name match: all ${nonStoplistWords.length} words in name`);
-        searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.partial} partial match (${nonStoplistWords.join(', ')})`);
-      }
-    }
-
-    return { svc, boost, explanations };
-  });
-
-  // Sort by boost (highest first) while preserving relative order for equal boosts
-  scored.sort((a, b) => b.boost - a.boost);
-
-  const boostedCount = scored.filter(s => s.boost > 0).length;
-  if (boostedCount > 0) {
-    searchLog.debug(`[NameMatch] ${boostedCount} services boosted by name match`);
-  }
-
-  // Return services with explanations attached if tracking is enabled
-  if (trackExplanations) {
-    return scored.map(s => ({
-      ...s.svc,
-      scoreExplanation: [
-        ...((s.svc as LiteServiceWithDebug).scoreExplanation || []),
-        ...s.explanations,
-      ],
-    })) as LiteServiceWithDebug[];
-  }
-
-  return scored.map(s => s.svc);
-}
+// Re-export BoostOptions/BoostResult from name-match where they are defined
+export type { BoostOptions, BoostResult } from './name-match';
+import type { BoostOptions } from './name-match';
 
 /**
  * Map query intent to expected service types and boost patterns
@@ -241,19 +140,6 @@ function hasIntent(analysis: QueryAnalysis | undefined, target: QueryIntent, pri
   if (!analysis?.intents) return false;
   return analysis.intents.secondary?.intent === target ||
          analysis.intents.tertiary?.intent === target || false;
-}
-
-/** Options for boost function */
-export interface BoostOptions {
-  /** Enable tracking of score explanations */
-  trackExplanations?: boolean;
-}
-
-/** Result from boostByIntent with optional explanations */
-export interface BoostResult {
-  services: LiteService[];
-  /** Services with score explanations (only when trackExplanations is true) */
-  servicesWithExplanations?: LiteServiceWithDebug[];
 }
 
 /**
@@ -360,72 +246,21 @@ export function boostByIntent(
       }
     }
 
-    // Gender-based boosting
+    // Demographic boosting — delegated to demographic-boost.ts helpers
     if (genderPref) {
-      const isWomensService = /women|woman|female|mother|girl|domestic violence|yw\s|ywca/i.test(textLower);
-      const isMensService = /\bmen\b|male|father|\bmen'?s\b/i.test(textLower) && !isWomensService;
-      const menOnlyIndicator = /men'?s.*shelter|men only|males only|for men\b/i.test(textLower);
-      const womenOnlyIndicator = /women'?s.*shelter|women only|females only|for women\b/i.test(textLower);
-
-      if (genderPref === 'women_only') {
-        if (isWomensService || womenOnlyIndicator) addFactor('gender.matchBoost', cfg.gender.matchBoost, `Matches women-only preference`);
-        if (menOnlyIndicator) addFactor('gender.mismatchPenalty', cfg.gender.mismatchPenalty, `Men-only service for women-only query`);
-      } else if (genderPref === 'men_only') {
-        if (isMensService || menOnlyIndicator) addFactor('gender.matchBoost', cfg.gender.matchBoost, `Matches men-only preference`);
-        if (womenOnlyIndicator) addFactor('gender.mismatchPenalty', cfg.gender.mismatchPenalty, `Women-only service for men-only query`);
-      }
+      applyGenderBoost(textLower, genderPref, addFactor);
     }
 
-    // Age group boosting
     if (ageGroup) {
-      const isYouthService = /youth|teen|adolescent|young|student|under 25|child|kids?|juvenile|minor|school/i.test(textLower);
-      const isSeniorService = /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer/i.test(textLower);
-      const isAdultService = /\badult\b/i.test(textLower);
-
-      if (ageGroup.ageGroup === 'youth') {
-        if (isYouthService) addFactor('ageGroup.youthMatch', cfg.ageGroup.youthMatch, `Youth service matches youth query`);
-        if (isSeniorService) addFactor('ageGroup.youthForSeniorPenalty', cfg.ageGroup.youthForSeniorPenalty, `Senior service for youth query`);
-        if (isAdultService && !isYouthService) addFactor('ageGroup.youthForAdultPenalty', cfg.ageGroup.youthForAdultPenalty, `Adult-only service for youth query`);
-      } else if (ageGroup.ageGroup === 'adult') {
-        if (isYouthService && !isAdultService) {
-          addFactor('ageGroup.adultForYouthPenalty', cfg.ageGroup.adultForYouthPenalty, `Youth-only service for adult query`);
-          searchLog.debug(`[AgeBoost] "${svc.name.substring(0, 40)}" ${cfg.ageGroup.adultForYouthPenalty} penalty for youth service (adult query)`);
-        }
-        if (isAdultService) {
-          addFactor('ageGroup.adultMatch', cfg.ageGroup.adultMatch, `Adult service matches adult query`);
-          searchLog.debug(`[AgeBoost] "${svc.name.substring(0, 40)}" +${cfg.ageGroup.adultMatch} for adult service (adult query)`);
-        }
-        if (isSeniorService) addFactor('ageGroup.adultForSeniorPenalty', cfg.ageGroup.adultForSeniorPenalty, `Senior service for adult query`);
-      } else if (ageGroup.ageGroup === 'senior') {
-        if (isSeniorService) addFactor('ageGroup.seniorMatch', cfg.ageGroup.seniorMatch, `Senior service matches senior query`);
-        if (isYouthService && /only|exclusive/i.test(textLower)) addFactor('ageGroup.seniorYouthOnlyPenalty', cfg.ageGroup.seniorYouthOnlyPenalty, `Youth-only service for senior query`);
-      }
+      applyAgeGroupBoost(svc, textLower, ageGroup, addFactor);
     }
 
-    // Urgency boosting
-    if (urgency === 'immediate') {
-      if (/24\/7|24 hour|walk-?in|emergency|crisis|immediate|no appointment|same day|drop-?in|open now/i.test(textLower)) {
-        addFactor('urgency.immediateAccess', cfg.urgency.immediateAccess, `Immediate access service`);
-      }
-      if (/appointment required|waitlist|intake process|wait time|waiting list/i.test(textLower)) {
-        addFactor('urgency.appointmentPenalty', cfg.urgency.appointmentPenalty, `Requires appointment for urgent query`);
-      }
+    if (urgency) {
+      applyUrgencyBoost(textLower, urgency, addFactor);
     }
 
-    // "No waitlist" query boosting - applies noWaitlistBoost to walk-in/immediate access services
-    const rawQueryLower = rawQuery.toLowerCase();
-    const isNoWaitlistQuery = /\b(no wait|no waitlist|without wait|walk[\s-]?in|immediate|can'?t wait)\b/i.test(rawQueryLower);
-    if (isNoWaitlistQuery) {
-      if (/walk-?in|no appointment|same day|drop-?in|immediate access|no wait|open now|24\/7|24 hour/i.test(textLower)) {
-        addFactor('exclusion.noWaitlistBoost', cfg.exclusion.noWaitlistBoost, `Walk-in/immediate access for no-waitlist query`);
-        searchLog.debug(`[NoWaitlistBoost] "${svc.name.substring(0, 40)}" +${cfg.exclusion.noWaitlistBoost} for immediate access`);
-      }
-      // Penalize services that explicitly mention waitlists
-      if (/waitlist|waiting list|wait time|intake process|referral required/i.test(textLower)) {
-        addFactor('exclusion.waitlist', cfg.exclusion.waitlist, `Has waitlist for no-waitlist query`);
-        searchLog.debug(`[NoWaitlistPenalty] "${svc.name.substring(0, 40)}" ${cfg.exclusion.waitlist} for waitlist mention`);
-      }
-    }
+    // "No waitlist" query boosting
+    applyNoWaitlistBoost(svc, textLower, rawQuery, addFactor);
 
     // Disability/Autism boosting
     const queryLower = (analysis?.raw || rawQuery || '').toLowerCase();
@@ -859,131 +694,25 @@ export function boostByIntent(
       }
     }
 
-    // Family situation boosting
+    // Demographic boosting — delegated to demographic-boost.ts helpers
     if (familySituations.length > 0) {
-      for (const situation of familySituations) {
-        if (situation === 'single_parent') {
-          if (/single parent|single mom|single dad|sole parent|family|child|parenting/i.test(textLower)) {
-            addFactor('familySituation.singleParent', cfg.familySituation.singleParent, `Single parent service match`);
-          }
-        }
-        if (situation === 'family_legal') {
-          if (/legal|court|mediation|family services|custody|divorce|lawyer|law/i.test(textLower)) {
-            addFactor('familySituation.familyLegal', cfg.familySituation.familyLegal, `Family legal service match`);
-          }
-        }
-        if (situation === 'pregnancy') {
-          if (/prenatal|maternity|infant|baby|parenting|newborn|pregnancy|pregnant|postpartum|maternal/i.test(textLower)) {
-            addFactor('familySituation.pregnancy', cfg.familySituation.pregnancy, `Pregnancy/parenting service match`);
-          }
-        }
-        if (situation === 'family_general') {
-          if (/family|families|parent|child|kids/i.test(textLower)) {
-            addFactor('familySituation.familyGeneral', cfg.familySituation.familyGeneral, `General family service match`);
-          }
-        }
-      }
+      applyFamilySituationBoost(textLower, familySituations, addFactor);
     }
 
-    // Community preference boosting
     if (communityPref) {
-      if (communityPref === 'indigenous') {
-        if (/indigenous|first nations?|aboriginal|native|metis|m[eé]tis|inuit|fnmi/i.test(textLower)) {
-          addFactor('community.match', cfg.community.match, `Indigenous community match`);
-        }
-      }
-      if (communityPref === 'newcomer') {
-        if (/immigrant|refugee|newcomer|settlement|new canadian|esl|language|citizenship/i.test(textLower)) {
-          addFactor('community.match', cfg.community.match, `Newcomer community match`);
-        }
-      }
-      if (communityPref === 'lgbtq') {
-        if (/lgbtq|lgbt|pride|queer|trans|gay|lesbian|2slgbtq|two-spirit|non-?binary/i.test(textLower)) {
-          addFactor('community.match', cfg.community.match, `LGBTQ+ community match`);
-        }
-      }
-      if (communityPref === 'veteran') {
-        if (/veteran|military|armed forces|canadian forces|vac\b|legion/i.test(textLower)) {
-          addFactor('community.match', cfg.community.match, `Veteran community match`);
-        }
-      }
+      applyCommunityBoost(textLower, communityPref, addFactor);
     }
 
-    // Student/University boosting
     if (studentContext) {
-      const institutionServicePatterns: Record<string, RegExp> = {
-        ucalgary: /\b(ucalgary|u of c|uofc|ucrc|university of calgary|uc wellness|uc counselling)\b/i,
-        ualberta: /\b(ualberta|u of a|uofa|university of alberta|ua wellness|ua counselling)\b/i,
-        mru: /\b(mount royal|mru)\b/i,
-        ulethbridge: /\b(lethbridge|uleth|u of l)\b/i,
-        macewan: /\b(macewan)\b/i,
-        athabasca: /\b(athabasca)\b/i,
-        sait: /\b(sait|southern alberta institute)\b/i,
-        nait: /\b(nait|northern alberta institute)\b/i,
-        bowvalley: /\b(bow valley)\b/i,
-        norquest: /\b(norquest)\b/i,
-        olds: /\b(olds college)\b/i,
-        reddeer: /\b(red deer)\b/i,
-      };
-
-      const isStudentService = /student|university|campus|college|wellness.*centre|counsell?ing.*centre|student.*services/i.test(textLower);
-      const isYouthService = /youth|young adult|18-24|18-25|under 25/i.test(textLower);
-
-      if (studentContext.institution) {
-        const institutionPattern = institutionServicePatterns[studentContext.institution];
-        if (institutionPattern && institutionPattern.test(textLower)) {
-          addFactor('student.institutionMatch', cfg.student.institutionMatch, `${studentContext.institution} institution match`);
-          searchLog.debug(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted for ${studentContext.institution} (institution match)`);
-        } else if (isStudentService) {
-          addFactor('student.genericStudent', cfg.student.genericStudent, `Generic student service`);
-        }
-      } else if (isStudentService) {
-        addFactor('student.studentService', cfg.student.studentService, `Student service`);
-        searchLog.debug(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted as student service`);
-      } else if (isYouthService) {
-        addFactor('student.youthService', cfg.student.youthService, `Youth service for student query`);
-      }
+      applyStudentBoost(svc, textLower, studentContext, addFactor);
     }
 
-    // Language preference boosting
     if (languagePref) {
-      const langBoostPatterns: Record<string, RegExp> = {
-        spanish: /\b(spanish|español|hispanic|latino|latina)\b/i,
-        french: /\b(french|français|francophone|bilingual)\b/i,
-        arabic: /\b(arabic|arab|muslim)\b/i,
-        mandarin: /\b(mandarin|chinese|cantonese|asian)\b/i,
-        punjabi: /\b(punjabi|sikh|south asian)\b/i,
-        tagalog: /\b(tagalog|filipino|philippines)\b/i,
-        vietnamese: /\b(vietnamese|viet)\b/i,
-        ukrainian: /\b(ukrainian|ukrain)\b/i,
-        hindi: /\b(hindi|indian|south asian)\b/i,
-        urdu: /\b(urdu|pakistan)\b/i,
-        korean: /\b(korean)\b/i,
-        nonEnglish: /\b(multilingual|interpreter|translation|multiple languages)\b/i,
-      };
-
-      const langPattern = langBoostPatterns[languagePref];
-      if (langPattern && langPattern.test(textLower)) {
-        addFactor('language.langMatch', cfg.language.langMatch, `${languagePref} language match`);
-        searchLog.debug(`[LanguageBoost] "${svc.name.substring(0, 40)}" boosted for ${languagePref}`);
-      }
-      if (/\b(interpreter|multilingual|translation|multiple languages)\b/i.test(textLower)) {
-        addFactor('language.multilingual', cfg.language.multilingual, `Multilingual service`);
-      }
+      applyLanguageBoost(svc, textLower, languagePref, addFactor);
     }
 
-    // Family context boosting
     if (familyContext) {
-      const isFamilySupportService = /\b(family support|family services|loved ones|concerned persons|al-?anon|nar-?anon|family counsell?ing|parent support|caregiver|coping)\b/i.test(textLower);
-      const isInterventionService = /\b(intervention|family therapy|family program)\b/i.test(textLower);
-
-      if (isFamilySupportService) {
-        addFactor('familyContext.familySupport', cfg.familyContext.familySupport, `Family support service`);
-        searchLog.debug(`[FamilyBoost] "${svc.name.substring(0, 40)}" boosted as family support`);
-      }
-      if (isInterventionService) {
-        addFactor('familyContext.intervention', cfg.familyContext.intervention, `Intervention/family therapy service`);
-      }
+      applyFamilyContextBoost(svc, textLower, familyContext, addFactor);
     }
 
     // Exclusion signal boosts (penalties removed - now handled by applyExclusionFilter)
@@ -1181,85 +910,4 @@ export function computeRRFScore(sqlRank: number | null, semanticRank: number | n
     score += 1 / (k + semanticRank);
   }
   return score;
-}
-
-/**
- * Apply penalty for services containing negative terms user wants to exclude
- * E.g., "shelter not religious" penalizes shelters with "religious" in their text
- * Handles semantic terms like "12_step" → AA, NA, higher power, etc.
- */
-export function applyNegativePenalty(
-  services: LiteService[],
-  negativeTerms: string[],
-  options?: BoostOptions
-): LiteService[] {
-  if (negativeTerms.length === 0) return services;
-
-  const cfg = SCORING_CONFIG.negativeKeyword;
-  const trackExplanations = options?.trackExplanations ?? false;
-
-  // Map semantic negative terms to patterns that should be penalized
-  const semanticPatterns: Record<string, RegExp> = {
-    '12_step': /\b(12[\s-]?step|twelve[\s-]?step|AA\b|NA\b|CA\b|alcoholics\s*anonymous|narcotics\s*anonymous|cocaine\s*anonymous|higher\s*power|step\s*program|steps?\s*(?:1|2|3|4|5|6|7|8|9|10|11|12)\b)/i,
-    'religious': /\b(religious|faith[\s-]?based|christian|church|ministry|spiritual|god|prayer|bible|jesus|christ|evangelical|catholic|baptist|methodist|lutheran|presbyterian|pentecostal|salvation\s*army|rescue\s*mission|dream\s*centre|dream\s*center|life\s*centre|mission\s*centre|12[\s-]?step|AA\b|NA\b|CA\b|alcoholics\s*anonymous|narcotics\s*anonymous|higher\s*power)\b/i,
-    'faith_based': /\b(faith[\s-]?based|religious|spiritual|christian|church|ministry|god|prayer|dream\s*centre|dream\s*center)\b/i,
-  };
-
-  // Deduplicate negative terms
-  const uniqueTerms = negativeTerms.filter((term, index) => negativeTerms.indexOf(term) === index);
-
-  const scored = services.map(service => {
-    let penalty = 0;
-    const explanations: ScoreExplanation[] = [];
-    const searchText = `${service.name} ${service.description} ${service.category}`.toLowerCase();
-
-    // Get existing explanations if present
-    const existingExplanations = (service as LiteServiceWithDebug).scoreExplanation || [];
-
-    for (const term of uniqueTerms) {
-      // Check if this is a semantic term with expanded patterns
-      const pattern = semanticPatterns[term];
-      if (pattern) {
-        if (pattern.test(searchText)) {
-          penalty += cfg.semanticMatch;
-          if (trackExplanations) {
-            explanations.push({
-              factor: 'negativeKeyword.semanticMatch',
-              value: -cfg.semanticMatch,
-              reason: `Matches excluded "${term}" pattern`
-            });
-          }
-          searchLog.debug(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-${cfg.semanticMatch}) for "${term}" pattern match`);
-        }
-      } else {
-        // Direct term match
-        if (searchText.includes(term)) {
-          penalty += cfg.directMatch;
-          if (trackExplanations) {
-            explanations.push({
-              factor: 'negativeKeyword.directMatch',
-              value: -cfg.directMatch,
-              reason: `Contains excluded term "${term}"`
-            });
-          }
-          searchLog.debug(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-${cfg.directMatch}) for containing "${term}"`);
-        }
-      }
-    }
-
-    return { service, penalty, explanations: [...existingExplanations, ...explanations] };
-  });
-
-  // Sort by penalty (lower is better), maintaining original order for equal penalties
-  scored.sort((a, b) => a.penalty - b.penalty);
-
-  // Return services with explanations attached if tracking is enabled
-  if (trackExplanations) {
-    return scored.map(s => ({
-      ...s.service,
-      scoreExplanation: s.explanations,
-    })) as LiteServiceWithDebug[];
-  }
-
-  return scored.map(s => s.service);
 }
