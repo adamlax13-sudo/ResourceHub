@@ -839,7 +839,8 @@ export class DatabaseStorage implements IStorage {
         firstSeen: row.first_seen,
         lastSeen: row.last_seen,
       }));
-    } catch {
+    } catch (err) {
+      console.error('[storage] getTopFailedQueries error:', err);
       return [];
     }
   }
@@ -871,7 +872,8 @@ export class DatabaseStorage implements IStorage {
         serviceId: r.service_id as string,
         affinityScore: r.affinity_score as number,
       }));
-    } catch {
+    } catch (err) {
+      console.error('[storage] getQueryAffinities error:', err);
       return [];
     }
   }
@@ -990,7 +992,8 @@ export class DatabaseStorage implements IStorage {
         reformulationRate: Number(row?.reformulation_rate) || 0,
         zeroResultRate: Number(row?.zero_result_rate) || 0,
       };
-    } catch {
+    } catch (err) {
+      console.error('[storage] getSearchQualityReport error:', err);
       return {
         totalSearches: 0,
         avgFirstClickPosition: 0,
