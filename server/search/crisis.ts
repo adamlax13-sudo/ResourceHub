@@ -71,11 +71,14 @@ export function isCrisisServiceId(serviceId: string): boolean {
 }
 
 /**
- * Detect if a query is crisis-related
+ * Detect if a query is crisis-related.
+ * Checks both explicit keywords AND implicit patterns.
  */
 export function isCrisisQuery(query: string): boolean {
   const lower = query.toLowerCase();
   return SEARCH_CONFIG.crisis.keywords.some(keyword =>
     lower.includes(keyword)
+  ) || SEARCH_CONFIG.crisis.implicitPatterns.some(pattern =>
+    pattern.test(lower)
   );
 }

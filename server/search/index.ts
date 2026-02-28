@@ -272,16 +272,38 @@ export async function getServiceDetails(serviceId: string): Promise<any> {
     return null;
   }
 
-  // Helper to parse JSON array fields
+  // Helper to parse JSON array fields, normalizing objects to strings
   const parseArrayField = (value: unknown): string[] => {
-    if (Array.isArray(value) && value.length > 0) return value;
-    if (typeof value === 'string') {
+    let arr: unknown[] | null = null;
+    if (Array.isArray(value) && value.length > 0) {
+      arr = value;
+    } else if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) arr = parsed;
       } catch { /* ignore */ }
     }
-    return [];
+    if (!arr) return [];
+
+    // Normalize each element: objects like {action, details} become strings
+    return arr
+      .map((item) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') {
+          const obj = item as Record<string, unknown>;
+          // Process step objects: {step, action, details}
+          const action = obj.action || obj.name || obj.title || '';
+          const details = obj.details || obj.description || '';
+          if (action && details) return `${action} — ${details}`;
+          if (action) return String(action);
+          if (details) return String(details);
+          // Last resort: join all string values
+          const vals = Object.values(obj).filter(v => typeof v === 'string' && v.trim());
+          if (vals.length > 0) return vals.join(' — ');
+        }
+        return '';
+      })
+      .filter((s) => s.length > 0);
   };
 
   // "Fill gaps only" logic: service data wins, AI only fills empty fields

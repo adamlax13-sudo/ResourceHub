@@ -83,39 +83,123 @@ export const SEARCH_CONFIG = {
   },
 
   // === CRISIS DETECTION ===
+  // SAFETY-CRITICAL: This is a life-safety feature. When in doubt, include a pattern.
+  // False positives (showing 988 when not needed) are vastly preferable to false negatives.
   crisis: {
-    // Explicit crisis keywords
+    // Explicit crisis keywords — direct phrases that always indicate crisis
     keywords: [
       'suicide',
       'suicidal',
       'kill myself',
       'end my life',
       'want to die',
+      'wanna die',
       'dont want to live',
       "don't want to live",
       'self harm',
       'self-harm',
       'overdose',
+      'off myself',
+      'unalive',
+      'self delete',
+      'self-delete',
+      'take my own life',
+      'take my life',
+      'commit suicide',
+      'not worth living',
+      'rather be dead',
+      'better off dead',
+      'kms',           // "kill myself" abbreviation
+      'end it all',
+      // Gen Z / internet culture euphemisms
+      'sewerslide',    // TikTok censorship evasion for "suicide"
+      'sewer slide',
+      'toaster bath',  // dark humor suicide method reference
+      'neck rope',     // dark humor suicide method reference
+      'forever sleep', // euphemism for death/suicide
+      'eternal sleep',
+      'permadeath',    // gaming term used as suicide euphemism
     ],
-    // Implicit crisis patterns - subtle expressions of suicidal ideation
+    // Implicit crisis patterns — subtle expressions of suicidal ideation
+    // These use regex to catch variations in phrasing
     implicitPatterns: [
-      /\b(don'?t|do not)\s+want\s+to\s+(be here|exist|wake up|live)\b/i,
+      // --- Expressions of not wanting to exist ---
+      /\b(don'?t|do not|dont)\s+want\s+to\s+(be here|exist|wake up|live|be alive)\b/i,
+      /\b(don'?t|do not|dont)\s+want\s+to\s+be\s+here\s*(anymore|any more)?\b/i,
       /\b(no point|what'?s the point|pointless)\s+(in|to|of)?\s*(living|life|going on|continuing)?\b/i,
-      /\b(can'?t|cannot)\s+(go on|take it|do this)\s*(anymore|any more)?\b/i,
+      /\b(can'?t|cannot|cant)\s+(go on|take it|do this|take this)\s*(anymore|any more)?\b/i,
+
+      // --- Better off dead / burden ---
       /\b(better off|world.*better)\s+(without me|if i.*gone|dead)\b/i,
-      /\b(hopeless|worthless|burden)\s+(to everyone|to my family|on)?\b/i,
-      /\b(end(ing)?|final(ly)?)\s+(it|peace|solution|way out)\b/i,
-      /\b(nobody|no one)\s+(would|will)\s+(care|notice|miss me)\b/i,
+      /\b(hopeless|worthless|burden)\b/i,
+      /\b(i'?m|i am)\s+(a\s+)?burden\b/i,
+      /\b(everyone|they|the world|my family|people)\s+(would be|is|are)\s+better\s+(off\s+)?without\s+me\b/i,
+
+      // --- Ending it / final solution ---
+      /\b(end(ing)?)\s+(it|it all|everything|my life|this)\b/i,
+      /\b(final)\s+(solution|way out|exit|goodbye|answer)\b/i,
+      /\bpermanent\s+(solution|escape|way out)\b/i,
+
+      // --- Nobody cares / unwanted ---
+      /\b(nobody|no one|noone)\s+(would|will)\s+(care|notice|miss me)\b/i,
+      /\b(nobody|no one|noone)\s+(wants|needs|cares about|cares for|loves)\s+me\b/i,
+      /\b(nobody|no one|noone)\s+wants\s+me\s+(here|around|anymore|any more)\b/i,
+      /\b(i'?m|i am)\s+(unwanted|unloved|a burden|in the way|invisible)\b/i,
+
+      // --- Giving up on life ---
       /\b(give up|giving up)\s+(on life|on everything|completely)?\b/i,
-      /\b(tired of|done with)\s+(living|life|fighting|everything)\b/i,
-      /\b(permanent)\s+(solution|escape|way out)\b/i,
-      // Feeling unwanted/uncared for
-      /\b(nobody|no one)\s+(wants|needs|cares about|loves)\s+me\b/i,
-      /\b(nobody|no one)\s+wants\s+me\s+(here|around|anymore)\b/i,
-      /\b(i'?m|i am)\s+(unwanted|unloved|a burden|in the way)\b/i,
-      /\b(everyone|they|the world)\s+(would be|is)\s+better\s+(off\s+)?without\s+me\b/i,
-      /\bwish\s+i\s+(was\s+)?never\s+born\b/i,
-      /\bshouldn'?t\s+(be here|exist|have been born)\b/i,
+      /\b(tired of|done with|sick of)\s+(living|life|fighting|everything|trying)\b/i,
+      /\b(can'?t|cannot|cant)\s+keep\s+(going|living|doing this)\b/i,
+
+      // --- Wish I was never born / shouldn't exist ---
+      /\bwish\s+i\s+(was\s+|were\s+)?(never\s+born|dead|gone)\b/i,
+      /\bshouldn'?t\s+(be here|exist|have been born|be alive)\b/i,
+
+      // --- Internet euphemisms for suicide ---
+      /\b(un-?alive|unalive)\s*(myself|me)?\b/i,
+      /\bself[- ]?delete\b/i,
+      /\b(off|offing)\s+(myself|me)\b/i,
+      /\b(gonna|going to|want to|wanna)\s+(off|unalive|self[- ]?delete)\s+(myself|me)\b/i,
+
+      // --- Gen Z / internet culture / content filter evasion ---
+      // Leetspeak and censored spellings of "suicide"
+      /\bsu[i1!][c¢][i1!]de\b/i,
+      /\bsewer\s*slide\b/i,
+      // Gaming metaphors for suicide
+      /\bgame[- ]?end\s+(myself|me)\b/i,
+      /\b(log|logging)\s+(off|out)\s+(permanently|forever|for good)\b/i,
+      /\b(alt[- ]?f4|ctrl[- ]?alt[- ]?delete)\s+(my\s+)?(life|myself|existence)\b/i,
+      /\bleave\s+(this\s+|the\s+)?(server|game|world)\s+(permanently|forever|for good|behind)\b/i,
+      // Self-yeet (Gen Z term for throwing oneself)
+      /\b(yeet|yeeting)\s+(myself|me)\s*(off|from|into)?\b/i,
+      /\bself[- ]?yeet\b/i,
+      /\b(final|last)\s+yeet\b/i,
+      // Dark humor method references
+      /\btoaster\s+bath\b/i,
+      /\bneck\s+rope\b/i,
+      /\b(commit|go)\s+(neck rope|toaster bath|sewer\s*slide|sewerslide)\b/i,
+      // "Go to sleep forever" / "long sleep"
+      /\b(go to|take a|the)\s+(forever|eternal|long|permanent|final)\s+sleep\b/i,
+
+      // --- Method references ---
+      /\b(jump|jumping)\s+(off|from)\s+(a\s+)?(bridge|building|roof|cliff|balcony)\b/i,
+      /\b(slit|cut|cutting)\s+(my\s+)?(wrists?|veins?|throat)\b/i,
+      /\b(hang|hanging)\s+(myself|me)\b/i,
+      /\b(pull the trigger|shoot myself|gun to my head)\b/i,
+      /\b(take|swallow|down)\s+(all|a bunch of|too many)\s+(pills?|medication|meds)\b/i,
+      /\b(step in front of|throw myself|jump in front)\b/i,
+
+      // --- Farewell / goodbye expressions ---
+      /\b(this is|it'?s)\s+(my\s+)?(goodbye|farewell|the end|my last)\b/i,
+      /\b(won'?t|will not)\s+(be here|be around|see)\s+(much longer|tomorrow|anymore)\b/i,
+      /\b(no|not)\s+(reason|point)\s+(to|for)\s+(live|living|go on|continue|stay)\b/i,
+      /\b(rather|want to)\s+(die|be dead|not exist|disappear forever)\b/i,
+
+      // --- Cry for help ---
+      /\b(i'?m|i am)\s+(going to|gonna)\s+(do it|end it|kill myself|hurt myself)\b/i,
+      /\bhelp\s+me\s+(die|end it|kill myself)\b/i,
+      /\b(can'?t|cannot|cant)\s+(live|survive)\s+(like this|this way|without)\b/i,
+      /\b(life|living)\s+(isn'?t|is not|not)\s+worth\s+(it|living|the pain)\b/i,
     ],
     pinnedServiceId: CRISIS_PINNED_SERVICE_ID,
     pinnedServiceLite: CRISIS_PINNED_SERVICE_LITE,

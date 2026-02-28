@@ -9,7 +9,7 @@
  * demographic-boost.ts.
  */
 
-import { SCORING_CONFIG } from '../../config';
+import { SCORING_CONFIG, SEARCH_CONFIG } from '../../config';
 import type { QueryIntent } from '../../config';
 import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation, ScoredIntent } from '../../types';
 import { searchLog } from '../../logger';
@@ -320,8 +320,10 @@ export function boostByIntent(
       }
     }
 
-    // Crisis query detection
-    const isCrisisQuery = intent === 'crisis' || /\b(kill myself|suicide|want to die|end it all|don'?t want to (live|be here)|nobody.*miss me|no one.*care|burden|hopeless|give up|can'?t go on|not worth living|better off dead|cut myself|self-?harm)\b/i.test(queryLower);
+    // Crisis query detection — uses centralized config to stay in sync
+    const isCrisisQuery = intent === 'crisis' ||
+      SEARCH_CONFIG.crisis.keywords.some(kw => queryLower.includes(kw)) ||
+      SEARCH_CONFIG.crisis.implicitPatterns.some(p => p.test(queryLower));
     if (isCrisisQuery) {
       if (/\b(988|crisis|suicide|helpline|hotline|distress|prevention)\b/i.test(textLower)) {
         addFactor('crisis.crisisHelpline', cfg.crisis.crisisHelpline, `Crisis/suicide helpline service`);
