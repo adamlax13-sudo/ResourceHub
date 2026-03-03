@@ -24,6 +24,7 @@ export function CategoryTiles({ onSelect }: CategoryTilesProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {CATEGORIES.map((cat, i) => (
           <motion.button
+            type="button"
             key={cat.label}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -36,7 +37,7 @@ export function CategoryTiles({ onSelect }: CategoryTilesProps) {
               cursor-pointer text-center
             `}
           >
-            <span className="text-3xl" role="img" aria-label={cat.label}>{cat.icon}</span>
+            <span className="text-3xl" aria-hidden="true">{cat.icon}</span>
             <span className="text-xs font-semibold text-foreground leading-tight">{cat.label}</span>
           </motion.button>
         ))}

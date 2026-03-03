@@ -1,12 +1,11 @@
-import { useState, lazy, Suspense, useEffect, useCallback, memo } from "react";
+import { useState, lazy, Suspense, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
-import { type ServiceSummary } from "@shared/routes";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lucide-react";
+import { Info, MessageSquare } from "lucide-react";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
@@ -14,80 +13,6 @@ import { CategoryTiles } from "@/components/CategoryTiles";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
-
-// FlipCard component moved outside Home to prevent recreation on every render
-interface FlipCardProps {
-  frontContent: React.ReactNode;
-  backContent: React.ReactNode;
-  index: number;
-}
-
-const FlipCard = memo(function FlipCard({ frontContent, backContent, index }: FlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const { t } = useTranslation();
-
-  const handleClick = useCallback(() => {
-    setIsFlipped(prev => !prev);
-  }, []);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setIsFlipped(prev => !prev);
-    }
-  }, []);
-
-  return (
-    <motion.div
-      className="relative h-64 cursor-pointer perspective-1000"
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`Flip card ${index + 1}`}
-      aria-pressed={isFlipped}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 + index * 0.15 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      data-testid={`flip-card-${index}`}
-    >
-      <motion.div
-        className="w-full h-full relative"
-        initial={false}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{
-          duration: 0.6,
-          type: "spring",
-          stiffness: 100,
-          damping: 15
-        }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* Front */}
-        <div
-          className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 shadow-lg hover:shadow-xl hover:shadow-primary/5 transition-shadow duration-300 p-6 flex flex-col items-center justify-center"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          {frontContent}
-          <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1 text-xs text-muted-foreground/60">
-            <RotateCcw className="w-3 h-3" aria-hidden="true" />
-            <span>{t('howItWorks.clickToFlip')}</span>
-          </div>
-        </div>
-
-        {/* Back */}
-        <div
-          className="absolute inset-0 w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-card border border-primary/20 shadow-xl p-6 flex flex-col items-center justify-center"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-        >
-          {backContent}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-});
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
@@ -108,11 +33,11 @@ export default function Home() {
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = (query: string, locations: string[], hp?: string) => {
+  const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
     // Single location from dropdown (or empty for "All of Alberta")
     const locationParam = locations.length > 0 ? locations[0] : undefined;
     search({ query, location: locationParam, ...(hp ? { hp } : {}) });
-  };
+  }, [search]);
 
   const handleLocationChange = (location: string) => {
     // Set single location (empty string = "All of Alberta" = empty array)
@@ -121,6 +46,10 @@ export default function Home() {
 
   const handleEmergencySearch = useCallback(() => {
     handleSearch("crisis support emergency help right now", searchState.locations);
+  }, [handleSearch, searchState.locations]);
+
+  const handleCategorySelect = useCallback((query: string) => {
+    handleSearch(query, searchState.locations);
   }, [handleSearch, searchState.locations]);
 
   return (
@@ -199,7 +128,7 @@ export default function Home() {
         </AnimatePresence>
         
         {!displayServices && !isPending && !error && (
-          <CategoryTiles onSelect={(query) => handleSearch(query, searchState.locations)} />
+          <CategoryTiles onSelect={handleCategorySelect} />
         )}
       </div>
 
