@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, Check } from "lucide-react";
+import { Search, MapPin, ChevronDown, Check, Mic, MicOff } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -234,10 +234,57 @@ function LocationDropdown({
   );
 }
 
+// Voice search hook — uses browser-native Web Speech API, no backend needed
+function useVoiceSearch() {
+  const SpeechRecognition =
+    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const isSupported = Boolean(SpeechRecognition);
+
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  function startListening(onResult: (transcript: string) => void) {
+    if (!isSupported) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-CA";
+
+    recognition.onresult = (event: any) => {
+      const transcript: string = event.results[0][0].transcript;
+      onResult(transcript);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    setIsListening(true);
+    recognition.start();
+  }
+
+  function stopListening() {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setIsListening(false);
+  }
+
+  return { isSupported, isListening, startListening, stopListening };
+}
+
 export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
+  const { isSupported: voiceSupported, isListening, startListening, stopListening } = useVoiceSearch();
 
   // Get current selected location (first in array or empty for "All of Alberta")
   const selectedLocation = locations.length > 0 ? locations[0] : '';
@@ -495,11 +542,44 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('app.searchPlaceholder')}
               maxLength={200}
-              className="relative w-full h-16 pl-6 pr-16 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+              className={`relative w-full h-16 pl-6 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)] ${voiceSupported ? 'pr-28' : 'pr-16'}`}
               disabled={isLoading}
               aria-describedby="search-hint"
               data-testid="input-search"
             />
+
+            {/* Mic button — only rendered when Web Speech API is available */}
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isListening) {
+                    stopListening();
+                  } else {
+                    startListening((transcript) => {
+                      setQuery(transcript);
+                      onSearch(transcript, locations);
+                    });
+                  }
+                }}
+                className={`absolute right-16 top-2 h-12 w-12 rounded-xl flex items-center justify-center transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${
+                  isListening
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : 'bg-primary text-white hover:bg-primary/90'
+                }`}
+                aria-label={isListening ? "Stop listening" : "Search by voice"}
+              >
+                {isListening ? (
+                  <>
+                    <MicOff className="w-5 h-5" aria-hidden="true" />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true" />
+                  </>
+                ) : (
+                  <Mic className="w-5 h-5" aria-hidden="true" />
+                )}
+              </button>
+            )}
+
             <button
               type="submit"
               disabled={isLoading || !query.trim()}
