@@ -5,16 +5,17 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, MessageSquare, SlidersHorizontal, X, Heart } from "lucide-react";
+import { Info, MessageSquare, SlidersHorizontal, X, Heart, Share2 } from "lucide-react";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
-import { useSearchContext } from "@/contexts/SearchContext";
+import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
 import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
 import { MyShortlist } from "@/components/MyShortlist";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
+import { useToast } from "@/hooks/use-toast";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
@@ -94,6 +95,7 @@ export default function Home() {
   const [shortlistOpen, setShortlistOpen] = useState(false);
   const { favoriteCount, isFavorite, toggleFavorite } = useFavoritesContext();
   const { t } = useTranslation();
+  const { toast } = useToast();
 
   // Store search results when data changes
   // Note: We only depend on data and setSearchResults
@@ -102,8 +104,9 @@ export default function Home() {
     if (data && data.services) {
       // Pass current locations from searchState at time of update
       setSearchResults(data.query, data.services);
+      updateSearchUrl(data.query, searchState.locations[0], searchState.filters);
     }
-  }, [data, setSearchResults]);
+  }, [data, setSearchResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
@@ -180,6 +183,16 @@ export default function Home() {
     },
     [searchState.filters, handleFiltersChange]
   );
+
+  const handleShare = useCallback(async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link copied!", description: "Share this link to show the same search results." });
+    } catch {
+      toast({ title: "Copy this link", description: url });
+    }
+  }, [toast]);
 
   const filterChips = buildFilterChips(searchState.filters);
 
@@ -284,6 +297,15 @@ export default function Home() {
                     Shortlist ({favoriteCount})
                   </button>
                 )}
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                  aria-label="Share search results"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
                 <button
                   type="button"
                   onClick={() => setRefinePanelOpen((prev) => !prev)}
