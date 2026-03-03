@@ -278,8 +278,11 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       ? sqlOnly.reduce((sum, r) => sum + (r.relevanceScore || 0), 0) / sqlOnly.length
       : 0;
 
-    // If SQL returns many high-confidence results, skip semantic search
-    if (sqlOnly.length >= 10 && avgSqlScore > 80 && !isDomainIntent) {
+    // If SQL returns many high-confidence results, skip semantic search.
+    // Skip this early-exit when UI filters are active: fast_search doesn't return
+    // filter fields (gender_restriction, age_group, etc.), so hard filters would
+    // silently fail on these results. Let the full pipeline run instead.
+    if (!input.filters && sqlOnly.length >= 10 && avgSqlScore > 80 && !isDomainIntent) {
       console.log(`[TieredSearch] Tier 2: High-confidence SQL (${sqlOnly.length} results, avg score ${avgSqlScore.toFixed(1)}) in ${Date.now() - startTime}ms`);
 
       // Convert to LiteService format
