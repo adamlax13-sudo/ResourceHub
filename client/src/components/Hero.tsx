@@ -1,5 +1,5 @@
 import { Search, MapPin, ChevronDown, Check, Mic, MicOff } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -234,48 +234,71 @@ function LocationDropdown({
   );
 }
 
+// Minimal interface for the Web Speech Recognition instance
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+}
+
+// Module-level constant — API lookup runs once, not on every render
+const SpeechRecognitionAPI: (new () => SpeechRecognitionInstance) | undefined =
+  typeof window !== 'undefined'
+    ? ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+    : undefined;
+
 // Voice search hook — uses browser-native Web Speech API, no backend needed
 function useVoiceSearch() {
-  const SpeechRecognition =
-    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  const isSupported = Boolean(SpeechRecognition);
-
+  const isSupported = Boolean(SpeechRecognitionAPI);
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
-  function startListening(onResult: (transcript: string) => void) {
-    if (!isSupported) return;
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-CA";
-
-    recognition.onresult = (event: any) => {
-      const transcript: string = event.results[0][0].transcript;
-      onResult(transcript);
+  // Cleanup on unmount — prevents handlers firing on an unmounted component
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
     };
+  }, []);
 
-    recognition.onerror = () => {
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    setIsListening(true);
-    recognition.start();
-  }
-
-  function stopListening() {
+  const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
     setIsListening(false);
-  }
+  }, []);
+
+  const startListening = useCallback((onResult: (transcript: string) => void) => {
+    if (!SpeechRecognitionAPI) return;
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-CA';
+
+    recognition.onresult = (event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => {
+      const transcript = event.results[0][0].transcript;
+      onResult(transcript);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    setIsListening(true);
+    recognition.start();
+  }, [stopListening]);
 
   return { isSupported, isListening, startListening, stopListening };
 }
@@ -290,9 +313,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
   const selectedLocation = locations.length > 0 ? locations[0] : '';
 
   useEffect(() => {
-    if (initialQuery !== query) {
-      setQuery(initialQuery);
-    }
+    setQuery(initialQuery);
   }, [initialQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -552,6 +573,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             {voiceSupported && (
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => {
                   if (isListening) {
                     stopListening();
@@ -562,7 +584,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                     });
                   }
                 }}
-                className={`absolute right-16 top-2 h-12 w-12 rounded-xl flex items-center justify-center transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 ${
+                className={`absolute right-16 top-2 h-12 w-12 rounded-xl flex items-center justify-center transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isListening
                     ? 'bg-red-500 hover:bg-red-600 text-white'
                     : 'bg-primary text-white hover:bg-primary/90'
