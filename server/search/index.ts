@@ -22,7 +22,7 @@ import { analyzeQuery, buildCacheKey } from './analyzer';
 import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
-import { pinCrisisService, getCrisisServiceFull, isCrisisServiceId } from './crisis';
+import { pinCrisisService, boostCrisisServices, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
 import {
   isFamilyAddictionQuery,
@@ -34,6 +34,7 @@ import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
 import type { SearchFilters } from '@shared/routes';
+import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
@@ -45,7 +46,7 @@ const searchStrategy = new ComprehensiveSearchStrategy();
  *
  * Rules:
  * - Skip the filter entirely if input.filters is undefined
- * - Boolean filters (is24_7, isFaithBased, is12Step) only applied when value is true
+ * - Boolean preferences (is24_7, isFaithBased, is12Step) are handled by applyPreferenceBoosts, not here
  * - genderRestriction: skip if value is 'all'
  * - ageGroup: skip if value is 'all_ages'; 'youth_and_adult' DB rows match both 'youth' and 'adult'
  * - languagesSupported: only filter if array is non-empty
@@ -68,10 +69,6 @@ function applyHardFilters(services: LiteService[], filters: SearchFilters): Lite
         return false;
       }
     }
-
-    if (filters.is24_7 === true && !svc.is24_7) return false;
-    if (filters.isFaithBased === true && !svc.isFaithBased) return false;
-    if (filters.is12Step === true && !svc.is12Step) return false;
 
     if (filters.serviceFormat && svc.serviceFormat?.toLowerCase() !== filters.serviceFormat.toLowerCase()) return false;
 
@@ -153,8 +150,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     // Still apply pinning for precomputed results
     const analysis = analyzeQuery(input.query, input.location);
-    if (analysis.isCrisis) {
+    const isEmergency = input.emergency === true;
+    if (analysis.isCrisis || isEmergency) {
       pinCrisisService(services);
+      if (isEmergency) boostCrisisServices(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -168,6 +167,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
+      services = applyPreferenceBoosts(services, input.filters);
     }
 
     return formatResponse(services, '', input, startTime, true);
@@ -195,8 +195,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     let services = filterActiveServices([...cachedResults.services], servicesCache.activeIds);
 
     // Apply pinning even for cached results
-    if (analysis.isCrisis) {
+    if (analysis.isCrisis || input.emergency) {
       pinCrisisService(services);
+      if (input.emergency) boostCrisisServices(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -210,6 +211,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
+      services = applyPreferenceBoosts(services, input.filters);
     }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
@@ -224,9 +226,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   );
 
   // Apply crisis pinning if needed (single place!)
-  if (analysis.isCrisis) {
+  if (analysis.isCrisis || input.emergency) {
     pinCrisisService(result.services);
-    console.log(`[SearchOrchestrator] Crisis query - 988 pinned to top`);
+    if (input.emergency) {
+      boostCrisisServices(result.services);
+      console.log(`[SearchOrchestrator] Emergency mode - 988 pinned, crisis services boosted to top`);
+    } else {
+      console.log(`[SearchOrchestrator] Crisis query - 988 pinned to top`);
+    }
   }
 
   // Apply PCHAD pinning for parent/child addiction queries

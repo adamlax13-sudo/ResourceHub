@@ -10,3 +10,4 @@ export * from './name-match';
 export * from './intent-boost';
 export * from './demographic-boost';
 export * from './penalty';
+export * from './preference-boost';

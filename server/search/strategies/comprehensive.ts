@@ -41,6 +41,7 @@ import {
   boostByIntent,
   boostByNameMatch,
   applyNegativePenalty,
+  applyPreferenceBoosts,
   type BoostOptions,
 } from './scoring';
 
@@ -328,6 +329,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         ? applyNegativePenalty(boosted, analysis.negativeTerms, boostOptions)
         : boosted;
 
+      // Note: preference boosts not needed here — Tier 2 only entered when !input.filters
+
       // Apply category diversity for location-only queries to ensure mixed results
       if (analysis.intent === 'location_only') {
         final = applyCategoryDiversity(final);
@@ -461,6 +464,11 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Apply negative keyword penalty (e.g., "shelter not religious")
     if (analysis.negativeTerms && analysis.negativeTerms.length > 0) {
       services = applyNegativePenalty(services, analysis.negativeTerms, boostOptions);
+    }
+
+    // Apply preference boosts for soft UI filters (faith-based, 12-step, 24/7)
+    if (input.filters) {
+      services = applyPreferenceBoosts(services, input.filters, boostOptions);
     }
 
     // Apply organization diversity to prevent monopoly in top results
