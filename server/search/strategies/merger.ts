@@ -25,6 +25,12 @@ export interface SQLSearchResult {
   phone?: string;
   is24_7?: boolean;
   relevanceScore?: number;
+  genderRestriction?: string | null;
+  ageGroup?: string | null;
+  isFaithBased?: boolean | null;
+  is12Step?: boolean | null;
+  serviceFormat?: string | null;
+  languagesSupported?: string[] | null;
 }
 
 /**
@@ -126,6 +132,12 @@ export async function convertSQLToLiteServices(
       waitTimes: merged.waitTimes || '',
       phone: sr.phone || undefined,
       is24_7: sr.is24_7 || undefined,
+      genderRestriction: sr.genderRestriction ?? null,
+      ageGroup: sr.ageGroup ?? null,
+      isFaithBased: sr.isFaithBased ?? null,
+      is12Step: sr.is12Step ?? null,
+      serviceFormat: sr.serviceFormat ?? null,
+      languagesSupported: (sr.languagesSupported as string[] | null) ?? null,
     };
   });
 }
@@ -160,6 +172,12 @@ export async function convertSemanticToLiteServices(
       waitTimes: merged.waitTimes || '',
       phone: sr.phone || undefined,
       is24_7: sr.is24_7 || undefined,
+      genderRestriction: sr.genderRestriction ?? null,
+      ageGroup: sr.ageGroup ?? null,
+      isFaithBased: sr.isFaithBased ?? null,
+      is12Step: sr.is12Step ?? null,
+      serviceFormat: sr.serviceFormat ?? null,
+      languagesSupported: (sr.languagesSupported as string[] | null) ?? null,
     };
   });
 }

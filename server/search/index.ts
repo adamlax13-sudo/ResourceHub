@@ -53,18 +53,14 @@ const searchStrategy = new ComprehensiveSearchStrategy();
  */
 function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
   return services.filter(svc => {
-    // Cast to any to access DB columns that may be present but are not typed on LiteService
-    const s = svc as any;
-
     if (filters.category && svc.category?.toLowerCase() !== filters.category.toLowerCase()) return false;
 
     if (filters.genderRestriction && filters.genderRestriction !== 'all') {
-      const svcGender: string | null = s.genderRestriction ?? s.gender_restriction ?? null;
-      if (svcGender !== filters.genderRestriction) return false;
+      if (svc.genderRestriction !== filters.genderRestriction) return false;
     }
 
     if (filters.ageGroup && filters.ageGroup !== 'all_ages') {
-      const dbAge: string = s.ageGroup ?? s.age_group ?? 'all_ages';
+      const dbAge = svc.ageGroup ?? 'all_ages';
       // 'youth_and_adult' DB rows should match both 'youth' and 'adult' API filter values
       if (dbAge === 'youth_and_adult') {
         if (filters.ageGroup !== 'youth' && filters.ageGroup !== 'adult') return false;
@@ -74,17 +70,14 @@ function applyHardFilters(services: LiteService[], filters: SearchFilters): Lite
     }
 
     if (filters.is24_7 === true && !svc.is24_7) return false;
-    if (filters.isFaithBased === true && !(s.isFaithBased ?? s.is_faith_based)) return false;
-    if (filters.is12Step === true && !(s.is12Step ?? s.is_12_step)) return false;
+    if (filters.isFaithBased === true && !svc.isFaithBased) return false;
+    if (filters.is12Step === true && !svc.is12Step) return false;
 
-    if (filters.serviceFormat) {
-      const svcFormat: string | null = s.serviceFormat ?? s.service_format ?? null;
-      if (!svcFormat || svcFormat.toLowerCase() !== filters.serviceFormat.toLowerCase()) return false;
-    }
+    if (filters.serviceFormat && svc.serviceFormat?.toLowerCase() !== filters.serviceFormat.toLowerCase()) return false;
 
     if (filters.languagesSupported && filters.languagesSupported.length > 0) {
-      const svcLangs: string[] = (s.languagesSupported ?? s.languages_supported) ?? [];
-      if (!filters.languagesSupported.some((lang: string) => svcLangs.includes(lang))) return false;
+      const svcLangs = svc.languagesSupported ?? [];
+      if (!filters.languagesSupported.some(lang => svcLangs.includes(lang))) return false;
     }
 
     return true;
@@ -156,7 +149,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (precomputed && precomputed.results.length > 0) {
     console.log(`[SearchOrchestrator] Precomputed HIT for: "${normalizedQuery}" (${precomputed.resultCount} results)`);
     // Filter out any deactivated services from precomputed cache
-    const services = filterActiveServices([...precomputed.results] as LiteService[], servicesCache.activeIds);
+    let services = filterActiveServices([...precomputed.results] as LiteService[], servicesCache.activeIds);
 
     // Still apply pinning for precomputed results
     const analysis = analyzeQuery(input.query, input.location);
@@ -171,6 +164,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
     if (isTenantLegalQuery(input.query)) {
       ensureLegalAidInResults(services);
+    }
+
+    if (input.filters) {
+      services = applyHardFilters(services, input.filters);
     }
 
     return formatResponse(services, '', input, startTime, true);
@@ -195,7 +192,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
     // Filter out any deactivated services from cached results
-    const services = filterActiveServices([...cachedResults.services], servicesCache.activeIds);
+    let services = filterActiveServices([...cachedResults.services], servicesCache.activeIds);
 
     // Apply pinning even for cached results
     if (analysis.isCrisis) {
@@ -209,6 +206,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
     if (isTenantLegalQuery(input.query)) {
       ensureLegalAidInResults(services);
+    }
+
+    if (input.filters) {
+      services = applyHardFilters(services, input.filters);
     }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);

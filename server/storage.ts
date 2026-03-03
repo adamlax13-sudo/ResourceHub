@@ -19,6 +19,12 @@ export interface SemanticSearchResult {
   email: string | null;
   address: string | null;
   similarity: number;
+  genderRestriction?: string | null;
+  ageGroup?: string | null;
+  isFaithBased?: boolean | null;
+  is12Step?: boolean | null;
+  serviceFormat?: string | null;
+  languagesSupported?: string[] | null;
 }
 
 // Result type for optimized SQL search (Stage 1)
@@ -39,6 +45,12 @@ export interface FastSearchResult {
   address: string | null;
   tags: any;
   relevanceScore: number;
+  genderRestriction?: string | null;
+  ageGroup?: string | null;
+  isFaithBased?: boolean | null;
+  is12Step?: boolean | null;
+  serviceFormat?: string | null;
+  languagesSupported?: string[] | null;
 }
 
 // Enrichment data for Stage 2
@@ -288,6 +300,12 @@ export class DatabaseStorage implements IStorage {
         phone,
         email,
         address,
+        gender_restriction as "genderRestriction",
+        age_group as "ageGroup",
+        is_faith_based as "isFaithBased",
+        is_12_step as "is12Step",
+        service_format as "serviceFormat",
+        languages_supported as "languagesSupported",
         1 - (embedding <=> ${embeddingStr}::vector) as similarity
       FROM services
       WHERE is_active = true
@@ -556,6 +574,12 @@ export class DatabaseStorage implements IStorage {
         address: row.address,
         tags: row.tags,
         relevanceScore: parseFloat(row.relevance_score) || 0,
+        genderRestriction: row.gender_restriction ?? null,
+        ageGroup: row.age_group ?? null,
+        isFaithBased: row.is_faith_based ?? null,
+        is12Step: row.is_12_step ?? null,
+        serviceFormat: row.service_format ?? null,
+        languagesSupported: (row.languages_supported as string[] | null) ?? null,
       }));
     } catch (err) {
       // Fallback to basic search if optimized function doesn't exist
@@ -628,6 +652,12 @@ export class DatabaseStorage implements IStorage {
         email,
         address,
         tags,
+        gender_restriction,
+        age_group,
+        is_faith_based,
+        is_12_step,
+        service_format,
+        languages_supported,
         (${sql.join(keywordScoring, sql` + `)} + COALESCE(click_count, 0) * 2) as relevance_score
       FROM services
       WHERE is_active = true
@@ -654,6 +684,12 @@ export class DatabaseStorage implements IStorage {
       address: row.address,
       tags: row.tags,
       relevanceScore: parseFloat(row.relevance_score) || 0,
+      genderRestriction: row.gender_restriction ?? null,
+      ageGroup: row.age_group ?? null,
+      isFaithBased: row.is_faith_based ?? null,
+      is12Step: row.is_12_step ?? null,
+      serviceFormat: row.service_format ?? null,
+      languagesSupported: (row.languages_supported as string[] | null) ?? null,
     }));
   }
 

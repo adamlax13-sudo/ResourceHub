@@ -118,6 +118,13 @@ export interface LiteService {
   is_faith_based?: boolean;
   /** True if service uses 12-step methodology */
   is_12_step?: boolean;
+  // Filter-relevant fields (populated for hard constraint filtering)
+  genderRestriction?: string | null;
+  ageGroup?: string | null;
+  isFaithBased?: boolean | null;
+  is12Step?: boolean | null;
+  serviceFormat?: string | null;
+  languagesSupported?: string[] | null;
 }
 
 /** Full service detail format for expanded view */
@@ -200,6 +207,12 @@ export interface FastSearchResult {
   email: string | null;
   address: string | null;
   is24_7?: boolean | null;
+  genderRestriction?: string | null;
+  ageGroup?: string | null;
+  isFaithBased?: boolean | null;
+  is12Step?: boolean | null;
+  serviceFormat?: string | null;
+  languagesSupported?: string[] | null;
 }
 
 /** Result from semantic vector search */

@@ -306,6 +306,12 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
           location: merged.location,
           waitTimes: merged.waitTimes,
           phone: sr.phone || undefined,
+          genderRestriction: sr.genderRestriction ?? null,
+          ageGroup: sr.ageGroup ?? null,
+          isFaithBased: sr.isFaithBased ?? null,
+          is12Step: sr.is12Step ?? null,
+          serviceFormat: sr.serviceFormat ?? null,
+          languagesSupported: (sr.languagesSupported as string[] | null) ?? null,
         };
       });
 
