@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { ServiceSummary } from "@shared/routes";
+import type { SearchFilters } from '@shared/routes';
 
 interface SearchState {
   query: string;
   locations: string[]; // Changed from single location to array
   services: ServiceSummary[];
   hasSearched: boolean;
+  filters: SearchFilters;
 }
 
 interface SearchContextType {
@@ -14,6 +16,9 @@ interface SearchContextType {
   setLocations: (locations: string[]) => void;
   toggleLocation: (location: string) => void;
   clearSearch: () => void;
+  setFilters: (filters: SearchFilters) => void;
+  clearFilters: () => void;
+  activeFilterCount: number;
 }
 
 const defaultState: SearchState = {
@@ -21,6 +26,7 @@ const defaultState: SearchState = {
   locations: [],
   services: [],
   hasSearched: false,
+  filters: {},
 };
 
 const SearchContext = createContext<SearchContextType | null>(null);
@@ -64,12 +70,38 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, [searchState]);
 
+  // On mount, read URL params to restore filter state
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (!q) return;
+
+    const restoredFilters: SearchFilters = {};
+    const cat = params.get('cat'); if (cat) restoredFilters.category = cat;
+    const gender = params.get('gender'); if (gender) restoredFilters.genderRestriction = gender as SearchFilters['genderRestriction'];
+    const age = params.get('age'); if (age) restoredFilters.ageGroup = age as SearchFilters['ageGroup'];
+    if (params.get('24h')) restoredFilters.is24_7 = true;
+    if (params.get('faith')) restoredFilters.isFaithBased = true;
+    if (params.get('12step')) restoredFilters.is12Step = true;
+    const format = params.get('format'); if (format) restoredFilters.serviceFormat = format;
+    const lang = params.get('lang'); if (lang) restoredFilters.languagesSupported = lang.split(',');
+
+    const loc = params.get('loc');
+    setSearchState(prev => ({
+      ...prev,
+      query: q,
+      locations: loc ? [loc] : prev.locations,
+      filters: restoredFilters,
+    }));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const setSearchResults = useCallback((query: string, services: ServiceSummary[], locations?: string[]) => {
     setSearchState(prev => ({
       query,
       locations: locations ?? prev.locations,
       services,
       hasSearched: true,
+      filters: prev.filters,
     }));
   }, []);
 
@@ -111,8 +143,23 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setFilters = useCallback((filters: SearchFilters) => {
+    setSearchState(prev => ({ ...prev, filters }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setSearchState(prev => ({ ...prev, filters: {} }));
+  }, []);
+
+  const activeFilterCount = Object.entries(searchState.filters).filter(([k, v]) => {
+    if (v === undefined) return false;
+    if (v === 'all' || v === 'all_ages') return false;  // sentinel values = no filter
+    if (Array.isArray(v) && v.length === 0) return false;
+    return true;
+  }).length;
+
   return (
-    <SearchContext.Provider value={{ searchState, setSearchResults, setLocations, toggleLocation, clearSearch }}>
+    <SearchContext.Provider value={{ searchState, setSearchResults, setLocations, toggleLocation, clearSearch, setFilters, clearFilters, activeFilterCount }}>
       {children}
     </SearchContext.Provider>
   );
@@ -125,3 +172,21 @@ export function useSearchContext() {
   }
   return context;
 }
+
+export function updateSearchUrl(query: string, location?: string, filters?: SearchFilters) {
+  const params = new URLSearchParams();
+  if (query) params.set('q', query);
+  if (location) params.set('loc', location);
+  if (filters?.category) params.set('cat', filters.category);
+  if (filters?.genderRestriction && filters.genderRestriction !== 'all') params.set('gender', filters.genderRestriction);
+  if (filters?.ageGroup && filters.ageGroup !== 'all_ages') params.set('age', filters.ageGroup);
+  if (filters?.is24_7) params.set('24h', '1');
+  if (filters?.isFaithBased) params.set('faith', '1');
+  if (filters?.is12Step) params.set('12step', '1');
+  if (filters?.serviceFormat) params.set('format', filters.serviceFormat);
+  if (filters?.languagesSupported?.length) params.set('lang', filters.languagesSupported.join(','));
+  const qs = params.toString();
+  window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+}
+
+export type { SearchFilters };
