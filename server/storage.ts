@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
+import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
 import { eq, or, ilike, and, desc, inArray, sql } from "drizzle-orm";
 
 // Result type for semantic search
@@ -137,6 +137,9 @@ export interface IStorage {
   // ============= FAILED QUERY LOGGING =============
   logFailedQuery(data: { query: string; queryNormalized: string; intent: string; location?: string | null }): Promise<void>;
   getTopFailedQueries(limit?: number): Promise<{ query: string; queryNormalized: string; intent: string; location: string | null; count: number; firstSeen: Date; lastSeen: Date }[]>;
+
+  // ============= SERVICE VOTES =============
+  createServiceVote(serviceId: string, vote: 'up' | 'down', queryContext?: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1001,6 +1004,10 @@ export class DatabaseStorage implements IStorage {
         zeroResultRate: 0,
       };
     }
+  }
+
+  async createServiceVote(serviceId: string, vote: 'up' | 'down', queryContext?: string): Promise<void> {
+    await db.insert(serviceVotes).values({ serviceId, vote, queryContext: queryContext ?? null });
   }
 }
 

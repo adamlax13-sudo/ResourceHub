@@ -42,4 +42,24 @@ export function registerFeedbackRoutes(app: Express): void {
       }
     }
   });
+
+  app.post("/api/service-vote", feedbackLimiter, async (req: Request, res: Response) => {
+    try {
+      const schema = z.object({
+        serviceId: z.string().min(1).max(255),
+        vote: z.enum(['up', 'down']),
+        queryContext: z.string().max(500).optional(),
+      });
+      const { serviceId, vote, queryContext } = schema.parse(req.body);
+      await storage.createServiceVote(serviceId, vote, queryContext);
+      res.json({ success: true });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        res.status(400).json(createErrorResponse("Invalid vote data", undefined, err.errors));
+      } else {
+        console.error("Service vote error:", err);
+        res.status(500).json(createErrorResponse("Failed to record vote"));
+      }
+    }
+  });
 }
