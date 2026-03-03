@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
-import type { ServiceSummary } from "@shared/routes";
-import type { SearchFilters } from '@shared/routes';
+import type { ServiceSummary, SearchFilters } from "@shared/routes";
 
 interface SearchState {
   query: string;
@@ -92,6 +91,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       query: q,
       locations: loc ? [loc] : prev.locations,
       filters: restoredFilters,
+      services: [],        // clear stale results — URL is the source of truth
+      hasSearched: false,  // Home.tsx will trigger a fresh search from URL params
     }));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -152,7 +153,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const activeFilterCount = Object.entries(searchState.filters).filter(([k, v]) => {
-    if (v === undefined) return false;
+    if (v === undefined || v === false) return false;
     if (v === 'all' || v === 'all_ages') return false;  // sentinel values = no filter
     if (Array.isArray(v) && v.length === 0) return false;
     return true;
@@ -186,7 +187,7 @@ export function updateSearchUrl(query: string, location?: string, filters?: Sear
   if (filters?.serviceFormat) params.set('format', filters.serviceFormat);
   if (filters?.languagesSupported?.length) params.set('lang', filters.languagesSupported.join(','));
   const qs = params.toString();
-  window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+  window.history.replaceState(window.history.state, '', qs ? `?${qs}` : window.location.pathname);
 }
 
 export type { SearchFilters };
