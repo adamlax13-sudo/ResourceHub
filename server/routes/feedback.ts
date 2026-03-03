@@ -45,19 +45,22 @@ export function registerFeedbackRoutes(app: Express): void {
 
   app.post("/api/service-vote", feedbackLimiter, async (req: Request, res: Response) => {
     try {
-      const schema = z.object({
+      const serviceVoteSchema = z.object({
         serviceId: z.string().min(1).max(255),
         vote: z.enum(['up', 'down']),
         queryContext: z.string().max(500).optional(),
       });
-      const { serviceId, vote, queryContext } = schema.parse(req.body);
+      const { serviceId, vote, queryContext } = serviceVoteSchema.parse(req.body);
       await storage.createServiceVote(serviceId, vote, queryContext);
       res.json({ success: true });
     } catch (err) {
+      console.error("Service vote error:", err);
       if (err instanceof z.ZodError) {
         res.status(400).json(createErrorResponse("Invalid vote data", undefined, err.errors));
+      } else if ((err as any)?.code === '23503') {
+        // Postgres FK violation — serviceId doesn't exist in services table
+        res.status(400).json(createErrorResponse("Service not found"));
       } else {
-        console.error("Service vote error:", err);
         res.status(500).json(createErrorResponse("Failed to record vote"));
       }
     }
