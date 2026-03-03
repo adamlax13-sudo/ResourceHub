@@ -59,6 +59,17 @@ export interface SearchInput {
   session?: SessionContext;
   /** Enable debug mode to include score explanations */
   debug?: boolean;
+  // Explicit filters from UI (applied as hard constraints, not semantic boosts)
+  filters?: {
+    category?: string;
+    genderRestriction?: 'all' | 'women_only' | 'men_only';
+    ageGroup?: 'all_ages' | 'youth' | 'adult' | 'senior';
+    is24_7?: boolean;
+    isFaithBased?: boolean;
+    is12Step?: boolean;
+    languagesSupported?: string[];
+    serviceFormat?: string;
+  };
 }
 
 // === QUERY ANALYSIS ===

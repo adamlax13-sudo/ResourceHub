@@ -62,6 +62,15 @@ export const api = {
         pageSize: z.number().int().min(1).max(50).optional(),
         // Debug mode - includes score explanations in response
         debug: z.boolean().optional(),
+        // Explicit filters (applied as hard constraints in the search pipeline)
+        category: z.string().optional(),
+        genderRestriction: z.enum(['all', 'women_only', 'men_only']).optional(),
+        ageGroup: z.enum(['all_ages', 'youth', 'adult', 'senior']).optional(),
+        is24_7: z.boolean().optional(),
+        isFaithBased: z.boolean().optional(),
+        is12Step: z.boolean().optional(),
+        languagesSupported: z.array(z.string()).optional(),
+        serviceFormat: z.string().optional(),
       }),
       responses: {
         // Now returns lite summaries for fast display

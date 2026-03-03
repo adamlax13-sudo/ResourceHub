@@ -27,6 +27,16 @@ export function registerSearchRoutes(app: Express): void {
         page: input.page ?? 1,
         pageSize: input.pageSize ?? 20,
         debug: input.debug,
+        filters: {
+          category: input.category,
+          genderRestriction: input.genderRestriction,
+          ageGroup: input.ageGroup,
+          is24_7: input.is24_7,
+          isFaithBased: input.isFaithBased,
+          is12Step: input.is12Step,
+          languagesSupported: input.languagesSupported,
+          serviceFormat: input.serviceFormat,
+        },
       });
 
       res.json(result);
