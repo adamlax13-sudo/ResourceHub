@@ -148,9 +148,9 @@ export default function Home() {
 
   const handleWizardComplete = useCallback((query: string, filters: SearchFilters) => {
     setFilters(filters);
-    handleSearch(query, searchState.locations);
+    handleSearchWithFilters(query, searchState.locations, filters);
     setWizardOpen(false);
-  }, [setFilters, handleSearch, searchState.locations]);
+  }, [setFilters, handleSearchWithFilters, searchState.locations]);
 
   const handleFiltersChange = useCallback(
     (newFilters: SearchFilters) => {
@@ -317,9 +317,7 @@ export default function Home() {
         onClose={() => setRefinePanelOpen(false)}
         filters={searchState.filters}
         onFiltersChange={handleFiltersChange}
-        onClear={() => {
-          handleClearFilters();
-        }}
+        onClear={handleClearFilters}
       />
 
       {/* Service Details Modal */}

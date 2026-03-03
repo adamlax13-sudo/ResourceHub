@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { SearchFilters } from "@shared/routes";
@@ -58,20 +58,21 @@ export function RefinePanel({
   );
 
   useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
+    const handler = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(prev => (prev === mobile ? prev : mobile));
+    };
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
 
   // Lock body scroll while panel is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prev;
     };
   }, [isOpen]);
 
@@ -106,7 +107,7 @@ export function RefinePanel({
     { value: "in_person_and_online", label: "Both" },
   ];
 
-  const panelVariants = isMobile
+  const panelVariants = useMemo(() => isMobile
     ? {
         initial: { y: "100%" },
         animate: { y: 0 },
@@ -116,7 +117,9 @@ export function RefinePanel({
         initial: { x: "100%" },
         animate: { x: 0 },
         exit: { x: "100%" },
-      };
+      },
+    [isMobile]
+  );
 
   const panelClass = isMobile
     ? "fixed bottom-0 left-0 right-0 rounded-t-2xl bg-card shadow-2xl z-50 flex flex-col max-h-[90vh]"
@@ -141,6 +144,7 @@ export function RefinePanel({
           {/* Panel */}
           <motion.div
             key="refine-panel"
+            id="refine-panel"
             initial={panelVariants.initial}
             animate={panelVariants.animate}
             exit={panelVariants.exit}
