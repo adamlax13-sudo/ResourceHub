@@ -134,11 +134,20 @@ export type ServiceAlias = typeof serviceAliases.$inferSelect;
 // Service vote feedback (thumbs up/down on search result cards)
 export const serviceVotes = pgTable("service_votes", {
   id: serial("id").primaryKey(),
-  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  serviceId: varchar("service_id", { length: 255 }).notNull().references(() => services.serviceId),
   vote: varchar("vote", { length: 10 }).notNull(), // 'up' or 'down'
   queryContext: text("query_context"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const insertServiceVoteSchema = createInsertSchema(serviceVotes)
+  .omit({ id: true, createdAt: true })
+  .refine((d) => d.vote === "up" || d.vote === "down", {
+    message: "vote must be 'up' or 'down'",
+    path: ["vote"],
+  });
+export type ServiceVote = typeof serviceVotes.$inferSelect;
+export type InsertServiceVote = z.infer<typeof insertServiceVoteSchema>;
 
 export interface ServiceDetail {
   id: string;
