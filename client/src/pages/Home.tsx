@@ -55,6 +55,8 @@ export default function Home() {
     handleSearch(query, searchState.locations);
   }, [handleSearch, searchState.locations]);
 
+  const handleOpenWizard = useCallback(() => setWizardOpen(true), []);
+
   const handleWizardComplete = useCallback((query: string, filters: SearchFilters) => {
     setFilters(filters);
     handleSearch(query, searchState.locations);
@@ -73,7 +75,7 @@ export default function Home() {
         locations={searchState.locations}
         onLocationChange={handleLocationChange}
         onEmergencySearch={handleEmergencySearch}
-        onOpenWizard={() => setWizardOpen(true)}
+        onOpenWizard={handleOpenWizard}
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">

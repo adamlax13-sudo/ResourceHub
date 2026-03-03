@@ -16,14 +16,27 @@ const WHO_OPTIONS = [
   { id: 'client', icon: '🤝', label: "A client I'm helping" },
 ] as const;
 
-const REQUIREMENTS = [
+type FilterReqEntry = {
+  id: string;
+  label: string;
+  filterKey: keyof SearchFilters;
+  filterValue: SearchFilters[keyof SearchFilters];
+};
+type QueryReqEntry = {
+  id: string;
+  label: string;
+  queryAppend: string;
+};
+type RequirementEntry = FilterReqEntry | QueryReqEntry;
+
+const REQUIREMENTS: RequirementEntry[] = [
   { id: 'women_only', label: 'Women-only', filterKey: 'genderRestriction', filterValue: 'women_only' },
   { id: 'french', label: 'French language', filterKey: 'languagesSupported', filterValue: ['French'] },
   { id: 'walk_in', label: 'Walk-in', queryAppend: ' walk-in' },
   { id: '24_7', label: '24/7', filterKey: 'is24_7', filterValue: true },
   { id: 'faith', label: 'Faith-based', filterKey: 'isFaithBased', filterValue: true },
   { id: 'no_referral', label: 'No referral needed', queryAppend: ' no referral' },
-] as const;
+];
 
 function assembleSearch(
   who: string,
@@ -40,7 +53,7 @@ function assembleSearch(
     const req = REQUIREMENTS.find(r => r.id === reqId);
     if (!req) continue;
     if ('queryAppend' in req) query += req.queryAppend;
-    if ('filterKey' in req) (filters as any)[req.filterKey] = req.filterValue;
+    if ('filterKey' in req) (filters as Record<string, unknown>)[req.filterKey as string] = req.filterValue;
   }
 
   return { query, filters };
@@ -55,15 +68,14 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [requirements, setRequirements] = useState<Set<string>>(new Set());
 
-  // Reset state whenever the wizard opens
+  // Reset state whenever the wizard closes
   const handleOpenChange = (open: boolean) => {
-    if (open) {
+    if (!open) {
       setStep(1);
       setDirection(1);
       setWho('');
       setSelectedCategory('');
-      setRequirements(new Set());
-    } else {
+      setRequirements(new Set<string>());
       onClose();
     }
   };
@@ -107,6 +119,13 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
         <DialogHeader>
           <DialogTitle className="sr-only">Guided Resource Finder</DialogTitle>
         </DialogHeader>
+
+        {/* Live region for screen readers to announce step changes */}
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {step === 1 && 'Step 1 of 3: Who needs help?'}
+          {step === 2 && 'Step 2 of 3: What is most urgent right now?'}
+          {step === 3 && 'Step 3 of 3: Any specific requirements?'}
+        </div>
 
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mb-6 mt-1">
@@ -184,7 +203,7 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
                         bg-gradient-to-br ${cat.gradient}
                         ${selectedCategory === cat.query
                           ? 'border-primary ring-2 ring-primary/30 scale-105'
-                          : 'border-border/50 hover:border-primary/40 hover:scale-102'
+                          : 'border-border/50 hover:border-primary/40 hover:scale-105'
                         }
                       `}
                     >
@@ -246,6 +265,7 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
             <button
               type="button"
               onClick={goBack}
+              aria-label={`Go back to step ${step - 1} of ${TOTAL_STEPS}`}
               className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Back
