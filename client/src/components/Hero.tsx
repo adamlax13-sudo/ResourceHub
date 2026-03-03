@@ -39,6 +39,7 @@ interface HeroProps {
   locations: string[];
   onLocationChange: (location: string) => void;
   onEmergencySearch: () => void;
+  onOpenWizard: () => void;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -303,7 +304,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -627,9 +628,18 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                 <span>Searching for resources...</span>
               </motion.div>
             ) : (
-              <p id="search-hint" className="text-sm text-white/70 font-medium">
-                {t('app.searchHint')}
-              </p>
+              <>
+                <p id="search-hint" className="text-sm text-white/70 font-medium">
+                  {t('app.searchHint')}
+                </p>
+                <button
+                  type="button"
+                  onClick={onOpenWizard}
+                  className="text-sm text-white/60 hover:text-white/90 underline underline-offset-2 transition-colors"
+                >
+                  Not sure what to search for? Let us guide you →
+                </button>
+              </>
             )}
           </div>
         </motion.form>

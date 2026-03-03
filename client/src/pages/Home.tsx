@@ -10,15 +10,18 @@ import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { CategoryTiles } from "@/components/CategoryTiles";
+import { IntakeWizard } from "@/components/IntakeWizard";
+import type { SearchFilters } from "@shared/routes";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults, setLocations } = useSearchContext();
+  const { searchState, setSearchResults, setLocations, setFilters } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const { t } = useTranslation();
 
   // Store search results when data changes
@@ -52,6 +55,12 @@ export default function Home() {
     handleSearch(query, searchState.locations);
   }, [handleSearch, searchState.locations]);
 
+  const handleWizardComplete = useCallback((query: string, filters: SearchFilters) => {
+    setFilters(filters);
+    handleSearch(query, searchState.locations);
+    setWizardOpen(false);
+  }, [setFilters, handleSearch, searchState.locations]);
+
   return (
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
       <Suspense fallback={null}>
@@ -64,6 +73,7 @@ export default function Home() {
         locations={searchState.locations}
         onLocationChange={handleLocationChange}
         onEmergencySearch={handleEmergencySearch}
+        onOpenWizard={() => setWizardOpen(true)}
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
@@ -162,6 +172,12 @@ export default function Home() {
       </footer>
 
       <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+
+      <IntakeWizard
+        isOpen={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onComplete={handleWizardComplete}
+      />
     </div>
   );
 }
