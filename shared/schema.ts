@@ -131,6 +131,15 @@ export type SearchAnalytics = typeof searchAnalytics.$inferSelect;
 export type InsertSearchAnalytics = z.infer<typeof insertSearchAnalyticsSchema>;
 export type ServiceAlias = typeof serviceAliases.$inferSelect;
 
+// Service vote feedback (thumbs up/down on search result cards)
+export const serviceVotes = pgTable("service_votes", {
+  id: serial("id").primaryKey(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  vote: varchar("vote", { length: 10 }).notNull(), // 'up' or 'down'
+  queryContext: text("query_context"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export interface ServiceDetail {
   id: string;
   name: string;
