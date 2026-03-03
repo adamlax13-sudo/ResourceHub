@@ -5,23 +5,90 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, MessageSquare } from "lucide-react";
+import { Info, MessageSquare, SlidersHorizontal, X } from "lucide-react";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
+import { RefinePanel } from "@/components/RefinePanel";
 import type { SearchFilters } from "@shared/routes";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
 
+interface FilterChip {
+  key: string;
+  label: string;
+}
+
+function buildFilterChips(filters: SearchFilters): FilterChip[] {
+  const chips: FilterChip[] = [];
+
+  if (filters.genderRestriction && filters.genderRestriction !== "all") {
+    chips.push({
+      key: "genderRestriction",
+      label: filters.genderRestriction === "women_only" ? "Women-only" : "Men-only",
+    });
+  }
+  if (filters.ageGroup && filters.ageGroup !== "all_ages") {
+    chips.push({
+      key: "ageGroup",
+      label: filters.ageGroup.charAt(0).toUpperCase() + filters.ageGroup.slice(1),
+    });
+  }
+  if (filters.is24_7) chips.push({ key: "is24_7", label: "24/7" });
+  if (filters.isFaithBased) chips.push({ key: "isFaithBased", label: "Faith-based" });
+  if (filters.is12Step) chips.push({ key: "is12Step", label: "12-step" });
+  if (filters.serviceFormat) {
+    const formatLabels: Record<string, string> = {
+      in_person: "In-person",
+      online: "Online",
+      in_person_and_online: "In-person & Online",
+    };
+    chips.push({
+      key: "serviceFormat",
+      label: formatLabels[filters.serviceFormat] ?? filters.serviceFormat,
+    });
+  }
+  (filters.languagesSupported ?? []).forEach((lang) => {
+    chips.push({ key: `lang_${lang}`, label: lang });
+  });
+
+  return chips;
+}
+
+function removeChip(filters: SearchFilters, chipKey: string): SearchFilters {
+  const next = { ...filters };
+
+  if (chipKey === "genderRestriction") {
+    delete next.genderRestriction;
+  } else if (chipKey === "ageGroup") {
+    delete next.ageGroup;
+  } else if (chipKey === "is24_7") {
+    delete next.is24_7;
+  } else if (chipKey === "isFaithBased") {
+    delete next.isFaithBased;
+  } else if (chipKey === "is12Step") {
+    delete next.is12Step;
+  } else if (chipKey === "serviceFormat") {
+    delete next.serviceFormat;
+  } else if (chipKey.startsWith("lang_")) {
+    const lang = chipKey.slice(5);
+    const langs = (next.languagesSupported ?? []).filter((l) => l !== lang);
+    next.languagesSupported = langs.length > 0 ? langs : undefined;
+  }
+
+  return next;
+}
+
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults, setLocations, setFilters } = useSearchContext();
+  const { searchState, setSearchResults, setLocations, setFilters, clearFilters, activeFilterCount } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [refinePanelOpen, setRefinePanelOpen] = useState(false);
   const { t } = useTranslation();
 
   // Store search results when data changes
@@ -41,6 +108,28 @@ export default function Home() {
     const locationParam = locations.length > 0 ? locations[0] : undefined;
     search({ query, location: locationParam, ...(hp ? { hp } : {}) });
   }, [search]);
+
+  const handleSearchWithFilters = useCallback(
+    (query: string, locations: string[], filters: SearchFilters) => {
+      const locationParam = locations.length > 0 ? locations[0] : undefined;
+      const filterParams: Partial<SearchFilters> = {};
+      if (filters.genderRestriction && filters.genderRestriction !== "all") {
+        filterParams.genderRestriction = filters.genderRestriction;
+      }
+      if (filters.ageGroup && filters.ageGroup !== "all_ages") {
+        filterParams.ageGroup = filters.ageGroup;
+      }
+      if (filters.is24_7) filterParams.is24_7 = true;
+      if (filters.isFaithBased) filterParams.isFaithBased = true;
+      if (filters.is12Step) filterParams.is12Step = true;
+      if (filters.serviceFormat) filterParams.serviceFormat = filters.serviceFormat;
+      if (filters.languagesSupported?.length) {
+        filterParams.languagesSupported = filters.languagesSupported;
+      }
+      search({ query, location: locationParam, ...filterParams });
+    },
+    [search]
+  );
 
   const handleLocationChange = (location: string) => {
     // Set single location (empty string = "All of Alberta" = empty array)
@@ -63,6 +152,33 @@ export default function Home() {
     setWizardOpen(false);
   }, [setFilters, handleSearch, searchState.locations]);
 
+  const handleFiltersChange = useCallback(
+    (newFilters: SearchFilters) => {
+      setFilters(newFilters);
+      if (searchState.query) {
+        handleSearchWithFilters(searchState.query, searchState.locations, newFilters);
+      }
+    },
+    [setFilters, searchState.query, searchState.locations, handleSearchWithFilters]
+  );
+
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+    if (searchState.query) {
+      handleSearch(searchState.query, searchState.locations);
+    }
+  }, [clearFilters, searchState.query, searchState.locations, handleSearch]);
+
+  const handleRemoveChip = useCallback(
+    (chipKey: string) => {
+      const newFilters = removeChip(searchState.filters, chipKey);
+      handleFiltersChange(newFilters);
+    },
+    [searchState.filters, handleFiltersChange]
+  );
+
+  const filterChips = buildFilterChips(searchState.filters);
+
   return (
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
       <Suspense fallback={null}>
@@ -79,6 +195,38 @@ export default function Home() {
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
+        {/* Active filter chips — shown below Hero when there are active filters */}
+        <AnimatePresence>
+          {filterChips.length > 0 && (
+            <motion.div
+              key="filter-chips"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-wrap gap-2 mb-4"
+              aria-label="Active filters"
+            >
+              {filterChips.map((chip) => (
+                <span
+                  key={chip.key}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-medium"
+                >
+                  {chip.label}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveChip(chip.key)}
+                    aria-label={`Remove ${chip.label} filter`}
+                    className="ml-0.5 rounded-full p-0.5 hover:bg-primary/20 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           {error && !isPending && (
             <motion.div
@@ -119,6 +267,25 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
+              {/* Results toolbar: Refine button */}
+              <div className="flex items-center justify-end mb-4">
+                <button
+                  type="button"
+                  onClick={() => setRefinePanelOpen((prev) => !prev)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors relative"
+                  aria-expanded={refinePanelOpen}
+                  aria-controls="refine-panel"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Refine
+                  {activeFilterCount > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayServices.map((service, index) => (
                   <ServiceCard
@@ -138,11 +305,22 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
-        
+
         {!displayServices && !isPending && !error && (
           <CategoryTiles onSelect={handleCategorySelect} />
         )}
       </div>
+
+      {/* Refine Filter Panel */}
+      <RefinePanel
+        isOpen={refinePanelOpen}
+        onClose={() => setRefinePanelOpen(false)}
+        filters={searchState.filters}
+        onFiltersChange={handleFiltersChange}
+        onClear={() => {
+          handleClearFilters();
+        }}
+      />
 
       {/* Service Details Modal */}
       <Suspense fallback={null}>
