@@ -299,7 +299,7 @@ function useVoiceSearch() {
     recognitionRef.current = recognition;
     setIsListening(true);
     recognition.start();
-  }, [stopListening]);
+  }, []);
 
   return { isSupported, isListening, startListening, stopListening };
 }
@@ -529,17 +529,21 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
           </div>
 
           {/* Emergency fast-path */}
-          <button
-            type="button"
-            onClick={onEmergencySearch}
-            className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-xl
-                       shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm
-                       animate-pulse hover:animate-none mb-4"
-            aria-label="Get immediate crisis support"
-          >
-            <span aria-hidden="true">🆘</span>
-            I need help right now
-          </button>
+          <div className="flex justify-center mb-5">
+            <button
+              type="button"
+              onClick={onEmergencySearch}
+              className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full
+                         bg-white/10 backdrop-blur-md border border-white/20 text-white/90
+                         hover:bg-red-500/20 hover:border-red-400/40 hover:text-white
+                         focus:outline-none focus:ring-2 focus:ring-white/30
+                         transition-all duration-200 text-sm font-medium shadow-sm"
+              aria-label="Get immediate crisis support"
+            >
+              <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
+              I need help right now
+            </button>
+          </div>
 
           {/* Custom Location Dropdown */}
           <motion.div

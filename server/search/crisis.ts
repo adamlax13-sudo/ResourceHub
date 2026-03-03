@@ -82,3 +82,63 @@ export function isCrisisQuery(query: string): boolean {
     pattern.test(lower)
   );
 }
+
+// Categories that represent immediate crisis resources, ordered by priority.
+// "Crisis Lines" (phone hotlines) first, then "Crisis Services" (response teams),
+// then emergency shelters and domestic violence support.
+const CRISIS_CATEGORY_PRIORITY: string[] = [
+  'crisis lines',
+  'crisis services',
+  'domestic violence support',
+  'emergency shelter',
+];
+
+/**
+ * Check if a service category is crisis-related.
+ */
+function getCrisisCategoryRank(category: string): number {
+  const lower = category.toLowerCase();
+  for (let i = 0; i < CRISIS_CATEGORY_PRIORITY.length; i++) {
+    if (lower.includes(CRISIS_CATEGORY_PRIORITY[i])) return i;
+  }
+  return -1;
+}
+
+/**
+ * Reorder search results so crisis-category services appear first.
+ * Services are grouped: Crisis Lines → Crisis Services → Domestic Violence → Emergency Shelter → rest.
+ * Within each group the original relevance order is preserved.
+ * The 988 pinned service (index 0) is left in place.
+ *
+ * Modifies the array in place.
+ */
+export function boostCrisisServices(services: LiteService[]): LiteService[] {
+  if (services.length <= 1) return services;
+
+  // Keep 988 pinned at index 0 (it was already placed there by pinCrisisService)
+  const pinned = services[0];
+  const rest = services.slice(1);
+
+  // Partition into crisis-category and non-crisis
+  const crisisGroups: LiteService[][] = CRISIS_CATEGORY_PRIORITY.map(() => []);
+  const nonCrisis: LiteService[] = [];
+
+  for (const svc of rest) {
+    const rank = getCrisisCategoryRank(svc.category || '');
+    if (rank >= 0) {
+      crisisGroups[rank].push(svc);
+    } else {
+      nonCrisis.push(svc);
+    }
+  }
+
+  // Reassemble: pinned 988 → crisis groups in priority order → everything else
+  services.length = 0;
+  services.push(pinned);
+  for (const group of crisisGroups) {
+    services.push(...group);
+  }
+  services.push(...nonCrisis);
+
+  return services;
+}

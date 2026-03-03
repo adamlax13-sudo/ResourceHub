@@ -153,7 +153,7 @@ process.on('unhandledRejection', (reason, promise) => {
   // Register main routes (search, feedback, analytics)
   await registerRoutes(httpServer, app);
 
-  const clientBuildPath = path.join(__dirname, "../dist/public");
+  const clientBuildPath = path.join(import.meta.dirname, "../dist/public");
   app.use(express.static(clientBuildPath));
 
   app.get("*", (req, res) => {

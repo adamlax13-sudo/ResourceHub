@@ -46,7 +46,7 @@ export function applyAgeGroupBoost(
   addFactor: AddFactorFn,
 ): void {
   const cfg = SCORING_CONFIG;
-  const isYouthService = /youth|teen|adolescent|young|student|under 25|child|kids?|juvenile|minor|school/i.test(textLower);
+  const isYouthService = /youth|teen|adolescent|young|under 25|child|kids?|juvenile|minor|school/i.test(textLower);
   const isSeniorService = /senior|elderly|aging|aged|older adult|65\+|retirement|dementia|alzheimer/i.test(textLower);
   const isAdultService = /\badult\b/i.test(textLower);
 

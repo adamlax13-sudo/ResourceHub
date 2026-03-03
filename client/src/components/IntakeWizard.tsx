@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CATEGORIES } from "@/components/CategoryTiles";
 import type { SearchFilters } from "@shared/routes";
+import { User, Users, ClipboardList, type LucideIcon } from "lucide-react";
 
 interface IntakeWizardProps {
   isOpen: boolean;
@@ -10,11 +11,11 @@ interface IntakeWizardProps {
   onComplete: (query: string, filters: SearchFilters) => void;
 }
 
-const WHO_OPTIONS = [
-  { id: 'self', icon: '🙋', label: 'Me' },
-  { id: 'family', icon: '👪', label: 'Someone I care for' },
-  { id: 'client', icon: '🤝', label: "A client I'm helping" },
-] as const;
+const WHO_OPTIONS: { id: string; icon: LucideIcon; label: string }[] = [
+  { id: 'self', icon: User, label: 'Me' },
+  { id: 'family', icon: Users, label: 'Someone I care for' },
+  { id: 'client', icon: ClipboardList, label: "A client I'm helping" },
+];
 
 type FilterReqEntry = {
   id: string;
@@ -115,7 +116,7 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg w-full overflow-hidden">
+      <DialogContent className="sm:max-w-lg w-full overflow-visible">
         <DialogHeader>
           <DialogTitle className="sr-only">Guided Resource Finder</DialogTitle>
         </DialogHeader>
@@ -141,8 +142,8 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
           ))}
         </div>
 
-        {/* Step content */}
-        <div className="relative min-h-[280px]">
+        {/* Step content — scrollable container, no absolute positioning */}
+        <div className="relative overflow-y-auto" style={{ maxHeight: 'min(60vh, 440px)' }}>
           <AnimatePresence mode="wait" custom={direction}>
             {step === 1 && (
               <motion.div
@@ -153,27 +154,34 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="absolute inset-0"
               >
                 <h2 className="text-xl font-semibold text-foreground text-center mb-6">
                   Who needs help?
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {WHO_OPTIONS.map(option => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => setWho(option.id)}
-                      className={`flex items-center gap-4 px-5 py-4 rounded-xl border-2 text-left transition-all duration-150 ${
-                        who === option.id
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border hover:border-primary/40 hover:bg-muted/50'
-                      }`}
-                    >
-                      <span className="text-2xl" aria-hidden="true">{option.icon}</span>
-                      <span className="font-medium text-base">{option.label}</span>
-                    </button>
-                  ))}
+                  {WHO_OPTIONS.map(option => {
+                    const Icon = option.icon;
+                    const active = who === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setWho(option.id)}
+                        className={`flex items-center gap-4 px-5 py-4 rounded-xl border-2 text-left transition-all duration-150 ${
+                          active
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border hover:border-primary/40 hover:bg-muted/50'
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                          active ? 'bg-primary/20' : 'bg-primary/10'
+                        }`}>
+                          <Icon className={`w-5 h-5 ${active ? 'text-primary' : 'text-primary/70'}`} aria-hidden="true" />
+                        </div>
+                        <span className="font-medium text-base">{option.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
@@ -187,30 +195,36 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="absolute inset-0"
               >
                 <h2 className="text-xl font-semibold text-foreground text-center mb-6">
                   What's most urgent right now?
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {CATEGORIES.map(cat => (
-                    <button
-                      key={cat.label}
-                      type="button"
-                      onClick={() => setSelectedCategory(cat.query)}
-                      className={`
-                        flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-150 text-center
-                        bg-gradient-to-br ${cat.gradient}
-                        ${selectedCategory === cat.query
-                          ? 'border-primary ring-2 ring-primary/30 scale-105'
-                          : 'border-border/50 hover:border-primary/40 hover:scale-105'
-                        }
-                      `}
-                    >
-                      <span className="text-2xl" aria-hidden="true">{cat.icon}</span>
-                      <span className="text-xs font-semibold text-foreground leading-tight">{cat.label}</span>
-                    </button>
-                  ))}
+                  {CATEGORIES.map(cat => {
+                    const Icon = cat.icon;
+                    const active = selectedCategory === cat.query;
+                    return (
+                      <button
+                        key={cat.label}
+                        type="button"
+                        onClick={() => setSelectedCategory(cat.query)}
+                        className={`
+                          flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-150 text-center
+                          ${active
+                            ? 'border-primary ring-2 ring-primary/30 scale-105 bg-primary/10'
+                            : 'bg-card border-border/50 hover:border-primary/40 hover:bg-primary/5 hover:scale-105'
+                          }
+                        `}
+                      >
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                          active ? 'bg-primary/20' : 'bg-primary/10'
+                        }`}>
+                          <Icon className={`w-4.5 h-4.5 ${active ? 'text-primary' : 'text-primary/70'}`} aria-hidden="true" />
+                        </div>
+                        <span className="text-xs font-semibold text-foreground leading-tight">{cat.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
@@ -224,7 +238,6 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="absolute inset-0"
               >
                 <h2 className="text-xl font-semibold text-foreground text-center mb-6">
                   Any specific requirements?

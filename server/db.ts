@@ -19,10 +19,10 @@ export const pool = new Pool({
   // Timeouts
   idleTimeoutMillis: 30000,     // Close idle connections after 30s
   connectionTimeoutMillis: 5000, // Fail fast on connection issues (5s)
-  // SSL configuration for production
-  ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+  // SSL configuration — required for Render.com hosted PostgreSQL
+  ssl: process.env.DATABASE_URL?.includes('localhost')
+    ? false
+    : { rejectUnauthorized: false },
 });
 
 // Handle pool errors gracefully

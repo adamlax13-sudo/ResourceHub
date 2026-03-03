@@ -77,6 +77,8 @@ export const api = {
         pageSize: z.number().int().min(1).max(50).optional(),
         // Debug mode - includes score explanations in response
         debug: z.boolean().optional(),
+        // Emergency mode - forces crisis service prioritization (used by "I need help right now" button)
+        emergency: z.boolean().optional(),
         // Explicit filters (applied as hard constraints in the search pipeline)
         ...searchFiltersSchema.shape,
       }),

@@ -92,7 +92,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'youth_services': {
     serviceTypes: ['youth_services', 'teen_support'],
-    categoryPatterns: /youth|teen|adolescent|young adult|under 25|kids help|student|runaway/i,
+    categoryPatterns: /youth|teen|adolescent|young adult|under 25|kids help|runaway/i,
   },
   'newcomer_services': {
     serviceTypes: ['newcomer', 'settlement', 'immigration'],

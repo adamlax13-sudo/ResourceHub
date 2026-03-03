@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { SearchFilters } from "@shared/routes";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 interface RefinePanelProps {
   isOpen: boolean;
@@ -52,6 +53,8 @@ export function RefinePanel({
   onFiltersChange,
   onClear,
 }: RefinePanelProps) {
+  const panelRef = useFocusTrap(isOpen, onClose);
+
   // Track whether we're on mobile to use correct animation axis
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false
@@ -145,6 +148,7 @@ export function RefinePanel({
           <motion.div
             key="refine-panel"
             id="refine-panel"
+            ref={panelRef}
             initial={panelVariants.initial}
             animate={panelVariants.animate}
             exit={panelVariants.exit}

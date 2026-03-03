@@ -101,6 +101,12 @@ export function detectAgeGroup(query: string): AgeGroupDetection | null {
 
   // === MEDIUM CONFIDENCE PATTERNS (-200 penalty) ===
 
+  // University/college student → adult (not youth)
+  if (/\b(university|college|campus|undergrad|graduate|masters|phd|doctoral|polytechnic)\b/.test(q) ||
+      /\b(u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|sait|nait|macewan|bow valley|norquest)\b/.test(q)) {
+    return { ageGroup: 'adult', confidence: 'medium' };
+  }
+
   // Young adult → maps to youth_and_adult
   if (/\byoung\s+adult\b/.test(q)) {
     return { ageGroup: 'youth_and_adult', confidence: 'medium' };

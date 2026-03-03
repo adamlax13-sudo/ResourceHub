@@ -60,6 +60,8 @@ export interface SearchInput {
   session?: SessionContext;
   /** Enable debug mode to include score explanations */
   debug?: boolean;
+  /** Emergency mode — forces crisis service prioritization */
+  emergency?: boolean;
   // Explicit filters from UI (applied as hard constraints, not semantic boosts)
   filters?: SearchFilters;
 }

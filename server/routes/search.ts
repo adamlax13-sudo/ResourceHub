@@ -39,6 +39,7 @@ export function registerSearchRoutes(app: Express): void {
         page: input.page ?? 1,
         pageSize: input.pageSize ?? 20,
         debug: input.debug,
+        emergency: input.emergency,
         filters: hasFilters ? activeFilters : undefined,
       });
 

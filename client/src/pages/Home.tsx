@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useEffect, useCallback } from "react";
+import { useState, useRef, lazy, Suspense, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
 import { useSearch } from "@/hooks/use-search";
@@ -108,6 +108,15 @@ export default function Home() {
     }
   }, [data, setSearchResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-trigger search when page loads with URL params (shared link restoration)
+  const hasTriggeredUrlSearch = useRef(false);
+  useEffect(() => {
+    if (searchState.query && !searchState.hasSearched && !isPending && !hasTriggeredUrlSearch.current) {
+      hasTriggeredUrlSearch.current = true;
+      handleSearchWithFilters(searchState.query, searchState.locations, searchState.filters);
+    }
+  }, [searchState.query, searchState.hasSearched, isPending]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
   const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
@@ -144,8 +153,9 @@ export default function Home() {
   };
 
   const handleEmergencySearch = useCallback(() => {
-    handleSearch("crisis support emergency help right now", searchState.locations);
-  }, [handleSearch, searchState.locations]);
+    const locationParam = searchState.locations.length > 0 ? searchState.locations[0] : undefined;
+    search({ query: "crisis support emergency help right now", location: locationParam, emergency: true });
+  }, [search, searchState.locations]);
 
   const handleCategorySelect = useCallback((query: string) => {
     handleSearch(query, searchState.locations);
@@ -211,7 +221,7 @@ export default function Home() {
         onOpenWizard={handleOpenWizard}
       />
 
-      <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
+      <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-20' : ''}`}>
         {/* Active filter chips — shown below Hero when there are active filters */}
         <AnimatePresence>
           {filterChips.length > 0 && (

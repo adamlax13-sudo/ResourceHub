@@ -1,20 +1,13 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, FileText, Trash2 } from "lucide-react";
 import { useFavoritesContext, type FavoriteService } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 interface MyShortlistProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 function buildPrintPage(doc: Document, favorites: FavoriteService[]): void {
@@ -112,6 +105,8 @@ function buildPrintPage(doc: Document, favorites: FavoriteService[]): void {
 export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
   const { favorites, favoriteCount, removeFavorite, clearFavorites } = useFavoritesContext();
   const { toast } = useToast();
+  const panelRef = useFocusTrap(isOpen, onClose);
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const handleExportPDF = useCallback(() => {
     const printWindow = window.open("", "_blank");
@@ -147,6 +142,7 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
           {/* Panel */}
           <motion.div
             key="shortlist-panel"
+            ref={panelRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -206,7 +202,7 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
                       <button
                         type="button"
                         onClick={() => removeFavorite(fav.id)}
-                        aria-label={`Remove ${escapeHtml(fav.name)} from shortlist`}
+                        aria-label={`Remove ${fav.name} from shortlist`}
                         className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-destructive shrink-0 mt-0.5"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -230,11 +226,23 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={clearFavorites}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-background text-sm font-medium text-muted-foreground hover:text-destructive hover:border-destructive/30 transition-colors"
+                  onClick={() => {
+                    if (confirmingClear) {
+                      clearFavorites();
+                      setConfirmingClear(false);
+                    } else {
+                      setConfirmingClear(true);
+                    }
+                  }}
+                  onBlur={() => setConfirmingClear(false)}
+                  className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                    confirmingClear
+                      ? "border-destructive bg-destructive/10 text-destructive"
+                      : "border-border bg-background text-muted-foreground hover:text-destructive hover:border-destructive/30"
+                  }`}
                 >
                   <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  Clear all
+                  {confirmingClear ? "Tap again to confirm" : "Clear all"}
                 </button>
               </div>
             )}

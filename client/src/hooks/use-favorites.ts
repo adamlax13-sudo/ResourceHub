@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, createContext, useContext, createElement, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, useMemo, createContext, useContext, createElement, type ReactNode } from 'react';
 
 const FAVORITES_KEY = 'roc_favorites';
 const MAX_FAVORITES = 50; // Limit to prevent localStorage bloat
@@ -120,7 +120,7 @@ export function useFavorites() {
   /**
    * Get favorite IDs for quick lookup
    */
-  const favoriteIds = new Set(favorites.map(f => f.id));
+  const favoriteIds = useMemo(() => new Set(favorites.map(f => f.id)), [favorites]);
 
   return {
     favorites,
