@@ -5,13 +5,15 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, MessageSquare, SlidersHorizontal, X } from "lucide-react";
+import { Info, MessageSquare, SlidersHorizontal, X, Heart } from "lucide-react";
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
+import { MyShortlist } from "@/components/MyShortlist";
+import { useFavorites } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
@@ -89,6 +91,8 @@ export default function Home() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [refinePanelOpen, setRefinePanelOpen] = useState(false);
+  const [shortlistOpen, setShortlistOpen] = useState(false);
+  const { favoriteCount, isFavorite, toggleFavorite } = useFavorites();
   const { t } = useTranslation();
 
   // Store search results when data changes
@@ -267,8 +271,19 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Results toolbar: Refine button */}
-              <div className="flex items-center justify-end mb-4">
+              {/* Results toolbar: Shortlist + Refine buttons */}
+              <div className="flex items-center justify-end gap-2 mb-4">
+                {favoriteCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShortlistOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                    aria-label={`Open shortlist, ${favoriteCount} saved`}
+                  >
+                    <Heart className="w-4 h-4 text-red-500 fill-current" aria-hidden="true" />
+                    Shortlist ({favoriteCount})
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setRefinePanelOpen((prev) => !prev)}
@@ -293,6 +308,8 @@ export default function Home() {
                     service={service}
                     index={index}
                     onClick={() => setSelectedServiceId(service.id)}
+                    isFavorite={isFavorite(service.id)}
+                    onToggleFavorite={toggleFavorite}
                   />
                 ))}
               </div>
@@ -326,8 +343,16 @@ export default function Home() {
           serviceId={selectedServiceId}
           isOpen={!!selectedServiceId}
           onClose={() => setSelectedServiceId(null)}
+          isFavorite={selectedServiceId ? isFavorite(selectedServiceId) : false}
+          onToggleFavorite={toggleFavorite}
         />
       </Suspense>
+
+      {/* My Shortlist drawer */}
+      <MyShortlist
+        isOpen={shortlistOpen}
+        onClose={() => setShortlistOpen(false)}
+      />
 
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-2">

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { type ServiceDetail } from "@shared/routes";
 import { ProcessTimeline } from "./ProcessTimeline";
-import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2 } from "lucide-react";
+import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,8 @@ interface ServiceModalProps {
   serviceId: string | null;
   isOpen: boolean;
   onClose: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (service: ServiceDetail) => void;
 }
 
 function isSafeUrl(url: string): boolean {
@@ -192,7 +194,7 @@ function ServiceModalSkeleton() {
 
 // ============= COMPONENT =============
 
-export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) {
+export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, onToggleFavorite }: ServiceModalProps) {
   const { t } = useTranslation();
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -308,8 +310,8 @@ export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-[95vw] md:w-full h-[85vh] md:h-[90vh] max-h-[85vh] md:max-h-[90vh] p-0 overflow-hidden bg-background border-0 shadow-2xl rounded-xl md:rounded-3xl">
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0">
-            <div className="flex flex-col gap-2 pr-8 md:pr-10">
+          <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0 relative">
+            <div className="flex flex-col gap-2 pr-16 md:pr-20">
               <Badge className="w-fit max-w-[80%] md:max-w-none bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none whitespace-normal text-left">
                 {service.category}
               </Badge>
@@ -320,6 +322,22 @@ export function ServiceModal({ serviceId, isOpen, onClose }: ServiceModalProps) 
                 {service.description}
               </DialogDescription>
             </div>
+            {/* Heart / favorite button */}
+            {onToggleFavorite && (
+              <button
+                type="button"
+                onClick={() => onToggleFavorite(service)}
+                className={`absolute top-3 right-10 md:top-6 md:right-14 p-2 rounded-full transition-colors ${
+                  isFavorite
+                    ? "text-red-500"
+                    : "text-muted-foreground/40 hover:text-red-400"
+                }`}
+                aria-label={isFavorite ? "Remove from shortlist" : "Save to shortlist"}
+                aria-pressed={isFavorite}
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} aria-hidden="true" />
+              </button>
+            )}
           </div>
 
           <ScrollArea className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 140px)' }}>

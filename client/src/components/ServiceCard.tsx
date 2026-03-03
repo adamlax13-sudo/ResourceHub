@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
-import { type ServiceSummary } from "@shared/routes";
+import { MapPin, Clock, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
+import { type ServiceSummary, type ServiceDetail } from "@shared/routes";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
 
@@ -37,9 +37,11 @@ interface ServiceCardProps {
   service: ServiceSummary;
   onClick: () => void;
   index: number;
+  isFavorite?: boolean;
+  onToggleFavorite?: (service: ServiceDetail) => void;
 }
 
-export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
+export function ServiceCard({ service, onClick, index, isFavorite = false, onToggleFavorite }: ServiceCardProps) {
   const { searchState } = useSearchContext();
 
   const [vote, setVote] = useState<VoteValue | null>(() => {
@@ -81,6 +83,26 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
       data-testid={`card-service-${service.id}`}
     >
       <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
+        {/* Favorite (heart) button — top-right corner */}
+        {onToggleFavorite && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(service as unknown as ServiceDetail);
+            }}
+            className={`absolute top-3 right-3 z-10 p-1.5 rounded-full transition-colors ${
+              isFavorite
+                ? "text-red-500"
+                : "text-muted-foreground/30 hover:text-red-400"
+            }`}
+            aria-label={isFavorite ? "Remove from shortlist" : "Save to shortlist"}
+            aria-pressed={isFavorite}
+          >
+            <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} aria-hidden="true" />
+          </button>
+        )}
+
         {/* Geometric triangle accent - inspired by ROC logo */}
         <svg className="absolute top-0 right-0 w-24 h-24 -mr-6 -mt-6 text-primary/10 group-hover:text-primary/20 transition-colors" viewBox="0 0 100 100" fill="none">
           <polygon points="50,10 10,90 90,90" stroke="currentColor" strokeWidth="1" fill="none" />
