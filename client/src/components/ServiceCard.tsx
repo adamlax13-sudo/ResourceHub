@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Clock, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
-import { type ServiceSummary, type ServiceDetail } from "@shared/routes";
+import { type ServiceSummary } from "@shared/routes";
+import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
 
@@ -38,7 +39,7 @@ interface ServiceCardProps {
   onClick: () => void;
   index: number;
   isFavorite?: boolean;
-  onToggleFavorite?: (service: ServiceDetail) => void;
+  onToggleFavorite?: (service: FavoriteCandidate) => void;
 }
 
 export function ServiceCard({ service, onClick, index, isFavorite = false, onToggleFavorite }: ServiceCardProps) {
@@ -89,7 +90,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onToggleFavorite(service as unknown as ServiceDetail);
+              onToggleFavorite(service);
             }}
             className={`absolute top-3 right-3 z-10 p-1.5 rounded-full transition-colors ${
               isFavorite

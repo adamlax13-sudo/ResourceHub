@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
 import { SearchProvider } from "@/contexts/SearchContext";
+import { FavoritesProvider } from "@/hooks/use-favorites";
 import { ErrorBoundary, RouteErrorBoundary } from "@/components/ErrorBoundary";
 import './lib/i18n';
 
@@ -39,8 +40,10 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <SearchProvider>
-            <Toaster />
-            <Router />
+            <FavoritesProvider>
+              <Toaster />
+              <Router />
+            </FavoritesProvider>
           </SearchProvider>
         </TooltipProvider>
       </QueryClientProvider>

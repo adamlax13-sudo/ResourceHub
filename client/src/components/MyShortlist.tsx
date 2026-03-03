@@ -1,6 +1,8 @@
+import { useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, FileText, Trash2 } from "lucide-react";
-import { useFavorites, type FavoriteService } from "@/hooks/use-favorites";
+import { useFavoritesContext, type FavoriteService } from "@/hooks/use-favorites";
+import { useToast } from "@/hooks/use-toast";
 
 interface MyShortlistProps {
   isOpen: boolean;
@@ -107,16 +109,24 @@ function buildPrintPage(doc: Document, favorites: FavoriteService[]): void {
   doc.body.appendChild(footer);
 }
 
-function handleExportPDF(favorites: FavoriteService[]): void {
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) return;
-  buildPrintPage(printWindow.document, favorites);
-  // Give browser a tick to render styles before opening print dialog
-  setTimeout(() => printWindow.print(), 250);
-}
-
 export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
-  const { favorites, favoriteCount, removeFavorite, clearFavorites } = useFavorites();
+  const { favorites, favoriteCount, removeFavorite, clearFavorites } = useFavoritesContext();
+  const { toast } = useToast();
+
+  const handleExportPDF = useCallback(() => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast({
+        title: "Popup blocked",
+        description: "Please allow popups for this site to export your shortlist as PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+    buildPrintPage(printWindow.document, favorites);
+    // Give browser a tick to render styles before opening print dialog
+    setTimeout(() => printWindow.print(), 250);
+  }, [favorites, toast]);
 
   return (
     <AnimatePresence>
@@ -212,7 +222,7 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
               <div className="px-4 py-4 border-t border-border shrink-0 space-y-2">
                 <button
                   type="button"
-                  onClick={() => handleExportPDF(favorites)}
+                  onClick={handleExportPDF}
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
                 >
                   <FileText className="w-4 h-4" aria-hidden="true" />

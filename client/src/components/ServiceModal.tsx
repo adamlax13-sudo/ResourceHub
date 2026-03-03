@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { type ServiceDetail } from "@shared/routes";
+import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { ProcessTimeline } from "./ProcessTimeline";
 import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ interface ServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   isFavorite?: boolean;
-  onToggleFavorite?: (service: ServiceDetail) => void;
+  onToggleFavorite?: (service: FavoriteCandidate) => void;
 }
 
 function isSafeUrl(url: string): boolean {

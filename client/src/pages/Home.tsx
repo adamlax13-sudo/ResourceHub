@@ -13,7 +13,7 @@ import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
 import { MyShortlist } from "@/components/MyShortlist";
-import { useFavorites } from "@/hooks/use-favorites";
+import { useFavoritesContext } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
@@ -92,7 +92,7 @@ export default function Home() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [refinePanelOpen, setRefinePanelOpen] = useState(false);
   const [shortlistOpen, setShortlistOpen] = useState(false);
-  const { favoriteCount, isFavorite, toggleFavorite } = useFavorites();
+  const { favoriteCount, isFavorite, toggleFavorite } = useFavoritesContext();
   const { t } = useTranslation();
 
   // Store search results when data changes

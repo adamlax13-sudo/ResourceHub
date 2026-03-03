@@ -1,8 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { ServiceDetail } from '@shared/routes';
+import { useState, useEffect, useCallback, createContext, useContext, createElement, type ReactNode } from 'react';
 
 const FAVORITES_KEY = 'roc_favorites';
 const MAX_FAVORITES = 50; // Limit to prevent localStorage bloat
+
+export interface FavoriteCandidate {
+  id: string;
+  name: string;
+  category: string;
+  location: string;
+}
 
 interface FavoriteService {
   id: string;
@@ -56,7 +62,7 @@ export function useFavorites() {
   /**
    * Add a service to favorites
    */
-  const addFavorite = useCallback((service: ServiceDetail) => {
+  const addFavorite = useCallback((service: FavoriteCandidate) => {
     setFavorites(prev => {
       // Don't add duplicates
       if (prev.some(f => f.id === service.id)) {
@@ -91,7 +97,7 @@ export function useFavorites() {
   /**
    * Toggle favorite status for a service
    */
-  const toggleFavorite = useCallback((service: ServiceDetail) => {
+  const toggleFavorite = useCallback((service: FavoriteCandidate) => {
     if (isFavorite(service.id)) {
       removeFavorite(service.id);
     } else {
@@ -130,3 +136,20 @@ export function useFavorites() {
 }
 
 export type { FavoriteService };
+
+// ============= SHARED CONTEXT =============
+
+interface FavoritesContextValue extends ReturnType<typeof useFavorites> {}
+
+const FavoritesContext = createContext<FavoritesContextValue | null>(null);
+
+export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const favorites = useFavorites();
+  return createElement(FavoritesContext.Provider, { value: favorites }, children);
+}
+
+export function useFavoritesContext(): FavoritesContextValue {
+  const ctx = useContext(FavoritesContext);
+  if (!ctx) throw new Error('useFavoritesContext must be used inside FavoritesProvider');
+  return ctx;
+}
