@@ -21,22 +21,25 @@ export function registerSearchRoutes(app: Express): void {
       }
 
       // Call the search orchestrator
+      const activeFilters = {
+        category: input.category,
+        genderRestriction: input.genderRestriction,
+        ageGroup: input.ageGroup,
+        is24_7: input.is24_7,
+        isFaithBased: input.isFaithBased,
+        is12Step: input.is12Step,
+        languagesSupported: input.languagesSupported,
+        serviceFormat: input.serviceFormat,
+      };
+      const hasFilters = Object.values(activeFilters).some(v => v !== undefined);
+
       const result = await search({
         query: input.query,
         location: input.location,
         page: input.page ?? 1,
         pageSize: input.pageSize ?? 20,
         debug: input.debug,
-        filters: {
-          category: input.category,
-          genderRestriction: input.genderRestriction,
-          ageGroup: input.ageGroup,
-          is24_7: input.is24_7,
-          isFaithBased: input.isFaithBased,
-          is12Step: input.is12Step,
-          languagesSupported: input.languagesSupported,
-          serviceFormat: input.serviceFormat,
-        },
+        filters: hasFilters ? activeFilters : undefined,
       });
 
       res.json(result);

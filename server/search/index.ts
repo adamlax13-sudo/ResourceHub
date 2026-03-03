@@ -89,6 +89,9 @@ function filterActiveServices(services: LiteService[], activeIds: Set<string>): 
 export async function search(input: SearchInput): Promise<SearchResponse> {
   const startTime = Date.now();
 
+  // TODO: Task 4 — apply input.filters as hard constraints before ranking
+  // Filters: category, genderRestriction, ageGroup, is24_7, isFaithBased, is12Step, languagesSupported, serviceFormat
+
   // Normalize query for precomputed cache lookup
   const normalizedQuery = normalizeForCache(input.query);
 

@@ -5,6 +5,7 @@
  */
 
 import type { SearchType, QueryIntent, SubstanceType } from './config';
+import type { SearchFilters } from '@shared/routes';
 
 // Re-export types from config for convenience
 export type { SearchType, QueryIntent, SubstanceType };
@@ -60,16 +61,7 @@ export interface SearchInput {
   /** Enable debug mode to include score explanations */
   debug?: boolean;
   // Explicit filters from UI (applied as hard constraints, not semantic boosts)
-  filters?: {
-    category?: string;
-    genderRestriction?: 'all' | 'women_only' | 'men_only';
-    ageGroup?: 'all_ages' | 'youth' | 'adult' | 'senior';
-    is24_7?: boolean;
-    isFaithBased?: boolean;
-    is12Step?: boolean;
-    languagesSupported?: string[];
-    serviceFormat?: string;
-  };
+  filters?: SearchFilters;
 }
 
 // === QUERY ANALYSIS ===

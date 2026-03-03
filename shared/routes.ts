@@ -48,6 +48,21 @@ export const paginationSchema = z.object({
   hasPreviousPage: z.boolean(),
 });
 
+// Filter fields passed as explicit UI constraints (applied as hard constraints, not semantic boosts)
+// Note: 'all' in genderRestriction is a UI sentinel meaning "no restriction" — never compared to DB data
+// Note: 'youth_and_adult' is a DB-internal storage value intentionally excluded from the API surface
+export const searchFiltersSchema = z.object({
+  category: z.string().optional(),
+  genderRestriction: z.enum(['all', 'women_only', 'men_only']).optional(),
+  ageGroup: z.enum(['all_ages', 'youth', 'adult', 'senior']).optional(),
+  is24_7: z.boolean().optional(),
+  isFaithBased: z.boolean().optional(),
+  is12Step: z.boolean().optional(),
+  languagesSupported: z.array(z.string()).optional(),
+  serviceFormat: z.string().optional(),
+});
+export type SearchFilters = z.infer<typeof searchFiltersSchema>;
+
 export const api = {
   search: {
     query: {
@@ -63,14 +78,7 @@ export const api = {
         // Debug mode - includes score explanations in response
         debug: z.boolean().optional(),
         // Explicit filters (applied as hard constraints in the search pipeline)
-        category: z.string().optional(),
-        genderRestriction: z.enum(['all', 'women_only', 'men_only']).optional(),
-        ageGroup: z.enum(['all_ages', 'youth', 'adult', 'senior']).optional(),
-        is24_7: z.boolean().optional(),
-        isFaithBased: z.boolean().optional(),
-        is12Step: z.boolean().optional(),
-        languagesSupported: z.array(z.string()).optional(),
-        serviceFormat: z.string().optional(),
+        ...searchFiltersSchema.shape,
       }),
       responses: {
         // Now returns lite summaries for fast display
