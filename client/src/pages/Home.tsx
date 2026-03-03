@@ -10,6 +10,7 @@ import { Info, Search, ClipboardList, Heart, RotateCcw, MessageSquare } from "lu
 import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext } from "@/contexts/SearchContext";
+import { CategoryTiles } from "@/components/CategoryTiles";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
@@ -118,6 +119,10 @@ export default function Home() {
     setLocations(location ? [location] : []);
   };
 
+  const handleEmergencySearch = useCallback(() => {
+    handleSearch("crisis support emergency help right now", searchState.locations);
+  }, [handleSearch, searchState.locations]);
+
   return (
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
       <Suspense fallback={null}>
@@ -129,6 +134,7 @@ export default function Home() {
         initialQuery={searchState.query}
         locations={searchState.locations}
         onLocationChange={handleLocationChange}
+        onEmergencySearch={handleEmergencySearch}
       />
 
       <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
@@ -193,59 +199,7 @@ export default function Home() {
         </AnimatePresence>
         
         {!displayServices && !isPending && !error && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-center mt-32"
-          >
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto" style={{ perspective: "1000px" }}>
-              {[
-                { 
-                  title: t('howItWorks.step1Title'), 
-                  desc: t('howItWorks.step1Desc'), 
-                  back: t('howItWorks.step1Back'),
-                  Icon: Search 
-                },
-                { 
-                  title: t('howItWorks.step2Title'), 
-                  desc: t('howItWorks.step2Desc'), 
-                  back: t('howItWorks.step2Back'),
-                  Icon: ClipboardList 
-                },
-                { 
-                  title: t('howItWorks.step3Title'), 
-                  desc: t('howItWorks.step3Desc'), 
-                  back: t('howItWorks.step3Back'),
-                  Icon: Heart 
-                }
-              ].map((step, i) => (
-                <FlipCard
-                  key={i}
-                  index={i}
-                  frontContent={
-                    <>
-                      <div className="relative mb-4">
-                        <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-50" />
-                        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-lg border border-primary/20 flex items-center justify-center text-primary font-bold text-xl">
-                          {i + 1}
-                        </div>
-                      </div>
-                      <h3 className="font-display font-bold text-lg mb-2 text-foreground">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm text-center">{step.desc}</p>
-                    </>
-                  }
-                  backContent={
-                    <>
-                      <step.Icon className="w-10 h-10 text-primary mb-4" />
-                      <h3 className="font-display font-bold text-lg mb-3 text-foreground">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm text-center leading-relaxed">{step.back}</p>
-                    </>
-                  }
-                />
-              ))}
-            </div>
-          </motion.div>
+          <CategoryTiles onSelect={(query) => handleSearch(query, searchState.locations)} />
         )}
       </div>
 

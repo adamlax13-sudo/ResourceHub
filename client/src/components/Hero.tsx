@@ -38,6 +38,7 @@ interface HeroProps {
   initialQuery?: string;
   locations: string[];
   onLocationChange: (location: string) => void;
+  onEmergencySearch: () => void;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -233,7 +234,7 @@ function LocationDropdown({
   );
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -457,6 +458,19 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             <label htmlFor="website-url">Website</label>
             <input id="website-url" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
           </div>
+
+          {/* Emergency fast-path */}
+          <button
+            type="button"
+            onClick={onEmergencySearch}
+            className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-xl
+                       shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm
+                       animate-pulse hover:animate-none mb-4"
+            aria-label="Get immediate crisis support"
+          >
+            <span aria-hidden="true">🆘</span>
+            I need help right now
+          </button>
 
           {/* Custom Location Dropdown */}
           <motion.div
