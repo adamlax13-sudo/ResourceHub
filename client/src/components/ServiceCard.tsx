@@ -1,7 +1,37 @@
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Clock } from "lucide-react";
+import { ArrowRight, MapPin, Clock, ThumbsUp, ThumbsDown } from "lucide-react";
 import { type ServiceSummary } from "@shared/routes";
 import { Badge } from "@/components/ui/badge";
+import { useSearchContext } from "@/contexts/SearchContext";
+
+const VOTES_STORAGE_KEY = 'roc_service_votes';
+
+type VoteValue = 'up' | 'down';
+
+function readStoredVotes(): Record<string, VoteValue> {
+  try {
+    const raw = localStorage.getItem(VOTES_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+      return parsed as Record<string, VoteValue>;
+    }
+  } catch {
+    // ignore corrupt storage
+  }
+  return {};
+}
+
+function writeStoredVote(serviceId: string, vote: VoteValue): void {
+  try {
+    const current = readStoredVotes();
+    current[serviceId] = vote;
+    localStorage.setItem(VOTES_STORAGE_KEY, JSON.stringify(current));
+  } catch {
+    // ignore storage errors
+  }
+}
 
 interface ServiceCardProps {
   service: ServiceSummary;
@@ -10,6 +40,33 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
+  const { searchState } = useSearchContext();
+
+  const [vote, setVote] = useState<VoteValue | null>(() => {
+    const stored = readStoredVotes();
+    return stored[service.id] ?? null;
+  });
+
+  const handleVote = useCallback((chosen: VoteValue, e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    if (vote !== null) return; // already voted — no re-voting
+
+    fetch('/api/service-vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        serviceId: service.id,
+        vote: chosen,
+        queryContext: searchState.query,
+      }),
+    }).catch(() => {}); // fire and forget
+
+    writeStoredVote(service.id, chosen);
+    setVote(chosen);
+  }, [vote, service.id, searchState.query]);
+
+  const hasVoted = vote !== null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -40,7 +97,7 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
         <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors min-w-0 break-words hyphens-auto line-clamp-2">
           {service.name}
         </h3>
-        
+
         <p className="text-muted-foreground mb-6 flex-grow min-w-0 break-words whitespace-normal overflow-wrap-anywhere">
           {service.description}
         </p>
@@ -58,7 +115,48 @@ export function ServiceCard({ service, onClick, index }: ServiceCardProps) {
 
         <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
           <span>View Details</span>
-          <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              aria-label="This result was helpful"
+              aria-pressed={vote === 'up'}
+              disabled={hasVoted}
+              onClick={(e) => handleVote('up', e)}
+              onKeyDown={(e) => e.key === 'Enter' && handleVote('up', e)}
+              className={[
+                "p-1 rounded transition-colors",
+                hasVoted
+                  ? "cursor-default"
+                  : "hover:text-green-600 hover:bg-green-50",
+                vote === 'up'
+                  ? "text-green-600"
+                  : vote === 'down'
+                    ? "text-muted-foreground/30"
+                    : "text-muted-foreground/50",
+              ].join(' ')}
+            >
+              <ThumbsUp className="w-3.5 h-3.5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              aria-label="This result was not helpful"
+              aria-pressed={vote === 'down'}
+              disabled={hasVoted}
+              onClick={(e) => handleVote('down', e)}
+              onKeyDown={(e) => e.key === 'Enter' && handleVote('down', e)}
+              className={[
+                "p-1 rounded transition-colors",
+                hasVoted
+                  ? "cursor-default"
+                  : "hover:text-red-500 hover:bg-red-50",
+                vote === 'down'
+                  ? "text-red-500"
+                  : "text-muted-foreground/50",
+              ].join(' ')}
+            >
+              <ThumbsDown className="w-3.5 h-3.5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
