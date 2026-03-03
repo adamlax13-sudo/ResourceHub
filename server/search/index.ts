@@ -33,9 +33,63 @@ import {
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
+import type { SearchFilters } from '@shared/routes';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
+
+/**
+ * Apply hard UI filters to search results.
+ * These are explicit constraints from the user (e.g. gender filter dropdown),
+ * not semantic boosts derived from query text.
+ *
+ * Rules:
+ * - Skip the filter entirely if input.filters is undefined
+ * - Boolean filters (is24_7, isFaithBased, is12Step) only applied when value is true
+ * - genderRestriction: skip if value is 'all'
+ * - ageGroup: skip if value is 'all_ages'; 'youth_and_adult' DB rows match both 'youth' and 'adult'
+ * - languagesSupported: only filter if array is non-empty
+ * - category / serviceFormat: case-insensitive string match
+ */
+function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
+  return services.filter(svc => {
+    // Cast to any to access DB columns that may be present but are not typed on LiteService
+    const s = svc as any;
+
+    if (filters.category && svc.category?.toLowerCase() !== filters.category.toLowerCase()) return false;
+
+    if (filters.genderRestriction && filters.genderRestriction !== 'all') {
+      const svcGender: string | null = s.genderRestriction ?? s.gender_restriction ?? null;
+      if (svcGender !== filters.genderRestriction) return false;
+    }
+
+    if (filters.ageGroup && filters.ageGroup !== 'all_ages') {
+      const dbAge: string = s.ageGroup ?? s.age_group ?? 'all_ages';
+      // 'youth_and_adult' DB rows should match both 'youth' and 'adult' API filter values
+      if (dbAge === 'youth_and_adult') {
+        if (filters.ageGroup !== 'youth' && filters.ageGroup !== 'adult') return false;
+      } else if (dbAge !== filters.ageGroup) {
+        return false;
+      }
+    }
+
+    if (filters.is24_7 === true && !svc.is24_7) return false;
+    if (filters.isFaithBased === true && !(s.isFaithBased ?? s.is_faith_based)) return false;
+    if (filters.is12Step === true && !(s.is12Step ?? s.is_12_step)) return false;
+
+    if (filters.serviceFormat) {
+      const svcFormat: string | null = s.serviceFormat ?? s.service_format ?? null;
+      if (!svcFormat || svcFormat.toLowerCase() !== filters.serviceFormat.toLowerCase()) return false;
+    }
+
+    if (filters.languagesSupported && filters.languagesSupported.length > 0) {
+      const svcLangs: string[] = (s.languagesSupported ?? s.languages_supported) ?? [];
+      if (!filters.languagesSupported.some((lang: string) => svcLangs.includes(lang))) return false;
+    }
+
+    return true;
+  });
+}
 
 // In-memory services cache for generating database hash and active ID set
 interface ServicesCacheData {
@@ -88,9 +142,6 @@ function filterActiveServices(services: LiteService[], activeIds: Set<string>): 
  */
 export async function search(input: SearchInput): Promise<SearchResponse> {
   const startTime = Date.now();
-
-  // TODO: Task 4 — apply input.filters as hard constraints before ranking
-  // Filters: category, genderRestriction, ageGroup, is24_7, isFaithBased, is12Step, languagesSupported, serviceFormat
 
   // Normalize query for precomputed cache lookup
   const normalizedQuery = normalizeForCache(input.query);
@@ -193,6 +244,16 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (isTenantLegalQuery(input.query)) {
     ensureLegalAidInResults(result.services);
     console.log(`[SearchOrchestrator] Tenant legal query - Legal aid service ensured in results`);
+  }
+
+  // Apply hard UI filters before caching and pagination
+  // Must run AFTER pinning so crisis/pinned services are still subject to filters
+  if (input.filters) {
+    const beforeFilter = result.services.length;
+    result.services = applyHardFilters(result.services, input.filters);
+    if (result.services.length < beforeFilter) {
+      console.log(`[SearchOrchestrator] Hard filters applied: ${beforeFilter} → ${result.services.length} services`);
+    }
   }
 
   // ============= LOG FAILED QUERIES =============
