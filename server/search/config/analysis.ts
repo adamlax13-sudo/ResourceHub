@@ -327,7 +327,8 @@ export const SEARCH_CONFIG = {
       /(?:can'?t|cannot).*(?:fall asleep|sleep at night|sleeping)/i,
       /(?:struggling|help|need).*(?:mental health|mental-health|my mental)/i,
       /(?:no one|nobody).*(?:to talk|who cares|understands)/i,
-      /(?:isolated|lonely|loneliness)/i,
+      // Note: standalone "lonely/isolated" moved to community_social intent;
+      // mental_health still catches these via distress patterns below and categoryIndicators
       // Expanded emotional distress patterns
       /(?:scared|terrified|trapped|helpless|stuck)/i,
       /(?:can'?t cope|breaking down|falling apart|at my wit'?s end)/i,
@@ -506,7 +507,10 @@ export const SEARCH_CONFIG = {
     community_social: [
       // Social connection / loneliness (proactive, not crisis)
       /\b(?:make|find|meet|looking for)\s*(?:friends|people|connections?|companions?)\b/i,
-      /\b(?:social\s*(?:activities|connection|groups?|programs?|events?|clubs?|circles?))\b/i,
+      /\b(?:can'?t|cannot|don'?t have|no|need)\s*(?:find|make)?\s*(?:friends|people|connections?|companions?)\b/i,
+      /\b(?:social\s*(?:activities|connection|support|groups?|programs?|events?|clubs?|circles?))\b/i,
+      /\b(?:i'?m|i am|i feel|feeling|so)\s*(?:lonely|lonesome|isolated|alone)\b/i,
+      /\b(?:lonely|loneliness|isolated|isolation)\b/i,
       /\b(?:lonely|loneliness|isolated|isolation)\b.*\b(?:connect|friends|people|activities|things to do)\b/i,
       /\b(?:connect|friends|people|activities|things to do)\b.*\b(?:lonely|loneliness|isolated|isolation)\b/i,
       // Recreation and fitness
@@ -734,7 +738,7 @@ export const SEARCH_CONFIG = {
     // Community & social connection indicators
     community_social: [
       /\b(recreation|recreational|fitness class|drop-in|sports league)\b/i,
-      /\b(social connection|social activit|community program|community group)\b/i,
+      /\b(social connection|social support|social activit|community program|community group)\b/i,
       /\b(volunteer|volunteering)\b/i,
       /\b(hobby|hobbies|arts and crafts|woodworking|makerspace|maker space)\b/i,
       /\b(community garden|gardening club|urban farm)\b/i,

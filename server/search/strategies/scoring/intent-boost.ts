@@ -131,8 +131,8 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
     categoryPatterns: /veteran|military|armed forces|canadian forces|CAF|CFB|PTSD|post-?traumatic|trauma|operational stress|combat|deployment|VAC|veterans affairs|OSISS|legion|royal canadian legion/i,
   },
   'community_social': {
-    serviceTypes: ['community_social_connection'],
-    categoryPatterns: /recreation|drop-in|fitness|social connection|community program|volunteer|hiking|outdoor|adaptive sport|wheelchair sport|inclusive recreation|makerspace|maker space|men'?s shed|community garden|friendship|YMCA|arts and crafts|woodworking|community farm/i,
+    serviceTypes: ['community & social'],
+    categoryPatterns: /recreation|drop-in|fitness|social connection|social support|community program|volunteer|hiking|outdoor|adaptive sport|wheelchair sport|inclusive recreation|makerspace|maker space|men'?s shed|community garden|friendship|lonely|isolation|YMCA|arts and crafts|woodworking|community farm/i,
   },
 };
 

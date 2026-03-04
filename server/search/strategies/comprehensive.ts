@@ -218,6 +218,7 @@ const DOMAIN_FALLBACK_TERMS: Record<string, string> = {
   'indigenous_services': 'indigenous first nations métis inuit native aboriginal elder ceremony healing treaty',
   'student_services': 'campus university college student counselling mental health support crisis',
   'parenting_support': 'pregnancy pregnant baby infant parenting parent support formula diapers childcare postpartum',
+  'community_social': 'recreation social connection community program drop-in volunteer friendship YMCA adaptive sports makerspace community garden',
 };
 
 // Domain intents that benefit from OpenAI enhancement
@@ -226,7 +227,8 @@ const DOMAIN_INTENTS = [
   'mental_health', 'disability_support', 'grief_support', 'senior_services',
   'legal_aid', 'employment_support', 'youth_services', 'newcomer_services',
   'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services',
-  'indigenous_services', 'student_services', 'parenting_support', 'veteran_services'
+  'indigenous_services', 'student_services', 'parenting_support', 'veteran_services',
+  'community_social'
 ];
 
 export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
