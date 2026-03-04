@@ -384,6 +384,10 @@ export default function Home() {
       <MyShortlist
         isOpen={shortlistOpen}
         onClose={() => setShortlistOpen(false)}
+        onSelectService={(id) => {
+          setSelectedServiceId(id);
+          setShortlistOpen(false);
+        }}
       />
 
       {/* Footer */}

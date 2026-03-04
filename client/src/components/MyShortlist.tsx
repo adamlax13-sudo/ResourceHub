@@ -9,6 +9,7 @@ import type { ServiceDetail } from "@shared/routes";
 interface MyShortlistProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelectService?: (id: string) => void;
 }
 
 interface PrintOptions {
@@ -28,9 +29,13 @@ function serviceToText(svc: ServiceDetail, options: PrintOptions): string {
     lines.push("", "How to Access:");
     svc.process.forEach((step, i) => lines.push(`  ${i + 1}. ${step}`));
   }
-  if (options.includeRequiredDocs && svc.requiredDocs.length > 0) {
+  if (options.includeRequiredDocs) {
     lines.push("", "What You'll Need:");
-    svc.requiredDocs.forEach((d) => lines.push(`  - ${d}`));
+    if (svc.requiredDocs.length > 0) {
+      svc.requiredDocs.forEach((d) => lines.push(`  - ${d}`));
+    } else {
+      lines.push("  No specific documents required.");
+    }
   }
   return lines.join("\n");
 }
@@ -265,20 +270,27 @@ function buildPrintPage(
     }
 
     // Required docs (optional)
-    if (options.includeRequiredDocs && svc.requiredDocs.length > 0) {
+    if (options.includeRequiredDocs) {
       const divider = doc.createElement("div");
       divider.className = "section-divider";
       divider.textContent = "What You'll Need";
       card.appendChild(divider);
 
-      const ul = doc.createElement("ul");
-      ul.className = "docs";
-      for (const d of svc.requiredDocs) {
-        const li = doc.createElement("li");
-        li.textContent = d;
-        ul.appendChild(li);
+      if (svc.requiredDocs.length > 0) {
+        const ul = doc.createElement("ul");
+        ul.className = "docs";
+        for (const d of svc.requiredDocs) {
+          const li = doc.createElement("li");
+          li.textContent = d;
+          ul.appendChild(li);
+        }
+        card.appendChild(ul);
+      } else {
+        const noDocsMsg = doc.createElement("p");
+        noDocsMsg.textContent = "No specific documents required.";
+        noDocsMsg.style.cssText = "font-size: 12px; color: #666; font-style: italic; margin-top: 4px;";
+        card.appendChild(noDocsMsg);
       }
-      card.appendChild(ul);
     }
 
     doc.body.appendChild(card);
@@ -293,7 +305,7 @@ function buildPrintPage(
   doc.body.appendChild(footer);
 }
 
-export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
+export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistProps) {
   const { favorites, favoriteCount, removeFavorite, clearFavorites } = useFavoritesContext();
   const { toast } = useToast();
   const panelRef = useFocusTrap(isOpen, onClose);
@@ -427,8 +439,19 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
                       key={fav.id}
                       className="flex items-start gap-3 bg-background rounded-xl border border-border p-3"
                     >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground leading-snug break-words">
+                      <div
+                        className={`flex-1 min-w-0${onSelectService ? " cursor-pointer" : ""}`}
+                        onClick={() => onSelectService?.(fav.id)}
+                        role={onSelectService ? "button" : undefined}
+                        tabIndex={onSelectService ? 0 : undefined}
+                        onKeyDown={(e) => {
+                          if (onSelectService && (e.key === "Enter" || e.key === " ")) {
+                            e.preventDefault();
+                            onSelectService(fav.id);
+                          }
+                        }}
+                      >
+                        <p className={`text-sm font-semibold leading-snug break-words ${onSelectService ? "text-primary hover:underline" : "text-foreground"}`}>
                           {fav.name}
                         </p>
                         <p className="text-xs text-primary font-medium mt-0.5 uppercase tracking-wide">
