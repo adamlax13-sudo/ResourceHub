@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v70'; // Bumped for multi-intent confidence-based detection
+const CACHE_VERSION = 'v71'; // Bumped for include-compatible filters + filter-match boost
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -34,6 +34,7 @@ import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
+import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyHardFilters } from './filters';
 
 // Single search strategy - comprehensive mode only
@@ -128,6 +129,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
+      services = applyFilterMatchBoosts(services, input.filters);
     }
 
     return formatResponse(services, '', input, startTime, true);
@@ -172,6 +174,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
+      services = applyFilterMatchBoosts(services, input.filters);
     }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
