@@ -142,8 +142,8 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
           ))}
         </div>
 
-        {/* Step content — scrollable container, no absolute positioning */}
-        <div className="relative overflow-y-auto" style={{ maxHeight: 'min(60vh, 440px)' }}>
+        {/* Step content */}
+        <div className="relative overflow-visible">
           <AnimatePresence mode="wait" custom={direction}>
             {step === 1 && (
               <motion.div
@@ -199,7 +199,7 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
                 <h2 className="text-xl font-semibold text-foreground text-center mb-6">
                   What's most urgent right now?
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 px-1">
                   {CATEGORIES.map(cat => {
                     const Icon = cat.icon;
                     const active = selectedCategory === cat.query;
