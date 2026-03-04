@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { QuickExitButton } from './QuickExitButton';
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { extractQueryLocation } from "@/lib/extract-query-location";
 
@@ -389,10 +390,15 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             </span>
           </div>
 
-          <LanguageSwitcher
-            variant="ghost"
-            className="text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
-          />
+          <div className="flex items-center gap-2">
+            <QuickExitButton
+              className="text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
+            />
+            <LanguageSwitcher
+              variant="ghost"
+              className="text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
+            />
+          </div>
         </div>
       </div>
 
