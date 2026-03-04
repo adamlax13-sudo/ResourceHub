@@ -3,11 +3,11 @@
  * and return the corresponding dropdown value from Hero.tsx's ALBERTA_LOCATIONS.
  *
  * This mirrors a subset of the backend's extractLocationContext
- * (server/helpers/locations.ts) but is scoped to only the 22 cities
+ * (server/helpers/locations.ts) but is scoped to only the 21 cities
  * available in the location dropdown.
  */
 
-// The 22 dropdown city values, sorted longest-first for matching
+// The 21 dropdown city values, sorted longest-first for matching
 const DROPDOWN_CITIES = [
   'fort saskatchewan',
   'fort mcmurray',
@@ -32,8 +32,10 @@ const DROPDOWN_CITIES = [
   'banff',
 ];
 
-// Aliases that map to dropdown city values
-// Only includes aliases whose canonical target is a dropdown city
+// Aliases that map to dropdown city values.
+// Only includes aliases whose canonical target is a dropdown city.
+// Omitted from backend: 'gp' (ambiguous — also means "general practitioner"),
+// 'spruce' (covered by full name 'spruce grove'), 'fortmac' (covered by 'fort mac'/'ft mac').
 const ALIASES: Record<string, string> = {
   // Airport codes
   'yyc': 'calgary',
