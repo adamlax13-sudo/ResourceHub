@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, FileText, Trash2 } from "lucide-react";
-import { useFavoritesContext, type FavoriteService } from "@/hooks/use-favorites";
+import { useFavoritesContext } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
 import type { ServiceDetail } from "@shared/routes";
@@ -207,21 +207,70 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
   const { toast } = useToast();
   const panelRef = useFocusTrap(isOpen, onClose);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const [includeSteps, setIncludeSteps] = useState(true);
+  const [includeDocs, setIncludeDocs] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleExportPDF = useCallback(() => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
+  const handleExportPDF = useCallback(async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+
+    try {
+      // Fetch full details for all favorites in parallel
+      const details = await Promise.all(
+        favorites.map(async (fav) => {
+          const res = await fetch(`/api/services/${encodeURIComponent(fav.id)}`);
+          if (!res.ok) return null;
+          return res.json() as Promise<ServiceDetail>;
+        }),
+      );
+
+      const services: ServiceDetail[] = details.filter(
+        (d): d is ServiceDetail => d !== null,
+      );
+
+      if (services.length === 0) {
+        toast({
+          title: "Export failed",
+          description: "Could not load service details. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        toast({
+          title: "Popup blocked",
+          description: "Please allow popups for this site to export your shortlist.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (services.length < favorites.length) {
+        toast({
+          title: "Some services unavailable",
+          description: `Exported ${services.length} of ${favorites.length} services.`,
+        });
+      }
+
+      buildPrintPage(printWindow.document, services, {
+        includeProcessSteps: includeSteps,
+        includeRequiredDocs: includeDocs,
+      });
+      printWindow.document.close();
+      setTimeout(() => printWindow.print(), 250);
+    } catch {
       toast({
-        title: "Popup blocked",
-        description: "Please allow popups for this site to export your shortlist as PDF.",
+        title: "Export failed",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsExporting(false);
     }
-    buildPrintPage(printWindow.document, favorites);
-    // Give browser a tick to render styles before opening print dialog
-    setTimeout(() => printWindow.print(), 250);
-  }, [favorites, toast]);
+  }, [favorites, includeSteps, includeDocs, toast]);
 
   return (
     <AnimatePresence>
@@ -316,13 +365,53 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
             {/* Footer actions */}
             {favoriteCount > 0 && (
               <div className="px-4 py-4 border-t border-border shrink-0 space-y-2">
+                {/* Export options */}
+                <div className="space-y-1.5 mb-3">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    PDF Options
+                  </p>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={includeSteps}
+                      onChange={(e) => setIncludeSteps(e.target.checked)}
+                      className="rounded border-border text-primary focus:ring-primary/30 w-3.5 h-3.5"
+                    />
+                    <span className="text-sm text-foreground group-hover:text-primary transition-colors">
+                      Include access steps
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={includeDocs}
+                      onChange={(e) => setIncludeDocs(e.target.checked)}
+                      className="rounded border-border text-primary focus:ring-primary/30 w-3.5 h-3.5"
+                    />
+                    <span className="text-sm text-foreground group-hover:text-primary transition-colors">
+                      Include required documents
+                    </span>
+                  </label>
+                </div>
                 <button
                   type="button"
                   onClick={handleExportPDF}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+                  disabled={isExporting}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <FileText className="w-4 h-4" aria-hidden="true" />
-                  Export PDF
+                  {isExporting ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
+                      </svg>
+                      Preparing PDF…
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="w-4 h-4" aria-hidden="true" />
+                      Export PDF
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
