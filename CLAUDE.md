@@ -106,6 +106,23 @@ See `.env.example` for required variables. Key ones:
 
 Render.com with `render.yaml` blueprint. Auto-deploys on push to main. Monthly scraper cron job runs on the 1st at 2 AM UTC. See DEPLOYMENT.md for full details.
 
+Live URL: https://resourcehub-wwg6.onrender.com
+
+### Build format
+The server is built with esbuild to **CJS** format (`script/build.ts` → `dist/index.cjs`). Do NOT use `import.meta.dirname` or other ESM-only APIs in server code — use `__dirname` instead, which esbuild provides in CJS output.
+
+## Git Safety Rules (CRITICAL)
+
+### Subagent + Git = Danger
+Subagents dispatched via the `Task` tool (without `isolation: "worktree"`) share the main `.git/index`. If a subagent runs git commands (add, reset, checkout), it **corrupts the staging area** for the main agent. This has caused mass file deletions in production.
+
+**Rules:**
+1. **Use `isolation: "worktree"` for any subagent that writes code.** This gives it its own git state.
+2. **Never chain `git add <file> && git commit`** — always inspect what's staged first.
+3. **Before every commit, run `git diff --cached --stat`** to verify only intended files are staged. If the number of files doesn't match what you expect, STOP and investigate.
+4. **After subagent work completes, run `git status`** to check for unexpected index changes before doing any git operations.
+5. **If a commit shows unexpected file counts** (e.g., "236 files changed" when you expected 1), do NOT push. Investigate immediately.
+
 ## Maintaining This File
 
 This is a living document. Update it when you discover:
