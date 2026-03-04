@@ -72,6 +72,19 @@ export function boostByNameMatch(
     'emergency', 'assistance', 'resource', 'resources', 'outreach',
     'youth', 'adult', 'seniors', 'senior', 'women', 'men', 'children',
     'calgary', 'alberta', 'society', 'foundation', 'association',
+    'meeting', 'meetings', 'class', 'classes', 'workshop', 'workshops',
+    'session', 'sessions', 'activity', 'activities',
+    // Alberta cities
+    'edmonton', 'lethbridge', 'red', 'deer', 'medicine', 'hat',
+    'grande', 'prairie', 'fort', 'mcmurray', 'airdrie', 'spruce', 'grove',
+    'leduc', 'okotoks', 'cochrane', 'camrose', 'brooks', 'lloydminster',
+    'wetaskiwin', 'canmore', 'banff', 'drumheller',
+    // Demographic qualifiers
+    'indigenous', 'first', 'nations', 'metis', 'lgbtq', 'lgbtq2s',
+    'female', 'male', 'pregnant', 'newcomer', 'immigrant', 'refugee',
+    // Common query modifiers
+    'near', 'nearby', 'affordable', 'anonymous', 'online',
+    'phone', 'available', 'find', 'need', 'get', 'want', 'looking',
   ]);
 
   // Pre-compute query words for partial matching

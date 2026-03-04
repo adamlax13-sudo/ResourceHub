@@ -51,7 +51,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
 }>> = {
   'domestic_violence': {
     serviceTypes: ['domestic_violence', 'emergency_shelter', 'crisis_line'],
-    categoryPatterns: /domestic|violence|abuse|women'?s.*shelter|safe.*house|crisis.*line|victim|assault/i,
+    categoryPatterns: /domestic|violence|abuse|women'?s.*shelter|safe.*house|crisis.*line|victim|assault|trafficking|exploitation|CEASE|RESET Society/i,
     genderPreference: 'women_only',
   },
   'food_insecurity': {
@@ -60,7 +60,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'housing_urgent': {
     serviceTypes: ['emergency_shelter'],
-    categoryPatterns: /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in/i,
+    categoryPatterns: /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in|affordable|subsidized|rent supplement|habitat|capital region housing|calgary housing|silvera|homespace/i,
   },
   'substance_abuse': {
     serviceTypes: ['addiction_recovery', 'residential_treatment'],
@@ -72,7 +72,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'disability_support': {
     serviceTypes: ['disability_services', 'support_groups', 'community_programs'],
-    categoryPatterns: /autis|autism|ASD|asperger|disability|disabled|neurodivergent|neurodiverse|ADHD|ADD|developmental|sensory|AISH|PDD|accessibility|social skills|peer support|support group|life skills|independent living/i,
+    categoryPatterns: /autis|autism|ASD|asperger|disability|disabled|neurodivergent|neurodiverse|ADHD|ADD|developmental|sensory|AISH|PDD|accessibility|social skills|peer support|support group|life skills|independent living|FASD|fetal alcohol|brain injury|ABI|acquired brain|cognitive rehab|CNIB|vision rehabilitation/i,
   },
   'grief_support': {
     serviceTypes: ['grief_support', 'bereavement', 'loss_support'],
@@ -84,7 +84,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'legal_aid': {
     serviceTypes: ['legal_aid', 'legal_services'],
-    categoryPatterns: /legal|lawyer|attorney|court|custody|divorce|immigration|family law|tenant|housing rights|pro bono/i,
+    categoryPatterns: /legal|lawyer|attorney|court|custody|divorce|immigration|family law|tenant|housing rights|pro bono|john howard|elizabeth fry|reintegration|halfway house|parole|probation|criminal record/i,
   },
   'employment_support': {
     serviceTypes: ['employment', 'job_training', 'career'],
@@ -104,7 +104,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'financial_support': {
     serviceTypes: ['financial_services', 'debt_counseling'],
-    categoryPatterns: /financial|debt|credit|bankruptcy|budget|money management|bills|collections|payday loan/i,
+    categoryPatterns: /financial|debt|credit|bankruptcy|budget|money management|bills|collections|payday loan|money mentors|OPD|tax clinic|income support|alberta supports/i,
   },
   'caregiver_support': {
     serviceTypes: ['caregiver_support', 'respite'],
@@ -124,11 +124,11 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'parenting_support': {
     serviceTypes: ['parenting', 'baby_resources', 'family_support'],
-    categoryPatterns: /pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support|childcare|daycare|formula|diapers/i,
+    categoryPatterns: /pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support|childcare|daycare|formula|diapers|midwife|midwifery|parent link|maternal|breastfeeding|child welfare|foster care|kinship|aging out|youth advocate|advancing futures/i,
   },
   'veteran_services': {
     serviceTypes: ['veteran_services', 'military_support', 'trauma_services'],
-    categoryPatterns: /veteran|military|armed forces|canadian forces|CAF|CFB|PTSD|post-?traumatic|trauma|operational stress|combat|deployment|VAC|veterans affairs|OSISS|legion|royal canadian legion/i,
+    categoryPatterns: /veteran|military|armed forces|canadian forces|CAF|CFB|PTSD|post-?traumatic|trauma|operational stress|combat|deployment|VAC|veterans affairs|OSISS|legion|royal canadian legion|MFRC|family resource centre|homes for heroes|wounded warriors/i,
   },
   'community_social': {
     serviceTypes: ['community & social'],
@@ -364,7 +364,15 @@ export function boostByIntent(
     }
 
     // Grief support boosting (only if NOT a crisis query)
-    const isGriefQuery = !isCrisisQuery && /\b(grief|loss|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide loss|overdose death|miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|pet died|dog died|cat died|put to sleep|drowned|accident|terminal|cancer|my dog|my cat|my pet)\b/i.test(queryLower);
+    const isGriefQuery = !isCrisisQuery && (
+      /\b(grief|died|passed away|mourning|bereavement|death of|widow|murdered|killed|homicide|suicide loss|overdose death|miscarriage|stillbirth|stillborn|infant loss|pregnancy loss|SIDS|pet died|dog died|cat died|put to sleep|drowned|my dog|my cat|my pet)\b/i.test(queryLower) ||
+      /\bloss\s+of\s+(a\s+)?(loved one|parent|mother|father|child|son|daughter|baby|spouse|husband|wife|partner|friend|sibling|brother|sister|pet|dog|cat)\b/i.test(queryLower) ||
+      /\b(grieving|coping with)\s+(a\s+)?loss\b/i.test(queryLower) ||
+      /\b(fatal|deadly|died in a|killed in a)\s+accident\b/i.test(queryLower) ||
+      /\bterminal(ly)?\s+(ill|illness|diagnosis|disease|sick)\b/i.test(queryLower) ||
+      /\b(died of|dying of|lost .* to)\s+cancer\b/i.test(queryLower) ||
+      /\bcancer\s+(death|loss|grief|bereavement)\b/i.test(queryLower)
+    );
     const isPetLossQuery = /\b(pet|dog|cat|animal).*(died|loss|passed|death|put to sleep|euthanized|put down)\b/i.test(queryLower) || /\b(died|lost|passed).*(pet|dog|cat|animal)\b/i.test(queryLower);
     const isMiscarriageQuery = /\b(miscarriage|stillbirth|stillborn|pregnancy loss|infant loss|SIDS|baby loss|lost the baby|baby died)\b/i.test(queryLower);
     const isViolentLossQuery = /\b(murder|murdered|killed|homicide|violent|suicide|overdose|accident|shooting|stabbing)\b/i.test(queryLower);
@@ -497,7 +505,8 @@ export function boostByIntent(
     }
 
     // Employment support boosting
-    const isEmploymentQuery = /\b(job|employment|career|unemployed|laid off|fired|work|EI|resume)\b/i.test(queryLower);
+    const isEmploymentQuery = /\b(job|employment|career|unemployed|laid off|fired|EI|resume)\b/i.test(queryLower) ||
+      /\b(find|looking for|need|out of)\s+work\b/i.test(queryLower);
     if (isEmploymentQuery) {
       if (/\b(employment|job.*training|career|workforce|resume|interview|employment services)\b/i.test(textLower)) {
         addFactor('employment.employmentSupport', cfg.employment.employmentSupport, `Employment support service`);

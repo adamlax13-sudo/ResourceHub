@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v75'; // Bumped for community_social serviceTypes + fallback terms
+const CACHE_VERSION = 'v76'; // Bumped for gap analysis: 134 new services, expanded intent patterns
 
 import { SEARCH_CONFIG } from './config';
 import type {

@@ -483,10 +483,18 @@ function extractNegativeTerms(query: string): string[] {
   }
 
   // Handle "X-free" patterns: "drug-free", "alcohol-free"
+  // Safelist: compound terms where "-free" means accessible/without/dietary, not exclusion
+  const freeSafelist = new Set([
+    'barrier', 'gluten', 'interest', 'toll', 'cost', 'rent', 'debt',
+    'drug', 'smoke', 'alcohol', 'judgment', 'stigma', 'fee', 'charge',
+  ]);
   const freePattern = /\b(\w+)[- ]free\b/gi;
   let match;
   while ((match = freePattern.exec(q)) !== null) {
-    negatives.push(match[1].toLowerCase());
+    const captured = match[1].toLowerCase();
+    if (!freeSafelist.has(captured)) {
+      negatives.push(captured);
+    }
   }
 
   if (negatives.length > 0) {

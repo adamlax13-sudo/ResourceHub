@@ -1594,12 +1594,12 @@ def phase_generate_embeddings(session, client: Optional[Any], log: ScraperLog, r
     # Get services needing embeddings
     if regenerate_all:
         services = session.execute(text(
-            "SELECT service_id, name, category, description, eligibility, location, tags, notes "
+            "SELECT service_id, name, category, description, eligibility, location, tags "
             "FROM services WHERE is_active = true ORDER BY service_id"
         )).fetchall()
     else:
         services = session.execute(text(
-            "SELECT service_id, name, category, description, eligibility, location, tags, notes "
+            "SELECT service_id, name, category, description, eligibility, location, tags "
             "FROM services WHERE is_active = true AND embedding IS NULL ORDER BY service_id"
         )).fetchall()
 
@@ -1608,7 +1608,7 @@ def phase_generate_embeddings(session, client: Optional[Any], log: ScraperLog, r
         return
 
     logger.info(f"Generating embeddings for {len(services)} services")
-    columns = ["service_id", "name", "category", "description", "eligibility", "location", "tags", "notes"]
+    columns = ["service_id", "name", "category", "description", "eligibility", "location", "tags"]
     batch = []
 
     for row in services:

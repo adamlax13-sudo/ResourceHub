@@ -77,7 +77,7 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'deppression': 'depression',
   'suicde': 'suicide',
   'suiside': 'suicide',
-  'suicidal': 'suicide',
+  'suicidal': 'suicidal',
   'homless': 'homeless',
   'houising': 'housing',
   'houseing': 'housing',

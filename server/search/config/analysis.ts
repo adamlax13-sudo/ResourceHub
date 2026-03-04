@@ -275,6 +275,9 @@ export const SEARCH_CONFIG = {
       // Coercive control
       /(?:controls?|controlling).*(?:my|money|friends|family|phone|where I go)/i,
       /\b(?:financial abuse|emotional abuse|coercive control|isolated me)\b/i,
+      // Human trafficking
+      /\b(?:human trafficking|sex trafficking|trafficked|forced labour|forced labor|exploitation)\b/i,
+      /\b(?:trafficking.*(?:help|support|victim|survivor))\b/i,
     ],
     food_insecurity: [
       /(?:hungry|starving).*(?:no food|can'?t eat|nothing to eat)/i,
@@ -300,6 +303,10 @@ export const SEARCH_CONFIG = {
       /(?:couch surfing|staying with friends|no permanent)/i,
       /(?:about to be|getting|facing).*(?:evicted|kicked out)/i,
       /(?:nowhere to go|no where to go|no place to go)/i,
+      // Affordable housing (long-term)
+      /\b(?:affordable|subsidized|low-?income).*(?:housing|apartment|rental|unit)/i,
+      /\b(?:rent supplement|rent assistance|social housing|public housing)\b/i,
+      /\b(?:habitat for humanity|housing.*waitlist|housing.*wait list)\b/i,
     ],
     substance_abuse: [
       /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict|gambling|betting)/i,
@@ -376,6 +383,14 @@ export const SEARCH_CONFIG = {
       /\b(?:sensory.*processing|sensory.*issues|sensory.*overload)\b.*(?:support|help|therapy|group)/i,
       // AISH/PDD (Alberta disability programs)
       /\b(?:AISH|PDD)\b.*(?:help|support|apply|services)/i,
+      // FASD support
+      /\b(?:FASD|fetal alcohol|FAS)\b.*(?:support|help|services|diagnosis|assessment|network)/i,
+      /\b(?:child|kid|son|daughter).*\b(?:FASD|fetal alcohol)\b/i,
+      // Brain injury support
+      /\b(?:brain injury|ABI|acquired brain|TBI|traumatic brain|concussion)\b.*(?:support|help|rehab|services)/i,
+      /\b(?:cognitive rehab|brain care|synapse)\b/i,
+      // Chronic pain
+      /\b(?:chronic pain|pain management|pain clinic|pain centre|pain center)\b/i,
     ],
     // Grief and bereavement support
     grief_support: [
@@ -411,6 +426,10 @@ export const SEARCH_CONFIG = {
       /(?:can'?t afford|free|low cost).*(?:lawyer|legal)/i,
       /\b(?:tenant rights|eviction.*legal|housing.*legal|family court|child support)\b/i,
       /\b(?:legal aid|pro bono|lawyer referral)\b/i,
+      // Criminal justice reintegration
+      /\b(?:just|recently).*(?:released|out of|left).*(?:prison|jail|custody|penitentiary)\b/i,
+      /\b(?:halfway house|reintegration|re-?entry|parole|probation)\b.*(?:help|support|services?)/i,
+      /\b(?:john howard|elizabeth fry|criminal record)\b/i,
     ],
     // Employment and job support
     employment_support: [
@@ -502,6 +521,12 @@ export const SEARCH_CONFIG = {
       /\b(?:parenting|parent support|single parent|teen parent|young parent)\b/i,
       /\b(?:breastfeeding|nursing|lactation|postpartum depression|ppd|baby blues)\b/i,
       /\b(?:childcare|daycare|child care).*(?:help|afford|can'?t|need)/i,
+      // Child welfare / aging out of care
+      /\b(?:child welfare|children'?s services|foster care|kinship care|aging out)\b/i,
+      /\b(?:youth in care|aged out|former foster|crown ward)\b/i,
+      /\b(?:child advocate|youth advocate|advancing futures)\b/i,
+      // Midwifery / prenatal
+      /\b(?:midwife|midwifery|doula|prenatal class|birth plan)\b/i,
     ],
     // Community & social connection, recreation, hobbies
     community_social: [
@@ -547,7 +572,9 @@ export const SEARCH_CONFIG = {
       /\balcohol\b/i,
       // Colloquial/slang terms
       /\b(wasted|hammered|plastered|smashed|trashed|blacked out|black out)\b/i,
-      /\b(shakes|tremors|DTs|withdrawal|detoxing)\b/i,
+      /\b(DTs|detoxing)\b/i,
+      /\b(shakes|tremors|withdrawal)\b.*\b(drink|alcohol|booze|sober|liquor)\b/i,
+      /\b(drink|alcohol|booze|sober|liquor)\b.*\b(shakes|tremors|withdrawal)\b/i,
       /\b(hair of the dog|liquid courage|falling off the wagon)\b/i,
       /\b(binge|bender|on a bender)\b/i,
     ],
@@ -556,7 +583,9 @@ export const SEARCH_CONFIG = {
       /\b(painkiller|pain\s*pill).*addict/i,
       /\b(needle|inject|shooting up)\b/i,
       // Street names and slang
-      /\b(oxy|percs?|roxies?|blues|dope|smack|junk|horse|china white|tar)\b/i,
+      /\b(oxy|percs?|roxies?|dope|smack|junk|horse|china white|tar)\b/i,
+      /\b(popping|taking|buying|doing)\s+blues\b/i,
+      /\bblues\b.*\b(fentanyl|oxy|pill|press)\b/i,
       /\b(nodding|on the nod|pinned|dopesick|kicking|cold turkey)\b/i,
       /\b(chasing|chasing the dragon)\b/i,
       /\b(dilaudid|hydromorphone|codeine|tramadol|norco|vicodin)\b/i,
@@ -566,7 +595,9 @@ export const SEARCH_CONFIG = {
       // Prescription stimulants (commonly abused)
       /\b(adderall|ritalin|vyvanse|concerta|dexedrine|amphetamine|dextroamphetamine|methylphenidate)\b/i,
       // Street names and slang
-      /\b(blow|snow|yayo|white|powder|rails?|lines?|8-?ball)\b/i,
+      /\b(blow|yayo|8-?ball)\b/i,
+      /\b(snow|white|powder|rails?|lines?)\s+(coke|cocaine|meth|crack|speed)/i,
+      /\b(doing|snorting|cutting|racking)\s+(lines?|rails?|powder)\b/i,
       /\b(ice|glass|tina|speed|crank|tweak|tweaking|geeked|gacked)\b/i,
       /\b(crashing|coming down|stayed up \d+ days?|haven'?t slept)\b/i,
       /\b(uppers|stims|study drugs?)\b/i,
@@ -574,7 +605,9 @@ export const SEARCH_CONFIG = {
     cannabis: [
       /\b(weed|pot|marijuana|cannabis|thc|dab|dabs)\b/i,
       // Colloquial terms
-      /\b(bud|flower|edibles?|gummies|vape|vaping|cart|cartridge)\b/i,
+      /\b(vape|vaping|cartridge)\b/i,
+      /\b(bud|flower|edibles?|gummies|cart)\s+(weed|marijuana|cannabis|thc|dispensary)/i,
+      /\b(smoking|buying|selling)\s+(bud|flower|cart|edibles?|gummies)\b/i,
       /\b(stoned|high all the time|wake and bake|smoking every day)\b/i,
     ],
     gambling: [
@@ -643,6 +676,7 @@ export const SEARCH_CONFIG = {
       /\b(paralyz|parapleg|quadripleg|amputee|prosthetic)\b/i,
       // Chronic conditions that affect daily functioning
       /\b(chronic.*fatigue|fibromyalgia|chronic.*pain|chronic.*illness)\b/i,
+      /\b(brain injury|ABI|TBI|traumatic brain|concussion|cognitive rehab)\b/i,
       // Support and services
       /\b(AISH|PDD|disability.*services|accessibility|accommodations?|adaptive)\b/i,
     ],
@@ -653,6 +687,7 @@ export const SEARCH_CONFIG = {
       /\b(safe.*(?:house|place)|women'?s.*shelter|escape|flee|protect)\b/i,
       /\b(threaten|control|stalk|harass|intimidate|isolate)\b/i,
       /\b(restraining.*order|protection.*order)\b/i,
+      /\b(trafficking|trafficked|exploited|exploitation|forced labour)\b/i,
     ],
     // Financial/employment terms
     financial: [
@@ -665,6 +700,7 @@ export const SEARCH_CONFIG = {
       /\b(lawyer|attorney|legal.*(?:aid|help)|court|judge|charges?|arrested)\b/i,
       /\b(custody|divorce|separation|child.*support|family.*court)\b/i,
       /\b(immigration|visa|refugee|asylum|deporta)\b/i,
+      /\b(halfway house|parole|probation|reintegration|ex-?offender|criminal record)\b/i,
     ],
     // Healthcare terms
     healthcare: [
