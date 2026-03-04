@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import rocLogo from "@/assets/ucalgary-gear-logo.png";
+import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 
 // Alberta locations for the dropdown
 const ALBERTA_LOCATIONS = [
@@ -325,7 +325,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
   };
 
   return (
-    <div className="relative w-screen max-w-full overflow-hidden bg-[#C41020] text-white pt-16 pb-14 md:pt-20 md:pb-24 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
+    <div className="relative w-screen max-w-full overflow-hidden bg-[#D6001C] text-white pt-16 pb-14 md:pt-20 md:pb-24 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
       {/* Flowing wave background — red/orange/pink layers inspired by UCalgary */}
       <div className="absolute inset-0">
         <svg className="w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -345,7 +345,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               <stop offset="100%" stopColor="#FFA300" stopOpacity="0.6" />
             </linearGradient>
           </defs>
-          <rect width="1440" height="800" fill="#C41020" />
+          <rect width="1440" height="800" fill="#D6001C" />
           {/* Deep wave from bottom-left */}
           <path d="M0,120 C180,40 380,220 700,160 C1020,100 1240,280 1440,220 L1440,800 L0,800Z" fill="url(#heroWave1)" opacity="0.85" />
           {/* Pink/coral sweep from top-right */}
@@ -369,8 +369,8 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               className="flex-shrink-0 transition-transform hover:scale-105"
             >
               <img
-                src={rocLogo}
-                alt="ROC Logo"
+                src={ucalgaryLogo}
+                alt="University of Calgary Recovery on Campus logo"
                 className="h-10 sm:h-12 w-auto"
               />
             </a>

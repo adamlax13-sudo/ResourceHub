@@ -154,11 +154,6 @@ input[type="search"]::-webkit-search-cancel-button {
   @apply hidden;
 }
 
-/* Recolour ROC logo from purple to UCalgary red */
-.logo-ucalgary {
-  filter: hue-rotate(67deg) saturate(2.5) brightness(0.85);
-}
-
 /* Geometric pattern background utility */
 .geometric-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='30,5 5,55 55,55' fill='none' stroke='%23D6001C' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");

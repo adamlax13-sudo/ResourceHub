@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v71'; // Bumped for include-compatible filters + filter-match boost
+const CACHE_VERSION = 'v72'; // Bumped for AHS duplicate deactivation + name improvements + location fixes
 
 import { SEARCH_CONFIG } from './config';
 import type {

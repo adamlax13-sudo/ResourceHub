@@ -6,7 +6,7 @@ import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, MessageSquare, SlidersHorizontal, X, Heart, Share2 } from "lucide-react";
-import rocLogo from "@/assets/ucalgary-gear-logo.png";
+import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
 import { CategoryTiles } from "@/components/CategoryTiles";
@@ -389,8 +389,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-2">
         <div className="container mx-auto px-4 text-center">
-          <a href="https://www.recoveryoncampusalberta.ca/" target="_blank" rel="noopener noreferrer">
-            <img src={rocLogo} alt="ROC Logo" className="h-16 w-auto mx-auto mb-4 opacity-60 hover:opacity-80 transition-opacity" loading="lazy" />
+          <a href="https://www.ucalgary.ca/about/commitments/recovery-campus" target="_blank" rel="noopener noreferrer">
+            <img src={ucalgaryLogo} alt="University of Calgary Recovery on Campus logo" className="h-16 w-auto mx-auto mb-4 opacity-60 hover:opacity-80 transition-opacity" loading="lazy" />
           </a>
           <p className="text-muted-foreground text-sm mb-4">
             {t('app.footer')}

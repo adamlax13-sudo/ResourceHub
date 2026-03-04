@@ -163,6 +163,55 @@ const KNOWN_DUPLICATES: { canonical: string; duplicates: string[] }[] = [
       'calgary-dream-centre-mens-calgary',
     ],
   },
+  // Lander Treatment Centre (AHS generic "Calgary Zone" entry duplicates proper facility name)
+  {
+    canonical: 'lander-treatment-centre-claresholm',
+    duplicates: [
+      'alberta-health-services-calgary-zone-addiction-and-mental-health-residential-treatment-services-adult-calgary',
+    ],
+  },
+  // Elk Point DART (AHS generic entry duplicates proper facility name)
+  {
+    canonical: 'alberta-health-services-provincial-health-services-addiction-and-mental-health-domestic-abuse-response-team-5310-50-avenue-elk-point-ab-t0a-1a0',
+    duplicates: [
+      'addiction-and-mental-health-domestic-abuse-response-team-elk-point',
+    ],
+  },
+  // Indigenous Mental Health Program (AHS generic entry duplicates existing)
+  {
+    canonical: 'ahs-indigenous-mental-health-program-calgary',
+    duplicates: [
+      'alberta-health-services-calgary-zone-indigenous-mental-health-program-1213-4-street-sw-calgary-ab-t2r-0x7',
+    ],
+  },
+  // CAST Edmonton (AHS generic entry duplicates existing)
+  {
+    canonical: 'addiction-and-mental-health-crisis-and-stabilization-team-for-children-and-youth-cast-12803-116-avenue-nw-edmonton-ab-t5m-3c8',
+    duplicates: [
+      'alberta-health-services-edmonton-zone-addiction-and-mental-health-crisis-and-stabilization-team-for-children-and-youth-cast-12803-116-avenue-nw-edmonton-ab-t5m-3c8',
+    ],
+  },
+  // Edmonton Adult Detox (AHS generic entry duplicates existing)
+  {
+    canonical: 'ahs-adult-detox-17-edmonton-area',
+    duplicates: [
+      'alberta-health-services-edmonton-zone-addiction-and-mental-health-detoxification-services-adult-edmonton-ab',
+    ],
+  },
+  // Pastew Place / Fort McMurray Day Treatment (same address, same service)
+  {
+    canonical: 'pastew-place-detox-centre-alberta',
+    duplicates: [
+      'alberta-health-services-north-zone-addiction-services-adult-day-treatment-505-sakitawaw-trail-s-fort-mcmurray-ab-t9h-4p3',
+    ],
+  },
+  // Police and Crisis Team Medicine Hat (AHS generic entry duplicates existing)
+  {
+    canonical: 'addiction-and-mental-health-police-and-crisis-team-adult-666-5-street-sw-medicine-hat-ab-t1a-4h6',
+    duplicates: [
+      'alberta-health-services-south-zone-police-and-crisis-team-adult-666-5-street-sw-medicine-hat-ab-t1a-4h6',
+    ],
+  },
   // NOTE: Lethbridge Recovery Centre and Detox are NOT duplicates
   // They have different phones ((403) 328-0955 vs (403) 388-6243)
   // and the Detox variant is specifically a youth program (ages 12-19)
