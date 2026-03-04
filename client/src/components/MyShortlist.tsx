@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Heart, FileText, Trash2 } from "lucide-react";
+import { X, Heart, ExternalLink, Trash2 } from "lucide-react";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
@@ -16,6 +16,25 @@ interface PrintOptions {
   includeRequiredDocs: boolean;
 }
 
+/** Build plain text for a single service (used for copy) */
+function serviceToText(svc: ServiceDetail, options: PrintOptions): string {
+  const lines: string[] = [svc.name, svc.category];
+  if (svc.address) lines.push(svc.address);
+  else if (svc.location) lines.push(svc.location);
+  if (svc.phone) lines.push(`Phone: ${svc.phone}`);
+  if (svc.email) lines.push(`Email: ${svc.email}`);
+  if (svc.websiteUrl) lines.push(svc.websiteUrl);
+  if (options.includeProcessSteps && svc.process.length > 0) {
+    lines.push("", "How to Access:");
+    svc.process.forEach((step, i) => lines.push(`  ${i + 1}. ${step}`));
+  }
+  if (options.includeRequiredDocs && svc.requiredDocs.length > 0) {
+    lines.push("", "What You'll Need:");
+    svc.requiredDocs.forEach((d) => lines.push(`  - ${d}`));
+  }
+  return lines.join("\n");
+}
+
 function buildPrintPage(
   doc: Document,
   services: ServiceDetail[],
@@ -28,35 +47,56 @@ function buildPrintPage(
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       max-width: 720px;
       margin: 0 auto;
-      padding: 0 24px 40px;
+      padding: 24px 24px 40px;
       color: #1a1a1a;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .header-bar { background: #D6001C; height: 6px; margin: 0 -24px 24px; }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .toolbar button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toolbar button:hover { background: #f3f4f6; border-color: #9ca3af; }
+    .toolbar button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .toolbar button.primary:hover { background: #1d4ed8; }
     .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2px; }
-    .header .subtitle { font-size: 13px; color: #555; margin-bottom: 4px; }
-    .header .meta { font-size: 12px; color: #888; margin-bottom: 28px; }
+    .header .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
     .service {
+      position: relative;
       border: 1px solid #e2e2e2;
-      border-left: 5px solid #D6001C;
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 16px 18px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       page-break-inside: avoid;
     }
+    .service:hover { border-color: #c7c7c7; }
     .service-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
     .badge {
       display: inline-block;
-      background: #FFF8E1;
-      color: #8B6914;
+      background: #f3f4f6;
+      color: #4b5563;
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       padding: 2px 8px;
       border-radius: 3px;
-      border: 1px solid #FFCD00;
+      border: 1px solid #e5e7eb;
       margin-bottom: 8px;
     }
     .contact-row { font-size: 12px; color: #444; line-height: 1.8; }
@@ -66,7 +106,7 @@ function buildPrintPage(
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #D6001C;
+      color: #6b7280;
       margin: 12px 0 6px;
       padding-top: 10px;
       border-top: 1px solid #eee;
@@ -75,39 +115,65 @@ function buildPrintPage(
     .steps li { font-size: 12px; color: #333; line-height: 1.6; margin-bottom: 2px; }
     .docs { padding-left: 18px; margin: 0; list-style: disc; }
     .docs li { font-size: 12px; color: #333; line-height: 1.6; margin-bottom: 2px; }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fff;
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .service:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: #f3f4f6; color: #374151; }
     .footer {
       margin-top: 32px;
       padding-top: 12px;
-      border-top: 3px solid #FFCD00;
+      border-top: 1px solid #e5e7eb;
       font-size: 11px;
       color: #888;
-      display: flex;
-      justify-content: space-between;
+    }
+    @media print {
+      .toolbar, .copy-btn { display: none !important; }
+      body { padding-top: 0; }
     }
   `;
   doc.head.appendChild(style);
 
   // Title
   const titleEl = doc.createElement("title");
-  titleEl.textContent = "My Shortlist \u2014 Recovery on Campus Alberta";
+  titleEl.textContent = "My Shortlist";
   doc.head.appendChild(titleEl);
+
+  // Toolbar (hidden in print)
+  const toolbar = doc.createElement("div");
+  toolbar.className = "toolbar";
+
+  const copyAllBtn = doc.createElement("button");
+  copyAllBtn.className = "primary";
+  copyAllBtn.textContent = "\u{1F4CB} Copy All";
+  toolbar.appendChild(copyAllBtn);
+
+  const printBtn = doc.createElement("button");
+  printBtn.textContent = "\u{1F5B6} Save as PDF";
+  printBtn.addEventListener("click", () => doc.defaultView?.print());
+  toolbar.appendChild(printBtn);
+
+  doc.body.appendChild(toolbar);
 
   // Header
   const header = doc.createElement("div");
   header.className = "header";
 
-  const bar = doc.createElement("div");
-  bar.className = "header-bar";
-  header.appendChild(bar);
-
   const h1 = doc.createElement("h1");
-  h1.textContent = "My Service Shortlist";
+  h1.textContent = "My Shortlist";
   header.appendChild(h1);
-
-  const subtitle = doc.createElement("div");
-  subtitle.className = "subtitle";
-  subtitle.textContent = "Recovery on Campus Alberta";
-  header.appendChild(subtitle);
 
   const metaEl = doc.createElement("div");
   metaEl.className = "meta";
@@ -128,10 +194,38 @@ function buildPrintPage(
     return span;
   }
 
+  // Build text for all services (for copy-all)
+  const allText = services
+    .map((svc) => serviceToText(svc, options))
+    .join("\n\n---\n\n");
+
+  // Wire up copy-all button
+  copyAllBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(allText).then(() => {
+      copyAllBtn.textContent = "\u2705 Copied!";
+      setTimeout(() => {
+        copyAllBtn.textContent = "\u{1F4CB} Copy All";
+      }, 1500);
+    });
+  });
+
   // Service cards
   for (const svc of services) {
     const card = doc.createElement("div");
     card.className = "service";
+
+    // Per-service copy button
+    const copyBtn = doc.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.textContent = "Copy";
+    const svcText = serviceToText(svc, options);
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(svcText).then(() => {
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+      });
+    });
+    card.appendChild(copyBtn);
 
     const nameEl = doc.createElement("div");
     nameEl.className = "service-name";
@@ -193,12 +287,9 @@ function buildPrintPage(
   // Footer
   const footer = doc.createElement("div");
   footer.className = "footer";
-  const footerLeft = doc.createElement("span");
-  footerLeft.textContent = "Recovery on Campus Alberta \u00B7 ucalgary.ca/recovery-campus";
-  const footerRight = doc.createElement("span");
-  footerRight.textContent = `${services.length} service${services.length !== 1 ? "s" : ""}`;
-  footer.appendChild(footerLeft);
-  footer.appendChild(footerRight);
+  const dateFooter = doc.createElement("span");
+  dateFooter.textContent = `Generated ${dateStr}`;
+  footer.appendChild(dateFooter);
   doc.body.appendChild(footer);
 }
 
@@ -260,7 +351,6 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
         includeRequiredDocs: includeDocs,
       });
       printWindow.document.close();
-      setTimeout(() => printWindow.print(), 250);
     } catch {
       toast({
         title: "Export failed",
@@ -368,7 +458,7 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
                 {/* Export options */}
                 <div className="space-y-1.5 mb-3">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    PDF Options
+                    Export Options
                   </p>
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
@@ -404,12 +494,12 @@ export function MyShortlist({ isOpen, onClose }: MyShortlistProps) {
                       <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
                       </svg>
-                      Preparing PDF…
+                      Loading...
                     </>
                   ) : (
                     <>
-                      <FileText className="w-4 h-4" aria-hidden="true" />
-                      Export PDF
+                      <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                      View Shortlist
                     </>
                   )}
                 </button>
