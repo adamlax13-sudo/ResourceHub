@@ -153,8 +153,7 @@ process.on('unhandledRejection', (reason, promise) => {
   // Register main routes (search, feedback, analytics)
   await registerRoutes(httpServer, app);
 
-  const currentDir = typeof __dirname !== 'undefined' ? __dirname : import.meta.dirname;
-  const clientBuildPath = path.join(currentDir, "../dist/public");
+  const clientBuildPath = path.join(__dirname, "../dist/public");
   app.use(express.static(clientBuildPath));
 
   app.get("*", (req, res) => {
