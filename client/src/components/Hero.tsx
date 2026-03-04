@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import rocLogo from "@/assets/About_Recovery_on_Campus_Alberta_1768060674341.png";
+import rocLogo from "@/assets/ucalgary-gear-logo.png";
 
 // Alberta locations for the dropdown
 const ALBERTA_LOCATIONS = [
@@ -127,7 +127,7 @@ function LocationDropdown({
         >
           <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/20 border border-white/50 overflow-hidden">
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-purple-500/5">
+            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-accent/5">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Location</p>
             </div>
 
@@ -325,15 +325,45 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
   };
 
   return (
-    <div className="relative w-screen max-w-full overflow-hidden bg-primary text-primary-foreground pt-20 pb-32 md:pt-28 md:pb-48 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-purple-900/50 opacity-90" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
+    <div className="relative w-screen max-w-full overflow-hidden bg-[#C41020] text-white pt-16 pb-14 md:pt-20 md:pb-24 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
+      {/* Flowing wave background — red/orange/pink layers inspired by UCalgary */}
+      <div className="absolute inset-0">
+        <svg className="w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heroWave1" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="#7A0014" />
+              <stop offset="40%" stopColor="#D6001C" />
+              <stop offset="100%" stopColor="#FF671F" />
+            </linearGradient>
+            <linearGradient id="heroWave2" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ED0A72" />
+              <stop offset="50%" stopColor="#E8461E" />
+              <stop offset="100%" stopColor="#D6001C" />
+            </linearGradient>
+            <linearGradient id="heroWave3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FF671F" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#FFA300" stopOpacity="0.6" />
+            </linearGradient>
+          </defs>
+          <rect width="1440" height="800" fill="#C41020" />
+          {/* Deep wave from bottom-left */}
+          <path d="M0,120 C180,40 380,220 700,160 C1020,100 1240,280 1440,220 L1440,800 L0,800Z" fill="url(#heroWave1)" opacity="0.85" />
+          {/* Pink/coral sweep from top-right */}
+          <path d="M500,0 C700,90 860,25 1060,130 C1260,235 1380,85 1440,160 L1440,0 L500,0Z" fill="url(#heroWave2)" opacity="0.5" />
+          {/* Mid wave — orange accent */}
+          <path d="M0,380 C260,270 520,430 820,320 C1120,210 1360,370 1440,310 L1440,800 L0,800Z" fill="url(#heroWave2)" opacity="0.55" />
+          {/* Top-right warm glow */}
+          <path d="M700,0 C900,60 1100,20 1300,100 C1400,140 1440,80 1440,80 L1440,0Z" fill="url(#heroWave3)" opacity="0.45" />
+        </svg>
+      </div>
+      {/* Diagonal hatching overlay */}
+      <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.035) 3px, rgba(255,255,255,0.035) 6px)' }} />
 
       <div className="absolute top-0 left-0 right-0 z-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex justify-between items-center">
           <div className="flex items-center gap-2 sm:gap-3">
             <a
-              href="https://www.recoveryoncampusalberta.ca/"
+              href="https://www.ucalgary.ca/about/commitments/recovery-campus"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-shrink-0 transition-transform hover:scale-105"
@@ -356,159 +386,149 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
         </div>
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-25 pointer-events-none">
-        <motion.svg
-          className="absolute -top-20 -left-20 w-96 h-96"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="1" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
-          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
-          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
+      {/* Floating geometric triangles — 4-column layout, no overlap */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-35 pointer-events-none">
+        {/* Row 1 — top edge */}
+        {/* Large, top-left corner overflow */}
+        <motion.svg className="absolute -top-12 -left-12 w-72 h-72" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 18, -6, 14, 0], y: [0, -12, 8, -16, 0], rotate: [0, 12, 6, 18, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
+          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.3" fill="none" />
         </motion.svg>
-        <motion.svg
-          className="absolute top-1/4 right-0 w-72 h-72 rotate-45"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.05, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="1" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
+        {/* Small, top ~30% */}
+        <motion.svg className="absolute top-[4%] left-[28%] w-10 h-10" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -10, 8, -6, 0], y: [0, 12, -8, 14, 0], rotate: [20, 50, 35, 60, 20] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2.5" fill="none" />
         </motion.svg>
-        <motion.svg
-          className="absolute bottom-10 left-1/4 w-48 h-48 -rotate-12"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        >
+        {/* Medium, top-center */}
+        <motion.svg className="absolute top-[2%] left-[50%] w-32 h-32" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -14, 10, -12, 0], y: [0, 16, -6, 18, 0], rotate: [80, 100, 90, 108, 80] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.5" />
-          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.5" />
-        </motion.svg>
-        <motion.svg
-          className="absolute -bottom-24 -right-24 w-72 h-72"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, -15, -12, -15, 0],
-            x: [0, 5, 3, 5, 0],
-            rotate: [130, 140, 138, 142, 130]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", times: [0, 0.4, 0.5, 0.6, 1] }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.8" fill="none" />
-          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.6" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
-          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
-        <motion.svg
-          className="absolute top-[60%] -left-20 w-52 h-52"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, 12, 10, 14, 0],
-            x: [0, 8, 5, 8, 0],
-            rotate: [200, 215, 212, 218, 200],
-            opacity: [0.6, 0.85, 0.8, 0.85, 0.6]
-          }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", times: [0, 0.35, 0.45, 0.55, 1], delay: 1.5 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
-          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.7" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
-          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
+        {/* Large, top-right overflow */}
+        <motion.svg className="absolute -top-8 -right-10 w-64 h-64" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -16, 6, -12, 0], y: [0, 14, -10, 16, 0], rotate: [130, 148, 138, 155, 130], opacity: [0.6, 1, 0.8, 0.9, 0.6] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,45 45,165 155,165" stroke="white" strokeWidth="0.5" fill="none" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.3" />
         </motion.svg>
-        <motion.svg
-          className="absolute top-[8%] right-[8%] w-20 h-20"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, -10, -7, -12, 0],
-            rotate: [50, 70, 65, 75, 50]
-          }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.45, 0.6, 1] }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
-          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" />
+
+        {/* Row 2 — upper-mid ~25-40% */}
+        {/* Small, left quarter */}
+        <motion.svg className="absolute top-[28%] left-[8%] w-8 h-8" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 12, -8, 10, 0], y: [0, -10, 14, -8, 0], rotate: [0, 35, 18, 42, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3" fill="none" />
         </motion.svg>
-        <motion.svg
-          className="absolute bottom-[20%] left-[18%] w-12 h-12"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, -8, -5, -9, 0],
-            x: [0, 4, 2, 5, 0],
-            rotate: [160, 180, 175, 185, 160]
-          }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", times: [0, 0.35, 0.5, 0.65, 1], delay: 2 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
-        </motion.svg>
-        <motion.svg
-          className="absolute top-[40%] right-[12%] w-16 h-16"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, 8, 5, 10, 0],
-            x: [0, -5, -3, -6, 0],
-            rotate: [290, 310, 305, 315, 290]
-          }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", times: [0, 0.4, 0.5, 0.6, 1], delay: 0.5 }}
-        >
-          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.8" fill="none" />
-        </motion.svg>
-        <motion.svg
-          className="absolute bottom-[5%] left-[35%] w-32 h-32"
-          viewBox="0 0 200 200"
-          fill="none"
-          animate={{
-            y: [0, -10, -7, -12, 0],
-            rotate: [100, 115, 110, 120, 100],
-            opacity: [0.5, 0.75, 0.7, 0.8, 0.5]
-          }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", times: [0, 0.35, 0.45, 0.6, 1], delay: 3 }}
-        >
+        {/* Medium, left-center */}
+        <motion.svg className="absolute top-[30%] left-[30%] w-28 h-28" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 20, -8, 16, 0], y: [0, -18, 12, -14, 0], rotate: [200, 222, 212, 228, 200] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 4 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.6" fill="none" />
+        </motion.svg>
+        {/* Small, right-center */}
+        <motion.svg className="absolute top-[26%] right-[28%] w-12 h-12" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -8, 10, -6, 0], y: [0, 10, -12, 8, 0], rotate: [90, 112, 100, 118, 90] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
+        </motion.svg>
+        {/* Medium, far right */}
+        <motion.svg className="absolute top-[32%] right-[4%] w-24 h-24" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -18, 8, -14, 0], y: [0, 14, -16, 10, 0], rotate: [280, 300, 290, 306, 280] }}
+          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
-        <motion.div
-          className="absolute top-1/3 left-1/3 w-2 h-2 bg-white rounded-full"
-          animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-2/3 right-1/3 w-1.5 h-1.5 bg-white rounded-full"
-          animate={{ y: [0, -15, 0], opacity: [0.4, 0.9, 0.4] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-white rounded-full"
-          animate={{ y: [0, -10, 0], opacity: [0.2, 0.7, 0.2] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
+
+        {/* Row 3 — lower-mid ~50-65% */}
+        {/* Large, left overflow */}
+        <motion.svg className="absolute top-[52%] -left-8 w-56 h-56" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 22, -4, 18, 0], y: [0, -14, 10, -18, 0], rotate: [160, 178, 168, 184, 160] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
+          <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.3" />
+        </motion.svg>
+        {/* Small, center-left */}
+        <motion.svg className="absolute top-[58%] left-[35%] w-6 h-6" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 8, -10, 6, 0], y: [0, -8, 12, -10, 0], rotate: [40, 65, 52, 72, 40] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3.5" fill="none" />
+        </motion.svg>
+        {/* Medium, center-right */}
+        <motion.svg className="absolute top-[55%] right-[30%] w-20 h-20" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -14, 10, -12, 0], y: [0, 16, -8, 14, 0], rotate: [310, 330, 320, 336, 310] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 4.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
+        </motion.svg>
+        {/* Small, far right */}
+        <motion.svg className="absolute top-[60%] right-[8%] w-10 h-10" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -10, 6, -8, 0], y: [0, -12, 10, -14, 0], rotate: [240, 265, 252, 272, 240] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2.5" fill="none" />
+        </motion.svg>
+
+        {/* Row 4 — bottom edge */}
+        {/* Medium, bottom-left */}
+        <motion.svg className="absolute bottom-[6%] left-[6%] w-24 h-24" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 16, -6, 14, 0], y: [0, -18, 8, -14, 0], rotate: [60, 80, 70, 86, 60] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
+          <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
+        </motion.svg>
+        {/* Large, bottom-center */}
+        <motion.svg className="absolute -bottom-14 left-[30%] w-60 h-60" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -14, 10, -10, 0], y: [0, -10, 14, -12, 0], rotate: [150, 168, 158, 174, 150], opacity: [0.5, 0.9, 0.7, 0.85, 0.5] }}
+          transition={{ duration: 21, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
+          <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.3" fill="none" />
+        </motion.svg>
+        {/* Small, bottom ~60% */}
+        <motion.svg className="absolute bottom-[8%] right-[35%] w-8 h-8" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, 10, -8, 12, 0], y: [0, -10, 8, -6, 0], rotate: [180, 205, 192, 210, 180] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 3.5 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3" fill="none" />
+        </motion.svg>
+        {/* Large, bottom-right overflow */}
+        <motion.svg className="absolute -bottom-10 -right-8 w-52 h-52" viewBox="0 0 200 200" fill="none"
+          animate={{ x: [0, -18, 6, -14, 0], y: [0, -16, 10, -18, 0], rotate: [320, 340, 330, 345, 320] }}
+          transition={{ duration: 17, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
+          <polygon points="100,45 45,165 155,165" stroke="white" strokeWidth="0.5" fill="none" />
+          <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.3" />
+        </motion.svg>
+
+        {/* Floating dots — evenly placed in gaps */}
+        <motion.div className="absolute top-[18%] left-[18%] w-2 h-2 bg-white rounded-full"
+          animate={{ x: [0, 12, -8, 10, 0], y: [0, -14, 8, -10, 0], opacity: [0.3, 0.8, 0.4, 0.7, 0.3] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.div className="absolute top-[42%] left-[55%] w-1.5 h-1.5 bg-white rounded-full"
+          animate={{ x: [0, -10, 6, -8, 0], y: [0, 12, -10, 14, 0], opacity: [0.4, 0.9, 0.5, 0.8, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }} />
+        <motion.div className="absolute bottom-[20%] left-[70%] w-1 h-1 bg-white rounded-full"
+          animate={{ x: [0, 8, -6, 10, 0], y: [0, -8, 12, -6, 0], opacity: [0.2, 0.7, 0.3, 0.6, 0.2] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 4 }} />
       </div>
 
-      <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center mt-8">
+      <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center mt-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-5 text-white tracking-tight">
             <span className="block">Recovery on Campus</span>
             <span className="block mt-2">Alberta Resource Hub</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-light">
+          <p className="text-base md:text-lg text-white/80 mb-10 max-w-2xl mx-auto font-light">
             {t('app.subtitle')}
           </p>
         </motion.div>
@@ -528,8 +548,8 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             <input id="website-url" name="website" type="text" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} />
           </div>
 
-          {/* Emergency fast-path */}
-          <div className="flex justify-center mb-5">
+          {/* Emergency + Location — side by side */}
+          <div className="flex items-center justify-center gap-4 mb-7 flex-wrap">
             <button
               type="button"
               onClick={onEmergencySearch}
@@ -543,20 +563,12 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
               I need help right now
             </button>
-          </div>
 
-          {/* Custom Location Dropdown */}
-          <motion.div
-            className="mb-6"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
             <LocationDropdown
               value={selectedLocation}
               onChange={onLocationChange}
             />
-          </motion.div>
+          </div>
 
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
@@ -621,7 +633,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               )}
             </button>
           </div>
-          <div className="mt-4 flex flex-col items-center gap-2">
+          <div className="mt-6 flex flex-col items-center gap-3">
             {isLoading ? (
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
@@ -639,7 +651,10 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                 <button
                   type="button"
                   onClick={onOpenWizard}
-                  className="text-sm text-white/60 hover:text-white/90 underline underline-offset-2 transition-colors"
+                  className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full
+                             bg-white/15 backdrop-blur-sm border border-white/25 text-white/90
+                             hover:bg-white/25 hover:text-white
+                             transition-all duration-200 text-sm font-medium"
                 >
                   Not sure what to search for? Let us guide you →
                 </button>

@@ -35,7 +35,7 @@ interface CategoryTilesProps {
 export function CategoryTiles({ onSelect }: CategoryTilesProps) {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8">
-      <p className="text-center text-muted-foreground mb-6 text-sm">
+      <p className="text-center text-foreground/70 mb-6 text-base font-medium">
         Not sure where to start? Browse by category:
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
