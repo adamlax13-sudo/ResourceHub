@@ -127,5 +127,6 @@
   "nav2": {
     "profile": "プロフィール",
     "recommended": "あなた向け"
-  }
+  },
+  "quickExit": "緊急退出"
 }
