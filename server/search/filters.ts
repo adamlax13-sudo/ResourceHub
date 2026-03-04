@@ -1,0 +1,59 @@
+/**
+ * Hard Filters
+ *
+ * Pure filtering functions for search results.
+ * These apply explicit UI constraints (e.g. gender filter dropdown),
+ * not semantic boosts derived from query text.
+ *
+ * Include-compatible logic: null/untagged services always pass through.
+ * Only services with a populated, incompatible tag are excluded.
+ */
+
+import type { LiteService } from './types';
+import type { SearchFilters } from '@shared/routes';
+
+export function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
+  return services.filter(svc => {
+    // Category: strict match (explicit scoping)
+    if (filters.category && svc.category?.toLowerCase() !== filters.category.toLowerCase()) return false;
+
+    // Gender: exclude only the opposite restriction
+    if (filters.genderRestriction && filters.genderRestriction !== 'all') {
+      const g = svc.genderRestriction;
+      if (g && g !== 'all' && g !== filters.genderRestriction) return false;
+    }
+
+    // Age: exclude incompatible age groups, keep null/all_ages/compatible
+    if (filters.ageGroup && filters.ageGroup !== 'all_ages') {
+      const a = svc.ageGroup;
+      if (a && a !== 'all_ages') {
+        if (a === 'youth_and_adult') {
+          if (filters.ageGroup !== 'youth' && filters.ageGroup !== 'adult') return false;
+        } else if (a !== filters.ageGroup) {
+          return false;
+        }
+      }
+    }
+
+    // Service format: exclude only the opposite format, keep null and "both"
+    if (filters.serviceFormat) {
+      const f = svc.serviceFormat?.toLowerCase();
+      const requested = filters.serviceFormat.toLowerCase();
+      if (requested === 'both') {
+        // "both" filter = no exclusion
+      } else if (f && f !== requested && f !== 'both') {
+        return false;
+      }
+    }
+
+    // Languages: keep null/empty (untagged), only exclude populated arrays missing selected languages
+    if (filters.languagesSupported && filters.languagesSupported.length > 0) {
+      const svcLangs = svc.languagesSupported ?? [];
+      if (svcLangs.length > 0 && !filters.languagesSupported.some(lang => svcLangs.includes(lang))) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}

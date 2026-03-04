@@ -12,7 +12,8 @@
     "evaluate": "node --import tsx server/evaluation/evaluate_search.ts",
     "evaluate:query": "node --import tsx server/evaluation/evaluate_search.ts",
     "evaluate:comprehensive": "node --import tsx server/evaluation/auto_optimize.ts",
-    "evaluate:loop": "node --import tsx server/evaluation/auto_optimize.ts --loop"
+    "evaluate:loop": "node --import tsx server/evaluation/auto_optimize.ts --loop",
+    "test": "vitest run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -95,7 +96,8 @@
     "@types/node": "20.19.27",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
-    "drizzle-kit": "^0.31.8"
+    "drizzle-kit": "^0.31.8",
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "drizzle-kit": {

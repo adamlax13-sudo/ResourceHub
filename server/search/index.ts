@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v70'; // Bumped for multi-intent confidence-based detection
+const CACHE_VERSION = 'v71'; // Bumped for include-compatible filters + filter-match boost
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -33,53 +33,14 @@ import {
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
-import type { SearchFilters } from '@shared/routes';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
+import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
+import { applyHardFilters } from './filters';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
 
-/**
- * Apply hard UI filters to search results.
- * These are explicit constraints from the user (e.g. gender filter dropdown),
- * not semantic boosts derived from query text.
- *
- * Rules:
- * - Skip the filter entirely if input.filters is undefined
- * - Boolean preferences (is24_7, isFaithBased, is12Step) are handled by applyPreferenceBoosts, not here
- * - genderRestriction: skip if value is 'all'
- * - ageGroup: skip if value is 'all_ages'; 'youth_and_adult' DB rows match both 'youth' and 'adult'
- * - languagesSupported: only filter if array is non-empty
- * - category / serviceFormat: case-insensitive string match
- */
-function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
-  return services.filter(svc => {
-    if (filters.category && svc.category?.toLowerCase() !== filters.category.toLowerCase()) return false;
-
-    if (filters.genderRestriction && filters.genderRestriction !== 'all') {
-      if (svc.genderRestriction !== filters.genderRestriction) return false;
-    }
-
-    if (filters.ageGroup && filters.ageGroup !== 'all_ages') {
-      const dbAge = svc.ageGroup ?? 'all_ages';
-      // 'youth_and_adult' DB rows should match both 'youth' and 'adult' API filter values
-      if (dbAge === 'youth_and_adult') {
-        if (filters.ageGroup !== 'youth' && filters.ageGroup !== 'adult') return false;
-      } else if (dbAge !== filters.ageGroup) {
-        return false;
-      }
-    }
-
-    if (filters.serviceFormat && svc.serviceFormat?.toLowerCase() !== filters.serviceFormat.toLowerCase()) return false;
-
-    if (filters.languagesSupported && filters.languagesSupported.length > 0) {
-      const svcLangs = svc.languagesSupported ?? [];
-      if (!filters.languagesSupported.some(lang => svcLangs.includes(lang))) return false;
-    }
-
-    return true;
-  });
-}
+// applyHardFilters is imported from ./filters (extracted for testability)
 
 // In-memory services cache for generating database hash and active ID set
 interface ServicesCacheData {
@@ -168,6 +129,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
+      services = applyFilterMatchBoosts(services, input.filters);
     }
 
     return formatResponse(services, '', input, startTime, true);
@@ -212,6 +174,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
+      services = applyFilterMatchBoosts(services, input.filters);
     }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);

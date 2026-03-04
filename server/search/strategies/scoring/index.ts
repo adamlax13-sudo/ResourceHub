@@ -11,3 +11,4 @@ export * from './intent-boost';
 export * from './demographic-boost';
 export * from './penalty';
 export * from './preference-boost';
+export * from './filter-match-boost';

@@ -42,6 +42,7 @@ import {
   boostByNameMatch,
   applyNegativePenalty,
   applyPreferenceBoosts,
+  applyFilterMatchBoosts,
   type BoostOptions,
 } from './scoring';
 
@@ -469,6 +470,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Apply preference boosts for soft UI filters (faith-based, 12-step, 24/7)
     if (input.filters) {
       services = applyPreferenceBoosts(services, input.filters, boostOptions);
+      // Apply explicit filter-match boost (men-specific services rank above general)
+      services = applyFilterMatchBoosts(services, input.filters, boostOptions);
     }
 
     // Apply organization diversity to prevent monopoly in top results
