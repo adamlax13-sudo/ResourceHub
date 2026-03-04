@@ -323,7 +323,9 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
     if (!query.trim()) return;
 
     const detectedLocation = extractQueryLocation(query);
-    // If query mentions a location that differs from the dropdown, sync it
+    // If query mentions a location that differs from the dropdown, sync it.
+    // onLocationChange updates state async, so we pass detectedLocation
+    // directly to onSearch rather than relying on the updated locations prop.
     if (detectedLocation !== null && detectedLocation !== selectedLocation) {
       onLocationChange(detectedLocation);
       onSearch(query, detectedLocation ? [detectedLocation] : [], hp);
