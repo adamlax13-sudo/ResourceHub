@@ -43,6 +43,16 @@ describe('applyHardFilters', () => {
       expect(applyHardFilters(svcs, womenFilter)).toHaveLength(0);
     });
 
+    it('keeps women_only services when filtering for women', () => {
+      const svcs = [makeSvc({ id: '1', genderRestriction: 'women_only' })];
+      expect(applyHardFilters(svcs, womenFilter)).toHaveLength(1);
+    });
+
+    it('keeps "all" services when filtering for women', () => {
+      const svcs = [makeSvc({ id: '1', genderRestriction: 'all' })];
+      expect(applyHardFilters(svcs, womenFilter)).toHaveLength(1);
+    });
+
     it('keeps null/untagged services when filtering for women', () => {
       const svcs = [makeSvc({ id: '1', genderRestriction: null })];
       expect(applyHardFilters(svcs, womenFilter)).toHaveLength(1);
