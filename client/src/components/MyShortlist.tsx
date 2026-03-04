@@ -4,101 +4,201 @@ import { X, Heart, FileText, Trash2 } from "lucide-react";
 import { useFavoritesContext, type FavoriteService } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
+import type { ServiceDetail } from "@shared/routes";
 
 interface MyShortlistProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-function buildPrintPage(doc: Document, favorites: FavoriteService[]): void {
+interface PrintOptions {
+  includeProcessSteps: boolean;
+  includeRequiredDocs: boolean;
+}
+
+function buildPrintPage(
+  doc: Document,
+  services: ServiceDetail[],
+  options: PrintOptions,
+): void {
   const style = doc.createElement("style");
   style.textContent = `
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: Georgia, serif;
-      max-width: 680px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 32px 24px;
+      padding: 0 24px 40px;
       color: #1a1a1a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
-    h1 { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
-    .subtitle { font-size: 13px; color: #555; margin-bottom: 28px; }
+    .header-bar { background: #D6001C; height: 6px; margin: 0 -24px 24px; }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2px; }
+    .header .subtitle { font-size: 13px; color: #555; margin-bottom: 4px; }
+    .header .meta { font-size: 12px; color: #888; margin-bottom: 28px; }
     .service {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
+      border: 1px solid #e2e2e2;
+      border-left: 5px solid #D6001C;
+      border-radius: 6px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
       page-break-inside: avoid;
     }
-    .service-name { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
-    .service-meta { margin-bottom: 6px; }
+    .service-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
     .badge {
       display: inline-block;
-      background: #eef2ff;
-      color: #4338ca;
-      font-size: 11px;
-      font-weight: 600;
+      background: #FFF8E1;
+      color: #8B6914;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       padding: 2px 8px;
-      border-radius: 999px;
+      border-radius: 3px;
+      border: 1px solid #FFCD00;
+      margin-bottom: 8px;
     }
-    .service-location { font-size: 13px; color: #555; }
+    .contact-row { font-size: 12px; color: #444; line-height: 1.8; }
+    .contact-row span { margin-right: 16px; }
+    .section-divider {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #D6001C;
+      margin: 12px 0 6px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    .steps { padding-left: 20px; margin: 0; }
+    .steps li { font-size: 12px; color: #333; line-height: 1.6; margin-bottom: 2px; }
+    .docs { padding-left: 18px; margin: 0; list-style: disc; }
+    .docs li { font-size: 12px; color: #333; line-height: 1.6; margin-bottom: 2px; }
     .footer {
       margin-top: 32px;
-      font-size: 12px;
-      color: #888;
-      border-top: 1px solid #eee;
       padding-top: 12px;
+      border-top: 3px solid #FFCD00;
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
     }
   `;
   doc.head.appendChild(style);
 
+  // Title
   const titleEl = doc.createElement("title");
-  titleEl.textContent = "My Shortlist — ResourceHub Alberta";
+  titleEl.textContent = "My Shortlist \u2014 Recovery on Campus Alberta";
   doc.head.appendChild(titleEl);
+
+  // Header
+  const header = doc.createElement("div");
+  header.className = "header";
+
+  const bar = doc.createElement("div");
+  bar.className = "header-bar";
+  header.appendChild(bar);
 
   const h1 = doc.createElement("h1");
   h1.textContent = "My Service Shortlist";
-  doc.body.appendChild(h1);
+  header.appendChild(h1);
 
-  const subtitle = doc.createElement("p");
+  const subtitle = doc.createElement("div");
   subtitle.className = "subtitle";
-  subtitle.textContent = "Printed from ResourceHub Alberta — recoveryoncampusalberta.ca";
-  doc.body.appendChild(subtitle);
+  subtitle.textContent = "Recovery on Campus Alberta";
+  header.appendChild(subtitle);
 
-  for (const fav of favorites) {
-    const card = doc.createElement("div");
-    card.className = "service";
-
-    const nameEl = doc.createElement("div");
-    nameEl.className = "service-name";
-    nameEl.textContent = fav.name;
-    card.appendChild(nameEl);
-
-    const metaEl = doc.createElement("div");
-    metaEl.className = "service-meta";
-    const badge = doc.createElement("span");
-    badge.className = "badge";
-    badge.textContent = fav.category;
-    metaEl.appendChild(badge);
-    card.appendChild(metaEl);
-
-    const locEl = doc.createElement("div");
-    locEl.className = "service-location";
-    locEl.textContent = `\u{1F4CD} ${fav.location}`;
-    card.appendChild(locEl);
-
-    doc.body.appendChild(card);
-  }
-
-  const footer = doc.createElement("div");
-  footer.className = "footer";
+  const metaEl = doc.createElement("div");
+  metaEl.className = "meta";
   const dateStr = new Date().toLocaleDateString("en-CA", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  footer.textContent = `Printed on ${dateStr} · ${favorites.length} service${favorites.length !== 1 ? "s" : ""}`;
+  metaEl.textContent = `${dateStr} \u00B7 ${services.length} service${services.length !== 1 ? "s" : ""}`;
+  header.appendChild(metaEl);
+
+  doc.body.appendChild(header);
+
+  // Helper to create a contact span
+  function contactSpan(text: string): HTMLSpanElement {
+    const span = doc.createElement("span");
+    span.textContent = text;
+    return span;
+  }
+
+  // Service cards
+  for (const svc of services) {
+    const card = doc.createElement("div");
+    card.className = "service";
+
+    const nameEl = doc.createElement("div");
+    nameEl.className = "service-name";
+    nameEl.textContent = svc.name;
+    card.appendChild(nameEl);
+
+    const badge = doc.createElement("span");
+    badge.className = "badge";
+    badge.textContent = svc.category;
+    card.appendChild(badge);
+
+    // Contact row
+    const contactRow = doc.createElement("div");
+    contactRow.className = "contact-row";
+    if (svc.address) contactRow.appendChild(contactSpan(`\u{1F4CD} ${svc.address}`));
+    else if (svc.location) contactRow.appendChild(contactSpan(`\u{1F4CD} ${svc.location}`));
+    if (svc.phone) contactRow.appendChild(contactSpan(`\u{1F4DE} ${svc.phone}`));
+    if (svc.email) contactRow.appendChild(contactSpan(`\u2709 ${svc.email}`));
+    if (svc.websiteUrl) contactRow.appendChild(contactSpan(`\u{1F310} ${svc.websiteUrl}`));
+    if (contactRow.childNodes.length > 0) card.appendChild(contactRow);
+
+    // Process steps (optional)
+    if (options.includeProcessSteps && svc.process.length > 0) {
+      const divider = doc.createElement("div");
+      divider.className = "section-divider";
+      divider.textContent = "How to Access";
+      card.appendChild(divider);
+
+      const ol = doc.createElement("ol");
+      ol.className = "steps";
+      for (const step of svc.process) {
+        const li = doc.createElement("li");
+        li.textContent = step;
+        ol.appendChild(li);
+      }
+      card.appendChild(ol);
+    }
+
+    // Required docs (optional)
+    if (options.includeRequiredDocs && svc.requiredDocs.length > 0) {
+      const divider = doc.createElement("div");
+      divider.className = "section-divider";
+      divider.textContent = "What You'll Need";
+      card.appendChild(divider);
+
+      const ul = doc.createElement("ul");
+      ul.className = "docs";
+      for (const d of svc.requiredDocs) {
+        const li = doc.createElement("li");
+        li.textContent = d;
+        ul.appendChild(li);
+      }
+      card.appendChild(ul);
+    }
+
+    doc.body.appendChild(card);
+  }
+
+  // Footer
+  const footer = doc.createElement("div");
+  footer.className = "footer";
+  const footerLeft = doc.createElement("span");
+  footerLeft.textContent = "Recovery on Campus Alberta \u00B7 ucalgary.ca/recovery-campus";
+  const footerRight = doc.createElement("span");
+  footerRight.textContent = `${services.length} service${services.length !== 1 ? "s" : ""}`;
+  footer.appendChild(footerLeft);
+  footer.appendChild(footerRight);
   doc.body.appendChild(footer);
 }
 
