@@ -215,6 +215,158 @@ const KNOWN_DUPLICATES: { canonical: string; duplicates: string[] }[] = [
   // NOTE: Lethbridge Recovery Centre and Detox are NOT duplicates
   // They have different phones ((403) 328-0955 vs (403) 388-6243)
   // and the Detox variant is specifically a youth program (ages 12-19)
+
+  // --- New duplicates identified March 2026 ---
+
+  // YW Calgary Transitional Housing / Shelter (same phone, same service)
+  {
+    canonical: 'yw-calgary-transitional-housing-110-11-avenue-se-calgary-ab-t2g-0x5',
+    duplicates: [
+      'yw-calgary-transitional-shelter-calgary-ab',
+    ],
+  },
+  // HIV Edmonton - Support and Outreach (exact name, phone, address, website match)
+  {
+    canonical: 'hiv-edmonton-support-and-outreach-9702-111-avenue-edmonton-ab-t5g-0b1',
+    duplicates: [
+      'support-and-outreach-9702-111-avenue-edmonton-ab-t5g-0b1',
+    ],
+  },
+  // Lethbridge Recovery Centre Detox (same facility, different name styles)
+  {
+    canonical: 'lethbridge-recovery-centre-detox-lethbridge',
+    duplicates: [
+      'alberta-health-services-south-zone-addiction-services-adult-detoxification-960-19-street-s-lethbridge-ab-t1j-1w5',
+    ],
+  },
+  // Social Programs and Initiatives Grande Prairie (same service, two entries)
+  {
+    canonical: 'social-programs-and-initiatives-grande-prairie-ab',
+    duplicates: [
+      'social-programs-and-initiatives-12106-100-street-grande-prairie-ab-t8v-5p1',
+    ],
+  },
+  // CASA Mental Health (Edmonton entry is subset of Calgary+Edmonton entry)
+  {
+    canonical: 'casa-mental-health-calgary-and-edmonton',
+    duplicates: [
+      'casa-mental-health-edmonton-edmonton',
+    ],
+  },
+  // Métis Child and Family Services - Avenue Program (two entries for same program)
+  {
+    canonical: 'metis-child-and-family-services-society-edmonton-avenue-program-edmonton-ab',
+    duplicates: [
+      'avenue-program-edmonton-ab',
+    ],
+  },
+  // George Spady Society (three entries for same facility — detox and meals variants)
+  {
+    canonical: 'george-spady-society-edmonton-edmonton',
+    duplicates: [
+      'george-spady-society-detox-edmonton',
+      'george-spady-centre-edmonton',
+    ],
+  },
+  // WIN House Edmonton (three entries for same women's shelter)
+  {
+    canonical: 'win-house-edmonton-3-locations-edmonton-3-locations',
+    duplicates: [
+      'win-house-edmonton-edmonton-3-locations',
+      'women-in-need-iii-edmonton-ab',
+    ],
+  },
+  // Women's Emergency Accommodation Centre / WEAC (same shelter, acronym variant)
+  {
+    canonical: 'women-s-emergency-accommodation-centre-9611-101a-avenue-nw-edmonton-ab-t5h-0c8',
+    duplicates: [
+      'weac-edmonton-edmonton',
+    ],
+  },
+  // Thorpe Recovery Centre Blackfoot (two entries for same residential treatment)
+  {
+    canonical: 'thorpe-recovery-centre-residential-addiction-treatment-box-291-rr-21-21060-tranquility-way-blackfoot-ab-t0b-0l0',
+    duplicates: [
+      'thorpe-recovery-centre-blackfoot-blackfoot',
+    ],
+  },
+  // Northern Addictions Centre Grande Prairie (AHS short name vs full entry)
+  {
+    canonical: 'alberta-health-services-north-zone-addiction-services-adult-residential-grande-prairie-alberta',
+    duplicates: [
+      'northern-addictions-centre-northern-alberta',
+    ],
+  },
+  // Mustard Seed Women's Shelter Calgary (two entries, same shelter)
+  {
+    canonical: 'mustard-seed-womens-calgary-110-11-ave-se',
+    duplicates: [
+      'mustard-seed-calgary-110-11-avenue-se-calgary-ab-t2g-0x5',
+    ],
+  },
+  // Mustard Seed Red Deer (general entry and shelter entry for same location)
+  {
+    canonical: 'mustard-seed-red-deer-6002-54-avenue-red-deer-ab-t4n-4m8',
+    duplicates: [
+      'mustard-seed-shelter-6002-54-avenue-red-deer-ab-t4n-4m8',
+    ],
+  },
+  // Addiction Services - Prevention Fort McMurray (AHS long name vs short name)
+  {
+    canonical: 'addiction-services-prevention-339-powder-drive-fort-mcmurray-ab-t9k-0m4',
+    duplicates: [
+      'alberta-health-services-north-zone-addiction-services-prevention-339-powder-drive-fort-mcmurray-ab-t9k-0m4',
+    ],
+  },
+  // Addiction Services Adult Day Treatment Red Deer (AHS long name vs short name)
+  {
+    canonical: 'alberta-health-services-central-zone-addiction-services-adult-day-treatment-4733-49-street-red-deer-ab-t4n-1t6',
+    duplicates: [
+      'addiction-services-adult-day-treatment-4733-49-street-red-deer-ab-t4n-1t6',
+    ],
+  },
+  // Alpha House HELP Team (same outreach team, different name style)
+  {
+    canonical: 'calgary-alpha-house-society-help-team-203-15-avenue-se-calgary-ab-t2g-1g4',
+    duplicates: [
+      'help-team-calgary-calgary-mobile-outreach',
+    ],
+  },
+  // Alpha House Needle Response / Needle Debris Program (same program)
+  {
+    canonical: 'alpha-house-needle-response-ambassador-teams-calgary',
+    duplicates: [
+      'calgary-alpha-house-society-needle-debris-program-203-15-avenue-se-calgary-ab-t2g-1g4',
+    ],
+  },
+  // Aura Housing / Trellis Aura (same housing program)
+  {
+    canonical: 'aura-housing-calgary-calgary',
+    duplicates: [
+      'trellis-aura-938-15-avenue-sw-calgary-ab-t2r-0s3',
+    ],
+  },
+  // Medicine Hat Recovery Centre / Medically Supported Detox (detox is within the centre)
+  {
+    canonical: 'recovery-centre-medically-supported-detoxification-370-kipling-street-se-medicine-hat-ab-t1a-1y6',
+    duplicates: [
+      'medicine-hat-recovery-centre-medicine-hat',
+    ],
+  },
+  // Banff Mental Health (same service, different name styles)
+  {
+    canonical: 'banff-mental-health-urgent-care-banff-305-lynx-st',
+    duplicates: [
+      'alberta-health-services-calgary-zone-mental-health-services-303-lynx-street-banff-ab-t1l-1b3',
+    ],
+  },
+  // AHS CUPS Addiction and Recovery Supports (AHS entry duplicates CUPS org entry)
+  {
+    canonical: 'cups-calgary-urban-project-society-1001-10-avenue-sw-calgary-ab-t2r-0b7',
+    duplicates: [
+      'alberta-health-services-calgary-zone-addiction-and-recovery-supports-1001-10-avenue-sw-calgary-ab-t2r-0b7',
+    ],
+  },
 ];
 
 async function findDuplicatesToMerge(): Promise<DuplicateGroup[]> {

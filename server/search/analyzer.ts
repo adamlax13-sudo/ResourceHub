@@ -206,6 +206,7 @@ const INDICATOR_TO_INTENT: Record<string, { intent: QueryIntent; requiresDistres
   lgbtq: { intent: 'lgbtq_services', requiresDistress: false },
   indigenous: { intent: 'indigenous_services', requiresDistress: false },
   parenting: { intent: 'parenting_support', requiresDistress: false },
+  community_social: { intent: 'community_social', requiresDistress: false },
 };
 
 /**

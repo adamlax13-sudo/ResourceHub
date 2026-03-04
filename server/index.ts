@@ -5,6 +5,10 @@ import helmet from "helmet";
 import cors from "cors";
 import { randomUUID } from "crypto";
 import { registerRoutes } from "./routes";
+
+// ESM/CJS compat: __dirname exists in CJS (esbuild prod), import.meta.dirname in ESM (tsx dev)
+// @ts-ignore
+const _currentDir: string = typeof __dirname !== 'undefined' ? __dirname : import.meta.dirname;
 import { registerHealthRoutes } from "./routes/health";
 import { apiLimiter } from "./middleware/rateLimiter";
 import { pool } from "./db";
@@ -153,7 +157,7 @@ process.on('unhandledRejection', (reason, promise) => {
   // Register main routes (search, feedback, analytics)
   await registerRoutes(httpServer, app);
 
-  const clientBuildPath = path.join(__dirname, "../dist/public");
+  const clientBuildPath = path.join(_currentDir, "../dist/public");
   app.use(express.static(clientBuildPath));
 
   app.get("*", (req, res) => {
