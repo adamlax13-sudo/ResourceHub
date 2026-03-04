@@ -502,6 +502,35 @@ export const SEARCH_CONFIG = {
       /\b(?:breastfeeding|nursing|lactation|postpartum depression|ppd|baby blues)\b/i,
       /\b(?:childcare|daycare|child care).*(?:help|afford|can'?t|need)/i,
     ],
+    // Community & social connection, recreation, hobbies
+    community_social: [
+      // Social connection / loneliness (proactive, not crisis)
+      /\b(?:make|find|meet|looking for)\s*(?:friends|people|connections?|companions?)\b/i,
+      /\b(?:social\s*(?:activities|connection|groups?|programs?|events?|clubs?|circles?))\b/i,
+      /\b(?:lonely|loneliness|isolated|isolation)\b.*\b(?:connect|friends|people|activities|things to do)\b/i,
+      /\b(?:connect|friends|people|activities|things to do)\b.*\b(?:lonely|loneliness|isolated|isolation)\b/i,
+      // Recreation and fitness
+      /\b(?:recreation|recreational)\s*(?:programs?|centres?|centers?|activities|classes)\b/i,
+      /\b(?:drop-?in)\s*(?:programs?|activities|classes|fitness|sports?|swimming|skating)\b/i,
+      /\b(?:fitness|exercise|swimming|skating|sports?)\s*(?:programs?|classes|drop-?in|centres?|centers?)\b/i,
+      // Community activities / things to do
+      /\b(?:things?\s*to\s*do|activities)\b.*\b(?:community|local|nearby|in\s+\w+)\b/i,
+      /\b(?:community)\s*(?:programs?|activities|groups?|events?|centres?|centers?)\b/i,
+      /\b(?:group\s*activities|meetup|meet-?up)\b/i,
+      // Hobbies and interests
+      /\b(?:hobbies|hobby|arts?\s*and\s*crafts?|woodworking|makerspace|maker\s*space|gardening|community\s*garden)\b/i,
+      /\b(?:men'?s\s*shed)\b/i,
+      // Volunteering
+      /\b(?:volunteer|volunteering|give\s*back|civic\s*engagement)\b.*\b(?:opportunit|program|connect|where|how)\b/i,
+      // Outdoors and nature
+      /\b(?:hiking|outdoor)\s*(?:group|club|activities|programs?|recreation)\b/i,
+      /\b(?:nature)\s*(?:programs?|activities|therapy|wellness|based)\b/i,
+      // Adaptive and inclusive recreation
+      /\b(?:adaptive|adapted|inclusive)\s*(?:sports?|recreation|programs?|activities)\b/i,
+      /\b(?:wheelchair)\s*(?:sports?|basketball|rugby|tennis|hockey)\b/i,
+      // YMCA / rec centres
+      /\bYMCA\b/i,
+    ],
   },
 
   // === SUBSTANCE-SPECIFIC PATTERNS ===
@@ -702,6 +731,16 @@ export const SEARCH_CONFIG = {
       /\b(parent|parenting|mom|dad|single parent|teen parent|young parent)\b/i,
       /\b(childcare|daycare|car seat|crib|stroller|baby supplies)\b/i,
     ],
+    // Community & social connection indicators
+    community_social: [
+      /\b(recreation|recreational|fitness class|drop-in|sports league)\b/i,
+      /\b(social connection|social activit|community program|community group)\b/i,
+      /\b(volunteer|volunteering)\b/i,
+      /\b(hobby|hobbies|arts and crafts|woodworking|makerspace|maker space)\b/i,
+      /\b(community garden|gardening club|urban farm)\b/i,
+      /\b(men'?s shed|friendship club|hiking group|outdoor club)\b/i,
+      /\b(YMCA|adaptive sport|wheelchair sport|inclusive recreation)\b/i,
+    ],
   },
 
   // === DISTRESS/NEED INDICATORS ===
@@ -783,7 +822,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'community_social' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type

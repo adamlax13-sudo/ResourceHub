@@ -102,14 +102,31 @@ See `.env.example` for required variables. Key ones:
 - `ANTHROPIC_API_KEY` — Claude API key (optional, better extraction)
 - `ADMIN_API_KEY` — protects admin endpoints
 
+## MCP Servers
+
+A **PostgreSQL MCP server** is configured in the project-level Claude Code settings (`~/.claude/projects/.../settings.json` — outside the repo, not tracked by git). It connects directly to the production Render.com database using the same `DATABASE_URL` from `.env`.
+
+- Config location: `~/.claude/projects/-Users-adamyeo-Desktop-ResourceHub/settings.json`
+- Uses: `npx -y @modelcontextprotocol/server-postgres` with the connection string baked into args
+- If DB credentials rotate, update **both** `.env` and the MCP `settings.json`
+- After any MCP config change, **restart the Claude Code session** for it to take effect
+- The `claude` CLI is not on PATH inside Claude Code sessions — edit the settings.json directly instead of using `claude mcp add`
+
 ## Deployment
 
 Render.com with `render.yaml` blueprint. Auto-deploys on push to main. Monthly scraper cron job runs on the 1st at 2 AM UTC. See DEPLOYMENT.md for full details.
 
 Live URL: https://resourcehub-wwg6.onrender.com
 
-### Build format
-The server is built with esbuild to **CJS** format (`script/build.ts` → `dist/index.cjs`). Do NOT use `import.meta.dirname` or other ESM-only APIs in server code — use `__dirname` instead, which esbuild provides in CJS output.
+### Build format & ESM/CJS compat
+The server is built with esbuild to **CJS** format (`script/build.ts` → `dist/index.cjs`). The package is `"type": "module"`, so `npm run dev` (tsx) runs in ESM where `__dirname` doesn't exist, but esbuild's CJS output provides it natively.
+
+**Pattern for `__dirname`:** Use the `_currentDir` variable defined in `server/index.ts`:
+```ts
+// @ts-ignore
+const _currentDir: string = typeof __dirname !== 'undefined' ? __dirname : import.meta.dirname;
+```
+This works in both modes. The esbuild warning about `import.meta` is harmless (dead code path in CJS). Use `_currentDir` instead of `__dirname` in `server/index.ts`. Other server files that aren't bundled (e.g. `server/evaluation/`) can use the `fileURLToPath` shim directly.
 
 ## Git Safety Rules (CRITICAL)
 
