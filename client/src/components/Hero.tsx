@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
+import { extractQueryLocation } from "@/lib/extract-query-location";
 
 // Alberta locations for the dropdown
 const ALBERTA_LOCATIONS = [
@@ -319,7 +320,14 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
+    if (!query.trim()) return;
+
+    const detectedLocation = extractQueryLocation(query);
+    // If query mentions a location that differs from the dropdown, sync it
+    if (detectedLocation !== null && detectedLocation !== selectedLocation) {
+      onLocationChange(detectedLocation);
+      onSearch(query, detectedLocation ? [detectedLocation] : [], hp);
+    } else {
       onSearch(query, locations, hp);
     }
   };
@@ -597,7 +605,13 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                   } else {
                     startListening((transcript) => {
                       setQuery(transcript);
-                      onSearch(transcript, locations);
+                      const detectedLocation = extractQueryLocation(transcript);
+                      if (detectedLocation !== null && detectedLocation !== selectedLocation) {
+                        onLocationChange(detectedLocation);
+                        onSearch(transcript, detectedLocation ? [detectedLocation] : []);
+                      } else {
+                        onSearch(transcript, locations);
+                      }
                     });
                   }
                 }}
