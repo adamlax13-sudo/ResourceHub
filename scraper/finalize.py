@@ -143,7 +143,8 @@ def phase_normalize_contacts(session, log, dry_run: bool = False):
 
     if not dry_run:
         session.commit()
-    log.services_updated += updated_count
+    if hasattr(log, 'services_updated'):
+        log.services_updated += updated_count
     logger.info(f"Normalized {updated_count} services")
 
 
@@ -205,7 +206,8 @@ def phase_enhance_tags(session, log, dry_run: bool = False):
 
     if not dry_run:
         session.commit()
-    log.services_updated += updated_count
+    if hasattr(log, 'services_updated'):
+        log.services_updated += updated_count
     logger.info(f"Enhanced tags for {updated_count} services")
 
 
@@ -291,7 +293,8 @@ def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_al
         session.commit()
         logger.info(f"Saved final {len(batch)} embeddings")
 
-    log.services_updated += len(services)
+    if hasattr(log, 'services_updated'):
+        log.services_updated += len(services)
 
 
 def phase_dedupe_services(session, log, dry_run: bool = False):
