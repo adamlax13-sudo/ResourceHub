@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v76'; // Bumped for gap analysis: 134 new services, expanded intent patterns
+const CACHE_VERSION = 'v79'; // Bumped: cache unfiltered results, apply UI filters post-cache
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -217,16 +217,6 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     console.log(`[SearchOrchestrator] Tenant legal query - Legal aid service ensured in results`);
   }
 
-  // Apply hard UI filters before caching and pagination
-  // Must run AFTER pinning so crisis/pinned services are still subject to filters
-  if (input.filters) {
-    const beforeFilter = result.services.length;
-    result.services = applyHardFilters(result.services, input.filters);
-    if (result.services.length < beforeFilter) {
-      console.log(`[SearchOrchestrator] Hard filters applied: ${beforeFilter} → ${result.services.length} services`);
-    }
-  }
-
   // ============= LOG FAILED QUERIES =============
   // Track zero-result queries for analysis and coverage improvement
   if (result.services.length === 0) {
@@ -239,11 +229,23 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     console.log(`[SearchOrchestrator] Zero results - logged as failed query`);
   }
 
-  // Cache the results
+  // Cache the UNFILTERED results so future queries with different filters
+  // still have the full result set to filter from
   await storage.createSearch({
     query: cacheKey,
     results: { services: result.services, summary: result.summary },
   });
+
+  // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
+  if (input.filters) {
+    const beforeFilter = result.services.length;
+    result.services = applyHardFilters(result.services, input.filters);
+    result.services = applyPreferenceBoosts(result.services, input.filters);
+    result.services = applyFilterMatchBoosts(result.services, input.filters);
+    if (result.services.length < beforeFilter) {
+      console.log(`[SearchOrchestrator] Hard filters applied: ${beforeFilter} → ${result.services.length} services`);
+    }
+  }
 
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
 }

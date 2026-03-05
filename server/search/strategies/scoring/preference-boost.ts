@@ -14,9 +14,9 @@ import type { BoostOptions } from './name-match';
 import { searchLog } from '../../logger';
 
 // Multiplier applied to rrfScore for boolean DB match (strong signal)
-const BOOLEAN_MATCH_MULTIPLIER = 1.5;
+const BOOLEAN_MATCH_MULTIPLIER = 1.8;
 // Multiplier applied to rrfScore for text-pattern match (inferred signal)
-const TEXT_MATCH_MULTIPLIER = 1.2;
+const TEXT_MATCH_MULTIPLIER = 1.4;
 
 /** Text patterns that indicate a faith-based service */
 const FAITH_PATTERNS = /\b(faith[- ]based|spiritual|church|christian|prayer|bible|higher power|god|ministry|pastoral|religious|scripture|worship|mosque|synagogue|temple|imam|rabbi|chaplain)\b/i;

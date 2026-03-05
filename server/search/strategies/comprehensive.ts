@@ -469,12 +469,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       services = applyNegativePenalty(services, analysis.negativeTerms, boostOptions);
     }
 
-    // Apply preference boosts for soft UI filters (faith-based, 12-step, 24/7)
-    if (input.filters) {
-      services = applyPreferenceBoosts(services, input.filters, boostOptions);
-      // Apply explicit filter-match boost (men-specific services rank above general)
-      services = applyFilterMatchBoosts(services, input.filters, boostOptions);
-    }
+    // NOTE: UI filter boosts (preference + filter-match) are applied in the
+    // search orchestrator AFTER caching, so they work consistently for both
+    // fresh and cached result paths. Do not apply them here.
 
     // Apply organization diversity to prevent monopoly in top results
     // Pass query so we can skip limiting when user searches for specific org

@@ -10,7 +10,7 @@ import type { LiteService, LiteServiceWithDebug, ScoreExplanation } from '../../
 import type { BoostOptions } from './name-match';
 import { searchLog } from '../../logger';
 
-const EXPLICIT_MATCH_MULTIPLIER = 1.15;
+const EXPLICIT_MATCH_MULTIPLIER = 1.8;
 
 interface FilterMatchConfig {
   filterKey: keyof SearchFilters;
