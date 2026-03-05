@@ -416,13 +416,13 @@ class CRACharitiesSource(Source):
         In dry_run mode, downloads are still performed (they're public CSVs)
         but the method logs what would be produced and returns the list.
         """
-        if session is None:
-            session = requests.Session()
-            session.headers.update({"User-Agent": "ResourceHub-Scraper/1.0"})
+        # CRA source uses HTTP requests (not the SQLAlchemy DB session)
+        http = requests.Session()
+        http.headers.update({"User-Agent": "ResourceHub-Scraper/1.0"})
 
         # Step 1: Download and filter identification data to Alberta
         log.info("Downloading CRA identification data...")
-        ident_rows = self._download_csv(IDENT_CSV_URL, session, log)
+        ident_rows = self._download_csv(IDENT_CSV_URL, http, log)
         time.sleep(2)  # Rate limit
 
         # Filter to Alberta, Registered charities only
@@ -459,7 +459,7 @@ class CRACharitiesSource(Source):
 
         # Step 2: Download programs and merge by BN (optional — enriches but not required)
         log.info("Downloading CRA programs data...")
-        programs_rows = self._download_csv(PROGRAMS_CSV_URL, session, log, required=False)
+        programs_rows = self._download_csv(PROGRAMS_CSV_URL, http, log, required=False)
 
         # Aggregate all program descriptions per BN
         for row in programs_rows:
@@ -475,7 +475,7 @@ class CRACharitiesSource(Source):
 
         # Step 3: Download web URLs and merge by BN (optional)
         log.info("Downloading CRA web URL data...")
-        weburl_rows = self._download_csv(WEBURL_CSV_URL, session, log, required=False)
+        weburl_rows = self._download_csv(WEBURL_CSV_URL, http, log, required=False)
         time.sleep(2)  # Rate limit
 
         for row in weburl_rows:

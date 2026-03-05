@@ -204,11 +204,12 @@ def main_v2():
     Base.metadata.create_all(engine)
 
     run_id = f"pipeline-v2-{str(uuid.uuid4())[:8]}"
-    log = ScraperLog(run_id=run_id, status="running")
-    session.add(log)
+    scraper_log = ScraperLog(run_id=run_id, status="running")
+    session.add(scraper_log)
     session.commit()
 
-    # Build pipeline
+    # Build pipeline — Pipeline expects a standard Python logger
+    log = logging.getLogger("pipeline")
     pipeline = Pipeline(session=session, log=log, budget=args.budget)
 
     # Register all sources
