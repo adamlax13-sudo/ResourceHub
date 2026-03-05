@@ -3,9 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unittest.mock import MagicMock, patch
 from bs4 import BeautifulSoup
-from sources.homeless_hub import HomelessHubScraper
+from sources.homeless_hub import HomelessHubSource
 
 
 SAMPLE_PROFILE_HTML = """
@@ -45,21 +44,17 @@ SAMPLE_ALGOLIA_RESPONSE = {
 
 
 def test_parse_community_profile():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = HomelessHubScraper(session=session, log=log)
+    scraper = HomelessHubSource()
     soup = BeautifulSoup(SAMPLE_PROFILE_HTML, "html.parser")
     results = scraper.parse_community_profile(soup, "Calgary")
     assert len(results) >= 1
-    names = [r["name"] for r in results]
+    names = [r.name for r in results]
     assert any("Calgary Homeless Foundation" in n for n in names)
 
 
 def test_parse_algolia_results():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = HomelessHubScraper(session=session, log=log)
+    scraper = HomelessHubSource()
     results = scraper.parse_algolia_results(SAMPLE_ALGOLIA_RESPONSE)
     assert len(results) == 2
-    assert results[0]["name"] == "Alberta Housing Report 2024"
-    assert "homelesshub.ca" in results[0]["website_url"]
+    assert results[0].name == "Alberta Housing Report 2024"
+    assert "homelesshub.ca" in results[0].website_url

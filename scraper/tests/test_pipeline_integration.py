@@ -29,8 +29,8 @@ def test_scraper_imports():
     from sources.ahs_findhealth import AHSFindHealthScraper
     from sources.ab211_direct import AB211DirectScraper
 
-    assert VeteransAffairsScraper.SOURCE_NAME == "veterans_affairs"
-    assert ACDSScraper.SOURCE_NAME == "acds"
-    assert HomelessHubScraper.SOURCE_NAME == "homeless_hub"
-    assert AHSFindHealthScraper.SOURCE_NAME == "ahs_findhealth"
-    assert AB211DirectScraper.SOURCE_NAME == "211_direct"
+    assert VeteransAffairsScraper.name == "veterans_affairs"
+    assert ACDSScraper.name == "acds"
+    assert HomelessHubScraper.name == "homeless_hub"
+    assert AHSFindHealthScraper.name == "ahs_findhealth"
+    assert AB211DirectScraper.name == "211_direct"

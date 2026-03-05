@@ -3,15 +3,13 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unittest.mock import MagicMock, patch, AsyncMock
-from sources.ab211_direct import AB211DirectScraper
+from unittest.mock import MagicMock
+from sources.ab211_direct import AB211DirectSource
 
 
 def test_parse_listing_html():
     """Test parsing a typical 211 listing result."""
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AB211DirectScraper(session=session, log=log)
+    scraper = AB211DirectSource()
 
     sample_listing = {
         "name": "Calgary Counselling Centre",
@@ -29,9 +27,7 @@ def test_parse_listing_html():
 
 def test_dedup_against_existing():
     """Test that existing services are detected."""
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AB211DirectScraper(session=session, log=log)
+    scraper = AB211DirectSource()
 
     mock_service = MagicMock()
     mock_service.name = "Calgary Counselling Centre"
@@ -43,7 +39,5 @@ def test_dedup_against_existing():
 
 def test_topic_categories_defined():
     """Verify topic categories are defined for browsing."""
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AB211DirectScraper(session=session, log=log)
+    scraper = AB211DirectSource()
     assert len(scraper.TOPIC_IDS) > 0

@@ -5,13 +5,12 @@ CAPTCHA that blocks standard HTTP requests.
 
 Source: https://ab.211.ca/
 """
-import json
 import logging
 import re
 import time
 from typing import Dict, List, Optional
 
-from sources.base import BaseDirectoryScraper
+from sources.plugin import Source, RawService
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +18,9 @@ AB211_URL = "https://ab.211.ca/"
 AB211_TOPICS_URL = "https://ab.211.ca/how-we-help/"
 
 
-class AB211DirectScraper(BaseDirectoryScraper):
-    SOURCE_NAME = "211_direct"
+class AB211DirectSource(Source):
+    name = "211_direct"
+    url = "https://ab.211.ca/"
     CATEGORY = "Social Services"
     RATE_LIMIT_SECONDS = 3
 
@@ -37,7 +37,7 @@ class AB211DirectScraper(BaseDirectoryScraper):
         "legal": "Legal & Advocacy",
     }
 
-    def scrape(self) -> List[Dict]:
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
         """Scrape 211 Alberta using Playwright browser."""
         try:
             from playwright.sync_api import sync_playwright
@@ -85,9 +85,8 @@ class AB211DirectScraper(BaseDirectoryScraper):
                         listings = self._extract_page_listings(page)
                         for listing in listings:
                             listing["category"] = topic_name
-                            normalized = self.normalize_listing(listing)
-                            if not self.is_already_known(normalized["name"]):
-                                results.append(normalized)
+                            normalized = self._normalize_listing(listing)
+                            results.append(normalized)
 
                         time.sleep(self.RATE_LIMIT_SECONDS)
 
@@ -146,8 +145,8 @@ class AB211DirectScraper(BaseDirectoryScraper):
 
         return listings
 
-    def normalize_listing(self, listing: Dict) -> Dict:
-        """Normalize a raw listing into a service data dict."""
+    def _normalize_listing(self, listing: Dict) -> RawService:
+        """Normalize a raw listing into a RawService."""
         address = listing.get("address", "")
         city = "Alberta"
         for test_city in ["Calgary", "Edmonton", "Lethbridge", "Red Deer", "Medicine Hat", "Grande Prairie", "Fort McMurray"]:
@@ -155,9 +154,10 @@ class AB211DirectScraper(BaseDirectoryScraper):
                 city = test_city
                 break
 
-        return self.build_service_data(
+        return RawService(
             name=listing.get("name", "").strip(),
             category=listing.get("category", self.CATEGORY),
+            source_url=self.url,
             location=city,
             phone=listing.get("phone", ""),
             address=address,
@@ -166,18 +166,43 @@ class AB211DirectScraper(BaseDirectoryScraper):
             tags=["211", city.lower()],
         )
 
+    # Keep for backward compat with old tests
+    def normalize_listing(self, listing: Dict) -> Dict:
+        """Normalize a raw listing into a service data dict (legacy)."""
+        raw = self._normalize_listing(listing)
+        contact_parts = [p for p in [raw.phone, raw.website_url] if p]
+        return {
+            "name": raw.name,
+            "category": raw.category,
+            "location": raw.location,
+            "phone": raw.phone or "",
+            "email": "",
+            "website_url": raw.website_url or "",
+            "address": raw.address or "",
+            "contact": ", ".join(contact_parts),
+            "hours_of_operation": "",
+            "description": raw.description or "",
+            "eligibility": "",
+            "tags": raw.tags or [],
+        }
+
     def is_already_known(self, name: str) -> bool:
-        """Check if a service name already exists in the database."""
+        """Check if a service name already exists (uses _existing_lookup if set)."""
         if not name:
             return True
         normalized = name.lower().strip()
-        if normalized in self.existing_lookup:
-            return True
-        short = re.sub(r"\s*\(.*?\)\s*", "", normalized).strip()
-        if short in self.existing_lookup:
-            return True
-        for existing_name in self.existing_lookup:
-            if len(normalized) > 5 and len(existing_name) > 5:
-                if normalized in existing_name or existing_name in normalized:
-                    return True
+        if hasattr(self, '_existing_lookup') and self._existing_lookup is not None:
+            if normalized in self._existing_lookup:
+                return True
+            short = re.sub(r"\s*\(.*?\)\s*", "", normalized).strip()
+            if short in self._existing_lookup:
+                return True
+            for existing_name in self._existing_lookup:
+                if len(normalized) > 5 and len(existing_name) > 5:
+                    if normalized in existing_name or existing_name in normalized:
+                        return True
         return False
+
+
+# Backward-compatible alias
+AB211DirectScraper = AB211DirectSource

@@ -3,9 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unittest.mock import MagicMock, patch, PropertyMock
 from bs4 import BeautifulSoup
-from sources.ahs_findhealth import AHSFindHealthScraper
+from sources.ahs_findhealth import AHSFindHealthSource
 
 
 SAMPLE_SEARCH_PAGE = """
@@ -44,9 +43,7 @@ SAMPLE_RESULTS_HTML = """
 
 
 def test_extract_viewstate():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AHSFindHealthScraper(session=session, log=log)
+    scraper = AHSFindHealthSource()
     soup = BeautifulSoup(SAMPLE_SEARCH_PAGE, "html.parser")
     tokens = scraper.extract_viewstate(soup)
     assert tokens["__VIEWSTATE"] == "ABC123"
@@ -55,9 +52,7 @@ def test_extract_viewstate():
 
 
 def test_parse_facility_results():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AHSFindHealthScraper(session=session, log=log)
+    scraper = AHSFindHealthSource()
     soup = BeautifulSoup(SAMPLE_RESULTS_HTML, "html.parser")
     results = scraper.parse_results(soup)
     assert len(results) == 2
@@ -67,9 +62,7 @@ def test_parse_facility_results():
 
 
 def test_extract_facility_types():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = AHSFindHealthScraper(session=session, log=log)
+    scraper = AHSFindHealthSource()
     soup = BeautifulSoup(SAMPLE_SEARCH_PAGE, "html.parser")
     types = scraper.extract_dropdown_options(soup, "FacilityTypeDropDownList")
     assert len(types) == 2

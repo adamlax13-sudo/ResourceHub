@@ -5,15 +5,20 @@ Source: https://acds.ca/memberships/current-members.html
 """
 import logging
 import re
+import time
 from typing import Dict, List, Optional
 
+import requests
 from bs4 import BeautifulSoup, Tag
 
-from sources.base import BaseDirectoryScraper
+from sources.plugin import Source, RawService
 
 logger = logging.getLogger(__name__)
 
 ACDS_MEMBERS_URL = "https://acds.ca/memberships/current-members.html"
+
+USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
+TIMEOUT_SECONDS = 15
 
 REGIONS = ["calgary", "edmonton", "central", "south", "northeast", "northwest"]
 
@@ -27,18 +32,26 @@ REGION_LOCATIONS = {
 }
 
 
-class ACDSScraper(BaseDirectoryScraper):
-    SOURCE_NAME = "acds"
+class ACDSSource(Source):
+    name = "acds"
+    url = "https://acds.ca/memberships/current-members.html"
     CATEGORY = "Disability Support Services"
 
-    def scrape(self) -> List[Dict]:
-        soup = self.fetch_page(ACDS_MEMBERS_URL)
-        if not soup:
-            logger.error("Failed to fetch ACDS members page")
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
+        http = requests.Session()
+        http.headers.update({"User-Agent": USER_AGENT})
+
+        try:
+            resp = http.get(ACDS_MEMBERS_URL, timeout=TIMEOUT_SECONDS)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.content, "html.parser")
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch ACDS members page: {e}")
             return []
+
         return self.parse_members(soup)
 
-    def parse_members(self, soup: BeautifulSoup) -> List[Dict]:
+    def parse_members(self, soup: BeautifulSoup) -> List[RawService]:
         """Parse member organizations from the ACDS page."""
         results = []
         current_region = "Alberta"
@@ -65,7 +78,7 @@ class ACDSScraper(BaseDirectoryScraper):
         logger.info(f"[ACDS] Found {len(results)} member organizations")
         return results
 
-    def _parse_org_block(self, p_tag: Tag, region: str) -> Optional[Dict]:
+    def _parse_org_block(self, p_tag: Tag, region: str) -> Optional[RawService]:
         """Parse a single organization entry from a paragraph block."""
         strong = p_tag.find(["strong", "b"])
         if not strong:
@@ -114,9 +127,10 @@ class ACDSScraper(BaseDirectoryScraper):
 
         address = ", ".join(address_lines[:3]) if address_lines else ""
 
-        return self.build_service_data(
+        return RawService(
             name=name,
             category=self.CATEGORY,
+            source_url=self.url,
             location=region,
             phone=phone,
             email=email,
@@ -125,3 +139,7 @@ class ACDSScraper(BaseDirectoryScraper):
             description=f"{name} is a member of the Alberta Council of Disability Services (ACDS), providing disability support services in {region}.",
             tags=["disability", "acds-member", region.lower()],
         )
+
+
+# Backward-compatible alias
+ACDSScraper = ACDSSource

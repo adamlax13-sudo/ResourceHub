@@ -7,16 +7,21 @@ Source: https://www.homelesshub.ca/
 import json
 import logging
 import re
+import time
 from typing import Dict, List, Optional
 
+import requests
 from bs4 import BeautifulSoup
 
-from sources.base import BaseDirectoryScraper
+from sources.plugin import Source, RawService
 
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.homelesshub.ca"
 COMMUNITY_PROFILE_URL = BASE_URL + "/community_profile/{city}/"
+
+USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
+TIMEOUT_SECONDS = 15
 
 ALBERTA_CITIES = [
     "calgary", "edmonton", "lethbridge", "red-deer",
@@ -30,21 +35,25 @@ CITY_DISPLAY = {
 }
 
 
-class HomelessHubScraper(BaseDirectoryScraper):
-    SOURCE_NAME = "homeless_hub"
+class HomelessHubSource(Source):
+    name = "homeless_hub"
+    url = "https://www.homelesshub.ca/"
     CATEGORY = "Housing & Homelessness"
 
-    def scrape(self) -> List[Dict]:
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
+        self._http = requests.Session()
+        self._http.headers.update({"User-Agent": USER_AGENT})
+
         results = []
 
         # Part A: Community profiles
         for city_slug in ALBERTA_CITIES:
             url = COMMUNITY_PROFILE_URL.format(city=city_slug)
-            soup = self.fetch_page(url)
+            soup = self._fetch_page(url)
             if soup:
                 city_name = CITY_DISPLAY.get(city_slug, city_slug.title())
                 results.extend(self.parse_community_profile(soup, city_name))
-                self.rate_limit()
+                time.sleep(2)
 
         # Part B: Algolia resource library
         algolia_results = self._query_algolia()
@@ -53,7 +62,17 @@ class HomelessHubScraper(BaseDirectoryScraper):
 
         return results
 
-    def parse_community_profile(self, soup: BeautifulSoup, city: str) -> List[Dict]:
+    def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
+        """Fetch a URL and return parsed HTML."""
+        try:
+            resp = self._http.get(url, timeout=TIMEOUT_SECONDS)
+            resp.raise_for_status()
+            return BeautifulSoup(resp.content, "html.parser")
+        except requests.RequestException as e:
+            logger.error(f"[HomelessHub] Failed to fetch {url}: {e}")
+            return None
+
+    def parse_community_profile(self, soup: BeautifulSoup, city: str) -> List[RawService]:
         """Extract organization links from a community profile page."""
         results = []
 
@@ -70,9 +89,10 @@ class HomelessHubScraper(BaseDirectoryScraper):
             if len(text) < 5:
                 continue
 
-            results.append(self.build_service_data(
+            results.append(RawService(
                 name=text,
                 category=self.CATEGORY,
+                source_url=self.url,
                 location=city,
                 website_url=href,
                 description=f"{text} - identified through the Homeless Hub {city} community profile as a homelessness-related organization.",
@@ -84,7 +104,7 @@ class HomelessHubScraper(BaseDirectoryScraper):
 
     def _query_algolia(self) -> Optional[Dict]:
         """Query Algolia search API for Alberta resources."""
-        soup = self.fetch_page(BASE_URL)
+        soup = self._fetch_page(BASE_URL)
         if not soup:
             return None
 
@@ -118,15 +138,15 @@ class HomelessHubScraper(BaseDirectoryScraper):
                     "post_title", "content", "permalink", "taxonomies",
                 ],
             }
-            resp = self.http.post(url, json=payload, headers=headers, timeout=15)
+            resp = self._http.post(url, json=payload, headers=headers, timeout=15)
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
             logger.error(f"[HomelessHub] Algolia query failed: {e}")
             return None
 
-    def parse_algolia_results(self, data: Dict) -> List[Dict]:
-        """Parse Algolia search results into service dicts."""
+    def parse_algolia_results(self, data: Dict) -> List[RawService]:
+        """Parse Algolia search results into RawService objects."""
         results = []
         hits = data.get("hits", [])
 
@@ -140,9 +160,10 @@ class HomelessHubScraper(BaseDirectoryScraper):
             taxonomies = hit.get("taxonomies", {})
             resource_type = taxonomies.get("resource_type", ["Resource"])[0] if taxonomies.get("resource_type") else "Resource"
 
-            results.append(self.build_service_data(
+            results.append(RawService(
                 name=title,
                 category=self.CATEGORY,
+                source_url=self.url,
                 location="Alberta",
                 website_url=permalink,
                 description=content[:500] if content else f"{title} - {resource_type} from the Homeless Hub resource library.",
@@ -151,3 +172,7 @@ class HomelessHubScraper(BaseDirectoryScraper):
 
         logger.info(f"[HomelessHub] Algolia: {len(results)} Alberta resources found")
         return results
+
+
+# Backward-compatible alias
+HomelessHubScraper = HomelessHubSource

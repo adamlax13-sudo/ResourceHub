@@ -6,17 +6,22 @@ Source: https://www.albertahealthservices.ca/findhealth/
 """
 import logging
 import re
+import time
 from typing import Dict, List, Optional, Tuple
 
+import requests
 from bs4 import BeautifulSoup
 
-from sources.base import BaseDirectoryScraper
+from sources.plugin import Source, RawService
 
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.albertahealthservices.ca/findhealth"
 FACILITY_SEARCH_URL = f"{BASE_URL}/search.aspx?type=facility"
 SERVICE_SEARCH_URL = f"{BASE_URL}/search.aspx?type=service"
+
+USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
+TIMEOUT_SECONDS = 15
 
 CATEGORY_MAP = {
     "addiction & mental health": "Addiction Treatment",
@@ -32,12 +37,16 @@ CATEGORY_MAP = {
 }
 
 
-class AHSFindHealthScraper(BaseDirectoryScraper):
-    SOURCE_NAME = "ahs_findhealth"
+class AHSFindHealthSource(Source):
+    name = "ahs_findhealth"
+    url = "https://www.albertahealthservices.ca/findhealth/"
     CATEGORY = "Health Care Access"
     RATE_LIMIT_SECONDS = 2
 
-    def scrape(self) -> List[Dict]:
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
+        self._http = requests.Session()
+        self._http.headers.update({"User-Agent": USER_AGENT})
+
         results = []
         facility_results = self._scrape_search(FACILITY_SEARCH_URL, "facility")
         results.extend(facility_results)
@@ -45,11 +54,21 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
         results.extend(service_results)
         return results
 
-    def _scrape_search(self, url: str, search_type: str) -> List[Dict]:
+    def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
+        """Fetch a URL and return parsed HTML."""
+        try:
+            resp = self._http.get(url, timeout=TIMEOUT_SECONDS)
+            resp.raise_for_status()
+            return BeautifulSoup(resp.content, "html.parser")
+        except requests.RequestException as e:
+            logger.error(f"[AHS] Failed to fetch {url}: {e}")
+            return None
+
+    def _scrape_search(self, url: str, search_type: str) -> List[RawService]:
         """Scrape all results from a search page by iterating dropdown options."""
         results = []
 
-        soup = self.fetch_page(url)
+        soup = self._fetch_page(url)
         if not soup:
             logger.error(f"[AHS] Failed to fetch {search_type} search page")
             return []
@@ -78,7 +97,7 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
             }
 
             try:
-                resp = self.http.post(url, data=form_data, timeout=self.TIMEOUT_SECONDS)
+                resp = self._http.post(url, data=form_data, timeout=TIMEOUT_SECONDS)
                 resp.raise_for_status()
                 result_soup = BeautifulSoup(resp.content, "html.parser")
 
@@ -87,14 +106,16 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
                     category = self._map_category(label)
                     r["category"] = category
                     r["tags"] = r.get("tags", []) + [label.lower(), "ahs"]
-                results.extend(page_results)
+                # Convert dicts to RawService
+                for r in page_results:
+                    results.append(self._dict_to_raw(r))
 
                 tokens = self.extract_viewstate(result_soup)
 
             except Exception as e:
                 logger.error(f"[AHS] Error searching {label}: {e}")
 
-            self.rate_limit()
+            time.sleep(self.RATE_LIMIT_SECONDS)
 
         return results
 
@@ -144,7 +165,7 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
         return results
 
     def _parse_result_entry(self, container) -> Optional[Dict]:
-        """Parse a single result entry."""
+        """Parse a single result entry into a dict."""
         name_tag = container.find(["h3", "h4"])
         if not name_tag:
             link = container.find("a")
@@ -185,15 +206,36 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
 
         city = self._city_from_address(address)
 
-        return self.build_service_data(
-            name=name,
-            category=self.CATEGORY,
-            location=city,
-            phone=phone,
-            address=address,
-            website_url=detail_url or f"{BASE_URL}/",
-            description=f"{name} - Alberta Health Services {facility_type}." if facility_type else f"{name} - Alberta Health Services facility.",
-            tags=[facility_type.lower()] if facility_type else [],
+        return {
+            "name": name.strip(),
+            "category": self.CATEGORY,
+            "location": city,
+            "phone": phone,
+            "email": "",
+            "website_url": detail_url or f"{BASE_URL}/",
+            "address": address,
+            "contact": ", ".join([p for p in [phone, detail_url] if p]),
+            "hours_of_operation": "",
+            "description": f"{name} - Alberta Health Services {facility_type}." if facility_type else f"{name} - Alberta Health Services facility.",
+            "eligibility": "",
+            "tags": [facility_type.lower()] if facility_type else [],
+        }
+
+    def _dict_to_raw(self, d: Dict) -> RawService:
+        """Convert a parsed dict to a RawService."""
+        return RawService(
+            name=d.get("name", ""),
+            category=d.get("category", self.CATEGORY),
+            source_url=self.url,
+            location=d.get("location", "Alberta"),
+            phone=d.get("phone", ""),
+            email=d.get("email", ""),
+            address=d.get("address", ""),
+            website_url=d.get("website_url", ""),
+            hours=d.get("hours_of_operation", ""),
+            description=d.get("description", ""),
+            eligibility=d.get("eligibility", ""),
+            tags=d.get("tags", []),
         )
 
     def _map_category(self, type_label: str) -> str:
@@ -217,3 +259,7 @@ class AHSFindHealthScraper(BaseDirectoryScraper):
             if key in lower:
                 return name
         return "Alberta"
+
+
+# Backward-compatible alias
+AHSFindHealthScraper = AHSFindHealthSource

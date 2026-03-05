@@ -3,9 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unittest.mock import MagicMock
 from bs4 import BeautifulSoup
-from sources.acds import ACDSScraper
+from sources.acds import ACDSSource
 
 
 SAMPLE_HTML = """
@@ -36,32 +35,26 @@ Phone: (780) 555-0301<br>
 
 
 def test_parse_members():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = ACDSScraper(session=session, log=log)
+    scraper = ACDSSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_members(soup)
     assert len(results) == 3
 
 
 def test_region_assignment():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = ACDSScraper(session=session, log=log)
+    scraper = ACDSSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_members(soup)
-    assert results[0]["location"] == "Calgary"
-    assert results[2]["location"] == "Edmonton"
+    assert results[0].location == "Calgary"
+    assert results[2].location == "Edmonton"
 
 
 def test_fields_extracted():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = ACDSScraper(session=session, log=log)
+    scraper = ACDSSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_members(soup)
     ddrc = results[0]
-    assert "DDRC" in ddrc["name"]
-    assert ddrc["phone"] != ""
-    assert "ddrc.ca" in ddrc["website_url"]
-    assert "ddrc.ca" in ddrc["email"]
+    assert "DDRC" in ddrc.name
+    assert ddrc.phone != ""
+    assert "ddrc.ca" in ddrc.website_url
+    assert "ddrc.ca" in ddrc.email

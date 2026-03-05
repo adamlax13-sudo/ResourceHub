@@ -5,29 +5,42 @@ Source: https://www.veterans.gc.ca/en/contact-us
 """
 import logging
 import re
+import time
 from typing import Dict, List, Optional
 
+import requests
 from bs4 import BeautifulSoup, Tag
 
-from sources.base import BaseDirectoryScraper
+from sources.plugin import Source, RawService
 
 logger = logging.getLogger(__name__)
 
 VAC_CONTACT_URL = "https://www.veterans.gc.ca/en/contact-us"
 
+USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
+TIMEOUT_SECONDS = 15
 
-class VeteransAffairsScraper(BaseDirectoryScraper):
-    SOURCE_NAME = "veterans_affairs"
+
+class VeteransAffairsSource(Source):
+    name = "veterans_affairs"
+    url = "https://www.veterans.gc.ca/en/contact-us"
     CATEGORY = "Veterans Services"
 
-    def scrape(self) -> List[Dict]:
-        soup = self.fetch_page(VAC_CONTACT_URL)
-        if not soup:
-            logger.error("Failed to fetch VAC contact page")
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
+        http = requests.Session()
+        http.headers.update({"User-Agent": USER_AGENT})
+
+        try:
+            resp = http.get(VAC_CONTACT_URL, timeout=TIMEOUT_SECONDS)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.content, "html.parser")
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch VAC contact page: {e}")
             return []
+
         return self.parse_offices(soup)
 
-    def parse_offices(self, soup: BeautifulSoup) -> List[Dict]:
+    def parse_offices(self, soup: BeautifulSoup) -> List[RawService]:
         """Parse Alberta offices from the VAC contact page.
 
         The real page uses <details>/<summary> accordions for each province.
@@ -43,7 +56,7 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
             if "alberta" not in summary.get_text(strip=True).lower():
                 continue
 
-            # Found Alberta section — extract all offices
+            # Found Alberta section -- extract all offices
             for h3 in details.find_all("h3"):
                 office_name = h3.get_text(strip=True)
                 office_data = self._extract_office_data(h3, office_name)
@@ -54,7 +67,7 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
         logger.info(f"[VAC] Found {len(results)} Alberta offices")
         return results
 
-    def _extract_office_data(self, h3_tag: Tag, office_name: str) -> Optional[Dict]:
+    def _extract_office_data(self, h3_tag: Tag, office_name: str) -> Optional[RawService]:
         """Extract office details from the container around an h3.
 
         Real structure: h3 and sibling <p> tags live inside a col div.
@@ -76,7 +89,7 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
         address = ""
         first_p = h3_tag.find_next_sibling("p")
         if first_p:
-            # Check if this <p> contains hours/telephone labels — if so, skip it
+            # Check if this <p> contains hours/telephone labels -- if so, skip it
             p_text = first_p.get_text(strip=True)
             if "hours:" not in p_text.lower() and "telephone:" not in p_text.lower():
                 address = first_p.get_text(separator=", ", strip=True)
@@ -109,9 +122,10 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
         elif "red deer" in combined:
             city = "Red Deer"
 
-        return self.build_service_data(
+        return RawService(
             name=f"Veterans Affairs Canada - {office_name}",
             category=self.CATEGORY,
+            source_url=self.url,
             location=city,
             phone=phone,
             address=address,
@@ -121,3 +135,7 @@ class VeteransAffairsScraper(BaseDirectoryScraper):
             eligibility="Canadian Armed Forces veterans, RCMP members, and their families",
             tags=["veterans", "military", "federal", office_name.lower().split()[0] if office_name else ""],
         )
+
+
+# Backward-compatible alias
+VeteransAffairsScraper = VeteransAffairsSource

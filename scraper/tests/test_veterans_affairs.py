@@ -3,9 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unittest.mock import MagicMock, patch
 from bs4 import BeautifulSoup
-from sources.veterans_affairs import VeteransAffairsScraper
+from sources.veterans_affairs import VeteransAffairsSource
 
 
 SAMPLE_HTML = """
@@ -43,31 +42,25 @@ SAMPLE_HTML = """
 
 
 def test_parse_alberta_offices():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = VeteransAffairsScraper(session=session, log=log)
+    scraper = VeteransAffairsSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_offices(soup)
     assert len(results) == 2
-    assert results[0]["name"] == "Veterans Affairs Canada - Calgary Area Office"
-    assert "Calgary" in results[0]["address"]
-    assert results[1]["name"] == "Veterans Affairs Canada - Edmonton Area Office"
+    assert results[0].name == "Veterans Affairs Canada - Calgary Area Office"
+    assert "Calgary" in results[0].address
+    assert results[1].name == "Veterans Affairs Canada - Edmonton Area Office"
 
 
 def test_phone_extracted():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = VeteransAffairsScraper(session=session, log=log)
+    scraper = VeteransAffairsSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_offices(soup)
-    assert results[0]["phone"] != ""
+    assert results[0].phone != ""
 
 
 def test_bc_offices_excluded():
-    session = MagicMock()
-    log = MagicMock()
-    scraper = VeteransAffairsScraper(session=session, log=log)
+    scraper = VeteransAffairsSource()
     soup = BeautifulSoup(SAMPLE_HTML, "html.parser")
     results = scraper.parse_offices(soup)
-    names = [r["name"] for r in results]
+    names = [r.name for r in results]
     assert not any("Vancouver" in n for n in names)
