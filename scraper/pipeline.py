@@ -83,7 +83,11 @@ class Pipeline:
             if source_name and source.name != source_name:
                 continue
             self.log.info(f"Discovering from {source.name}...")
-            raw_services = source.discover(self.session, self.log, dry_run=dry_run)
+            try:
+                raw_services = source.discover(self.session, self.log, dry_run=dry_run)
+            except Exception as e:
+                self.log.error(f"Source {source.name} failed: {e}")
+                continue
             self.stats.services_found += len(raw_services)
             self.stats.sources_scraped += 1
             for raw in raw_services:
