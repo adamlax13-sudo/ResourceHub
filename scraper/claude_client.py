@@ -914,7 +914,10 @@ CRITICAL RULES:
 SERVICES TO RESEARCH:
 {services_text}
 
-For EACH service, search for:
+For EACH service, search their website and find:
+- Phone number and email address
+- Hours of operation
+- A clear description of what the service provides
 - Step-by-step process to access the service (intake process, assessments, etc.)
 - Required documents (ID, health card, referral letter, etc.)
 - Eligibility criteria (age, gender, residency, income requirements)
@@ -938,6 +941,10 @@ Use the report_enrichment_results tool to return your findings."""
                             "required": ["service_name", "confidence"],
                             "properties": {
                                 "service_name": {"type": "string"},
+                                "phone": {"type": ["string", "null"], "description": "Phone number"},
+                                "email": {"type": ["string", "null"], "description": "Email address"},
+                                "hours": {"type": ["string", "null"], "description": "Hours of operation"},
+                                "description": {"type": ["string", "null"], "description": "Clear description of what the service provides"},
                                 "process_steps": {"type": ["array", "null"]},
                                 "required_docs": {"type": ["array", "null"]},
                                 "eligibility": {"type": ["object", "null"]},
@@ -958,7 +965,7 @@ Use the report_enrichment_results tool to return your findings."""
         web_search_tool = {
             "type": "web_search_20250305",
             "name": "web_search",
-            "max_uses": 5 * len(services),
+            "max_uses": 3 * len(services),
             "user_location": {
                 "type": "approximate",
                 "region": "Alberta",
@@ -968,30 +975,39 @@ Use the report_enrichment_results tool to return your findings."""
         }
 
         try:
+            # web_search_20250305 is a server-side tool — Claude searches and returns
+            # results in a single API call. Use auto tool_choice so Claude searches
+            # first, then calls report_enrichment_results with findings.
             response = self.client.messages.create(
                 model=CLAUDE_MODEL,
-                max_tokens=4096,
+                max_tokens=16384,
                 system=system_prompt,
                 tools=[web_search_tool, report_tool],
-                tool_choice={"type": "tool", "name": "report_enrichment_results"},
                 messages=[{"role": "user", "content": user_prompt}],
             )
 
-            # Log token usage
+            # Log and track token usage for cost calculation
             if hasattr(response, "usage"):
                 logger.info(
                     f"Batch enrichment tokens: "
                     f"in={response.usage.input_tokens} out={response.usage.output_tokens}"
                 )
+                self._last_usage = {
+                    "input": response.usage.input_tokens,
+                    "output": response.usage.output_tokens,
+                }
 
-            # Extract tool_use result
+            # Extract report_enrichment_results tool call from response
             raw_services = []
             for block in response.content:
-                if getattr(block, "type", None) == "tool_use" and getattr(block, "input", None):
+                if getattr(block, "type", None) == "tool_use" and getattr(block, "name", None) == "report_enrichment_results":
                     data = block.input
                     if "services" in data:
                         raw_services = data["services"]
-                        break
+                    break
+
+            if not raw_services:
+                logger.warning("No report_enrichment_results tool call found in response")
 
             # Build a name->service_id lookup for matching
             name_to_id = {svc.name: svc.service_id for svc in services}
@@ -1012,6 +1028,10 @@ Use the report_enrichment_results tool to return your findings."""
                         cost=raw.get("cost"),
                         confidence=raw.get("confidence", 0),
                         source_urls=raw.get("source_urls", []),
+                        phone=raw.get("phone"),
+                        email=raw.get("email"),
+                        hours=raw.get("hours"),
+                        description=raw.get("description"),
                     )
                 )
 

@@ -26,6 +26,11 @@ class EnrichmentResult:
     confidence: int = 0
     enrichment_source: str = "found"  # "found", "verified", "inferred"
     source_urls: list[str] = field(default_factory=list)
+    # Contact fields (populated by web search enrichment)
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    hours: Optional[str] = None
+    description: Optional[str] = None
 
 
 def should_enrich(service) -> bool:
@@ -46,7 +51,7 @@ def should_enrich(service) -> bool:
     return False
 
 
-def batch_services_by_category(services, batch_size=5) -> list[list]:
+def batch_services_by_category(services, batch_size=3) -> list[list]:
     """Group services by category into batches for efficient API calls.
 
     Services in the same category are batched together so Claude can
@@ -111,8 +116,15 @@ class EnrichmentEngine:
             return []
 
         results = self.claude.batch_enrich_services(services)
-        # Track costs (estimate ~$0.01-0.02 per service in batch)
-        self.total_cost += len(services) * 0.015
+        # Track actual API costs using Sonnet pricing: $3/MTok input, $15/MTok output
+        last_usage = getattr(self.claude, '_last_usage', None)
+        if last_usage:
+            batch_cost = (last_usage.get('input', 0) * 3.0 / 1_000_000) + \
+                         (last_usage.get('output', 0) * 15.0 / 1_000_000)
+            self.total_cost += batch_cost
+        else:
+            # Fallback estimate based on typical web search usage
+            self.total_cost += len(services) * 0.10
         return results
 
     def enrich_service_inferred(self, session, log, service, similar_services: list) -> EnrichmentResult:

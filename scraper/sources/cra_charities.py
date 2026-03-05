@@ -20,6 +20,7 @@ Foundations that only fund other organizations are excluded.
 import csv
 import io
 import logging
+import os
 import time
 from typing import Optional
 
@@ -376,9 +377,28 @@ class CRACharitiesSource(Source):
 
         return list(dict.fromkeys(tags))  # dedupe preserving order
 
+    # Local file fallback paths (e.g. downloaded from Wayback Machine when site is down)
+    LOCAL_CSV_FALLBACKS = {
+        "ident_2023_update.csv": "/tmp/cra_ident.csv",
+        "new_ongoing_programs_2023_updated.csv": "/tmp/cra_programs.csv",
+        "weburl_2023_0721.csv": "/tmp/cra_weburl.csv",
+    }
+
     def _download_csv(self, url: str, session, log, required=True) -> list[dict]:
-        """Download and parse a CSV from the Open Government Portal."""
+        """Download and parse a CSV from the Open Government Portal.
+
+        Falls back to local files if the remote server is unreachable.
+        """
         filename = url.split("/")[-1]
+
+        # Check for local fallback first (faster, works when site is down)
+        local_path = self.LOCAL_CSV_FALLBACKS.get(filename)
+        if local_path and os.path.exists(local_path):
+            log.info(f"Using local CSV: {local_path}")
+            with open(local_path, "r", encoding="utf-8-sig") as f:
+                reader = csv.DictReader(f)
+                return list(reader)
+
         log.info(f"Downloading CSV: {filename}")
         for attempt in range(3):
             try:
@@ -503,6 +523,16 @@ class CRACharitiesSource(Source):
             f"Relevance filter: {len(relevant)} accepted, {rejected_count} rejected "
             f"(out of {len(alberta_charities)} Alberta charities)"
         )
+
+        # Step 4b: Only keep charities with a usable website URL
+        # Services without a URL can't be enriched via web search
+        with_url = [c for c in relevant if c.get("website_url")]
+        no_url_count = len(relevant) - len(with_url)
+        log.info(
+            f"URL filter: {len(with_url)} with website, {no_url_count} without "
+            f"(dropping {no_url_count} services that can't be enriched)"
+        )
+        relevant = with_url
 
         # Step 5: Convert to RawService
         services = [self._to_raw_service(c) for c in relevant]

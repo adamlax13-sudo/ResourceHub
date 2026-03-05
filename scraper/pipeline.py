@@ -10,7 +10,7 @@ from datetime import datetime
 
 from sources.plugin import Source
 from enrichment import EnrichmentEngine, should_enrich, batch_services_by_category
-from upserter import upsert_service
+from upserter import upsert_service, invalidate_service_cache
 from finalize import (
     phase_normalize_contacts,
     phase_enhance_tags,
@@ -72,7 +72,7 @@ class Pipeline:
         if phase is None or phase == "discover":
             self.run_discover(dry_run=dry_run, source_name=source_name)
         if phase is None or phase == "enrich":
-            self.run_enrich(dry_run=dry_run, full=full)
+            self.run_enrich(dry_run=dry_run, full=full, source_name=source_name)
         if phase is None or phase == "finalize":
             self.run_finalize(dry_run=dry_run)
         self.stats.duration_seconds = (datetime.now() - start).total_seconds()
@@ -90,7 +90,7 @@ class Pipeline:
                 continue
             self.stats.services_found += len(raw_services)
             self.stats.sources_scraped += 1
-            for raw in raw_services:
+            for i, raw in enumerate(raw_services):
                 result = upsert_service(self.session, self.log, raw, source.name, dry_run=dry_run)
                 if result == "created":
                     self.stats.new_services += 1
@@ -99,7 +99,39 @@ class Pipeline:
                 elif result == "skipped":
                     self.stats.skipped_unchanged += 1
 
-    def run_enrich(self, dry_run=False, full=False):
+                # Commit every 100 services to avoid connection timeouts
+                if not dry_run and (i + 1) % 100 == 0:
+                    self.session.commit()
+                    invalidate_service_cache()
+                    self.log.info(f"  Committed batch {i+1}/{len(raw_services)} from {source.name}")
+
+            # Final commit for remaining services
+            if not dry_run:
+                self.session.commit()
+                invalidate_service_cache()
+                self.log.info(f"Committed {len(raw_services)} services from {source.name}")
+
+    def _is_data_rich(self, svc) -> bool:
+        """Check if a service has enough data to be useful for users.
+
+        A service needs at least 2 of: phone, email, hours, eligibility,
+        process_steps to be considered useful. Description and address alone
+        aren't enough.
+        """
+        field_count = 0
+        if svc.phone and svc.phone.strip():
+            field_count += 1
+        if svc.email and svc.email.strip():
+            field_count += 1
+        if svc.hours_of_operation and str(svc.hours_of_operation).strip():
+            field_count += 1
+        if svc.eligibility and str(svc.eligibility).strip():
+            field_count += 1
+        if svc.process_steps and len(svc.process_steps) > 0:
+            field_count += 1
+        return field_count >= 2
+
+    def run_enrich(self, dry_run=False, full=False, source_name=None):
         if not self.enrichment_engine:
             self.log.info("No enrichment engine configured (missing Claude API key). Skipping.")
             return
@@ -109,17 +141,33 @@ class Pipeline:
 
         self.log.info("=== Enrich Phase ===")
 
-        # Query services needing enrichment
+        # Query services needing enrichment — filter at DB level to avoid loading everything
         from models import Service
-        query = self.session.query(Service).filter(Service.is_active == True)
-        if not full:
-            all_services = query.all()
-            to_enrich = [s for s in all_services if should_enrich(s)]
-        else:
-            to_enrich = query.all()
+        from sqlalchemy import or_
 
-        self.log.info(f"Found {len(to_enrich)} services needing enrichment")
+        base_filter = [
+            Service.website_url.isnot(None),
+            Service.website_url != "",
+        ]
+
+        if not full:
+            base_filter.append(or_(
+                Service.enrichment_date.is_(None),
+                Service.process_steps.is_(None),
+            ))
+
+        to_enrich = self.session.query(Service).filter(*base_filter).all()
+
+        # Filter by source if specified (source_name is stored in source_urls JSON array)
+        if source_name and to_enrich:
+            before = len(to_enrich)
+            to_enrich = [s for s in to_enrich if source_name in (s.source_urls or [])]
+            self.log.info(f"Source filter '{source_name}': {len(to_enrich)}/{before} services")
+
+        self.log.info(f"Loaded {len(to_enrich)} services needing enrichment")
+
         if not to_enrich:
+            self.log.info("No services need enrichment")
             return
 
         # Batch by category for efficient API calls
@@ -142,7 +190,16 @@ class Pipeline:
                 results = self.enrichment_engine.enrich_batch(self.session, self.log, batch)
             except Exception as e:
                 self.log.error(f"Enrichment batch {i+1} failed: {e}")
+                if "usage limits" in str(e) or "401" in str(e):
+                    self.log.error("API access denied. Stopping enrichment.")
+                    break
+                consecutive_errors = getattr(self, '_consecutive_errors', 0) + 1
+                self._consecutive_errors = consecutive_errors
+                if consecutive_errors >= 3:
+                    self.log.error("3 consecutive failures. Stopping enrichment.")
+                    break
                 continue
+            self._consecutive_errors = 0
 
             # Apply results to services
             for result in results:
@@ -153,7 +210,7 @@ class Pipeline:
                     self.enrichment_engine.stats["skipped"] += 1
                     continue
 
-                # Update service fields
+                # Update service fields from enrichment
                 if result.process_steps:
                     svc.process_steps = result.process_steps
                 if result.required_docs:
@@ -161,16 +218,41 @@ class Pipeline:
                 if result.eligibility:
                     svc.eligibility = str(result.eligibility)
                 if result.wait_times:
-                    svc.wait_times = str(result.wait_times)
+                    svc.wait_times = str(result.wait_times)[:255]
                 if result.source_urls:
                     svc.source_urls = result.source_urls
+
+                # Also apply contact fields if returned by enrichment
+                # Truncate to DB column limits to avoid StringDataRightTruncation
+                if hasattr(result, "phone") and result.phone:
+                    if not svc.phone or not svc.phone.strip():
+                        svc.phone = result.phone[:100]
+                if hasattr(result, "email") and result.email:
+                    if not svc.email or not svc.email.strip():
+                        svc.email = result.email[:255]
+                if hasattr(result, "hours") and result.hours:
+                    if not svc.hours_of_operation or not str(svc.hours_of_operation).strip():
+                        svc.hours_of_operation = result.hours[:500]
+                if hasattr(result, "description") and result.description:
+                    if not svc.description or not svc.description.strip():
+                        svc.description = result.description
 
                 svc.enrichment_source = result.enrichment_source
                 svc.enrichment_date = datetime.now()
                 svc.confidence_score = result.confidence
 
+                # Re-activate if now data-rich enough
+                # (always set is_active based on data richness since bulk deactivation
+                # may have set it to false in the DB while ORM still shows True)
+                if self._is_data_rich(svc):
+                    svc.is_active = True
+
                 self.enrichment_engine.stats[result.enrichment_source] += 1
-                self.session.commit()
+                try:
+                    self.session.commit()
+                except Exception as e:
+                    self.log.error(f"Commit failed for {svc.name}: {e}")
+                    self.session.rollback()
 
         self.stats.enriched_found = self.enrichment_engine.stats.get("found", 0)
         self.stats.enriched_verified = self.enrichment_engine.stats.get("verified", 0)

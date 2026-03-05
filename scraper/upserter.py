@@ -140,6 +140,21 @@ def _create_new(session, log, raw: RawService, source_name: str, dry_run: bool):
     logger.info(f"[{source_name}] Created: {raw.name}")
 
 
+def _get_active_services_cache(session, force_refresh=False):
+    """Cache active services to avoid repeated full-table scans."""
+    if force_refresh or not hasattr(_get_active_services_cache, "_cache"):
+        from models import Service
+        _get_active_services_cache._cache = session.query(Service).filter(Service.is_active == True).all()
+        logger.info(f"Cached {len(_get_active_services_cache._cache)} active services for fuzzy matching")
+    return _get_active_services_cache._cache
+
+
+def invalidate_service_cache():
+    """Clear the cached services list (call after bulk commits)."""
+    if hasattr(_get_active_services_cache, "_cache"):
+        del _get_active_services_cache._cache
+
+
 def upsert_service(
     session,
     log,
@@ -176,9 +191,9 @@ def upsert_service(
     # --- exact match by service_id ---
     existing = session.query(Service).filter_by(service_id=service_id).first()
 
-    # --- fuzzy match against all active services ---
+    # --- fuzzy match against cached active services ---
     if not existing:
-        all_active = session.query(Service).filter(Service.is_active == True).all()
+        all_active = _get_active_services_cache(session)
         normalized = name.lower().strip()
         for svc in all_active:
             svc_name = (svc.name or "").lower().strip()
