@@ -6,19 +6,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from unittest.mock import MagicMock, patch
 
 
-def test_new_phases_in_argparse():
-    """Verify new phase names are accepted by argparse."""
+def test_v2_phase_names_accepted():
+    """Verify new v2 phase names are accepted by argparse."""
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--phase", nargs="+", choices=[
-        "211", "enrich", "websites", "deepcrawl", "extract",
-        "informalberta", "normalize", "tags", "embeddings", "dedupe",
-        "recover", "refresh",
-        "veterans", "acds", "homelesshub", "ahs", "211direct",
-    ])
-    args = parser.parse_args(["--phase", "veterans", "acds"])
-    assert "veterans" in args.phase
-    assert "acds" in args.phase
+    parser.add_argument("--phase", choices=["discover", "enrich", "finalize"])
+    args = parser.parse_args(["--phase", "discover"])
+    assert args.phase == "discover"
 
 
 def test_scraper_imports():

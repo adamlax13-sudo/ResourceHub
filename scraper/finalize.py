@@ -1,16 +1,352 @@
 """
-Finalize phase functions for the new pipeline.
-Re-exports existing functions from scraper.py to avoid duplication.
-These will be moved here permanently during Task 12 (cleanup).
+Finalize phase functions for the pipeline.
+
+Phase 3 (Finalize) runs after discover + enrich to:
+  - Normalize contact info (extract phone, email, address)
+  - Enhance searchable tags
+  - Generate vector embeddings
+  - Deduplicate services
+  - Refresh materialized views
 """
 
-from scraper import (
-    phase_normalize_contacts,
-    phase_enhance_tags,
-    phase_generate_embeddings,
-    phase_dedupe_services,
-    phase_refresh_views,
-)
+import logging
+import os
+import re
+import time
+from collections import defaultdict
+from datetime import datetime
+from typing import Any, Dict, Optional, Set
+
+from sqlalchemy import text
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Constants used by tag enhancement
+# ---------------------------------------------------------------------------
+
+ALBERTA_LOCATIONS = {
+    "calgary": ["calgary", "yyc"], "edmonton": ["edmonton", "yeg"],
+    "red deer": ["red deer"], "lethbridge": ["lethbridge"],
+    "medicine hat": ["medicine hat"], "grande prairie": ["grande prairie"],
+    "fort mcmurray": ["fort mcmurray", "wood buffalo"],
+    "airdrie": ["airdrie"], "st. albert": ["st. albert", "st albert"],
+    "spruce grove": ["spruce grove"], "leduc": ["leduc"],
+    "alberta": ["alberta", "province-wide", "provincewide"],
+}
+
+SERVICE_TYPES = {
+    "residential": ["residential", "inpatient", "live-in", "treatment centre"],
+    "outpatient": ["outpatient", "day program"], "counselling": ["counselling", "counseling", "therapy"],
+    "peer support": ["peer support", "peer-led", "lived experience"],
+    "crisis": ["crisis", "emergency", "urgent", "24/7", "hotline"],
+    "shelter": ["shelter", "emergency housing", "safe house"],
+    "detox": ["detox", "detoxification", "withdrawal management"],
+    "harm reduction": ["harm reduction", "needle exchange", "naloxone"],
+    "support group": ["support group", "aa", "na", "12 step"],
+    "drop-in": ["drop-in", "walk-in"], "mobile": ["mobile", "outreach"],
+    "online": ["online", "virtual", "telehealth"],
+}
+
+TARGET_POPULATIONS = {
+    "youth": ["youth", "teen", "adolescent"], "adult": ["adult", "18+"],
+    "senior": ["senior", "elder", "65+"], "women": ["women", "female", "mothers"],
+    "men": ["men", "male"], "lgbtq+": ["lgbtq", "lgbt", "queer", "transgender"],
+    "indigenous": ["indigenous", "first nations", "metis", "inuit"],
+    "newcomer": ["newcomer", "immigrant", "refugee"],
+    "family": ["family", "parent", "children"], "homeless": ["homeless", "unhoused"],
+}
+
+TREATMENT_TYPES = {
+    "addiction": ["addiction", "substance use", "drug", "alcohol", "opioid"],
+    "mental health": ["mental health", "depression", "anxiety", "ptsd"],
+    "gambling": ["gambling"], "trauma": ["trauma", "ptsd", "abuse"],
+    "grief": ["grief", "bereavement"], "domestic violence": ["domestic violence", "family violence"],
+    "dual diagnosis": ["dual diagnosis", "concurrent disorder"],
+}
+
+# Embedding configuration
+EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_BATCH_SIZE = 100
+RATE_LIMIT_DELAY = 0.1
+
+
+# ---------------------------------------------------------------------------
+# Helper utilities
+# ---------------------------------------------------------------------------
+
+def normalize_phone(phone: str) -> str:
+    """Normalize phone to consistent format."""
+    digits = re.sub(r'[^\d]', '', phone)
+    if len(digits) == 10:
+        return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+    elif len(digits) == 11 and digits[0] == '1':
+        return f"1-{digits[1:4]}-{digits[4:7]}-{digits[7:]}"
+    return phone
+
+
+# ---------------------------------------------------------------------------
+# Phase functions
+# ---------------------------------------------------------------------------
+
+def phase_normalize_contacts(session, log, dry_run: bool = False):
+    """Normalize contact information (extract phone, email, address)."""
+    from models import Service
+
+    logger.info("=== Finalize: Normalize Contacts ===")
+
+    phone_regex = re.compile(r'(?:\+1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}', re.I)
+    email_regex = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', re.I)
+    url_regex = re.compile(r'(?:https?://)?(?:www\.)?[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:/[^\s,]*)?', re.I)
+
+    all_services = session.query(Service).all()
+    updated_count = 0
+
+    for service in all_services:
+        contact = service.contact or ""
+        changes = False
+
+        # Extract phone
+        if not service.phone:
+            phones = phone_regex.findall(contact)
+            if phones:
+                service.phone = normalize_phone(phones[0])
+                changes = True
+
+        # Extract email
+        if not service.email:
+            emails = email_regex.findall(contact)
+            if emails:
+                service.email = emails[0]
+                changes = True
+
+        # Extract website
+        if not service.website_url:
+            urls = [u for u in url_regex.findall(contact) if '@' not in u]
+            if urls:
+                url = urls[0]
+                if not url.startswith('http'):
+                    url = 'https://' + url
+                service.website_url = url
+                changes = True
+
+        # Extract address from description field
+        if not service.address and service.description:
+            match = re.search(r'Address:\s*([^|]+)', service.description, re.I)
+            if match:
+                service.address = match.group(1).strip()
+                changes = True
+
+        if changes and not dry_run:
+            service.last_updated = datetime.now()
+            updated_count += 1
+
+    if not dry_run:
+        session.commit()
+    log.services_updated += updated_count
+    logger.info(f"Normalized {updated_count} services")
+
+
+def phase_enhance_tags(session, log, dry_run: bool = False):
+    """Enhance service tags with searchable keywords."""
+    from models import Service
+
+    logger.info("=== Finalize: Enhance Tags ===")
+
+    def extract_keywords(text_str: str, keyword_map: Dict) -> Set[str]:
+        if not text_str:
+            return set()
+        text_lower = text_str.lower()
+        found = set()
+        for tag, keywords in keyword_map.items():
+            for kw in keywords:
+                if kw in text_lower:
+                    found.add(tag)
+                    break
+        return found
+
+    all_services = session.query(Service).filter(Service.is_active == True).all()
+    updated_count = 0
+
+    for service in all_services:
+        combined_text = " ".join(filter(None, [service.name, service.description, service.category, service.eligibility]))
+        tags = set()
+
+        # Location tags
+        for city, variants in ALBERTA_LOCATIONS.items():
+            for v in variants:
+                if v in (service.location or "").lower() or v in combined_text.lower():
+                    tags.add(city)
+                    break
+
+        # Service type, population, treatment tags
+        tags.update(extract_keywords(combined_text, SERVICE_TYPES))
+        tags.update(extract_keywords(combined_text, TARGET_POPULATIONS))
+        tags.update(extract_keywords(combined_text, TREATMENT_TYPES))
+
+        # Category as tag
+        if service.category:
+            tags.add(service.category.lower().strip())
+
+        # Existing tags
+        if isinstance(service.tags, list):
+            for t in service.tags:
+                if isinstance(t, str):
+                    tags.add(t.lower().strip())
+
+        new_tags = sorted([t for t in tags if t and len(t) > 1])
+        old_tags = service.tags if isinstance(service.tags, list) else []
+
+        if set(new_tags) != set(old_tags):
+            if not dry_run:
+                service.tags = new_tags
+                service.last_updated = datetime.now()
+            updated_count += 1
+
+    if not dry_run:
+        session.commit()
+    log.services_updated += updated_count
+    logger.info(f"Enhanced tags for {updated_count} services")
+
+
+def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_all: bool = False):
+    """Generate vector embeddings for semantic search."""
+    logger.info("=== Finalize: Generate Embeddings ===")
+    if not client:
+        logger.warning("OpenAI client unavailable - skipping embeddings")
+        return
+
+    # Check if embedding column exists
+    try:
+        session.execute(text("SELECT embedding FROM services LIMIT 1"))
+    except Exception as e:
+        logger.warning(f"Embedding column not found - run migrations first. Error: {e}")
+        return
+
+    # Get services needing embeddings
+    if regenerate_all:
+        services = session.execute(text(
+            "SELECT service_id, name, category, description, eligibility, location, tags "
+            "FROM services WHERE is_active = true ORDER BY service_id"
+        )).fetchall()
+    else:
+        services = session.execute(text(
+            "SELECT service_id, name, category, description, eligibility, location, tags "
+            "FROM services WHERE is_active = true AND embedding IS NULL ORDER BY service_id"
+        )).fetchall()
+
+    if not services:
+        logger.info("No services need embeddings")
+        return
+
+    logger.info(f"Generating embeddings for {len(services)} services")
+    columns = ["service_id", "name", "category", "description", "eligibility", "location", "tags"]
+    batch = []
+
+    for row in services:
+        svc = dict(zip(columns, row))
+        # Build embedding text
+        parts = []
+        if svc.get("name"):
+            parts.append(f"Service: {svc['name']}")
+        if svc.get("category"):
+            parts.append(f"Category: {svc['category']}")
+        if svc.get("description"):
+            parts.append(f"Description: {svc['description']}")
+        if svc.get("eligibility"):
+            parts.append(f"Eligibility: {svc['eligibility']}")
+        if svc.get("location"):
+            parts.append(f"Location: {svc['location']}")
+        if svc.get("tags") and isinstance(svc["tags"], list):
+            parts.append(f"Tags: {', '.join(svc['tags'])}")
+
+        embed_text = "\n".join(parts)[:30000]
+
+        try:
+            response = client.embeddings.create(model=EMBEDDING_MODEL, input=embed_text)
+            embedding = response.data[0].embedding
+            batch.append((svc["service_id"], embedding))
+
+            if len(batch) >= EMBEDDING_BATCH_SIZE:
+                for sid, emb in batch:
+                    session.execute(text(
+                        "UPDATE services SET embedding = CAST(:emb AS vector), embedding_updated_at = NOW() "
+                        "WHERE service_id = :sid"
+                    ), {"emb": f"[{','.join(map(str, emb))}]", "sid": sid})
+                session.commit()
+                logger.info(f"Saved {len(batch)} embeddings")
+                batch = []
+
+            time.sleep(RATE_LIMIT_DELAY)
+        except Exception as e:
+            logger.error(f"Embedding failed for {svc['service_id']}: {e}")
+
+    # Save remaining
+    if batch:
+        for sid, emb in batch:
+            session.execute(text(
+                "UPDATE services SET embedding = CAST(:emb AS vector), embedding_updated_at = NOW() "
+                "WHERE service_id = :sid"
+            ), {"emb": f"[{','.join(map(str, emb))}]", "sid": sid})
+        session.commit()
+        logger.info(f"Saved final {len(batch)} embeddings")
+
+    log.services_updated += len(services)
+
+
+def phase_dedupe_services(session, log, dry_run: bool = False):
+    """Clean up redundant/duplicate services."""
+    from models import Service
+
+    logger.info("=== Finalize: Deduplicate Services ===")
+
+    def normalize_name(name: str) -> str:
+        name = name.lower().strip()
+        name = re.sub(r'\s*-\s*(calgary|edmonton|red deer|lethbridge|medicine hat|grande prairie|fort mcmurray|alberta)\s*$', '', name, flags=re.I)
+        name = re.sub(r'^(calgary|edmonton|red deer|lethbridge)\s*-?\s*', '', name, flags=re.I)
+        return re.sub(r'\s+', ' ', name)
+
+    services = session.query(Service).filter_by(is_active=True).all()
+    by_name = defaultdict(list)
+    for svc in services:
+        by_name[normalize_name(svc.name)].append(svc)
+
+    deactivated = 0
+
+    for norm_name, group in by_name.items():
+        if len(group) < 2:
+            continue
+
+        locations = [s.location or '' for s in group]
+        has_provincial = any('alberta' in loc.lower() or 'province' in loc.lower() for loc in locations)
+        has_local = any(city in loc.lower() for loc in locations for city in ['calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat'])
+
+        if has_provincial and has_local:
+            for svc in group:
+                loc = (svc.location or '').lower()
+                if 'alberta' in loc or 'province' in loc:
+                    if not dry_run:
+                        svc.is_active = False
+                    deactivated += 1
+                    logger.info(f"Deactivating: {svc.name} ({svc.location})")
+                    break
+
+    if not dry_run:
+        session.commit()
+    log.services_deactivated = deactivated
+    logger.info(f"Deactivated {deactivated} redundant services")
+
+
+def phase_refresh_views(session, log):
+    """Refresh materialized views for search."""
+    logger.info("=== Finalize: Refresh Views ===")
+    try:
+        session.execute(text("REFRESH MATERIALIZED VIEW mv_service_search"))
+        session.commit()
+        logger.info("Materialized view refreshed")
+    except Exception as e:
+        logger.warning(f"Failed to refresh view (may not exist): {e}")
+
 
 __all__ = [
     "phase_normalize_contacts",

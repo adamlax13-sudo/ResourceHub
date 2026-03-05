@@ -52,7 +52,10 @@ pytest tests/ -v                     # Run scraper tests
 | `shared/schema.ts` | Drizzle ORM schema — all table definitions |
 | `shared/routes.ts` | Shared Zod schemas for API request/response types |
 | `scraper/scraper.py` | Scraper pipeline entry point |
-| `scraper/sources/base.py` | Base class for directory scrapers |
+| `scraper/sources/plugin.py` | Source plugin interface (replaces old base.py) |
+| `scraper/upserter.py` | Service upsert logic for discovery phase |
+| `scraper/finalize.py` | Finalize phase: contacts, tags, embeddings, dedup, views |
+| `scraper/pipeline.py` | 3-phase pipeline orchestrator |
 
 ## Architecture Notes
 
@@ -75,10 +78,14 @@ pytest tests/ -v                     # Run scraper tests
 - `search_analytics` — click tracking for ranking improvements
 - `service_field_source` — tracks which scraper provided each field
 
-### Scraper Pipeline
-Phases run in sequence: discovery → enrichment → directory scrapers → crawling → extraction → normalization → tagging → embeddings → deduplication → recovery → view refresh.
+### Scraper Pipeline (v2)
+Three phases: discover → enrich → finalize.
 
-Each phase can run independently with `--phase <name>`.
+- **Discover**: Source plugins scrape directories (211, AHS, CRA, etc.) with no AI cost.
+- **Enrich**: Claude extracts process steps, eligibility, hours from service websites.
+- **Finalize**: Normalize contacts, enhance tags, generate embeddings, deduplicate, refresh views.
+
+Run with `python scraper.py` (all phases) or `--phase discover|enrich|finalize`.
 
 ## Coding Conventions
 
@@ -90,7 +97,7 @@ Each phase can run independently with `--phase <name>`.
 
 ### Python (scraper)
 - SQLAlchemy for database access
-- BaseDirectoryScraper class for new directory scrapers (see `scraper/sources/base.py`)
+- Source plugin interface for directory scrapers (see `scraper/sources/plugin.py`)
 - Confidence scoring tracks data quality per source
 - Field source tracking for data lineage
 

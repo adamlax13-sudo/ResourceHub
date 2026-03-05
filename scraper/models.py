@@ -147,61 +147,6 @@ class ScraperLog(Base):
     )
 
 
-class WebsiteCrawl(Base):
-    """Record of a deep website crawl."""
-    __tablename__ = 'website_crawls'
-
-    id = Column(Integer, primary_key=True)
-    service_id = Column(String(255), ForeignKey('services.service_id'), nullable=False, index=True)
-
-    # Crawl metadata
-    base_url = Column(Text, nullable=False)
-    crawl_date = Column(DateTime, default=func.now())
-    pages_crawled = Column(Integer, default=0)
-    crawl_duration_seconds = Column(Integer)
-
-    # Results summary
-    intake_pages_found = Column(Integer, default=0)
-    eligibility_pages_found = Column(Integer, default=0)
-    services_pages_found = Column(Integer, default=0)
-
-    # Errors
-    errors = Column(JSON)  # Array of error messages
-    robots_respected = Column(Boolean, default=True)
-
-    __table_args__ = (
-        Index('idx_crawl_service', 'service_id'),
-        Index('idx_crawl_date', 'crawl_date'),
-    )
-
-
-class CrawledPage(Base):
-    """A single page crawled from a website."""
-    __tablename__ = 'crawled_pages'
-
-    id = Column(Integer, primary_key=True)
-    crawl_id = Column(Integer, ForeignKey('website_crawls.id'), nullable=False, index=True)
-
-    # Page details
-    url = Column(Text, nullable=False)
-    page_type = Column(String(50))  # 'intake', 'eligibility', 'services', 'contact', etc.
-    classification_confidence = Column(Integer)  # 0-100
-
-    # Content (stored for extraction)
-    text_content = Column(Text)
-    html_content = Column(Text)
-
-    # Metadata
-    crawl_depth = Column(Integer, default=0)
-    crawl_time_ms = Column(Integer)
-    status_code = Column(Integer)
-
-    __table_args__ = (
-        Index('idx_page_crawl', 'crawl_id'),
-        Index('idx_page_type', 'page_type'),
-    )
-
-
 class ServiceIntakeDetails(Base):
     """Detailed intake process extracted from service website."""
     __tablename__ = 'service_intake_details'
