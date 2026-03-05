@@ -1,0 +1,380 @@
+"""
+CRA Charities Alberta Source Plugin.
+
+Discovers Alberta-based registered charities providing social services
+from the Canada Revenue Agency's open data on the Open Government Portal.
+
+Data source: https://open.canada.ca/data/en/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6
+  - ident CSV: charity identification (BN, name, address, category, designation)
+  - programs CSV: charitable program descriptions (keyed by BN)
+  - weburl CSV: charity website URLs (keyed by BN)
+
+The CRA database contains ~86,000 charities across Canada, including sports clubs,
+arts organizations, hospitals, and private foundations. This plugin filters to only
+Alberta charities providing DIRECT social services to people (addiction, housing,
+mental health, crisis, food, disability, newcomer, etc.).
+
+Foundations that only fund other organizations are excluded.
+"""
+
+import csv
+import io
+import logging
+import time
+from typing import Optional
+
+import requests
+
+from sources.plugin import RawService, Source
+
+logger = logging.getLogger(__name__)
+
+# --- Open Data CSV URLs (2023 dataset, updated July 2025) ---
+
+IDENT_CSV_URL = (
+    "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6"
+    "/resource/31a52caf-fa79-4ab3-bded-1ccc7b61c17f/download/ident_2023_update.csv"
+)
+PROGRAMS_CSV_URL = (
+    "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6"
+    "/resource/b02f94b3-6555-4315-96ab-2658f61290c5/download/new_ongoing_programs_2023_updated.csv"
+)
+WEBURL_CSV_URL = (
+    "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6"
+    "/resource/f4e88909-7dbb-44c5-881c-dab4fa6a3d6f/download/weburl_2023_0721.csv"
+)
+
+# CRA charity detail page template
+CRA_DETAIL_URL = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/dsplyRprtngPrd?q.srchNm=&q.stts=0007&selectedCharityBn={bn}&dsrdPg=1"
+
+# --- Relevance filtering constants ---
+
+# CRA categories that are automatically relevant (direct social services)
+RELEVANT_CATEGORIES = {
+    "Welfare",
+    "Health",
+    "Education",
+    "Community",
+}
+
+# CRA categories that require keyword matching to be relevant
+CONDITIONAL_CATEGORIES = {
+    "Religion",  # Many religious orgs run social programs (food banks, shelters)
+}
+
+# CRA categories that are excluded entirely
+EXCLUDED_CATEGORIES = {
+    "Animal Welfare",
+    "Arts",
+    "Agricultural",
+    "Environment",
+    "Law, Advocacy and Politics",
+    "Other",
+    "Research",
+}
+
+# Keywords that indicate direct social service provision
+RELEVANCE_KEYWORDS = {
+    "addiction", "recovery", "mental health", "housing", "shelter",
+    "food bank", "food hamper", "meals", "crisis", "counselling",
+    "counseling", "disability", "newcomer", "immigrant", "refugee",
+    "family services", "youth", "senior", "elder", "domestic violence",
+    "women's shelter", "harm reduction", "detox", "rehabilitation",
+    "poverty", "homelessness", "employment", "legal aid", "advocacy",
+    "support group", "peer support", "respite", "palliative",
+    "grief", "trauma", "abuse", "sexual assault",
+    "indigenous", "first nations", "metis", "inuit",
+}
+
+# Keywords that indicate the charity is NOT a social service provider
+EXCLUSION_KEYWORDS = {
+    "golf", "curling", "hockey", "sports league", "arts council",
+    "museum", "gallery", "symphony", "opera", "theatre company",
+    "animal", "veterinary", "kennel", "humane society",
+    "private foundation",
+}
+
+# --- Category mapping ---
+
+CATEGORY_KEYWORDS = {
+    "addiction": [
+        "addiction", "recovery", "detox", "substance", "alcohol",
+        "drug", "harm reduction", "opioid", "sobriety", "sober",
+    ],
+    "mental_health": [
+        "mental health", "counselling", "counseling", "therapy",
+        "psychiatric", "psycholog", "anxiety", "depression",
+        "grief", "trauma", "ptsd",
+    ],
+    "housing": [
+        "housing", "shelter", "homeless", "transitional living",
+        "supportive living", "rent", "eviction",
+    ],
+    "basic_needs": [
+        "food bank", "food hamper", "meals", "clothing",
+        "basic needs", "poverty", "low income", "financial assistance",
+    ],
+    "disability": [
+        "disability", "disabilities", "accessible", "wheelchair",
+        "blind", "deaf", "cognitive", "developmental",
+    ],
+    "crisis": [
+        "crisis", "emergency", "domestic violence", "sexual assault",
+        "abuse", "hotline", "distress", "suicide",
+    ],
+    "youth": [
+        "youth", "children", "teen", "adolescent", "young people",
+        "at risk youth", "child welfare",
+    ],
+    "seniors": [
+        "senior", "elder", "aging", "geriatric", "retirement",
+        "palliative", "respite",
+    ],
+    "newcomer": [
+        "immigrant", "refugee", "newcomer", "settlement",
+        "english language", "citizenship", "cultural integration",
+    ],
+}
+
+
+class CRACharitiesSource(Source):
+    """Discovers Alberta charities from CRA open data CSV files."""
+
+    name = "cra_charities"
+    url = "https://open.canada.ca/data/en/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6"
+
+    def _is_relevant(self, charity: dict) -> bool:
+        """
+        Determine if a CRA charity record is relevant to ResourceHub.
+
+        Filters out:
+        - Private and Public Foundations (they fund, not serve)
+        - Excluded categories (animals, arts, sports, etc.)
+        - Charities with no relevance keywords and no relevant category
+
+        Returns True only for charities providing direct social services.
+        """
+        designation = charity.get("designation", "")
+        category = charity.get("category", "")
+        programs = charity.get("programs", "").lower()
+
+        # Foundations are excluded — they fund other orgs, not serve people directly
+        if "Foundation" in designation:
+            return False
+
+        # Check exclusion keywords first
+        for kw in EXCLUSION_KEYWORDS:
+            if kw in programs:
+                return False
+
+        # Excluded categories are always rejected
+        if category in EXCLUDED_CATEGORIES:
+            return False
+
+        # Welfare is always relevant, even without program keywords
+        if category == "Welfare":
+            return True
+
+        # Check if programs text contains any relevance keywords
+        has_relevance_keyword = any(kw in programs for kw in RELEVANCE_KEYWORDS)
+
+        # Relevant categories pass if they have keyword match or if programs are missing
+        # (missing programs = we can't determine, but the category is promising)
+        if category in RELEVANT_CATEGORIES:
+            if not programs:
+                return True
+            return has_relevance_keyword
+
+        # Conditional categories (Religion) require keyword match
+        if category in CONDITIONAL_CATEGORIES:
+            return has_relevance_keyword
+
+        # Unknown/other categories: require keyword match
+        return has_relevance_keyword
+
+    def _map_to_category(self, charity: dict) -> str:
+        """
+        Map a CRA charity to a ResourceHub category based on program keywords.
+
+        Checks keywords in priority order and returns the first match.
+        Falls back to 'community_support' if no specific category matches.
+        """
+        programs = charity.get("programs", "").lower()
+
+        for category, keywords in CATEGORY_KEYWORDS.items():
+            for kw in keywords:
+                if kw in programs:
+                    return category
+
+        return "community_support"
+
+    def _to_raw_service(self, charity: dict) -> RawService:
+        """Convert a merged charity record to a RawService."""
+        bn = charity.get("bn", "")
+        legal_name = charity.get("legal_name", "Unknown")
+        city = charity.get("city", "")
+        province = charity.get("province", "AB")
+        postal_code = charity.get("postal_code", "")
+        address = charity.get("address", "")
+        programs = charity.get("programs", "")
+        website_url = charity.get("website_url")
+        category_code = charity.get("category", "")
+
+        location = f"{city}, {province}" if city else province
+
+        # Build description from available data
+        desc_parts = []
+        if programs:
+            desc_parts.append(programs)
+        if category_code:
+            desc_parts.append(f"CRA Category: {category_code}")
+        description = ". ".join(desc_parts) if desc_parts else None
+
+        source_url = CRA_DETAIL_URL.format(bn=bn[:9]) if bn else self.url
+
+        return RawService(
+            name=legal_name,
+            category=self._map_to_category(charity),
+            source_url=source_url,
+            location=location,
+            address=address or None,
+            website_url=website_url,
+            description=description,
+            tags=self._build_tags(charity),
+            extra={
+                "bn": bn,
+                "designation": charity.get("designation", ""),
+                "cra_category": category_code,
+                "postal_code": postal_code,
+            },
+        )
+
+    def _build_tags(self, charity: dict) -> list[str]:
+        """Generate tags from program text and category."""
+        tags = ["registered-charity"]
+        programs = charity.get("programs", "").lower()
+
+        for cat, keywords in CATEGORY_KEYWORDS.items():
+            for kw in keywords:
+                if kw in programs:
+                    tags.append(cat.replace("_", "-"))
+                    break
+
+        return list(dict.fromkeys(tags))  # dedupe preserving order
+
+    def _download_csv(self, url: str, session, log) -> list[dict]:
+        """Download and parse a CSV from the Open Government Portal."""
+        log.info(f"Downloading CSV: {url.split('/')[-1]}")
+        resp = session.get(url, timeout=120)
+        resp.raise_for_status()
+
+        # CRA CSVs use UTF-8 with BOM sometimes
+        text = resp.content.decode("utf-8-sig")
+        reader = csv.DictReader(io.StringIO(text))
+        return list(reader)
+
+    def discover(self, session, log, dry_run=False) -> list[RawService]:
+        """
+        Download CRA open data CSVs, filter to Alberta social service charities,
+        and return RawService objects.
+
+        Approach:
+        1. Download identification CSV (~86K rows) — filter to Alberta + Registered
+        2. Download programs CSV — join by BN for program descriptions
+        3. Download weburl CSV — join by BN for website URLs
+        4. Apply relevance filter
+        5. Convert to RawService objects
+
+        In dry_run mode, downloads are still performed (they're public CSVs)
+        but the method logs what would be produced and returns the list.
+        """
+        if session is None:
+            session = requests.Session()
+            session.headers.update({"User-Agent": "ResourceHub-Scraper/1.0"})
+
+        # Step 1: Download and filter identification data to Alberta
+        log.info("Downloading CRA identification data...")
+        ident_rows = self._download_csv(IDENT_CSV_URL, session, log)
+        time.sleep(2)  # Rate limit
+
+        # Filter to Alberta, Registered charities only
+        alberta_charities = {}
+        for row in ident_rows:
+            province = row.get("Province", "").strip()
+            # Accept "AB" or "ALBERTA" variants
+            if province.upper() not in ("AB", "ALBERTA"):
+                continue
+
+            bn = row.get("BN", "").strip()
+            if not bn:
+                continue
+
+            alberta_charities[bn] = {
+                "bn": bn,
+                "legal_name": row.get("Legal Name", "").strip(),
+                "address": row.get("Address Line 1", "").strip(),
+                "city": row.get("City", "").strip(),
+                "province": "AB",
+                "postal_code": row.get("Postal Code", "").strip(),
+                "category": row.get("Category", "").strip(),
+                "sub_category": row.get("Sub Category", "").strip(),
+                "designation": row.get("Designation", "").strip(),
+            }
+
+        log.info(f"Found {len(alberta_charities)} Alberta charities in identification data")
+
+        # Step 2: Download programs and merge by BN
+        log.info("Downloading CRA programs data...")
+        programs_rows = self._download_csv(PROGRAMS_CSV_URL, session, log)
+        time.sleep(2)  # Rate limit
+
+        # Aggregate all program descriptions per BN
+        for row in programs_rows:
+            bn = row.get("BN", "").strip()
+            if bn in alberta_charities:
+                desc = row.get("Description", "").strip()
+                if desc:
+                    existing = alberta_charities[bn].get("programs", "")
+                    if existing:
+                        alberta_charities[bn]["programs"] = existing + "; " + desc
+                    else:
+                        alberta_charities[bn]["programs"] = desc
+
+        # Step 3: Download web URLs and merge by BN
+        log.info("Downloading CRA web URL data...")
+        weburl_rows = self._download_csv(WEBURL_CSV_URL, session, log)
+        time.sleep(2)  # Rate limit
+
+        for row in weburl_rows:
+            bn = row.get("BN", "").strip()
+            if bn in alberta_charities:
+                url = row.get("URL", "").strip()
+                if url:
+                    alberta_charities[bn]["website_url"] = url
+
+        # Step 4: Apply relevance filtering
+        relevant = []
+        rejected_count = 0
+        for charity in alberta_charities.values():
+            if self._is_relevant(charity):
+                relevant.append(charity)
+            else:
+                rejected_count += 1
+
+        log.info(
+            f"Relevance filter: {len(relevant)} accepted, {rejected_count} rejected "
+            f"(out of {len(alberta_charities)} Alberta charities)"
+        )
+
+        # Step 5: Convert to RawService
+        services = [self._to_raw_service(c) for c in relevant]
+
+        if dry_run:
+            log.info(f"[DRY RUN] Would produce {len(services)} services from CRA data")
+            for svc in services[:10]:
+                log.info(f"  - {svc.name} ({svc.category}) [{svc.location}]")
+            if len(services) > 10:
+                log.info(f"  ... and {len(services) - 10} more")
+
+        log.info(f"CRA Charities source: discovered {len(services)} services")
+        return services
