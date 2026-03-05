@@ -101,12 +101,81 @@ class Pipeline:
 
     def run_enrich(self, dry_run=False, full=False):
         if not self.enrichment_engine:
+            self.log.info("No enrichment engine configured (missing Claude API key). Skipping.")
             return
         if self.enrichment_engine.budget_limit and self.enrichment_engine.total_cost >= self.enrichment_engine.budget_limit:
             self.log.info("Budget already exceeded. Skipping enrichment.")
             return
-        # Query services needing enrichment (actual DB query)
-        # For now, the orchestration structure is in place
+
+        self.log.info("=== Enrich Phase ===")
+
+        # Query services needing enrichment
+        from models import Service
+        query = self.session.query(Service).filter(Service.is_active == True)
+        if not full:
+            all_services = query.all()
+            to_enrich = [s for s in all_services if should_enrich(s)]
+        else:
+            to_enrich = query.all()
+
+        self.log.info(f"Found {len(to_enrich)} services needing enrichment")
+        if not to_enrich:
+            return
+
+        # Batch by category for efficient API calls
+        batches = batch_services_by_category(to_enrich)
+        self.log.info(f"Created {len(batches)} batches for enrichment")
+
+        for i, batch in enumerate(batches):
+            if self.enrichment_engine.budget_limit and self.enrichment_engine.total_cost >= self.enrichment_engine.budget_limit:
+                self.log.info(f"Budget limit ${self.enrichment_engine.budget_limit:.2f} reached after {i} batches. Stopping.")
+                break
+
+            cat = batch[0].category if batch else "unknown"
+            self.log.info(f"Enriching batch {i+1}/{len(batches)} ({len(batch)} {cat} services)...")
+
+            if dry_run:
+                self.log.info(f"  [DRY RUN] Would enrich: {', '.join(s.name for s in batch)}")
+                continue
+
+            try:
+                results = self.enrichment_engine.enrich_batch(self.session, self.log, batch)
+            except Exception as e:
+                self.log.error(f"Enrichment batch {i+1} failed: {e}")
+                continue
+
+            # Apply results to services
+            for result in results:
+                svc = next((s for s in batch if str(s.id) == result.service_id or s.service_id == result.service_id), None)
+                if not svc:
+                    continue
+                if not self.enrichment_engine._should_apply(svc, result):
+                    self.enrichment_engine.stats["skipped"] += 1
+                    continue
+
+                # Update service fields
+                if result.process_steps:
+                    svc.process_steps = result.process_steps
+                if result.required_docs:
+                    svc.required_docs = result.required_docs
+                if result.eligibility:
+                    svc.eligibility = str(result.eligibility)
+                if result.wait_times:
+                    svc.wait_times = str(result.wait_times)
+                if result.source_urls:
+                    svc.source_urls = result.source_urls
+
+                svc.enrichment_source = result.enrichment_source
+                svc.enrichment_date = datetime.now()
+                svc.confidence_score = result.confidence
+
+                self.enrichment_engine.stats[result.enrichment_source] += 1
+                self.session.commit()
+
+        self.stats.enriched_found = self.enrichment_engine.stats.get("found", 0)
+        self.stats.enriched_verified = self.enrichment_engine.stats.get("verified", 0)
+        self.stats.enriched_inferred = self.enrichment_engine.stats.get("inferred", 0)
+        self.log.info(f"Enrichment complete. Cost: ${self.enrichment_engine.total_cost:.2f}")
 
     def run_finalize(self, dry_run=False):
         self.log.info("=== Finalize Phase ===")
