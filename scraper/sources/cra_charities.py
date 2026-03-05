@@ -49,28 +49,81 @@ CRA_DETAIL_URL = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/dsplyRprtngPrd?q
 
 # --- Relevance filtering constants ---
 
+# CRA uses numeric category codes in the CSV.
+# Map codes to human-readable names for filtering.
+CATEGORY_CODE_MAP = {
+    "1": "Welfare",
+    "0001": "Welfare",
+    "10": "Education",
+    "11": "Education",
+    "12": "Arts",
+    "0012": "Arts",
+    "13": "International",
+    "14": "International",
+    "15": "International",
+    "30": "Religion",
+    "0030": "Religion",
+    "40": "Religion",
+    "50": "Religion",
+    "60": "Religion",
+    "70": "Religion",
+    "80": "Religion",
+    "90": "Religion",
+    "100": "Community",
+    "110": "Health",
+    "0110": "Health",
+    "120": "Emergency",
+    "130": "Health",
+    "140": "Disability",
+    "150": "Seniors",
+    "155": "Human Rights",
+    "160": "Cemetery",
+    "0160": "Cemetery",
+    "170": "Environment",
+    "175": "Environment",
+    "180": "Animal Welfare",
+    "0180": "Animal Welfare",
+    "190": "Arts",
+    "0190": "Arts",
+    "200": "Community",
+    "0200": "Community",
+    "210": "Other",
+    "0210": "Other",
+    "215": "Other",
+}
+
+# Designation codes: A = Public Foundation, B = Private Foundation, C = Charitable Organization
+DESIGNATION_CODE_MAP = {
+    "A": "Public Foundation",
+    "B": "Private Foundation",
+    "C": "Charitable Organization",
+}
+
 # CRA categories that are automatically relevant (direct social services)
 RELEVANT_CATEGORIES = {
     "Welfare",
     "Health",
-    "Education",
     "Community",
+    "Emergency",
+    "Disability",
+    "Seniors",
+    "Human Rights",
 }
 
 # CRA categories that require keyword matching to be relevant
 CONDITIONAL_CATEGORIES = {
-    "Religion",  # Many religious orgs run social programs (food banks, shelters)
+    "Religion",     # Many religious orgs run social programs (food banks, shelters)
+    "Education",    # Some education orgs provide social services
+    "Other",        # Mixed bag, needs keywords
 }
 
 # CRA categories that are excluded entirely
 EXCLUDED_CATEGORIES = {
     "Animal Welfare",
     "Arts",
-    "Agricultural",
     "Environment",
-    "Law, Advocacy and Politics",
-    "Other",
-    "Research",
+    "Cemetery",
+    "International",  # International development, not local Alberta services
 }
 
 # Strong keywords — one match is enough to indicate a real social service
@@ -384,6 +437,12 @@ class CRACharitiesSource(Source):
             if not bn:
                 continue
 
+            # Map numeric codes to human-readable names
+            cat_code = row.get("Category", "").strip()
+            desig_code = row.get("Designation", "").strip()
+            category_name = CATEGORY_CODE_MAP.get(cat_code, "Other")
+            designation_name = DESIGNATION_CODE_MAP.get(desig_code, desig_code)
+
             alberta_charities[bn] = {
                 "bn": bn,
                 "legal_name": row.get("Legal Name", "").strip(),
@@ -391,9 +450,9 @@ class CRACharitiesSource(Source):
                 "city": row.get("City", "").strip(),
                 "province": "AB",
                 "postal_code": row.get("Postal Code", "").strip(),
-                "category": row.get("Category", "").strip(),
+                "category": category_name,
                 "sub_category": row.get("Sub Category", "").strip(),
-                "designation": row.get("Designation", "").strip(),
+                "designation": designation_name,
             }
 
         log.info(f"Found {len(alberta_charities)} Alberta charities in identification data")
@@ -420,10 +479,15 @@ class CRACharitiesSource(Source):
         time.sleep(2)  # Rate limit
 
         for row in weburl_rows:
-            bn = row.get("BN", "").strip()
+            # Weburl CSV uses "BN/NE" as the column name, not "BN"
+            bn = row.get("BN/NE", row.get("BN", "")).strip()
             if bn in alberta_charities:
-                url = row.get("URL", "").strip()
+                # Weburl CSV uses "Contact URL" as the column name
+                url = row.get("Contact URL", row.get("URL", "")).strip()
                 if url:
+                    # Ensure URL has protocol
+                    if url and not url.startswith(("http://", "https://")):
+                        url = "http://" + url
                     alberta_charities[bn]["website_url"] = url
 
         # Step 4: Apply relevance filtering
