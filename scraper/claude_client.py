@@ -15,6 +15,8 @@ from typing import Any, Dict, List, Optional
 from anthropic import Anthropic
 from anthropic.types import Message, ToolUseBlock
 
+from enrichment import EnrichmentResult
+
 logger = logging.getLogger(__name__)
 
 # Claude model to use - configurable via environment variable
@@ -863,6 +865,267 @@ If you cannot find information about this specific service, say "NO INFO FOUND".
 
         except Exception as e:
             logger.error(f"Claude web search failed: {e}")
+            return None
+
+    def batch_enrich_services(self, services: list) -> List[EnrichmentResult]:
+        """Enrich a batch of services (same category) using Claude with web search.
+
+        Sends all services in a single prompt so Claude can search efficiently.
+        Returns one EnrichmentResult per service.
+
+        Args:
+            services: List of service objects with service_id, name, category,
+                      location, and website_url attributes.
+
+        Returns:
+            List of EnrichmentResult objects, one per service.
+        """
+        _rate_limit()
+
+        # Build service listing for the prompt
+        service_lines = []
+        for i, svc in enumerate(services, 1):
+            url = getattr(svc, "website_url", None) or "Unknown"
+            service_lines.append(
+                f"{i}. {svc.name}\n"
+                f"   Category: {svc.category}\n"
+                f"   Location: {svc.location}\n"
+                f"   Website: {url}"
+            )
+        services_text = "\n".join(service_lines)
+
+        system_prompt = """You are researching Alberta social services to find practical access information.
+
+CRITICAL RULES:
+1. Search for EACH service's official website and intake/access pages
+2. Only report information you find from actual web sources
+3. If you cannot find information for a field, return null — DO NOT guess
+4. Provide a source_url for every piece of data you report
+5. Rate confidence based on source quality:
+   - 90-100: Official service website with explicit process info
+   - 70-89: Trusted directory (211, InformAlberta, Alberta Health Services)
+   - 50-69: Third-party site or news article
+   - 30-49: Indirect or partial information
+   - 0-29: Very little found
+6. NEVER use information from your training data — only use what you find via web search"""
+
+        user_prompt = f"""Research the following services and find their access/intake information.
+
+SERVICES TO RESEARCH:
+{services_text}
+
+For EACH service, search for:
+- Step-by-step process to access the service (intake process, assessments, etc.)
+- Required documents (ID, health card, referral letter, etc.)
+- Eligibility criteria (age, gender, residency, income requirements)
+- Wait times (if published)
+- Cost information (free, sliding scale, fees)
+
+Use the report_enrichment_results tool to return your findings."""
+
+        # Tool schema for structured batch output
+        report_tool = {
+            "name": "report_enrichment_results",
+            "description": "Report enrichment data for a batch of services",
+            "input_schema": {
+                "type": "object",
+                "required": ["services"],
+                "properties": {
+                    "services": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["service_name", "confidence"],
+                            "properties": {
+                                "service_name": {"type": "string"},
+                                "process_steps": {"type": ["array", "null"]},
+                                "required_docs": {"type": ["array", "null"]},
+                                "eligibility": {"type": ["object", "null"]},
+                                "wait_times": {"type": ["object", "null"]},
+                                "cost": {"type": ["object", "null"]},
+                                "confidence": {"type": "integer"},
+                                "source_urls": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                            },
+                        },
+                    }
+                },
+            },
+        }
+
+        web_search_tool = {
+            "type": "web_search_20250305",
+            "name": "web_search",
+            "max_uses": 5 * len(services),
+            "user_location": {
+                "type": "approximate",
+                "region": "Alberta",
+                "country": "CA",
+                "timezone": "America/Edmonton",
+            },
+        }
+
+        try:
+            response = self.client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=4096,
+                system=system_prompt,
+                tools=[web_search_tool, report_tool],
+                tool_choice={"type": "tool", "name": "report_enrichment_results"},
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+
+            # Log token usage
+            if hasattr(response, "usage"):
+                logger.info(
+                    f"Batch enrichment tokens: "
+                    f"in={response.usage.input_tokens} out={response.usage.output_tokens}"
+                )
+
+            # Extract tool_use result
+            raw_services = []
+            for block in response.content:
+                if getattr(block, "type", None) == "tool_use" and getattr(block, "input", None):
+                    data = block.input
+                    if "services" in data:
+                        raw_services = data["services"]
+                        break
+
+            # Build a name->service_id lookup for matching
+            name_to_id = {svc.name: svc.service_id for svc in services}
+
+            results: List[EnrichmentResult] = []
+            for raw in raw_services:
+                # Match by service_name to the original service
+                svc_name = raw.get("service_name", "")
+                service_id = name_to_id.get(svc_name, "")
+
+                results.append(
+                    EnrichmentResult(
+                        service_id=service_id,
+                        process_steps=raw.get("process_steps"),
+                        required_docs=raw.get("required_docs"),
+                        eligibility=raw.get("eligibility"),
+                        wait_times=raw.get("wait_times"),
+                        cost=raw.get("cost"),
+                        confidence=raw.get("confidence", 0),
+                        source_urls=raw.get("source_urls", []),
+                    )
+                )
+
+            return results
+
+        except Exception as e:
+            logger.error(f"Batch enrichment failed: {e}")
+            return []
+
+    def infer_from_similar(
+        self, service, similar_services: list
+    ) -> Optional[EnrichmentResult]:
+        """Infer enrichment data from similar services (last-resort fallback).
+
+        Does NOT use web search — purely based on provided examples.
+        The caller should set enrichment_source="inferred" and cap confidence.
+
+        Args:
+            service: Target service object with service_id, name, category, location.
+            similar_services: List of similar service objects with known process data.
+
+        Returns:
+            EnrichmentResult with inferred data, or None if inference failed.
+        """
+        # Format similar service examples
+        examples_text = ""
+        for i, sim in enumerate(similar_services[:5], 1):
+            name = getattr(sim, "name", "Unknown")
+            steps = getattr(sim, "process_steps", None) or []
+            steps_str = json.dumps(steps, default=str) if steps else "None"
+            examples_text += f"\nExample {i}: {name}\n  Process steps: {steps_str}\n"
+
+        system_prompt = """You are inferring likely access processes for a social service
+based on similar services in the same category.
+
+IMPORTANT:
+1. Base your inference ONLY on the patterns you see in the similar services provided
+2. Adapt steps to the target service's specifics (name, location)
+3. This is inference — set confidence accordingly (typically 30-45)
+4. Mark source_url as null for all inferred fields since they are not from a real source
+5. Generate plausible but conservative steps — when unsure, omit rather than guess"""
+
+        user_prompt = f"""Infer the likely access process for this service based on similar services.
+
+TARGET SERVICE:
+Name: {service.name}
+Category: {service.category}
+Location: {getattr(service, 'location', 'Alberta')}
+
+SIMILAR SERVICES WITH KNOWN PROCESSES:
+{examples_text}
+
+Based on the patterns in these similar services, infer the likely process steps,
+required documents, and eligibility for the target service.
+Use the report_inferred_enrichment tool to report your inference."""
+
+        tool_schema = {
+            "type": "object",
+            "required": ["confidence"],
+            "properties": {
+                "process_steps": {"type": ["array", "null"]},
+                "required_docs": {"type": ["array", "null"]},
+                "eligibility": {"type": ["object", "null"]},
+                "wait_times": {"type": ["object", "null"]},
+                "cost": {"type": ["object", "null"]},
+                "confidence": {"type": "integer"},
+            },
+        }
+
+        _rate_limit()
+
+        try:
+            response = self.client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=2048,
+                system=system_prompt,
+                tools=[
+                    {
+                        "name": "report_inferred_enrichment",
+                        "description": "Report inferred enrichment data for a service",
+                        "input_schema": tool_schema,
+                    }
+                ],
+                tool_choice={"type": "tool", "name": "report_inferred_enrichment"},
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+
+            if hasattr(response, "usage"):
+                logger.info(
+                    f"Inference tokens: "
+                    f"in={response.usage.input_tokens} out={response.usage.output_tokens}"
+                )
+
+            # Extract tool_use result
+            for block in response.content:
+                if getattr(block, "type", None) == "tool_use" and getattr(block, "input", None):
+                    data = block.input
+                    return EnrichmentResult(
+                        service_id=service.service_id,
+                        process_steps=data.get("process_steps"),
+                        required_docs=data.get("required_docs"),
+                        eligibility=data.get("eligibility"),
+                        wait_times=data.get("wait_times"),
+                        cost=data.get("cost"),
+                        confidence=data.get("confidence", 30),
+                        enrichment_source="inferred",
+                        source_urls=[],
+                    )
+
+            logger.warning("No tool use found in inference response")
+            return None
+
+        except Exception as e:
+            logger.error(f"Inference from similar services failed: {e}")
             return None
 
 
