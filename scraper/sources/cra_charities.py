@@ -41,7 +41,7 @@ PROGRAMS_CSV_URL = (
 )
 WEBURL_CSV_URL = (
     "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6"
-    "/resource/f4e88909-7dbb-44c5-881c-dab4fa6a3d6f/download/weburl_2023_0721.csv"
+    "/resource/204222a0-eefc-4ccc-8c29-b6ecea0f6eb5/download/weburl_2023_0721.csv"
 )
 
 # CRA charity detail page template
@@ -262,16 +262,30 @@ class CRACharitiesSource(Source):
 
         return list(dict.fromkeys(tags))  # dedupe preserving order
 
-    def _download_csv(self, url: str, session, log) -> list[dict]:
+    def _download_csv(self, url: str, session, log, required=True) -> list[dict]:
         """Download and parse a CSV from the Open Government Portal."""
-        log.info(f"Downloading CSV: {url.split('/')[-1]}")
-        resp = session.get(url, timeout=120)
-        resp.raise_for_status()
-
-        # CRA CSVs use UTF-8 with BOM sometimes
-        text = resp.content.decode("utf-8-sig")
-        reader = csv.DictReader(io.StringIO(text))
-        return list(reader)
+        filename = url.split("/")[-1]
+        log.info(f"Downloading CSV: {filename}")
+        for attempt in range(3):
+            try:
+                time.sleep(2 * (attempt + 1))
+                resp = session.get(url, timeout=180)
+                resp.raise_for_status()
+                text = resp.content.decode("utf-8-sig")
+                reader = csv.DictReader(io.StringIO(text))
+                return list(reader)
+            except (requests.ConnectionError, requests.Timeout) as e:
+                log.warning(f"Attempt {attempt + 1}/3 failed for {filename}: {e}")
+                if attempt == 2:
+                    if required:
+                        raise
+                    log.warning(f"Skipping optional CSV {filename} after 3 failures")
+                    return []
+            except requests.HTTPError as e:
+                if not required:
+                    log.warning(f"Skipping optional CSV {filename}: {e}")
+                    return []
+                raise
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
         """
@@ -323,10 +337,9 @@ class CRACharitiesSource(Source):
 
         log.info(f"Found {len(alberta_charities)} Alberta charities in identification data")
 
-        # Step 2: Download programs and merge by BN
+        # Step 2: Download programs and merge by BN (optional — enriches but not required)
         log.info("Downloading CRA programs data...")
-        programs_rows = self._download_csv(PROGRAMS_CSV_URL, session, log)
-        time.sleep(2)  # Rate limit
+        programs_rows = self._download_csv(PROGRAMS_CSV_URL, session, log, required=False)
 
         # Aggregate all program descriptions per BN
         for row in programs_rows:
@@ -340,9 +353,9 @@ class CRACharitiesSource(Source):
                     else:
                         alberta_charities[bn]["programs"] = desc
 
-        # Step 3: Download web URLs and merge by BN
+        # Step 3: Download web URLs and merge by BN (optional)
         log.info("Downloading CRA web URL data...")
-        weburl_rows = self._download_csv(WEBURL_CSV_URL, session, log)
+        weburl_rows = self._download_csv(WEBURL_CSV_URL, session, log, required=False)
         time.sleep(2)  # Rate limit
 
         for row in weburl_rows:
