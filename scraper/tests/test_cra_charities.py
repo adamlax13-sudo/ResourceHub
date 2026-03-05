@@ -22,19 +22,21 @@ def test_source_url():
 
 # --- Relevance filtering ---
 
-def test_relevance_filter_accepts_social_services():
+def test_relevance_filter_accepts_strong_keyword():
+    """A single strong keyword is enough to pass."""
     src = CRACharitiesSource()
-    charity = {"designation": "Charitable Organization", "programs": "addiction counselling, housing support"}
+    charity = {"designation": "Charitable Organization", "programs": "addiction counselling services"}
     assert src._is_relevant(charity) is True
 
 
-def test_relevance_filter_accepts_welfare_designation():
+def test_relevance_filter_accepts_welfare_with_weak_keyword():
+    """Welfare category needs only 1 weak keyword."""
     src = CRACharitiesSource()
-    charity = {"designation": "Charitable Organization", "category": "Welfare", "programs": ""}
+    charity = {"designation": "Charitable Organization", "category": "Welfare", "programs": "housing support"}
     assert src._is_relevant(charity) is True
 
 
-def test_relevance_filter_accepts_health_with_keywords():
+def test_relevance_filter_accepts_health_with_strong_keyword():
     src = CRACharitiesSource()
     charity = {"designation": "Charitable Organization", "category": "Health", "programs": "mental health counselling for youth"}
     assert src._is_relevant(charity) is True
@@ -52,7 +54,7 @@ def test_relevance_filter_rejects_foundation_only():
     assert src._is_relevant(charity) is False
 
 
-def test_relevance_filter_rejects_public_foundation_no_direct_services():
+def test_relevance_filter_rejects_public_foundation():
     src = CRACharitiesSource()
     charity = {"designation": "Public Foundation", "programs": "funding research grants"}
     assert src._is_relevant(charity) is False
@@ -70,16 +72,25 @@ def test_relevance_filter_rejects_arts():
     assert src._is_relevant(charity) is False
 
 
-def test_relevance_filter_accepts_religion_with_social_keywords():
+def test_relevance_filter_accepts_religion_with_strong_keywords():
+    """Religious org with strong social service keywords passes."""
     src = CRACharitiesSource()
     charity = {"designation": "Charitable Organization", "category": "Religion", "programs": "food bank, meals, community support"}
     assert src._is_relevant(charity) is True
 
 
-def test_relevance_filter_rejects_religion_without_social_keywords():
+def test_relevance_filter_rejects_religion_worship_only():
+    """Religious org with only worship activities is rejected."""
     src = CRACharitiesSource()
-    charity = {"designation": "Charitable Organization", "category": "Religion", "programs": "worship services, congregation activities"}
+    charity = {"designation": "Charitable Organization", "category": "Religion", "programs": "worship service, sunday school, bible study, congregation activities"}
     assert src._is_relevant(charity) is False
+
+
+def test_relevance_filter_accepts_religion_with_service_program_override():
+    """Religious org with worship + real service programs passes."""
+    src = CRACharitiesSource()
+    charity = {"designation": "Charitable Organization", "category": "Religion", "programs": "worship service, sunday school, food bank, emergency housing"}
+    assert src._is_relevant(charity) is True
 
 
 def test_relevance_filter_accepts_indigenous_services():
@@ -94,15 +105,44 @@ def test_relevance_filter_accepts_newcomer_services():
     assert src._is_relevant(charity) is True
 
 
-def test_relevance_handles_missing_programs():
+def test_relevance_rejects_no_programs():
+    """Charity with no programs text is rejected (can't determine relevance)."""
     src = CRACharitiesSource()
     charity = {"designation": "Charitable Organization", "category": "Welfare"}
+    assert src._is_relevant(charity) is False
+
+
+def test_relevance_rejects_empty_programs():
+    src = CRACharitiesSource()
+    charity = {"designation": "Charitable Organization", "category": "Recreation", "programs": ""}
+    assert src._is_relevant(charity) is False
+
+
+def test_relevance_rejects_generic_community_no_keywords():
+    """Community category with no relevant keywords is rejected."""
+    src = CRACharitiesSource()
+    charity = {"designation": "Charitable Organization", "category": "Community", "programs": "organizing annual community events"}
+    assert src._is_relevant(charity) is False
+
+
+def test_relevance_weak_keywords_need_two_matches():
+    """A single weak keyword in a non-Welfare category is rejected."""
+    src = CRACharitiesSource()
+    charity = {"designation": "Charitable Organization", "category": "Community", "programs": "youth group activities"}
+    assert src._is_relevant(charity) is False
+
+
+def test_relevance_two_weak_keywords_accepted():
+    """Two weak keywords in a relevant category passes."""
+    src = CRACharitiesSource()
+    charity = {"designation": "Charitable Organization", "category": "Community", "programs": "youth and family services for low income residents"}
     assert src._is_relevant(charity) is True
 
 
-def test_relevance_handles_empty_programs():
+def test_relevance_exclusion_keyword_blocks_strong():
+    """Exclusion keywords override even strong keywords."""
     src = CRACharitiesSource()
-    charity = {"designation": "Charitable Organization", "category": "Recreation", "programs": ""}
+    charity = {"designation": "Charitable Organization", "programs": "humane society animal shelter, counselling"}
     assert src._is_relevant(charity) is False
 
 

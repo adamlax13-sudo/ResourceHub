@@ -73,25 +73,59 @@ EXCLUDED_CATEGORIES = {
     "Research",
 }
 
-# Keywords that indicate direct social service provision
-RELEVANCE_KEYWORDS = {
-    "addiction", "recovery", "mental health", "housing", "shelter",
-    "food bank", "food hamper", "meals", "crisis", "counselling",
-    "counseling", "disability", "newcomer", "immigrant", "refugee",
-    "family services", "youth", "senior", "elder", "domestic violence",
-    "women's shelter", "harm reduction", "detox", "rehabilitation",
-    "poverty", "homelessness", "employment", "legal aid", "advocacy",
-    "support group", "peer support", "respite", "palliative",
-    "grief", "trauma", "abuse", "sexual assault",
+# Strong keywords — one match is enough to indicate a real social service
+STRONG_KEYWORDS = {
+    "addiction", "substance abuse", "detox", "harm reduction", "opioid",
+    "mental health", "psychiatric", "psycholog",
+    "food bank", "food hamper", "meals on wheels",
+    "women's shelter", "domestic violence", "sexual assault",
+    "homeless", "homelessness", "transitional housing", "supportive living",
+    "crisis line", "crisis intervention", "distress centre", "suicide prevention",
+    "disability", "disabilities", "developmental disabilit",
+    "refugee", "settlement services", "newcomer services",
+    "low income housing", "social housing", "rent subsidy",
+    "child welfare", "child protection", "foster care",
+    "palliative care", "hospice",
+}
+
+# Weak keywords — require 2+ matches to qualify (too generic alone)
+WEAK_KEYWORDS = {
+    "counselling", "counseling", "recovery", "rehabilitation",
+    "shelter", "housing", "support group", "peer support",
+    "youth", "senior", "elder", "family services",
+    "poverty", "low income", "employment", "advocacy",
+    "grief", "trauma", "abuse", "crisis",
     "indigenous", "first nations", "metis", "inuit",
+    "newcomer", "immigrant", "respite",
+    "meals", "clothing", "basic needs",
 }
 
 # Keywords that indicate the charity is NOT a social service provider
 EXCLUSION_KEYWORDS = {
     "golf", "curling", "hockey", "sports league", "arts council",
     "museum", "gallery", "symphony", "opera", "theatre company",
-    "animal", "veterinary", "kennel", "humane society",
+    "animal rescue", "animal shelter", "animal welfare",
+    "veterinary", "kennel", "humane society",
     "private foundation",
+}
+
+# Phrases that indicate worship-only orgs (not actual service providers)
+WORSHIP_ONLY_INDICATORS = {
+    "worship service", "sunday school", "bible study", "bible class",
+    "prayer meeting", "prayer group", "gospel service",
+    "sunday worship", "midweek service", "church service",
+    "vacation bible school", "scripture study",
+}
+
+# Programs that prove a church IS a real service provider (override worship filter)
+SERVICE_PROGRAM_OVERRIDES = {
+    "food bank", "food hamper", "meals program", "soup kitchen",
+    "shelter", "transitional housing", "emergency housing",
+    "addiction program", "recovery program", "detox",
+    "counselling center", "counselling centre", "crisis line",
+    "clothing depot", "thrift store for",
+    "settlement services", "newcomer program",
+    "after school program", "drop-in centre", "drop-in center",
 }
 
 # --- Category mapping ---
@@ -107,8 +141,9 @@ CATEGORY_KEYWORDS = {
         "grief", "trauma", "ptsd",
     ],
     "housing": [
-        "housing", "shelter", "homeless", "transitional living",
-        "supportive living", "rent", "eviction",
+        "housing", "homeless", "transitional living", "transitional housing",
+        "supportive living", "rent", "eviction", "women's shelter",
+        "emergency shelter", "social housing",
     ],
     "basic_needs": [
         "food bank", "food hamper", "meals", "clothing",
@@ -171,26 +206,52 @@ class CRACharitiesSource(Source):
         if category in EXCLUDED_CATEGORIES:
             return False
 
-        # Welfare is always relevant, even without program keywords
-        if category == "Welfare":
+        # No programs description = can't determine relevance, reject
+        if not programs:
+            return False
+
+        # Check for strong keywords (one match = relevant)
+        has_strong = any(kw in programs for kw in STRONG_KEYWORDS)
+        if has_strong:
+            # Even strong keywords can be overridden by worship-only pattern
+            # e.g. a church that mentions "youth" once but is purely worship
+            if self._is_worship_only(programs):
+                # But allow if they have a real service program override
+                has_real_program = any(kw in programs for kw in SERVICE_PROGRAM_OVERRIDES)
+                if not has_real_program:
+                    return False
             return True
 
-        # Check if programs text contains any relevance keywords
-        has_relevance_keyword = any(kw in programs for kw in RELEVANCE_KEYWORDS)
+        # Check weak keywords — need 2+ matches
+        weak_count = sum(1 for kw in WEAK_KEYWORDS if kw in programs)
 
-        # Relevant categories pass if they have keyword match or if programs are missing
-        # (missing programs = we can't determine, but the category is promising)
+        # Worship-only orgs with weak keyword matches are rejected
+        # (churches that mention "counselling" or "youth" as minor activities)
+        if self._is_worship_only(programs):
+            # Only override if they have a real service program
+            has_real_program = any(kw in programs for kw in SERVICE_PROGRAM_OVERRIDES)
+            if not has_real_program:
+                return False
+
+        # Welfare category: accept with any keyword match
+        if category == "Welfare":
+            return weak_count >= 1
+
+        # Other relevant categories: require 2+ weak keyword matches
         if category in RELEVANT_CATEGORIES:
-            if not programs:
-                return True
-            return has_relevance_keyword
+            return weak_count >= 2
 
-        # Conditional categories (Religion) require keyword match
+        # Religion/conditional: require 2+ weak keywords (worship filter already applied above)
         if category in CONDITIONAL_CATEGORIES:
-            return has_relevance_keyword
+            return weak_count >= 2
 
-        # Unknown/other categories: require keyword match
-        return has_relevance_keyword
+        # Unknown categories: require 2+ weak keywords
+        return weak_count >= 2
+
+    def _is_worship_only(self, programs: str) -> bool:
+        """Check if the org is primarily a worship/religious congregation."""
+        worship_count = sum(1 for kw in WORSHIP_ONLY_INDICATORS if kw in programs)
+        return worship_count >= 2
 
     def _map_to_category(self, charity: dict) -> str:
         """
