@@ -63,6 +63,11 @@ class Service(Base):
     # Metadata
     tags = Column(JSON)  # Array of tags for search
 
+    # Enrichment tracking
+    enrichment_source = Column(String)       # "found", "verified", "inferred"
+    enrichment_date = Column(DateTime)        # When AI enrichment last ran
+    source_page_hash = Column(String)         # For change detection
+
     # Category columns still in use
     gender_restriction = Column(String(50))  # women_only, men_only, all
     is_24_7 = Column(Boolean, default=False)
@@ -228,6 +233,10 @@ class ServiceIntakeDetails(Base):
 
     # Required documents
     required_documents = Column(JSON)  # Array of document names
+
+    # Inference tracking
+    is_inferred = Column(Boolean, default=False)  # True if steps were AI-inferred
+    source_urls = Column(JSON)                     # URLs backing the extraction
 
     # Source tracking
     source_url = Column(Text)

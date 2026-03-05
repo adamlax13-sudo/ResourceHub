@@ -46,6 +46,10 @@ export const services = pgTable("services", {
   // Search improvement columns (added by add_search_improvements.sql)
   popularityScore: integer("popularity_score").default(0),
   clickCount: integer("click_count").default(0),
+  // Enrichment tracking
+  enrichmentSource: text("enrichment_source"),
+  enrichmentDate: timestamp("enrichment_date"),
+  sourcePageHash: text("source_page_hash"),
   // Category columns still in use
   genderRestriction: varchar("gender_restriction", { length: 50 }), // women_only, men_only, all
   is24_7: boolean("is_24_7").default(false),
