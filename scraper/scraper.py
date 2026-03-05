@@ -2017,6 +2017,86 @@ def run_scraper(phases: Optional[List[str]] = None, dry_run: bool = False):
         session.close()
 
 
+def parse_args():
+    """New v2 CLI argument parser."""
+    import argparse
+    parser = argparse.ArgumentParser(description="ResourceHub Scraper v2")
+    parser.add_argument("--phase", choices=["discover", "enrich", "finalize"],
+                        help="Run a single phase (default: all)")
+    parser.add_argument("--source", type=str,
+                        help="Run only this source plugin (e.g. 211_alberta, cra_charities)")
+    parser.add_argument("--budget", type=float,
+                        help="Stop enrichment after this dollar amount")
+    parser.add_argument("--full", action="store_true",
+                        help="Re-enrich all services, not just new/stale")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Preview changes without saving")
+    parser.add_argument("--enrich-service", type=str,
+                        help="Enrich a single service by name (for testing)")
+    return parser.parse_args()
+
+
+def main_v2():
+    """New v2 pipeline entry point."""
+    args = parse_args()
+
+    # Import here to avoid circular imports
+    from pipeline import Pipeline
+    from sources.ab211_direct import AB211DirectSource
+    from sources.ahs_findhealth import AHSFindHealthSource
+    from sources.homeless_hub import HomelessHubSource
+    from sources.acds import ACDSSource
+    from sources.veterans_affairs import VeteransAffairsSource
+    from sources.cra_charities import CRACharitiesSource
+    from enrichment import EnrichmentEngine
+
+    # Database session setup (reuse existing pattern)
+    session = SessionLocal()
+    Base.metadata.create_all(engine)
+
+    run_id = f"pipeline-v2-{str(uuid.uuid4())[:8]}"
+    log = ScraperLog(run_id=run_id, status="running")
+    session.add(log)
+    session.commit()
+
+    # Build pipeline
+    pipeline = Pipeline(session=session, log=log, budget=args.budget)
+
+    # Register all sources
+    pipeline.register_source(AB211DirectSource())
+    pipeline.register_source(AHSFindHealthSource())
+    pipeline.register_source(HomelessHubSource())
+    pipeline.register_source(ACDSSource())
+    pipeline.register_source(VeteransAffairsSource())
+    pipeline.register_source(CRACharitiesSource())
+
+    # Set up enrichment engine
+    claude_client = None
+    if HAS_CLAUDE:
+        claude_client = init_claude()
+    if claude_client:
+        pipeline.enrichment_engine = EnrichmentEngine(
+            claude_client=claude_client,
+            budget_limit=args.budget
+        )
+
+    # Handle single-service enrichment
+    if args.enrich_service:
+        # TODO: Query service by name, run enrichment, print result
+        print(f"Single service enrichment for '{args.enrich_service}' not yet implemented")
+        session.close()
+        return
+
+    # Run pipeline
+    pipeline.run(
+        phase=args.phase,
+        dry_run=args.dry_run,
+        full=args.full,
+        source_name=args.source,
+    )
+    session.close()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Alberta Service Scraper & Data Pipeline")
     parser.add_argument(
