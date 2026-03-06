@@ -108,15 +108,6 @@ export default function Home() {
     }
   }, [data, setSearchResults]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-trigger search when page loads with URL params (shared link restoration)
-  const hasTriggeredUrlSearch = useRef(false);
-  useEffect(() => {
-    if (searchState.query && !searchState.hasSearched && !isPending && !hasTriggeredUrlSearch.current) {
-      hasTriggeredUrlSearch.current = true;
-      handleSearchWithFilters(searchState.query, searchState.locations, searchState.filters);
-    }
-  }, [searchState.query, searchState.hasSearched, isPending, handleSearchWithFilters, searchState.locations, searchState.filters]);
-
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
   const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
@@ -146,6 +137,15 @@ export default function Home() {
     },
     [search]
   );
+
+  // Auto-trigger search when page loads with URL params (shared link restoration)
+  const hasTriggeredUrlSearch = useRef(false);
+  useEffect(() => {
+    if (searchState.query && !searchState.hasSearched && !isPending && !hasTriggeredUrlSearch.current) {
+      hasTriggeredUrlSearch.current = true;
+      handleSearchWithFilters(searchState.query, searchState.locations, searchState.filters);
+    }
+  }, [searchState.query, searchState.hasSearched, isPending, handleSearchWithFilters, searchState.locations, searchState.filters]);
 
   const handleLocationChange = (location: string) => {
     // Set single location (empty string = "All of Alberta" = empty array)
