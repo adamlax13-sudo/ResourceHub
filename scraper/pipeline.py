@@ -63,6 +63,7 @@ class Pipeline:
         self.stats = PipelineStats()
         self.sources: list[Source] = []
         self.enrichment_engine: EnrichmentEngine = None
+        self._consecutive_errors = 0
 
     def register_source(self, source: Source):
         self.sources.append(source)

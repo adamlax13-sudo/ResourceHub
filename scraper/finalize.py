@@ -17,7 +17,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, Optional, Set
 
-from sqlalchemy import text
+from sqlalchemy import or_, text
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,13 @@ def phase_normalize_contacts(session, log, dry_run: bool = False):
     email_regex = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', re.I)
     url_regex = re.compile(r'(?:https?://)?(?:www\.)?[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:/[^\s,]*)?', re.I)
 
-    all_services = session.query(Service).all()
+    all_services = session.query(Service).filter(
+        or_(
+            Service.phone.is_(None),
+            Service.email.is_(None),
+            Service.address.is_(None),
+        )
+    ).all()
     updated_count = 0
 
     for service in all_services:
@@ -336,7 +342,10 @@ def phase_dedupe_services(session, log, dry_run: bool = False):
 
     if not dry_run:
         session.commit()
-    log.services_deactivated = deactivated
+    if hasattr(log, 'services_deactivated'):
+        log.services_deactivated += deactivated
+    else:
+        log.services_deactivated = deactivated
     logger.info(f"Deactivated {deactivated} redundant services")
 
 

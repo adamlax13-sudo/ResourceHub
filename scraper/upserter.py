@@ -20,6 +20,8 @@ def compute_page_hash(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
+# O(n*m) character-level LCS — acceptable for current dataset (~500 services).
+# If scaling past 5K, consider pg_trgm index for fuzzy matching.
 def fuzzy_match(a: str, b: str) -> float:
     """Character-level LCS similarity ratio (no external deps).
 

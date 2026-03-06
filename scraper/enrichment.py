@@ -123,7 +123,7 @@ class EnrichmentEngine:
                          (last_usage.get('output', 0) * 15.0 / 1_000_000)
             self.total_cost += batch_cost
         else:
-            # Fallback estimate based on typical web search usage
+            # Conservative fallback ($0.10/service) when API usage data unavailable
             self.total_cost += len(services) * 0.10
         return results
 
