@@ -12,8 +12,8 @@ export function registerFeedbackRoutes(app: Express): void {
   app.post("/api/feedback", feedbackLimiter, async (req: Request, res: Response) => {
     try {
       const feedbackSchema = z.object({
-        name: z.string().optional(),
-        email: z.string().email().optional().or(z.literal('')),
+        name: z.string().max(255).optional(),
+        email: z.string().email().max(255).optional().or(z.literal('')),
         message: z.string().min(1, "Message is required").max(2000, "Message is too long"),
         hp: z.string().max(0).optional(),
       });

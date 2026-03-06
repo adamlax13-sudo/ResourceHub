@@ -145,6 +145,9 @@ export interface IStorage {
   // Clear search cache (call after service changes)
   clearSearchCache(): Promise<void>;
 
+  // Clear stale search cache entries older than maxAgeDays
+  clearStaleSearches(maxAgeDays?: number): Promise<number>;
+
   // ============= PRECOMPUTED SEARCH CACHE =============
   getPrecomputedSearch(queryNormalized: string): Promise<{ results: any[]; resultCount: number } | null>;
   savePrecomputedSearch(queryNormalized: string, results: any[], resultCount: number): Promise<void>;
@@ -801,6 +804,27 @@ export class DatabaseStorage implements IStorage {
       console.log('[Search] Search cache cleared');
     } catch (err) {
       console.warn('[Search] Failed to clear search cache:', err);
+    }
+  }
+
+  /**
+   * Clear stale search cache entries older than maxAgeDays
+   * Returns the number of entries deleted
+   */
+  async clearStaleSearches(maxAgeDays: number = 7): Promise<number> {
+    try {
+      const cutoff = new Date(Date.now() - maxAgeDays * 24 * 60 * 60 * 1000);
+      const deleted = await db.delete(searches).where(
+        sql`${searches.createdAt} < ${cutoff}`
+      ).returning();
+      const count = deleted.length;
+      if (count > 0) {
+        console.log(`[Search] Cleared ${count} stale cache entries (older than ${maxAgeDays} days)`);
+      }
+      return count;
+    } catch (err) {
+      console.warn('[Search] Failed to clear stale searches:', err);
+      return 0;
     }
   }
 

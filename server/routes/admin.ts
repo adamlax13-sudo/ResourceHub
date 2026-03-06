@@ -22,8 +22,11 @@ export function registerAdminRoutes(app: Express): void {
       // Clear the search cache (old results with inactive services)
       await storage.clearSearchCache();
 
-      console.log('[Admin] Search view refreshed and cache cleared');
-      res.json({ success: true, message: 'Search view refreshed and cache cleared' });
+      // Clear stale cache entries (older than 7 days)
+      const staleCleared = await storage.clearStaleSearches();
+
+      console.log(`[Admin] Search view refreshed, cache cleared, ${staleCleared} stale entries removed`);
+      res.json({ success: true, message: `Search view refreshed, cache cleared, ${staleCleared} stale entries removed` });
     } catch (err) {
       console.error("Refresh search error:", err);
       res.status(500).json(createErrorResponse("Failed to refresh search view", err instanceof Error ? err.message : undefined));

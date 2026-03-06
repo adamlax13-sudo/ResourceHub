@@ -61,7 +61,7 @@ export const services = pgTable("services", {
 // Archive table for feature columns (created by archive_feature_columns.sql)
 export const serviceFeatureArchive = pgTable("service_feature_archive", {
   id: serial("id").primaryKey(),
-  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(), // Intentionally no FK — archive rows survive service deletion
   serviceType: varchar("service_type", { length: 100 }),
   eligibilityTags: jsonb("eligibility_tags").default([]),
   demographicTags: jsonb("demographic_tags").default([]),
@@ -139,7 +139,7 @@ export type ServiceAlias = typeof serviceAliases.$inferSelect;
 export const serviceVotes = pgTable("service_votes", {
   id: serial("id").primaryKey(),
   serviceId: varchar("service_id", { length: 255 }).notNull().references(() => services.serviceId),
-  vote: varchar("vote", { length: 10 }).notNull(), // 'up' or 'down'
+  vote: varchar("vote", { length: 10 }).notNull(), // 'up' | 'down' — enforced by Zod in routes/feedback.ts
   queryContext: text("query_context"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -153,16 +153,3 @@ export const insertServiceVoteSchema = createInsertSchema(serviceVotes)
 export type ServiceVote = typeof serviceVotes.$inferSelect;
 export type InsertServiceVote = z.infer<typeof insertServiceVoteSchema>;
 
-export interface ServiceDetail {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  location: string;
-  contact: string;
-  websiteUrl?: string;
-  eligibility: string;
-  process: string[];
-  waitTimes: string;
-  requiredDocs: string[];
-}
