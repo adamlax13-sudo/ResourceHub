@@ -116,7 +116,7 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg w-full overflow-visible">
+      <DialogContent className="sm:max-w-xl w-full overflow-visible">
         <DialogHeader>
           <DialogTitle className="sr-only">Guided Resource Finder</DialogTitle>
         </DialogHeader>

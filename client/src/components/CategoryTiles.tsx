@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import {
   ShieldAlert,
+  ShieldCheck,
   Sprout,
   Brain,
   Home,
@@ -8,6 +9,9 @@ import {
   Accessibility,
   HeartPulse,
   Briefcase,
+  HandHeart,
+  Baby,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,14 +22,18 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { label: "Crisis Support",     icon: ShieldAlert,     query: "crisis support emergency help" },
-  { label: "Addiction Recovery", icon: Sprout,           query: "addiction recovery treatment" },
-  { label: "Mental Health",      icon: Brain,            query: "mental health counselling therapy" },
-  { label: "Housing",            icon: Home,             query: "housing shelter accommodation" },
-  { label: "Food & Basic Needs", icon: UtensilsCrossed,  query: "food bank meals basic needs" },
-  { label: "Disability Support", icon: Accessibility,    query: "disability support accessibility" },
-  { label: "Healthcare",         icon: HeartPulse,       query: "healthcare medical clinic" },
-  { label: "Employment",         icon: Briefcase,        query: "employment job training work" },
+  { label: "Crisis Support",      icon: ShieldAlert,     query: "crisis support emergency help" },
+  { label: "Domestic Violence",    icon: ShieldCheck,     query: "domestic violence abuse safety support" },
+  { label: "Mental Health",        icon: Brain,           query: "mental health counselling therapy" },
+  { label: "Addiction Recovery",   icon: Sprout,          query: "addiction recovery treatment" },
+  { label: "Housing",              icon: Home,            query: "housing shelter accommodation" },
+  { label: "Food & Basic Needs",   icon: UtensilsCrossed, query: "food bank meals basic needs" },
+  { label: "Healthcare",           icon: HeartPulse,      query: "healthcare medical clinic" },
+  { label: "Disability Support",   icon: Accessibility,   query: "disability support accessibility" },
+  { label: "Social Connection",    icon: HandHeart,       query: "social connection community recreation programs" },
+  { label: "Family & Parenting",   icon: Baby,            query: "family parenting pregnancy child support" },
+  { label: "Employment",           icon: Briefcase,       query: "employment job training work" },
+  { label: "Legal Aid",            icon: Scale,           query: "legal aid lawyer court advocacy" },
 ];
 
 interface CategoryTilesProps {
