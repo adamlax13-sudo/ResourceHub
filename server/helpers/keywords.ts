@@ -53,6 +53,8 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'helpless': 'helpless',  // Not "homeless"
   'burden': 'burden',      // Emotional state word
   'worthless': 'worthless', // Emotional state word
+  'dental': 'dental',      // Not "mental" (Levenshtein distance 1)
+  'rental': 'rental',      // Not "mental" (Levenshtein distance 2)
   // Actual misspellings
   'addicton': 'addiction',
   'addiciton': 'addiction',
@@ -180,9 +182,11 @@ export function correctTypos(query: string): { corrected: string; corrections: s
     // Skip short words and stop words
     if (word.length < 4 || STOP_WORDS.has(word)) return word;
 
-    // Check misspellings dictionary first
+    // Check misspellings dictionary first (includes identity mappings to prevent false corrections)
     if (COMMON_MISSPELLINGS[word]) {
-      corrections.push(`${word} → ${COMMON_MISSPELLINGS[word]}`);
+      if (COMMON_MISSPELLINGS[word] !== word) {
+        corrections.push(`${word} → ${COMMON_MISSPELLINGS[word]}`);
+      }
       return COMMON_MISSPELLINGS[word];
     }
 
