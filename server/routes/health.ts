@@ -51,7 +51,8 @@ export function registerHealthRoutes(router: Router): void {
     } catch (err) {
       health.status = 'unhealthy';
       health.checks.database.status = 'error';
-      health.checks.database.error = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[Health] Database check failed:', err);
+      health.checks.database.error = 'Database connection failed';
     }
 
     // Check memory usage
@@ -93,10 +94,11 @@ export function registerHealthRoutes(router: Router): void {
       client.release();
       res.json({ status: 'ready', timestamp: new Date().toISOString() });
     } catch (err) {
+      console.error('[Health] Readiness check failed:', err);
       res.status(503).json({
         status: 'not_ready',
         timestamp: new Date().toISOString(),
-        error: err instanceof Error ? err.message : 'Database unavailable',
+        error: 'Database unavailable',
       });
     }
   });
