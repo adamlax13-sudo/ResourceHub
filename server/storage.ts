@@ -1,5 +1,7 @@
 import { db } from "./db";
-import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
+import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
+
+type InsertFeedback = typeof feedback.$inferInsert;
 import { eq, or, ilike, and, desc, inArray, sql, type SQL } from "drizzle-orm";
 
 // Result type for semantic search
