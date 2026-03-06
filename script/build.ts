@@ -45,6 +45,9 @@ async function buildAll() {
     minify: true,
     external: externals,
     logLevel: "info",
+    logOverride: {
+      "empty-import-meta": "silent",
+    },
   });
 }
 
