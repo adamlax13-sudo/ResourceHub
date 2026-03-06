@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type InsertFeedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
-import { eq, or, ilike, and, desc, inArray, sql } from "drizzle-orm";
+import { eq, or, ilike, and, desc, inArray, sql, type SQL } from "drizzle-orm";
 
 // Result type for semantic search
 export interface SemanticSearchResult {
@@ -524,15 +524,21 @@ export class DatabaseStorage implements IStorage {
   // Get all aliases as a lookup map (alias -> serviceId)
   // Cached in memory — aliases rarely change
   private aliasLookupCache: Map<string, string> | null = null;
+  private aliasLookupCacheTime: number = 0;
+  private static readonly ALIAS_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
   async getAliasLookup(): Promise<Map<string, string>> {
-    if (this.aliasLookupCache) return this.aliasLookupCache;
+    const now = Date.now();
+    if (this.aliasLookupCache && (now - this.aliasLookupCacheTime) < DatabaseStorage.ALIAS_CACHE_TTL) {
+      return this.aliasLookupCache;
+    }
     const aliases = await db.select().from(serviceAliases);
     const map = new Map<string, string>();
     for (const alias of aliases) {
       map.set(alias.alias.toLowerCase(), alias.serviceId);
     }
     this.aliasLookupCache = map;
+    this.aliasLookupCacheTime = Date.now();
     return map;
   }
 
@@ -1014,26 +1020,25 @@ export class DatabaseStorage implements IStorage {
     reformulated?: boolean;
   }): Promise<void> {
     try {
-      const updates: string[] = [];
+      const setClauses: SQL[] = [];
       if (data.firstClickPosition !== undefined) {
-        updates.push(`first_click_position = ${data.firstClickPosition}`);
+        setClauses.push(sql`first_click_position = ${data.firstClickPosition}`);
       }
       if (data.clickCount !== undefined) {
-        updates.push(`click_count = ${data.clickCount}`);
+        setClauses.push(sql`click_count = ${data.clickCount}`);
       }
       if (data.dwellTimeMs !== undefined) {
-        updates.push(`dwell_time_ms = ${data.dwellTimeMs}`);
+        setClauses.push(sql`dwell_time_ms = ${data.dwellTimeMs}`);
       }
       if (data.reformulated !== undefined) {
-        updates.push(`reformulated = ${data.reformulated}`);
+        setClauses.push(sql`reformulated = ${data.reformulated}`);
       }
-
-      if (updates.length > 0) {
-        await db.execute(sql.raw(`
+      if (setClauses.length > 0) {
+        await db.execute(sql`
           UPDATE search_quality_metrics
-          SET ${updates.join(', ')}
+          SET ${sql.join(setClauses, sql`, `)}
           WHERE id = ${id}
-        `));
+        `);
       }
     } catch (err) {
       console.warn('[Quality] Failed to update metrics:', err);

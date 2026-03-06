@@ -7,6 +7,7 @@ import { z } from "zod";
 import { storage } from "../storage";
 import { normalizeForCache } from "../helpers/keywords";
 import { createErrorResponse } from "../helpers/errors";
+import { adminAuth } from "../middleware/adminAuth";
 
 export function registerAnalyticsRoutes(app: Express): void {
   // ============= CLICK TRACKING ENDPOINT =============
@@ -14,8 +15,8 @@ export function registerAnalyticsRoutes(app: Express): void {
   app.post("/api/track-click", async (req: Request, res: Response) => {
     try {
       const clickSchema = z.object({
-        serviceId: z.string().min(1),
-        query: z.string().min(1),
+        serviceId: z.string().min(1).max(255),
+        query: z.string().min(1).max(500),
         position: z.number().int().min(1).optional(),
       });
 
@@ -53,7 +54,7 @@ export function registerAnalyticsRoutes(app: Express): void {
 
   // ============= SEARCH ANALYTICS ENDPOINT =============
   // Returns popular searches (for admin/analytics purposes)
-  app.get("/api/analytics/popular-searches", async (req: Request, res: Response) => {
+  app.get("/api/analytics/popular-searches", adminAuth, async (req: Request, res: Response) => {
     try {
       // Validate limit parameter with Zod
       const limitSchema = z.coerce.number().int().min(1).max(100).default(20);
