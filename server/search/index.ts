@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v81'; // Bumped: scoring consistency, filter field fixes, quality-boost pinned logic
+const CACHE_VERSION = 'v82'; // Bumped: Round 3 - clone pinned objects, cap OpenAI response, PII scrub, debug gate
 
 import { SEARCH_CONFIG } from './config';
 import type {
