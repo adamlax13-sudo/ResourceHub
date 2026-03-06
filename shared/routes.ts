@@ -58,8 +58,8 @@ export const searchFiltersSchema = z.object({
   is24_7: z.boolean().optional(),
   isFaithBased: z.boolean().optional(),
   is12Step: z.boolean().optional(),
-  languagesSupported: z.array(z.string()).optional(),
-  serviceFormat: z.string().optional(),
+  languagesSupported: z.array(z.string().max(100)).max(20).optional(),
+  serviceFormat: z.string().max(50).optional(),
 });
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;
 
@@ -70,7 +70,7 @@ export const api = {
       path: '/api/search',
       input: z.object({
         query: z.string().min(1, "Please enter what you're looking for").max(200, "Search query is too long (200 characters max)"),
-        location: z.string().optional(), // User's selected location for filtering
+        location: z.string().max(200).optional(), // User's selected location for filtering
         hp: z.string().max(0).optional(),
         // Pagination parameters (defaults applied server-side)
         page: z.number().int().min(1).optional(),
