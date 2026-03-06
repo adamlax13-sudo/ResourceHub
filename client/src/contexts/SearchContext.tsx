@@ -77,12 +77,18 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 
     const restoredFilters: SearchFilters = {};
     const cat = params.get('cat'); if (cat) restoredFilters.category = cat;
-    const gender = params.get('gender'); if (gender) restoredFilters.genderRestriction = gender as SearchFilters['genderRestriction'];
-    const age = params.get('age'); if (age) restoredFilters.ageGroup = age as SearchFilters['ageGroup'];
+    const VALID_GENDERS = ['all', 'women_only', 'men_only'];
+    const VALID_AGES = ['all_ages', 'youth', 'adult', 'senior', 'youth_and_adult'];
+    const gender = params.get('gender');
+    if (gender && VALID_GENDERS.includes(gender)) restoredFilters.genderRestriction = gender as SearchFilters['genderRestriction'];
+    const age = params.get('age');
+    if (age && VALID_AGES.includes(age)) restoredFilters.ageGroup = age as SearchFilters['ageGroup'];
     if (params.get('24h')) restoredFilters.is24_7 = true;
     if (params.get('faith')) restoredFilters.isFaithBased = true;
     if (params.get('12step')) restoredFilters.is12Step = true;
-    const format = params.get('format'); if (format) restoredFilters.serviceFormat = format;
+    const VALID_FORMATS = ['in_person', 'virtual', 'both'];
+    const format = params.get('format');
+    if (format && VALID_FORMATS.includes(format)) restoredFilters.serviceFormat = format;
     const lang = params.get('lang'); if (lang) restoredFilters.languagesSupported = lang.split(',');
 
     const loc = params.get('loc');

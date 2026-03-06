@@ -109,6 +109,15 @@ function LocationDropdown({
     }
   }, [isOpen]);
 
+  // Close on resize (dropdown position becomes stale)
+  useEffect(() => {
+    if (isOpen) {
+      const handleResize = () => setIsOpen(false);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [isOpen]);
+
   const dropdownMenu = (
     <AnimatePresence>
       {isOpen && (
@@ -314,6 +323,8 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
 
   // Get current selected location (first in array or empty for "All of Alberta")
   const selectedLocation = locations.length > 0 ? locations[0] : '';
+  const locationsRef = useRef(locations);
+  locationsRef.current = locations;
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -618,7 +629,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                         onLocationChange(detectedLocation);
                         onSearch(transcript, detectedLocation ? [detectedLocation] : []);
                       } else {
-                        onSearch(transcript, locations);
+                        onSearch(transcript, locationsRef.current);
                       }
                     });
                   }

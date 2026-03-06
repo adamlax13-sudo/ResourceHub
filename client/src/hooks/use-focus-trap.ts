@@ -13,6 +13,8 @@ const FOCUSABLE_SELECTOR =
 export function useFocusTrap(isOpen: boolean, onClose: () => void) {
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -31,7 +33,7 @@ export function useFocusTrap(isOpen: boolean, onClose: () => void) {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.stopPropagation();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -63,7 +65,7 @@ export function useFocusTrap(isOpen: boolean, onClose: () => void) {
       // Restore focus to the element that triggered the panel
       previousFocusRef.current?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   return panelRef;
 }

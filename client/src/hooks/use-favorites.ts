@@ -30,8 +30,10 @@ export function useFavorites() {
     try {
       const stored = localStorage.getItem(FAVORITES_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as FavoriteService[];
-        setFavorites(parsed);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setFavorites(parsed as FavoriteService[]);
+        }
       }
     } catch (err) {
       console.error('Failed to load favorites from localStorage:', err);
