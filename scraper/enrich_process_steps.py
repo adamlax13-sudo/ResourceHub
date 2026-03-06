@@ -36,24 +36,7 @@ from scoring.confidence import calculate_confidence_score
 from claude_client import init_claude
 
 
-def _safe_json_loads(value):
-    """Safely parse a JSON field that may be a list, string, or None."""
-    if isinstance(value, list):
-        return value
-    if value:
-        try:
-            return json.loads(value)
-        except (json.JSONDecodeError, TypeError):
-            return []
-    return []
-
-
-def _is_safe_url(url: str) -> bool:
-    """Validate URL uses http(s) scheme and has a valid host."""
-    if not url:
-        return False
-    parsed = urlparse(url)
-    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+from utils import safe_json_loads as _safe_json_loads, is_safe_url as _is_safe_url
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -100,6 +100,10 @@ export default function Home() {
   const searchStateRef = useRef(searchState);
   searchStateRef.current = searchState;
 
+  useEffect(() => {
+    if (error) console.error('Search error:', error);
+  }, [error]);
+
   // Store search results when data changes
   useEffect(() => {
     if (data && data.services) {
@@ -263,7 +267,6 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               className="bg-card p-8 rounded-3xl shadow-xl text-center max-w-2xl mx-auto border border-destructive/20"
-              ref={() => { console.error('Search error:', error); }}
             >
               <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Info className="w-8 h-8 text-destructive" />

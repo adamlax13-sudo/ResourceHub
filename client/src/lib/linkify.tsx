@@ -40,7 +40,7 @@ export function linkifyText(text: string): React.ReactNode {
       // Validate email doesn't contain protocol-like patterns
       if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(matched) && !matched.includes(':')) {
         parts.push(
-          <a key={key++} href={`mailto:${encodeURIComponent(matched)}`} className="text-primary hover:underline">
+          <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
             {matched}
           </a>
         );

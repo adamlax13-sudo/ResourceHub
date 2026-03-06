@@ -136,6 +136,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
     }
 
     const controller = new AbortController();
+    let aborted = false;
     setIsLoading(true);
     setError(null);
 
@@ -147,6 +148,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
         return res.json();
       })
       .then(data => {
+        if (aborted) return;
         setService({
           ...data,
           process: Array.isArray(data.process) ? data.process : [],
@@ -155,13 +157,13 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
         setIsLoading(false);
       })
       .catch(err => {
-        if (err.name !== 'AbortError') {
+        if (err.name !== 'AbortError' && !aborted) {
           setError(err.message);
           setIsLoading(false);
         }
       });
 
-    return () => controller.abort();
+    return () => { aborted = true; controller.abort(); };
   }, [serviceId, isOpen]);
 
   // Clear service data when modal closes

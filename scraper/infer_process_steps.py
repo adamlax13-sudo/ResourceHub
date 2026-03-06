@@ -21,16 +21,7 @@ from claude_client import init_claude
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def _safe_json_loads(value):
-    """Safely parse a JSON field that may be a list, string, or None."""
-    if isinstance(value, list):
-        return value
-    if value:
-        try:
-            return json.loads(value)
-        except (json.JSONDecodeError, TypeError):
-            return []
-    return []
+from utils import safe_json_loads as _safe_json_loads
 
 
 # Generic step patterns to detect boilerplate

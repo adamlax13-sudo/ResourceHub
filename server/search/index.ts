@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v84'; // Bumped: Round 4 search audit - negative terms on corrected query, empty activeIds guard
+const CACHE_VERSION = 'v85'; // Bumped: Round 4 review fixes - fallbackSearch location case fix, ServiceDetail dedup
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -33,6 +33,7 @@ import {
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
+import type { ServiceDetail } from '@shared/routes';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
@@ -97,7 +98,8 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
  */
 function filterActiveServices(services: LiteService[], activeIds: Set<string>): LiteService[] {
   if (activeIds.size === 0) {
-    console.warn('[Search] No active service IDs found — returning empty results to prevent stale data');
+    // Fail-closed: no active IDs means DB may be unreachable — return empty rather than stale data
+    console.error('[Search] No active service IDs found — returning empty results');
     return [];
   }
   const filtered = services.filter(s => activeIds.has(s.id));
@@ -331,23 +333,8 @@ function formatResponse(
   };
 }
 
-/** Full service detail returned by getServiceDetails */
-export interface ServiceDetail {
-  id: string;
-  name: string;
-  category: string | null;
-  description: string;
-  location: string;
-  contact: string;
-  websiteUrl: string;
-  eligibility: string;
-  process: string[];
-  waitTimes: string;
-  requiredDocs: string[];
-  phone: string;
-  email: string;
-  address: string;
-}
+// ServiceDetail type re-exported from @shared/routes (Zod schema is the source of truth)
+export type { ServiceDetail };
 
 /**
  * Get full service details by ID (for expanded view)

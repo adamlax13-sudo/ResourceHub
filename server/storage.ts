@@ -1,8 +1,9 @@
 import { db } from "./db";
 import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
 
-type InsertFeedback = typeof feedback.$inferInsert;
 import { eq, or, ilike, and, desc, inArray, sql, type SQL } from "drizzle-orm";
+
+type InsertFeedback = typeof feedback.$inferInsert;
 
 // Result type for semantic search
 export interface SemanticSearchResult {
@@ -652,8 +653,8 @@ export class DatabaseStorage implements IStorage {
           OR lower(location) LIKE '%nationwide%'
           OR lower(location) LIKE '%all of alberta%'
           OR lower(location) LIKE '%across alberta%'
-          OR location = 'Alberta'
-          OR location = 'Province of Alberta'
+          OR lower(location) = 'alberta'
+          OR lower(location) = 'province of alberta'
           OR location IS NULL OR location = '')`;
       } else if (locations.length > 1) {
         const locationClauses = locations.map(l => sql`lower(location) LIKE ${'%' + l + '%'}`);
@@ -664,8 +665,8 @@ export class DatabaseStorage implements IStorage {
           OR lower(location) LIKE '%nationwide%'
           OR lower(location) LIKE '%all of alberta%'
           OR lower(location) LIKE '%across alberta%'
-          OR location = 'Alberta'
-          OR location = 'Province of Alberta'
+          OR lower(location) = 'alberta'
+          OR lower(location) = 'province of alberta'
           OR location IS NULL OR location = '')`;
       }
     }

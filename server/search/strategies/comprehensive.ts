@@ -137,8 +137,8 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
  * Strips common injection prefixes and limits length.
  */
 function sanitizeForLLM(query: string): string {
-  // Strip common prompt injection prefixes
-  const injectionPatterns = /^(ignore|forget|disregard|override|system|assistant)\b.{0,20}(instructions?|previous|above|prompt)/i;
+  // Strip common prompt injection phrases anywhere in the query
+  const injectionPatterns = /(ignore|forget|disregard|override|system|assistant)\b.{0,20}(instructions?|previous|above|prompt)/gi;
   let sanitized = query.replace(injectionPatterns, '').trim();
   // Limit length to prevent token abuse
   return sanitized.slice(0, 200);
@@ -195,7 +195,7 @@ Examples:
 "i need diapers and formula" → {"rewritten":"baby supplies parenting support","categories":["parenting","baby resources"],"keywords":["baby","infant","diapers","formula","parenting","parent support","baby supplies"]}`
       }, {
         role: 'user',
-        content: sanitizedQuery
+        content: `<user_query>${sanitizedQuery}</user_query>`
       }],
     });
 
@@ -209,13 +209,13 @@ Examples:
     }
 
     // Validate rewritten field length to prevent abuse
-    if (typeof parsed.rewritten !== 'string' || parsed.rewritten.length > 300) {
-      console.warn('[ComprehensiveSearch] OpenAI rewritten field too long or invalid, ignoring');
+    if (parsed.rewritten.length > 200) {
+      console.warn('[ComprehensiveSearch] OpenAI rewritten field too long, ignoring');
       return null;
     }
 
     const result: EnhancedQuery = {
-      rewritten: parsed.rewritten.slice(0, 200),
+      rewritten: parsed.rewritten,
       categories: parsed.categories.filter((c: unknown) => typeof c === 'string').slice(0, 5).map((c: string) => c.slice(0, 100)),
       keywords: parsed.keywords.filter((k: unknown) => typeof k === 'string').slice(0, 10).map((k: string) => k.slice(0, 100)),
     };
