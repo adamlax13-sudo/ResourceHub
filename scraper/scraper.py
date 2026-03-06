@@ -239,13 +239,25 @@ def main_v2():
         return
 
     # Run pipeline
-    pipeline.run(
-        phase=args.phase,
-        dry_run=args.dry_run,
-        full=args.full,
-        source_name=args.source,
-    )
-    session.close()
+    try:
+        pipeline.run(
+            phase=args.phase,
+            dry_run=args.dry_run,
+            full=args.full,
+            source_name=args.source,
+        )
+        scraper_log.status = "completed"
+    except Exception as e:
+        scraper_log.status = "failed"
+        log.error(f"Pipeline failed: {e}")
+        raise
+    finally:
+        scraper_log.completed_at = datetime.utcnow()
+        try:
+            session.commit()
+        except Exception:
+            session.rollback()
+        session.close()
 
 
 if __name__ == "__main__":

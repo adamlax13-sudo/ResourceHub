@@ -146,7 +146,8 @@ def _get_active_services_cache(session, force_refresh=False):
     """Cache active services to avoid repeated full-table scans."""
     if force_refresh or not hasattr(_get_active_services_cache, "_cache"):
         from models import Service
-        _get_active_services_cache._cache = session.query(Service).filter(Service.is_active == True).all()
+        rows = session.query(Service.name, Service.service_id).filter(Service.is_active == True).all()
+        _get_active_services_cache._cache = [(r.name, r.service_id) for r in rows]
         logger.info(f"Cached {len(_get_active_services_cache._cache)} active services for fuzzy matching")
     return _get_active_services_cache._cache
 
@@ -197,10 +198,10 @@ def upsert_service(
     if not existing:
         all_active = _get_active_services_cache(session)
         normalized = name.lower().strip()
-        for svc in all_active:
-            svc_name = (svc.name or "").lower().strip()
+        for cached_name, cached_id in all_active:
+            svc_name = (cached_name or "").lower().strip()
             if fuzzy_match(normalized, svc_name) > 0.85:
-                existing = svc
+                existing = session.query(Service).filter_by(service_id=cached_id).first()
                 break
 
     # --- hash-based skip (page unchanged) ---

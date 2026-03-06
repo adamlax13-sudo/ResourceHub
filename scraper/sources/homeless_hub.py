@@ -89,6 +89,16 @@ class HomelessHubSource(Source):
             if len(text) < 5:
                 continue
 
+            # Skip navigational links and boilerplate
+            SKIP_PATTERNS = {"click here", "read more", "learn more", "view all", "see more",
+                             "back to top", "home", "next", "previous", "download", "sign up",
+                             "log in", "login", "register", "subscribe", "contact us"}
+            if text.strip().lower() in SKIP_PATTERNS:
+                continue
+            # Require at least 2 words (filter single-word nav links)
+            if len(text.split()) < 2:
+                continue
+
             results.append(RawService(
                 name=text,
                 category=self.CATEGORY,
