@@ -263,12 +263,13 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               className="bg-card p-8 rounded-3xl shadow-xl text-center max-w-2xl mx-auto border border-destructive/20"
+              ref={() => { console.error('Search error:', error); }}
             >
               <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Info className="w-8 h-8 text-destructive" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{t('search.error')}</h3>
-              <p className="text-muted-foreground">{error.message}</p>
+              <p className="text-muted-foreground">Something went wrong with the search. Please try again.</p>
             </motion.div>
           )}
 

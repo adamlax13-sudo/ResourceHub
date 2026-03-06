@@ -4,6 +4,7 @@ import { X, Heart, ExternalLink, Trash2 } from "lucide-react";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { useFocusTrap } from "@/hooks/use-focus-trap";
+import { isSafeUrl } from "@/lib/linkify";
 import type { ServiceDetail } from "@shared/routes";
 
 interface MyShortlistProps {
@@ -45,6 +46,7 @@ function buildPrintPage(
   services: ServiceDetail[],
   options: PrintOptions,
 ): void {
+  doc.open();
   const style = doc.createElement("style");
   style.textContent = `
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -249,7 +251,12 @@ function buildPrintPage(
     else if (svc.location) contactRow.appendChild(contactSpan(`\u{1F4CD} ${svc.location}`));
     if (svc.phone) contactRow.appendChild(contactSpan(`\u{1F4DE} ${svc.phone}`));
     if (svc.email) contactRow.appendChild(contactSpan(`\u2709 ${svc.email}`));
-    if (svc.websiteUrl) contactRow.appendChild(contactSpan(`\u{1F310} ${svc.websiteUrl}`));
+    if (svc.websiteUrl) {
+      const wsUrl = svc.websiteUrl.startsWith('http') ? svc.websiteUrl : `https://${svc.websiteUrl}`;
+      if (isSafeUrl(wsUrl)) {
+        contactRow.appendChild(contactSpan(`\u{1F310} ${svc.websiteUrl}`));
+      }
+    }
     if (contactRow.childNodes.length > 0) card.appendChild(contactRow);
 
     // Process steps (optional)

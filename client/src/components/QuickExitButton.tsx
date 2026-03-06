@@ -22,14 +22,8 @@ export function QuickExitButton({ className = '' }: QuickExitButtonProps) {
       // Storage access may be blocked in some contexts
     }
 
-    try {
-      const depth = window.history.length;
-      for (let i = 0; i < depth; i++) {
-        window.history.pushState(null, '', 'https://www.google.com');
-      }
-    } catch {
-      // pushState may fail in rare edge cases — still navigate away
-    }
+    // Note: history.pushState cannot replace entries with cross-origin URLs
+    // due to browser security restrictions, so we skip history flooding.
     window.location.replace('https://www.google.com');
   };
 

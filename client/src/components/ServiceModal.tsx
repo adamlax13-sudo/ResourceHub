@@ -135,11 +135,11 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
       return;
     }
 
-    let cancelled = false;
+    const controller = new AbortController();
     setIsLoading(true);
     setError(null);
 
-    fetch(`/api/services/${encodeURIComponent(serviceId)}`)
+    fetch(`/api/services/${encodeURIComponent(serviceId)}`, { signal: controller.signal })
       .then(res => {
         if (!res.ok) {
           throw new Error(res.status === 404 ? 'Service not found' : 'Failed to load service');
@@ -147,25 +147,21 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
         return res.json();
       })
       .then(data => {
-        if (!cancelled) {
-          setService({
-            ...data,
-            process: Array.isArray(data.process) ? data.process : [],
-            requiredDocs: Array.isArray(data.requiredDocs) ? data.requiredDocs : [],
-          });
-          setIsLoading(false);
-        }
+        setService({
+          ...data,
+          process: Array.isArray(data.process) ? data.process : [],
+          requiredDocs: Array.isArray(data.requiredDocs) ? data.requiredDocs : [],
+        });
+        setIsLoading(false);
       })
       .catch(err => {
-        if (!cancelled) {
+        if (err.name !== 'AbortError') {
           setError(err.message);
           setIsLoading(false);
         }
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [serviceId, isOpen]);
 
   // Clear service data when modal closes

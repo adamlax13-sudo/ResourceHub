@@ -147,6 +147,7 @@ function LocationDropdown({
               className="max-h-[280px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
               role="listbox"
               id="location-listbox"
+              aria-label="Select location"
             >
               {ALBERTA_LOCATIONS.map((location, index) => {
                 const isSelected = location.value === value;

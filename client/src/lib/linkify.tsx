@@ -37,11 +37,16 @@ export function linkifyText(text: string): React.ReactNode {
         parts.push(matched);
       }
     } else if (match[2]) {
-      parts.push(
-        <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
-          {matched}
-        </a>
-      );
+      // Validate email doesn't contain protocol-like patterns
+      if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(matched) && !matched.includes(':')) {
+        parts.push(
+          <a key={key++} href={`mailto:${encodeURIComponent(matched)}`} className="text-primary hover:underline">
+            {matched}
+          </a>
+        );
+      } else {
+        parts.push(matched);
+      }
     } else if (match[3]) {
       const cleanPhone = matched.replace(/[^\d+]/g, '');
       parts.push(
