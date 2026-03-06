@@ -20,25 +20,19 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
   // Extract token from Authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      message: 'Unauthorized',
-      error: 'Missing or invalid Authorization header. Expected: Bearer <token>'
-    });
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
   const token = authHeader.slice(7); // Remove 'Bearer ' prefix
 
   // Constant-time comparison to prevent timing attacks
   if (!constantTimeCompare(token, adminApiKey)) {
-    console.warn('[AdminAuth] Invalid admin API key attempt');
-    return res.status(403).json({
-      message: 'Forbidden',
-      error: 'Invalid admin API key'
-    });
+    console.warn(`[AdminAuth] Invalid admin API key attempt from ${req.ip}`);
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
   // Log successful admin access
-  console.log(`[AdminAuth] Admin access granted for: ${req.method} ${req.path}`);
+  console.log(`[AdminAuth] Admin access granted — ${req.method} ${req.path} from ${req.ip}`);
   next();
 }
 

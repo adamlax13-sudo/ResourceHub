@@ -26,7 +26,7 @@ export function registerAnalyticsRoutes(app: Express): void {
       // Safely extract headers (handle array case)
       const sessionIdHeader = req.headers['x-session-id'];
       const sessionIdRaw = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
-      const SESSION_UUID_RE = /^[0-9a-f-]{8,36}$/i;
+      const SESSION_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const sessionId = sessionIdRaw && SESSION_UUID_RE.test(sessionIdRaw)
         ? sessionIdRaw.slice(0, 36)
         : undefined;
