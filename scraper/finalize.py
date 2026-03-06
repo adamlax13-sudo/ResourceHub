@@ -225,17 +225,26 @@ def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_al
         logger.warning(f"Embedding column not found - run migrations first. Error: {e}")
         return
 
-    # Get services needing embeddings
+    # Get services needing embeddings (batched to avoid unbounded memory usage)
+    EMBED_FETCH_BATCH = 500
     if regenerate_all:
         services = session.execute(text(
             "SELECT service_id, name, category, description, eligibility, location, tags "
             "FROM services WHERE is_active = true ORDER BY service_id"
         )).fetchall()
     else:
-        services = session.execute(text(
-            "SELECT service_id, name, category, description, eligibility, location, tags "
-            "FROM services WHERE is_active = true AND embedding IS NULL ORDER BY service_id"
-        )).fetchall()
+        services = []
+        offset = 0
+        while True:
+            batch = session.execute(text(
+                "SELECT service_id, name, category, description, eligibility, location, tags "
+                "FROM services WHERE is_active = true AND embedding IS NULL "
+                f"ORDER BY service_id LIMIT {EMBED_FETCH_BATCH} OFFSET {offset}"
+            )).fetchall()
+            if not batch:
+                break
+            services.extend(batch)
+            offset += EMBED_FETCH_BATCH
 
     if not services:
         logger.info("No services need embeddings")
