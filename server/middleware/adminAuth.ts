@@ -14,10 +14,7 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
   // If no admin key is configured, admin endpoints are disabled
   if (!adminApiKey) {
     console.warn('[AdminAuth] ADMIN_API_KEY not configured - admin endpoints disabled');
-    return res.status(503).json({
-      message: 'Admin endpoints are not configured',
-      error: 'ADMIN_API_KEY environment variable is not set'
-    });
+    return res.status(404).json({ message: 'Not found' });
   }
 
   // Extract token from Authorization header

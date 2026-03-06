@@ -9,6 +9,7 @@ import type { Express, Request, Response } from "express";
 import { storage } from "../storage";
 import { adminAuth, adminLimiter } from "../middleware/adminAuth";
 import { createErrorResponse } from "../helpers/errors";
+import { withTimeout } from "../helpers/timeout";
 
 export function registerAdminRoutes(app: Express): void {
   // ============= ADMIN: REFRESH SEARCH VIEW =============
@@ -29,7 +30,8 @@ export function registerAdminRoutes(app: Express): void {
       res.json({ success: true, message: `Search view refreshed, cache cleared, ${staleCleared} stale entries removed` });
     } catch (err) {
       console.error("Refresh search error:", err);
-      res.status(500).json(createErrorResponse("Failed to refresh search view", err instanceof Error ? err.message : undefined));
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to refresh search view", errorMessage));
     }
   });
 
@@ -39,35 +41,44 @@ export function registerAdminRoutes(app: Express): void {
   // reducing future enrichment lookups and API calls
   app.post("/api/admin/persist-enrichments", adminLimiter, adminAuth, async (_req: Request, res: Response) => {
     try {
-      const enrichments = await storage.getAllEnrichments();
-      let totalFieldsUpdated = 0;
-      let servicesUpdated = 0;
+      const result = await withTimeout(
+        (async () => {
+          const enrichments = await storage.getAllEnrichments();
+          let totalFieldsUpdated = 0;
+          let servicesUpdated = 0;
 
-      for (const enrichment of enrichments) {
-        const fieldsUpdated = await storage.persistEnrichmentToService(
-          enrichment.serviceId,
-          enrichment
-        );
-        if (fieldsUpdated > 0) {
-          totalFieldsUpdated += fieldsUpdated;
-          servicesUpdated++;
-        }
-      }
+          for (const enrichment of enrichments) {
+            const fieldsUpdated = await storage.persistEnrichmentToService(
+              enrichment.serviceId,
+              enrichment
+            );
+            if (fieldsUpdated > 0) {
+              totalFieldsUpdated += fieldsUpdated;
+              servicesUpdated++;
+            }
+          }
 
-      // Clear cache after updates so new searches reflect the changes
-      await storage.clearSearchCache();
+          // Clear cache after updates so new searches reflect the changes
+          await storage.clearSearchCache();
 
-      console.log(`[Admin] Persisted enrichments: ${servicesUpdated} services updated, ${totalFieldsUpdated} total fields`);
+          return { servicesUpdated, totalFieldsUpdated, enrichmentsProcessed: enrichments.length };
+        })(),
+        60000,
+        'persist-enrichments'
+      );
+
+      console.log(`[Admin] Persisted enrichments: ${result.servicesUpdated} services updated, ${result.totalFieldsUpdated} total fields`);
       res.json({
         success: true,
-        message: `Persisted enrichments to ${servicesUpdated} services (${totalFieldsUpdated} fields total)`,
-        servicesUpdated,
-        totalFieldsUpdated,
-        enrichmentsProcessed: enrichments.length,
+        message: `Persisted enrichments to ${result.servicesUpdated} services (${result.totalFieldsUpdated} fields total)`,
+        servicesUpdated: result.servicesUpdated,
+        totalFieldsUpdated: result.totalFieldsUpdated,
+        enrichmentsProcessed: result.enrichmentsProcessed,
       });
     } catch (err) {
       console.error("Persist enrichments error:", err);
-      res.status(500).json(createErrorResponse("Failed to persist enrichments", err instanceof Error ? err.message : undefined));
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to persist enrichments", errorMessage));
     }
   });
 }

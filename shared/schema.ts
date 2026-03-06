@@ -122,8 +122,9 @@ export const aiServiceEnrichments = pgTable("ai_service_enrichments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true });
-export const insertSearchAnalyticsSchema = createInsertSchema(searchAnalytics).omit({ id: true, createdAt: true });
+export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true }).extend({
+  message: z.string().min(1).max(2000),
+});
 
 export type Search = typeof searches.$inferSelect;
 export type Feedback = typeof feedback.$inferSelect;
@@ -131,7 +132,6 @@ export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Service = typeof services.$inferSelect;
 export type AiServiceEnrichment = typeof aiServiceEnrichments.$inferSelect;
 export type SearchAnalytics = typeof searchAnalytics.$inferSelect;
-export type InsertSearchAnalytics = z.infer<typeof insertSearchAnalyticsSchema>;
 export type ServiceAlias = typeof serviceAliases.$inferSelect;
 
 // Service vote feedback (thumbs up/down on search result cards)

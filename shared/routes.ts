@@ -27,7 +27,7 @@ export const serviceDetailSchema = z.object({
   description: z.string(),
   location: z.string(),
   contact: z.string(),
-  websiteUrl: z.string().optional(),
+  websiteUrl: z.string().url().optional().or(z.literal('')),
   eligibility: z.string(),
   process: z.array(z.string()),
   waitTimes: z.string(),
@@ -52,7 +52,7 @@ export const paginationSchema = z.object({
 // Note: 'all' in genderRestriction is a UI sentinel meaning "no restriction" — never compared to DB data
 // Note: 'youth_and_adult' is a DB-internal storage value intentionally excluded from the API surface
 export const searchFiltersSchema = z.object({
-  category: z.string().optional(),
+  category: z.string().max(100).trim().optional(),
   genderRestriction: z.enum(['all', 'women_only', 'men_only']).optional(),
   ageGroup: z.enum(['all_ages', 'youth', 'adult', 'senior']).optional(),
   is24_7: z.boolean().optional(),

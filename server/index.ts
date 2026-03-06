@@ -21,7 +21,9 @@ app.set('trust proxy', 1);
 // ============= REQUEST CORRELATION IDS =============
 // Add unique correlation ID to each request for debugging
 app.use((req, res, next) => {
-  const correlationId = req.headers['x-correlation-id'] as string || randomUUID();
+  const rawId = req.headers['x-correlation-id'] as string;
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const correlationId = (rawId && UUID_RE.test(rawId)) ? rawId : randomUUID();
   req.headers['x-correlation-id'] = correlationId;
   res.setHeader('x-correlation-id', correlationId);
   next();
