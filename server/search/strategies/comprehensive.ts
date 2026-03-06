@@ -140,6 +140,8 @@ function sanitizeForLLM(query: string): string {
   // Strip common prompt injection phrases anywhere in the query
   const injectionPatterns = /(ignore|forget|disregard|override|system|assistant)\b.{0,20}(instructions?|previous|above|prompt)/gi;
   let sanitized = query.replace(injectionPatterns, '').trim();
+  // Escape XML-like delimiters to prevent tag injection
+  sanitized = sanitized.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   // Limit length to prevent token abuse
   return sanitized.slice(0, 200);
 }

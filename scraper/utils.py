@@ -33,10 +33,13 @@ def is_safe_url(url: str) -> bool:
     if not hostname:
         return False
     try:
-        resolved = socket.gethostbyname(hostname)
-        ip = ipaddress.ip_address(resolved)
-        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
-            return False
+        # Use getaddrinfo to support both IPv4 and IPv6
+        addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        for family, _, _, _, sockaddr in addr_info:
+            ip = ipaddress.ip_address(sockaddr[0])
+            if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+                return False
     except (socket.gaierror, ValueError):
-        pass  # DNS failure is fine — requests will fail naturally
+        # Cannot verify destination is safe — reject to prevent SSRF
+        return False
     return True

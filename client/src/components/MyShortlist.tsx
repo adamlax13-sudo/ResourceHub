@@ -25,7 +25,12 @@ function serviceToText(svc: ServiceDetail, options: PrintOptions): string {
   else if (svc.location) lines.push(svc.location);
   if (svc.phone) lines.push(`Phone: ${svc.phone}`);
   if (svc.email) lines.push(`Email: ${svc.email}`);
-  if (svc.websiteUrl) lines.push(svc.websiteUrl);
+  if (svc.websiteUrl) {
+    const wsUrl = svc.websiteUrl.startsWith('http') ? svc.websiteUrl : `https://${svc.websiteUrl}`;
+    if (isSafeUrl(wsUrl)) {
+      lines.push(svc.websiteUrl);
+    }
+  }
   if (options.includeProcessSteps && svc.process.length > 0) {
     lines.push("", "How to Access:");
     svc.process.forEach((step, i) => lines.push(`  ${i + 1}. ${step}`));
