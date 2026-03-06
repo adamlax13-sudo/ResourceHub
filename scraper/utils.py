@@ -37,6 +37,9 @@ def is_safe_url(url: str) -> bool:
         addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
         for family, _, _, _, sockaddr in addr_info:
             ip = ipaddress.ip_address(sockaddr[0])
+            # Handle IPv4-mapped IPv6 addresses (e.g., ::ffff:127.0.0.1)
+            if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped:
+                ip = ip.ipv4_mapped
             if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
                 return False
     except (socket.gaierror, ValueError):
