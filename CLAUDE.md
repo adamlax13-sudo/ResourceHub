@@ -8,7 +8,7 @@
 
 ResourceHub is an Alberta social services directory. Users search for recovery, support, housing, disability, healthcare, and emergency services. The search is AI-powered with semantic understanding, intent detection, and crisis service pinning.
 
-Live at recoveryoncampusalberta.ca. Deployed on Render.com (free tier).
+Live at https://resourcehub-wwg6.onrender.com. Deployed on Render.com (free tier).
 
 ## Tech Stack
 
@@ -33,7 +33,7 @@ npm run evaluate:comprehensive  # Auto-optimization run
 
 # Scraper (from /scraper directory)
 python scraper.py                    # Full pipeline
-python scraper.py --phase embeddings # Single phase
+python scraper.py --phase discover   # Single phase
 python scraper.py --dry-run          # Preview mode
 pytest tests/ -v                     # Run scraper tests
 ```
@@ -45,7 +45,10 @@ pytest tests/ -v                     # Run scraper tests
 | `server/routes.ts` | API route definitions — all endpoints registered here |
 | `server/storage.ts` | Database access layer (34KB) — all DB queries |
 | `server/search/index.ts` | Search orchestrator entry point |
-| `server/search/strategies/scoring.ts` | Ranking/boosting logic (78KB, largest module) |
+| `server/search/strategies/scoring/index.ts` | Ranking/boosting orchestrator (imports sub-modules) |
+| `server/search/strategies/scoring/quality-boost.ts` | Data quality boost — promotes high-confidence, well-described services |
+| `server/search/strategies/scoring/preference-boost.ts` | Preference boosts for filter toggles (faith-based, 12-step, 24/7) |
+| `server/search/strategies/scoring/filter-match-boost.ts` | Filter-match boosts for explicit DB matches |
 | `server/search/strategies/comprehensive.ts` | Main search strategy |
 | `server/search/analyzer.ts` | Query analysis, typo correction, intent detection |
 | `server/search/config.ts` | Search configuration and thresholds (48KB) |
@@ -69,7 +72,13 @@ pytest tests/ -v                     # Run scraper tests
 7. Apply filters (age, gender, exclusions, diversity)
 8. Apply intent-based boosting and scoring
 9. Pin crisis services if detected
-10. Return paginated results with summary
+10. Apply data quality boost (confidence score, description richness)
+11. Return paginated results with summary
+
+### Search Caching
+- Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
+- Cache version constant in `server/search/index.ts` must be bumped when changing filter/scoring behavior
+- Scoring sub-modules are in `server/search/strategies/scoring/` (modular files, not one monolith)
 
 ### Database Tables (most important)
 - `services` — current service data (name, category, location, contact, etc.)

@@ -133,6 +133,9 @@ export interface IStorage {
   // Batch enrichment lookup (avoids N+1)
   getEnrichmentsBatch(serviceIds: string[]): Promise<Map<string, EnrichmentData>>;
 
+  // Batch confidence score lookup for data quality boosting
+  getConfidenceScores(serviceIds: string[]): Promise<Map<string, number>>;
+
   // Check if materialized view exists (for graceful fallback)
   hasOptimizedSearch(): Promise<boolean>;
 
@@ -732,6 +735,30 @@ export class DatabaseStorage implements IStorage {
         aiLocation: row.aiLocation,
         aiContact: row.aiContact,
       });
+    }
+    return map;
+  }
+
+  /**
+   * Batch fetch confidence scores for data quality boosting.
+   * Returns a Map of serviceId -> confidenceScore (only non-null entries).
+   */
+  async getConfidenceScores(serviceIds: string[]): Promise<Map<string, number>> {
+    if (serviceIds.length === 0) return new Map();
+
+    const result = await db
+      .select({
+        serviceId: services.serviceId,
+        confidenceScore: services.confidenceScore,
+      })
+      .from(services)
+      .where(inArray(services.serviceId, serviceIds));
+
+    const map = new Map<string, number>();
+    for (const row of result) {
+      if (row.confidenceScore !== null) {
+        map.set(row.serviceId, row.confidenceScore);
+      }
     }
     return map;
   }

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v79'; // Bumped: cache unfiltered results, apply UI filters post-cache
+const CACHE_VERSION = 'v80'; // Bumped: add data quality boost (confidence scores + description richness)
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -35,6 +35,7 @@ import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
+import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters } from './filters';
 
 // Single search strategy - comprehensive mode only
@@ -132,6 +133,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyFilterMatchBoosts(services, input.filters);
     }
 
+    // Data quality boost applies regardless of filters
+    const precomputedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
+    services = applyDataQualityBoost(services, precomputedConfScores);
+
     return formatResponse(services, '', input, startTime, true);
   }
 
@@ -176,6 +181,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyPreferenceBoosts(services, input.filters);
       services = applyFilterMatchBoosts(services, input.filters);
     }
+
+    // Data quality boost applies regardless of filters
+    const cachedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
+    services = applyDataQualityBoost(services, cachedConfScores);
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
@@ -246,6 +255,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       console.log(`[SearchOrchestrator] Hard filters applied: ${beforeFilter} → ${result.services.length} services`);
     }
   }
+
+  // Data quality boost applies regardless of filters
+  const freshConfScores = await storage.getConfidenceScores(result.services.map(s => s.id));
+  result.services = applyDataQualityBoost(result.services, freshConfScores);
 
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
 }
