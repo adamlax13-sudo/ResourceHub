@@ -24,7 +24,7 @@ export function applyDataQualityBoost(services: LiteService[], confidenceScores:
   const pinned: LiteService[] = [];
   const rankable: LiteService[] = [];
   for (const s of services) {
-    if (s.rrfScore == null || s.rrfScore === 0) {
+    if (s.rrfScore == null) {
       pinned.push(s);
     } else {
       rankable.push(s);

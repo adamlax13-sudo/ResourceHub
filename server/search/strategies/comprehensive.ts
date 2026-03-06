@@ -188,7 +188,16 @@ Examples:
     const content = response.choices[0].message.content?.trim();
     if (!content) return null;
 
-    const result = JSON.parse(content) as EnhancedQuery;
+    const parsed = JSON.parse(content);
+    if (!parsed || typeof parsed.rewritten !== 'string' || !Array.isArray(parsed.categories) || !Array.isArray(parsed.keywords)) {
+      console.warn('[ComprehensiveSearch] OpenAI returned unexpected JSON structure');
+      return null;
+    }
+    const result: EnhancedQuery = {
+      rewritten: parsed.rewritten,
+      categories: parsed.categories.filter((c: unknown) => typeof c === 'string'),
+      keywords: parsed.keywords.filter((k: unknown) => typeof k === 'string'),
+    };
     console.log(`[ComprehensiveSearch] OpenAI query enhancement in ${Date.now() - startTime}ms: "${rawQuery}" → "${result.rewritten}"`);
     return result;
   } catch (err) {

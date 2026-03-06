@@ -78,8 +78,14 @@ export function applyNegativePenalty(
     return { service, penalty, explanations: [...existingExplanations, ...explanations] };
   });
 
-  // Sort by penalty (lower is better), maintaining original order for equal penalties
-  scored.sort((a, b) => a.penalty - b.penalty);
+  // Apply penalty to rrfScore so downstream modules see the adjusted score
+  for (const s of scored) {
+    if (s.penalty > 0 && s.service.rrfScore != null) {
+      s.service.rrfScore = Math.max(0, s.service.rrfScore - s.penalty);
+    }
+  }
+  // Sort by rrfScore descending (consistent with other scoring modules)
+  scored.sort((a, b) => (b.service.rrfScore ?? 0) - (a.service.rrfScore ?? 0));
 
   // Return services with explanations attached if tracking is enabled
   if (trackExplanations) {

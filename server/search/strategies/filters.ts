@@ -290,7 +290,7 @@ export function applyAgeFilter(
   if (confidence === 'high') {
     const before = services.length;
     const filtered = services.filter(svc => {
-      const serviceAgeGroup = (svc as any).age_group || 'all_ages';
+      const serviceAgeGroup = (svc as any).ageGroup || (svc as any).age_group || 'all_ages';
 
       // all_ages always passes through
       if (serviceAgeGroup === 'all_ages') return true;
@@ -341,12 +341,12 @@ export function applyExclusionFilter(
     const service = svc as any;
 
     // Filter faith-based services when religious exclusion detected
-    if (exclusions.religious && service.is_faith_based === true) {
+    if (exclusions.religious && (service.isFaithBased === true || service.is_faith_based === true)) {
       return false;
     }
 
     // Filter 12-step services when twelveStep exclusion detected
-    if (exclusions.twelveStep && service.is_12_step === true) {
+    if (exclusions.twelveStep && (service.is12Step === true || service.is_12_step === true)) {
       return false;
     }
 
@@ -362,14 +362,14 @@ export function applyExclusionFilter(
     // This catches services not yet classified by migration script
     const text = `${svc.name} ${svc.category} ${svc.description}`.toLowerCase();
 
-    if (exclusions.religious && service.is_faith_based === undefined) {
+    if (exclusions.religious && service.isFaithBased == null && service.is_faith_based == null) {
       // Strong religious indicators - hard filter
       if (/\b(church|ministry|mission|evangelical|faith-?based|christian|catholic|baptist|lutheran|salvation army|dream centre|dream center)\b/i.test(text)) {
         return false;
       }
     }
 
-    if (exclusions.twelveStep && service.is_12_step === undefined) {
+    if (exclusions.twelveStep && service.is12Step == null && service.is_12_step == null) {
       // 12-step indicators - hard filter
       if (/\b(12[\s-]?step|twelve[\s-]?step|\bAA\b|\bNA\b|\bCA\b|alcoholics anonymous|narcotics anonymous|higher power|celebrate recovery)\b/i.test(text)) {
         return false;
