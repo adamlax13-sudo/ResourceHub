@@ -156,6 +156,16 @@ Subagents dispatched via the `Task` tool (without `isolation: "worktree"`) share
 4. **After subagent work completes, run `git status`** to check for unexpected index changes before doing any git operations.
 5. **If a commit shows unexpected file counts** (e.g., "236 files changed" when you expected 1), do NOT push. Investigate immediately.
 
+### Worktree Merge Index Corruption (RECURRING BUG)
+After merging worktree branches back into main (the `Merge branch 'worktree-agent-*'` commits), the `.git/index` often becomes corrupted — `git status` will show **every file staged for deletion** while simultaneously listing them all as untracked. This is a cosmetic index issue, NOT actual data loss.
+
+**MANDATORY: After ANY push that includes worktree merge commits, immediately run:**
+```bash
+git reset HEAD
+git status  # Should show "nothing to commit, working tree clean"
+```
+This rebuilds the index from the last commit. Do this **every time** after pushing worktree merges, even if `git status` looks fine — check proactively rather than discovering the corruption later when staging new changes.
+
 ## Maintaining This File
 
 This is a living document. Update it when you discover:
