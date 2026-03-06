@@ -100,7 +100,8 @@ async function checkEmbeddingsAvailable(): Promise<boolean> {
     embeddingsAvailable = await storage.hasEmbeddings();
     console.log(`[ComprehensiveSearch] Embeddings available: ${embeddingsAvailable}`);
   } catch {
-    embeddingsAvailable = false;
+    embeddingsAvailable = null;  // Retry on next request instead of caching failure permanently
+    return false;
   }
   return embeddingsAvailable;
 }

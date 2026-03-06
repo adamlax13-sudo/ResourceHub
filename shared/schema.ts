@@ -145,9 +145,9 @@ export const serviceVotes = pgTable("service_votes", {
 
 export const insertServiceVoteSchema = createInsertSchema(serviceVotes)
   .omit({ id: true, createdAt: true })
-  .refine((d) => d.vote === "up" || d.vote === "down", {
-    message: "vote must be 'up' or 'down'",
-    path: ["vote"],
+  .extend({
+    vote: z.enum(['up', 'down']),
+    queryContext: z.string().max(500).optional(),
   });
 export type ServiceVote = typeof serviceVotes.$inferSelect;
 export type InsertServiceVote = z.infer<typeof insertServiceVoteSchema>;

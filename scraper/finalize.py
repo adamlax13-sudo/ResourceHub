@@ -245,8 +245,8 @@ def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_al
             batch = session.execute(text(
                 "SELECT service_id, name, category, description, eligibility, location, tags "
                 "FROM services WHERE is_active = true AND embedding IS NULL "
-                f"ORDER BY service_id LIMIT {EMBED_FETCH_BATCH} OFFSET {offset}"
-            )).fetchall()
+                "ORDER BY service_id LIMIT :limit OFFSET :offset"
+            ), {"limit": EMBED_FETCH_BATCH, "offset": offset}).fetchall()
             if not batch:
                 break
             services.extend(batch)

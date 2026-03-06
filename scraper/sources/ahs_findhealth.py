@@ -44,15 +44,19 @@ class AHSFindHealthSource(Source):
     RATE_LIMIT_SECONDS = 2
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
-        self._http = requests.Session()
-        self._http.headers.update({"User-Agent": USER_AGENT})
-
-        results = []
-        facility_results = self._scrape_search(FACILITY_SEARCH_URL, "facility")
-        results.extend(facility_results)
-        service_results = self._scrape_search(SERVICE_SEARCH_URL, "service")
-        results.extend(service_results)
-        return results
+        http = requests.Session()
+        http.headers.update({"User-Agent": USER_AGENT})
+        try:
+            self._http = http
+            results = []
+            facility_results = self._scrape_search(FACILITY_SEARCH_URL, "facility")
+            results.extend(facility_results)
+            service_results = self._scrape_search(SERVICE_SEARCH_URL, "service")
+            results.extend(service_results)
+            return results
+        finally:
+            http.close()
+            self._http = None
 
     def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
         """Fetch a URL and return parsed HTML."""

@@ -41,26 +41,30 @@ class HomelessHubSource(Source):
     CATEGORY = "Housing & Homelessness"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
-        self._http = requests.Session()
-        self._http.headers.update({"User-Agent": USER_AGENT})
+        http = requests.Session()
+        http.headers.update({"User-Agent": USER_AGENT})
+        try:
+            self._http = http
+            results = []
 
-        results = []
+            # Part A: Community profiles
+            for city_slug in ALBERTA_CITIES:
+                url = COMMUNITY_PROFILE_URL.format(city=city_slug)
+                soup = self._fetch_page(url)
+                if soup:
+                    city_name = CITY_DISPLAY.get(city_slug, city_slug.title())
+                    results.extend(self.parse_community_profile(soup, city_name))
+                    time.sleep(2)
 
-        # Part A: Community profiles
-        for city_slug in ALBERTA_CITIES:
-            url = COMMUNITY_PROFILE_URL.format(city=city_slug)
-            soup = self._fetch_page(url)
-            if soup:
-                city_name = CITY_DISPLAY.get(city_slug, city_slug.title())
-                results.extend(self.parse_community_profile(soup, city_name))
-                time.sleep(2)
+            # Part B: Algolia resource library
+            algolia_results = self._query_algolia()
+            if algolia_results:
+                results.extend(self.parse_algolia_results(algolia_results))
 
-        # Part B: Algolia resource library
-        algolia_results = self._query_algolia()
-        if algolia_results:
-            results.extend(self.parse_algolia_results(algolia_results))
-
-        return results
+            return results
+        finally:
+            http.close()
+            self._http = None
 
     def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
         """Fetch a URL and return parsed HTML."""
@@ -132,6 +136,13 @@ class HomelessHubSource(Source):
 
         if not algolia_app_id or not algolia_api_key:
             logger.warning("[HomelessHub] Could not find Algolia credentials in page source")
+            return None
+
+        # Validate Algolia app ID format to prevent SSRF via compromised page
+        import re as _re
+        ALGOLIA_APP_ID_PATTERN = _re.compile(r'^[A-Z0-9]{8,12}$', _re.IGNORECASE)
+        if not ALGOLIA_APP_ID_PATTERN.match(algolia_app_id):
+            logger.warning(f"[HomelessHub] Unexpected Algolia app ID format: {algolia_app_id!r}. Skipping.")
             return None
 
         try:

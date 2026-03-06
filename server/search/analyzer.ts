@@ -98,7 +98,7 @@ export function analyzeQuery(
   }
 
   return {
-    raw: query,
+    raw: sanitized,
     normalized,
     keywords,
     intent,

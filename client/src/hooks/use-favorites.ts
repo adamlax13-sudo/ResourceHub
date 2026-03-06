@@ -7,14 +7,14 @@ export interface FavoriteCandidate {
   id: string;
   name: string;
   category: string;
-  location: string;
+  location: string | null;
 }
 
 interface FavoriteService {
   id: string;
   name: string;
   category: string;
-  location: string;
+  location: string | null;
   addedAt: number;
 }
 

@@ -41,14 +41,18 @@ CRITICAL RULES - FOLLOW EXACTLY:
 The text below is the ONLY source you may use. Do not add any information not present in this text."""
 
 
+import threading
+_rate_limit_lock = threading.Lock()
+
 def _rate_limit():
     """Ensure minimum time between requests."""
     global _last_request_time
-    now = time.time()
-    elapsed = now - _last_request_time
-    if elapsed < MIN_REQUEST_INTERVAL:
-        time.sleep(MIN_REQUEST_INTERVAL - elapsed)
-    _last_request_time = time.time()
+    with _rate_limit_lock:
+        now = time.time()
+        elapsed = now - _last_request_time
+        if elapsed < MIN_REQUEST_INTERVAL:
+            time.sleep(MIN_REQUEST_INTERVAL - elapsed)
+        _last_request_time = time.time()
 
 
 class ClaudeClient:
@@ -140,11 +144,14 @@ CRITICAL INSTRUCTIONS:
 
 You will extract information about social services in Alberta, Canada."""
 
+        safe_name = (service_name or "").replace("\n", " ").replace("\r", " ").strip()
+        safe_category = (category or "").replace("\n", " ").replace("\r", " ").strip()
+
         user_prompt = f"""Extract service information from this webpage content.
 
 <service_context>
-Service Name: {service_name}
-Category: {category}
+Service Name: {safe_name}
+Category: {safe_category}
 </service_context>
 
 <webpage_content>
@@ -239,10 +246,13 @@ CRITICAL INSTRUCTIONS:
 4. Set fields to null if the information is not in the search results
 5. Each service must have at least a name"""
 
+        safe_category = (category or "").replace("\n", " ").replace("\r", " ").strip()
+        safe_region = (region or "").replace("\n", " ").replace("\r", " ").strip()
+
         user_prompt = f"""Parse these search results into a list of services.
 
-Category: {category}
-Region: {region}
+Category: {safe_category}
+Region: {safe_region}
 
 Search Results:
 {raw_text[:6000]}
@@ -1037,6 +1047,7 @@ Use the report_enrichment_results tool to return your findings."""
                 service_id = name_to_id.get(svc_name.strip().lower(), "")
                 if not service_id:
                     logger.warning(f"[Enrichment] Could not match service name: '{svc_name}'")
+                    continue  # Don't create an EnrichmentResult with empty service_id
 
                 results.append(
                     EnrichmentResult(

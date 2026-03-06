@@ -229,10 +229,10 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
 
   // Add email from dedicated field if available and not already in parsed
   if (service.email && service.email.trim()) {
-    const email = service.email.trim().toLowerCase();
+    const email = service.email.trim().toLowerCase().replace(/[?&#].*/g, '');
     const alreadyExists = parsed.emails.some(e => e.toLowerCase() === email);
-    if (!alreadyExists) {
-      parsed.emails.unshift(service.email.trim()); // Add at beginning as primary email
+    if (!alreadyExists && email.includes('@')) {
+      parsed.emails.unshift(email); // Add at beginning as primary email
     }
   }
 
@@ -341,7 +341,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.location')}</div>
                         <div className="font-medium text-foreground mt-0.5 break-words">
-                          {linkifyText(service.address?.trim() || service.location)}
+                          {linkifyText(service.address?.trim() || service.location || '')}
                         </div>
                       </div>
                     </div>

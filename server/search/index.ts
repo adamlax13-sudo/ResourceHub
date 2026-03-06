@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v82'; // Bumped: Round 3 - clone pinned objects, cap OpenAI response, PII scrub, debug gate
+const CACHE_VERSION = 'v83'; // Bumped: Round 4 - deep clone cached objects, negative term penalty on cache paths, PII raw fix
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -37,6 +37,7 @@ import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters } from './filters';
+import { applyNegativePenalty } from './strategies/scoring/penalty';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
@@ -125,7 +126,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (precomputed && precomputed.results.length > 0) {
     console.log(`[SearchOrchestrator] Precomputed HIT for: "${normalizedQuery}" (${precomputed.resultCount} results)`);
     // Filter out any deactivated services from precomputed cache
-    let services = filterActiveServices([...precomputed.results] as LiteService[], servicesCache.activeIds);
+    let services = filterActiveServices((precomputed.results as LiteService[]).map(s => ({ ...s })), servicesCache.activeIds);
 
     // Still apply pinning for precomputed results
     const analysis = analyzeQuery(input.query, input.location);
@@ -154,6 +155,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     const precomputedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
     services = applyDataQualityBoost(services, precomputedConfScores);
 
+    // Apply negative term penalty for exclusion queries (e.g., "shelter not religious")
+    if (analysis.negativeTerms?.length) {
+      services = applyNegativePenalty(services, analysis.negativeTerms);
+    }
+
     return formatResponse(services, '', input, startTime, true);
   }
 
@@ -176,7 +182,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
     // Filter out any deactivated services from cached results
-    let services = filterActiveServices([...cachedResults.services], servicesCache.activeIds);
+    let services = filterActiveServices(cachedResults.services.map(s => ({ ...s })), servicesCache.activeIds);
 
     // Apply pinning even for cached results
     if (analysis.isCrisis || input.emergency) {
@@ -202,6 +208,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Data quality boost applies regardless of filters
     const cachedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
     services = applyDataQualityBoost(services, cachedConfScores);
+
+    // Apply negative term penalty for exclusion queries (e.g., "shelter not religious")
+    if (analysis.negativeTerms?.length) {
+      services = applyNegativePenalty(services, analysis.negativeTerms);
+    }
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }

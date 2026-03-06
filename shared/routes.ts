@@ -13,8 +13,8 @@ export const serviceSummarySchema = z.object({
   name: z.string(),
   category: z.string(),
   description: z.string(),  // Truncated for card display
-  location: z.string(),
-  waitTimes: z.string(),
+  location: z.string().nullable().default(''),
+  waitTimes: z.string().nullable().default(''),
   // Debug mode only - shows scoring breakdown
   scoreExplanation: z.array(scoreExplanationSchema).optional(),
 });
@@ -25,12 +25,12 @@ export const serviceDetailSchema = z.object({
   name: z.string(),
   category: z.string(),
   description: z.string(),
-  location: z.string(),
+  location: z.string().nullable().default(''),
   contact: z.string(),
   websiteUrl: z.string().url().optional().or(z.literal('')),
   eligibility: z.string(),
   process: z.array(z.string()),
-  waitTimes: z.string(),
+  waitTimes: z.string().nullable().default(''),
   requiredDocs: z.array(z.string()),
   // Normalized contact fields (from dedicated DB columns)
   phone: z.string().optional(),

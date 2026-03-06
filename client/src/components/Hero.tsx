@@ -146,6 +146,7 @@ function LocationDropdown({
             <div
               className="max-h-[280px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
               role="listbox"
+              id="location-listbox"
             >
               {ALBERTA_LOCATIONS.map((location, index) => {
                 const isSelected = location.value === value;
@@ -229,6 +230,8 @@ function LocationDropdown({
         `}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
+        aria-label={`Location filter: ${selectedOption.label}`}
+        aria-controls="location-listbox"
       >
         <MapPin className="w-4 h-4 text-white/80" />
         <span className="min-w-[100px] text-left">{selectedOption.label}</span>
