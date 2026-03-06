@@ -46,8 +46,13 @@ export function registerAdminRoutes(app: Express): void {
           const enrichments = await storage.getAllEnrichments();
           let totalFieldsUpdated = 0;
           let servicesUpdated = 0;
+          const deadline = Date.now() + 55000; // 55s soft limit inside 60s hard limit
 
           for (const enrichment of enrichments) {
+            if (Date.now() > deadline) {
+              console.warn('[Admin] Approaching timeout, stopping enrichment persistence early');
+              break;
+            }
             const fieldsUpdated = await storage.persistEnrichmentToService(
               enrichment.serviceId,
               enrichment
