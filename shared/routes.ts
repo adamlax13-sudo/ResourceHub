@@ -9,9 +9,9 @@ export const scoreExplanationSchema = z.object({
 
 // Lite schema for search results (card display only) - FAST
 export const serviceSummarySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  category: z.string(),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().min(1),
   description: z.string(),  // Truncated for card display
   location: z.string().nullable().default(''),
   waitTimes: z.string().nullable().default(''),
@@ -21,12 +21,13 @@ export const serviceSummarySchema = z.object({
 
 // Full schema with all details (loaded on demand when user expands)
 export const serviceDetailSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  category: z.string(),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().min(1),
   description: z.string(),
   location: z.string().nullable().default(''),
   contact: z.string(),
+  // Allow empty string for backwards compat — some services have websiteUrl="" in the DB
   websiteUrl: z.string().url().optional().or(z.literal('')),
   eligibility: z.string(),
   process: z.array(z.string()),
@@ -34,7 +35,7 @@ export const serviceDetailSchema = z.object({
   requiredDocs: z.array(z.string()),
   // Normalized contact fields (from dedicated DB columns)
   phone: z.string().optional(),
-  email: z.string().optional(),
+  email: z.string().email().optional().or(z.literal('')),
   address: z.string().optional(),
 });
 

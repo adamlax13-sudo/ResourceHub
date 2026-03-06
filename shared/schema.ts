@@ -1,6 +1,4 @@
 import { pgTable, text, serial, jsonb, timestamp, varchar, boolean, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const searches = pgTable("searches", {
   id: serial("id").primaryKey(),
@@ -122,13 +120,8 @@ export const aiServiceEnrichments = pgTable("ai_service_enrichments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true }).extend({
-  message: z.string().min(1).max(2000),
-});
-
 export type Search = typeof searches.$inferSelect;
 export type Feedback = typeof feedback.$inferSelect;
-export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Service = typeof services.$inferSelect;
 export type AiServiceEnrichment = typeof aiServiceEnrichments.$inferSelect;
 export type SearchAnalytics = typeof searchAnalytics.$inferSelect;
@@ -143,12 +136,5 @@ export const serviceVotes = pgTable("service_votes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertServiceVoteSchema = createInsertSchema(serviceVotes)
-  .omit({ id: true, createdAt: true })
-  .extend({
-    vote: z.enum(['up', 'down']),
-    queryContext: z.string().max(500).optional(),
-  });
 export type ServiceVote = typeof serviceVotes.$inferSelect;
-export type InsertServiceVote = z.infer<typeof insertServiceVoteSchema>;
 
