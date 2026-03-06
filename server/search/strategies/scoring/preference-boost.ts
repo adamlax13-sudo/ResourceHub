@@ -22,7 +22,7 @@ const TEXT_MATCH_MULTIPLIER = 1.4;
 const FAITH_PATTERNS = /\b(faith[- ]based|spiritual|church|christian|prayer|bible|higher power|god|ministry|pastoral|religious|scripture|worship|mosque|synagogue|temple|imam|rabbi|chaplain)\b/i;
 
 /** Text patterns that indicate a 12-step service */
-const TWELVE_STEP_PATTERNS = /\b(12[- ]step|twelve[- ]step|alcoholics anonymous|\baa\b|narcotics anonymous|\bna\b|sponsor|step work|big book|gamblers anonymous|\bga\b|cocaine anonymous|\bca\b|celebrate recovery)\b/i;
+const TWELVE_STEP_PATTERNS = /\b(12[- ]step|twelve[- ]step|alcoholics anonymous|narcotics anonymous|sponsor|step work|big book|gamblers anonymous|cocaine anonymous|celebrate recovery)\b|(?:aa|na|ga|ca)\s+(?:meeting|group|program|chapter)/i;
 
 /** Text patterns that indicate 24/7 availability */
 const AVAILABILITY_247_PATTERNS = /\b(24\/7|24[- ]hours?|around the clock|always open|crisis line|anytime|never close[sd]?)\b/i;

@@ -129,8 +129,14 @@ export function boostByNameMatch(
     return { svc, boost, explanations };
   });
 
-  // Sort by boost (highest first) while preserving relative order for equal boosts
-  scored.sort((a, b) => b.boost - a.boost);
+  // Apply boost to rrfScore so downstream modules see the adjusted score
+  for (const s of scored) {
+    if (s.boost > 0 && s.svc.rrfScore != null) {
+      s.svc.rrfScore += s.boost;
+    }
+  }
+  // Sort by rrfScore descending (consistent with other scoring modules)
+  scored.sort((a, b) => (b.svc.rrfScore ?? 0) - (a.svc.rrfScore ?? 0));
 
   const boostedCount = scored.filter(s => s.boost > 0).length;
   if (boostedCount > 0) {

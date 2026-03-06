@@ -50,6 +50,7 @@ interface ServicesCacheData {
   lastFetched: number;
 }
 let servicesCacheData: ServicesCacheData | null = null;
+let servicesCachePromise: Promise<ServicesCacheData> | null = null;
 
 async function refreshServicesCache(): Promise<ServicesCacheData> {
   const now = Date.now();
@@ -57,22 +58,33 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
     return servicesCacheData;
   }
 
-  try {
-    const activeServices = await storage.getAllActiveServices();
-    const latestUpdate = activeServices.length > 0
-      ? Math.max(...activeServices.map((s: Service) => s.lastUpdated?.getTime() || 0))
-      : 0;
-    const hash = createHash('md5')
-      .update(`${activeServices.length}-${latestUpdate}`)
-      .digest('hex')
-      .slice(0, 8);
-    const activeIds = new Set(activeServices.map((s: Service) => s.serviceId));
-
-    servicesCacheData = { hash, activeIds, lastFetched: now };
-    return servicesCacheData;
-  } catch {
-    return servicesCacheData || { hash: 'default', activeIds: new Set(), lastFetched: now };
+  // Deduplicate concurrent callers — share a single in-flight fetch
+  if (servicesCachePromise) {
+    return servicesCachePromise;
   }
+
+  servicesCachePromise = (async () => {
+    try {
+      const activeServices = await storage.getAllActiveServices();
+      const latestUpdate = activeServices.length > 0
+        ? Math.max(...activeServices.map((s: Service) => s.lastUpdated?.getTime() || 0))
+        : 0;
+      const hash = createHash('md5')
+        .update(`${activeServices.length}-${latestUpdate}`)
+        .digest('hex')
+        .slice(0, 8);
+      const activeIds = new Set(activeServices.map((s: Service) => s.serviceId));
+
+      servicesCacheData = { hash, activeIds, lastFetched: Date.now() };
+      return servicesCacheData;
+    } catch {
+      return servicesCacheData || { hash: 'default', activeIds: new Set(), lastFetched: Date.now() };
+    } finally {
+      servicesCachePromise = null;
+    }
+  })();
+
+  return servicesCachePromise;
 }
 
 /**
@@ -81,7 +93,10 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
  * after the cache was populated.
  */
 function filterActiveServices(services: LiteService[], activeIds: Set<string>): LiteService[] {
-  if (activeIds.size === 0) return services; // No data yet, don't filter
+  if (activeIds.size === 0) {
+    console.warn('[SearchOrchestrator] activeIds set is empty — bypassing active service filter. This may return deactivated services.');
+    return services;
+  }
   const filtered = services.filter(s => activeIds.has(s.id));
   if (filtered.length < services.length) {
     console.log(`[SearchOrchestrator] Filtered out ${services.length - filtered.length} inactive service(s) from cached results`);
