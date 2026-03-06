@@ -24,7 +24,7 @@ export function pinCrisisService(services: LiteService[]): LiteService[] {
   );
 
   // Prepend the pinned crisis service
-  filtered.unshift(config.pinnedServiceLite as LiteService);
+  filtered.unshift({ ...config.pinnedServiceLite } as LiteService);
 
   // Update the original array in place
   services.length = 0;
@@ -117,6 +117,10 @@ export function boostCrisisServices(services: LiteService[]): LiteService[] {
 
   // Keep 988 pinned at index 0 (it was already placed there by pinCrisisService)
   const pinned = services[0];
+  if (!pinned.id?.includes('988')) {
+    console.warn('[CrisisBoost] Expected 988 at index 0 but got:', pinned.id);
+    return services;
+  }
   const rest = services.slice(1);
 
   // Partition into crisis-category and non-crisis
