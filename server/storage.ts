@@ -236,6 +236,11 @@ export class DatabaseStorage implements IStorage {
     matchCount: number = 20,
     location: string | null = null
   ): Promise<SemanticSearchResult[]> {
+    // Validate embedding before SQL interpolation
+    if (!Array.isArray(queryEmbedding) || !queryEmbedding.every(v => typeof v === 'number' && isFinite(v))) {
+      throw new Error('Invalid embedding: expected array of finite numbers');
+    }
+
     // Convert embedding array to PostgreSQL vector format
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
 
@@ -475,7 +480,6 @@ export class DatabaseStorage implements IStorage {
           .update(services)
           .set({
             clickCount: sql`COALESCE(${services.clickCount}, 0) + 1`,
-            lastUpdated: new Date(), // Also track when last clicked for recency
           })
           .where(eq(services.serviceId, data.clickedServiceId));
       }
@@ -484,10 +488,11 @@ export class DatabaseStorage implements IStorage {
 
   async getClickCountForService(serviceId: string): Promise<number> {
     const result = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(searchAnalytics)
-      .where(eq(searchAnalytics.clickedServiceId, serviceId));
-    return result[0]?.count ?? 0;
+      .select({ clickCount: services.clickCount })
+      .from(services)
+      .where(eq(services.serviceId, serviceId))
+      .limit(1);
+    return result[0]?.clickCount ?? 0;
   }
 
   async getPopularSearches(limit: number = 20): Promise<{ query: string; count: number }[]> {
@@ -638,10 +643,28 @@ export class DatabaseStorage implements IStorage {
       const locations = location.split(',').map(l => l.trim().toLowerCase()).filter(l => l);
       if (locations.length === 1) {
         const locPattern = '%' + locations[0] + '%';
-        locationFilter = sql`AND (lower(location) LIKE ${locPattern} OR lower(location) LIKE '%alberta%')`;
+        locationFilter = sql`AND (lower(location) LIKE ${locPattern}
+          OR lower(location) LIKE '%alberta-wide%'
+          OR lower(location) LIKE '%province-wide%'
+          OR lower(location) LIKE '%canada-wide%'
+          OR lower(location) LIKE '%nationwide%'
+          OR lower(location) LIKE '%all of alberta%'
+          OR lower(location) LIKE '%across alberta%'
+          OR location = 'Alberta'
+          OR location = 'Province of Alberta'
+          OR location IS NULL OR location = '')`;
       } else if (locations.length > 1) {
         const locationClauses = locations.map(l => sql`lower(location) LIKE ${'%' + l + '%'}`);
-        locationFilter = sql`AND (${sql.join(locationClauses, sql` OR `)} OR lower(location) LIKE '%alberta%')`;
+        locationFilter = sql`AND (${sql.join(locationClauses, sql` OR `)}
+          OR lower(location) LIKE '%alberta-wide%'
+          OR lower(location) LIKE '%province-wide%'
+          OR lower(location) LIKE '%canada-wide%'
+          OR lower(location) LIKE '%nationwide%'
+          OR lower(location) LIKE '%all of alberta%'
+          OR lower(location) LIKE '%across alberta%'
+          OR location = 'Alberta'
+          OR location = 'Province of Alberta'
+          OR location IS NULL OR location = '')`;
       }
     }
 
