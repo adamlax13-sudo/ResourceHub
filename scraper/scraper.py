@@ -255,7 +255,8 @@ def main_v2():
         scraper_log.completed_at = datetime.utcnow()
         try:
             session.commit()
-        except Exception:
+        except Exception as commit_err:
+            log.error(f"Failed to persist scraper log: {commit_err}")
             session.rollback()
         session.close()
 
