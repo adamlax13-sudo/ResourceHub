@@ -1,7 +1,7 @@
 import { Search, MapPin, ChevronDown, Check, Mic, MicOff } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { QuickExitButton } from './QuickExitButton';
@@ -319,6 +319,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const { isSupported: voiceSupported, isListening, startListening, stopListening } = useVoiceSearch();
 
   // Get current selected location (first in array or empty for "All of Alberta")
@@ -418,29 +419,29 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
         {/* Row 1 — top edge */}
         {/* Large, top-left corner overflow */}
         <motion.svg className="absolute -top-12 -left-12 w-72 h-72" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 18, -6, 14, 0], y: [0, -12, 8, -16, 0], rotate: [0, 12, 6, 18, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 18, -6, 14, 0], y: [0, -12, 8, -16, 0], rotate: [0, 12, 6, 18, 0] }}
+          transition={prefersReducedMotion ? {} : { duration: 22, repeat: Infinity, ease: "easeInOut" }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
           <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.3" fill="none" />
         </motion.svg>
         {/* Small, top ~30% */}
         <motion.svg className="absolute top-[4%] left-[28%] w-10 h-10" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -10, 8, -6, 0], y: [0, 12, -8, 14, 0], rotate: [20, 50, 35, 60, 20] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -10, 8, -6, 0], y: [0, 12, -8, 14, 0], rotate: [20, 50, 35, 60, 20] }}
+          transition={prefersReducedMotion ? {} : { duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2.5" fill="none" />
         </motion.svg>
         {/* Medium, top-center */}
         <motion.svg className="absolute top-[2%] left-[50%] w-32 h-32" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -14, 10, -12, 0], y: [0, 16, -6, 18, 0], rotate: [80, 100, 90, 108, 80] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -14, 10, -12, 0], y: [0, 16, -6, 18, 0], rotate: [80, 100, 90, 108, 80] }}
+          transition={prefersReducedMotion ? {} : { duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.4" />
         </motion.svg>
         {/* Large, top-right overflow */}
         <motion.svg className="absolute -top-8 -right-10 w-64 h-64" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -16, 6, -12, 0], y: [0, 14, -10, 16, 0], rotate: [130, 148, 138, 155, 130], opacity: [0.6, 1, 0.8, 0.9, 0.6] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -16, 6, -12, 0], y: [0, 14, -10, 16, 0], rotate: [130, 148, 138, 155, 130], opacity: [0.6, 1, 0.8, 0.9, 0.6] }}
+          transition={prefersReducedMotion ? {} : { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
           <polygon points="100,45 45,165 155,165" stroke="white" strokeWidth="0.5" fill="none" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.3" />
@@ -449,27 +450,27 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
         {/* Row 2 — upper-mid ~25-40% */}
         {/* Small, left quarter */}
         <motion.svg className="absolute top-[28%] left-[8%] w-8 h-8" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 12, -8, 10, 0], y: [0, -10, 14, -8, 0], rotate: [0, 35, 18, 42, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 12, -8, 10, 0], y: [0, -10, 14, -8, 0], rotate: [0, 35, 18, 42, 0] }}
+          transition={prefersReducedMotion ? {} : { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3" fill="none" />
         </motion.svg>
         {/* Medium, left-center */}
         <motion.svg className="absolute top-[30%] left-[30%] w-28 h-28" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 20, -8, 16, 0], y: [0, -18, 12, -14, 0], rotate: [200, 222, 212, 228, 200] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 4 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 20, -8, 16, 0], y: [0, -18, 12, -14, 0], rotate: [200, 222, 212, 228, 200] }}
+          transition={prefersReducedMotion ? {} : { duration: 15, repeat: Infinity, ease: "easeInOut", delay: 4 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1" fill="none" />
           <polygon points="100,50 50,160 150,160" stroke="white" strokeWidth="0.6" fill="none" />
         </motion.svg>
         {/* Small, right-center */}
         <motion.svg className="absolute top-[26%] right-[28%] w-12 h-12" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -8, 10, -6, 0], y: [0, 10, -12, 8, 0], rotate: [90, 112, 100, 118, 90] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -8, 10, -6, 0], y: [0, 10, -12, 8, 0], rotate: [90, 112, 100, 118, 90] }}
+          transition={prefersReducedMotion ? {} : { duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2" fill="none" />
         </motion.svg>
         {/* Medium, far right */}
         <motion.svg className="absolute top-[32%] right-[4%] w-24 h-24" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -18, 8, -14, 0], y: [0, 14, -16, 10, 0], rotate: [280, 300, 290, 306, 280] }}
-          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -18, 8, -14, 0], y: [0, 14, -16, 10, 0], rotate: [280, 300, 290, 306, 280] }}
+          transition={prefersReducedMotion ? {} : { duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
@@ -477,57 +478,57 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
         {/* Row 3 — lower-mid ~50-65% */}
         {/* Large, left overflow */}
         <motion.svg className="absolute top-[52%] -left-8 w-56 h-56" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 22, -4, 18, 0], y: [0, -14, 10, -18, 0], rotate: [160, 178, 168, 184, 160] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 22, -4, 18, 0], y: [0, -14, 10, -18, 0], rotate: [160, 178, 168, 184, 160] }}
+          transition={prefersReducedMotion ? {} : { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
           <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.3" />
         </motion.svg>
         {/* Small, center-left */}
         <motion.svg className="absolute top-[58%] left-[35%] w-6 h-6" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 8, -10, 6, 0], y: [0, -8, 12, -10, 0], rotate: [40, 65, 52, 72, 40] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 8, -10, 6, 0], y: [0, -8, 12, -10, 0], rotate: [40, 65, 52, 72, 40] }}
+          transition={prefersReducedMotion ? {} : { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3.5" fill="none" />
         </motion.svg>
         {/* Medium, center-right */}
         <motion.svg className="absolute top-[55%] right-[30%] w-20 h-20" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -14, 10, -12, 0], y: [0, 16, -8, 14, 0], rotate: [310, 330, 320, 336, 310] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 4.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -14, 10, -12, 0], y: [0, 16, -8, 14, 0], rotate: [310, 330, 320, 336, 310] }}
+          transition={prefersReducedMotion ? {} : { duration: 11, repeat: Infinity, ease: "easeInOut", delay: 4.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.5" fill="none" />
         </motion.svg>
         {/* Small, far right */}
         <motion.svg className="absolute top-[60%] right-[8%] w-10 h-10" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -10, 6, -8, 0], y: [0, -12, 10, -14, 0], rotate: [240, 265, 252, 272, 240] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -10, 6, -8, 0], y: [0, -12, 10, -14, 0], rotate: [240, 265, 252, 272, 240] }}
+          transition={prefersReducedMotion ? {} : { duration: 8, repeat: Infinity, ease: "easeInOut", delay: 5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="2.5" fill="none" />
         </motion.svg>
 
         {/* Row 4 — bottom edge */}
         {/* Medium, bottom-left */}
         <motion.svg className="absolute bottom-[6%] left-[6%] w-24 h-24" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 16, -6, 14, 0], y: [0, -18, 8, -14, 0], rotate: [60, 80, 70, 86, 60] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 16, -6, 14, 0], y: [0, -18, 8, -14, 0], rotate: [60, 80, 70, 86, 60] }}
+          transition={prefersReducedMotion ? {} : { duration: 14, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="1.2" fill="none" />
           <line x1="10" y1="190" x2="145" y2="100" stroke="white" strokeWidth="0.4" />
         </motion.svg>
         {/* Large, bottom-center */}
         <motion.svg className="absolute -bottom-14 left-[30%] w-60 h-60" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -14, 10, -10, 0], y: [0, -10, 14, -12, 0], rotate: [150, 168, 158, 174, 150], opacity: [0.5, 0.9, 0.7, 0.85, 0.5] }}
-          transition={{ duration: 21, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -14, 10, -10, 0], y: [0, -10, 14, -12, 0], rotate: [150, 168, 158, 174, 150], opacity: [0.5, 0.9, 0.7, 0.85, 0.5] }}
+          transition={prefersReducedMotion ? {} : { duration: 21, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
           <polygon points="100,40 40,170 160,170" stroke="white" strokeWidth="0.5" fill="none" />
           <polygon points="100,70 70,150 130,150" stroke="white" strokeWidth="0.3" fill="none" />
         </motion.svg>
         {/* Small, bottom ~60% */}
         <motion.svg className="absolute bottom-[8%] right-[35%] w-8 h-8" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, 10, -8, 12, 0], y: [0, -10, 8, -6, 0], rotate: [180, 205, 192, 210, 180] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 3.5 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, 10, -8, 12, 0], y: [0, -10, 8, -6, 0], rotate: [180, 205, 192, 210, 180] }}
+          transition={prefersReducedMotion ? {} : { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 3.5 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="3" fill="none" />
         </motion.svg>
         {/* Large, bottom-right overflow */}
         <motion.svg className="absolute -bottom-10 -right-8 w-52 h-52" viewBox="0 0 200 200" fill="none"
-          animate={{ x: [0, -18, 6, -14, 0], y: [0, -16, 10, -18, 0], rotate: [320, 340, 330, 345, 320] }}
-          transition={{ duration: 17, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+          animate={prefersReducedMotion ? {} : { x: [0, -18, 6, -14, 0], y: [0, -16, 10, -18, 0], rotate: [320, 340, 330, 345, 320] }}
+          transition={prefersReducedMotion ? {} : { duration: 17, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
           <polygon points="100,10 10,190 190,190" stroke="white" strokeWidth="0.8" fill="none" />
           <polygon points="100,45 45,165 155,165" stroke="white" strokeWidth="0.5" fill="none" />
           <line x1="190" y1="190" x2="55" y2="100" stroke="white" strokeWidth="0.3" />
@@ -535,14 +536,14 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
 
         {/* Floating dots — evenly placed in gaps */}
         <motion.div className="absolute top-[18%] left-[18%] w-2 h-2 bg-white rounded-full"
-          animate={{ x: [0, 12, -8, 10, 0], y: [0, -14, 8, -10, 0], opacity: [0.3, 0.8, 0.4, 0.7, 0.3] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} />
+          animate={prefersReducedMotion ? {} : { x: [0, 12, -8, 10, 0], y: [0, -14, 8, -10, 0], opacity: [0.3, 0.8, 0.4, 0.7, 0.3] }}
+          transition={prefersReducedMotion ? {} : { duration: 7, repeat: Infinity, ease: "easeInOut" }} />
         <motion.div className="absolute top-[42%] left-[55%] w-1.5 h-1.5 bg-white rounded-full"
-          animate={{ x: [0, -10, 6, -8, 0], y: [0, 12, -10, 14, 0], opacity: [0.4, 0.9, 0.5, 0.8, 0.4] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }} />
+          animate={prefersReducedMotion ? {} : { x: [0, -10, 6, -8, 0], y: [0, 12, -10, 14, 0], opacity: [0.4, 0.9, 0.5, 0.8, 0.4] }}
+          transition={prefersReducedMotion ? {} : { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }} />
         <motion.div className="absolute bottom-[20%] left-[70%] w-1 h-1 bg-white rounded-full"
-          animate={{ x: [0, 8, -6, 10, 0], y: [0, -8, 12, -6, 0], opacity: [0.2, 0.7, 0.3, 0.6, 0.2] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 4 }} />
+          animate={prefersReducedMotion ? {} : { x: [0, 8, -6, 10, 0], y: [0, -8, 12, -6, 0], opacity: [0.2, 0.7, 0.3, 0.6, 0.2] }}
+          transition={prefersReducedMotion ? {} : { duration: 9, repeat: Infinity, ease: "easeInOut", delay: 4 }} />
       </div>
 
       <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center mt-4">
