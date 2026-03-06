@@ -11,8 +11,8 @@ export const searches = pgTable("searches", {
 
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
-  name: varchar("name"),
-  email: varchar("email"),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }),
   message: text("message").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -122,7 +122,6 @@ export const aiServiceEnrichments = pgTable("ai_service_enrichments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertSearchSchema = createInsertSchema(searches).omit({ id: true, createdAt: true });
 export const insertFeedbackSchema = createInsertSchema(feedback).omit({ id: true, createdAt: true });
 export const insertSearchAnalyticsSchema = createInsertSchema(searchAnalytics).omit({ id: true, createdAt: true });
 
