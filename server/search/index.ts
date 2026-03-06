@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v83'; // Bumped: Round 4 - deep clone cached objects, negative term penalty on cache paths, PII raw fix
+const CACHE_VERSION = 'v84'; // Bumped: Round 4 search audit - negative terms on corrected query, empty activeIds guard
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -97,8 +97,8 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
  */
 function filterActiveServices(services: LiteService[], activeIds: Set<string>): LiteService[] {
   if (activeIds.size === 0) {
-    console.warn('[SearchOrchestrator] activeIds set is empty — bypassing active service filter. This may return deactivated services.');
-    return services;
+    console.warn('[Search] No active service IDs found — returning empty results to prevent stale data');
+    return [];
   }
   const filtered = services.filter(s => activeIds.has(s.id));
   if (filtered.length < services.length) {
@@ -309,7 +309,7 @@ function formatResponse(
   const paginatedServices = services.slice(startIndex, startIndex + input.pageSize);
 
   // When debug mode is enabled, return services with score explanations
-  const isDebugEnabled = process.env.NODE_ENV !== 'production' && input.debug;
+  const isDebugEnabled = process.env.ENABLE_DEBUG_SEARCH === 'true' && input.debug;
   const responseServices = isDebugEnabled && servicesWithDebug
     ? servicesWithDebug.slice(startIndex, startIndex + input.pageSize)
     : paginatedServices;
@@ -331,10 +331,28 @@ function formatResponse(
   };
 }
 
+/** Full service detail returned by getServiceDetails */
+export interface ServiceDetail {
+  id: string;
+  name: string;
+  category: string | null;
+  description: string;
+  location: string;
+  contact: string;
+  websiteUrl: string;
+  eligibility: string;
+  process: string[];
+  waitTimes: string;
+  requiredDocs: string[];
+  phone: string;
+  email: string;
+  address: string;
+}
+
 /**
  * Get full service details by ID (for expanded view)
  */
-export async function getServiceDetails(serviceId: string): Promise<any> {
+export async function getServiceDetails(serviceId: string): Promise<ServiceDetail | null> {
   // Handle 988 crisis service specially
   if (isCrisisServiceId(serviceId)) {
     return getCrisisServiceFull();

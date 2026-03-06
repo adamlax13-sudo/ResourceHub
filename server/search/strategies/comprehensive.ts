@@ -133,12 +133,25 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
 }
 
 /**
+ * Sanitize user input before sending to LLM to mitigate prompt injection.
+ * Strips common injection prefixes and limits length.
+ */
+function sanitizeForLLM(query: string): string {
+  // Strip common prompt injection prefixes
+  const injectionPatterns = /^(ignore|forget|disregard|override|system|assistant)\b.{0,20}(instructions?|previous|above|prompt)/i;
+  let sanitized = query.replace(injectionPatterns, '').trim();
+  // Limit length to prevent token abuse
+  return sanitized.slice(0, 200);
+}
+
+/**
  * Use OpenAI to rewrite a natural language query into searchable terms
  */
 async function enhanceQueryWithOpenAI(rawQuery: string): Promise<EnhancedQuery | null> {
   try {
     const openai = getOpenAI();
     const startTime = Date.now();
+    const sanitizedQuery = sanitizeForLLM(rawQuery);
 
     const response = await openai.chat.completions.create({
       model: SEARCH_CONFIG.openai.fastModel,
@@ -182,7 +195,7 @@ Examples:
 "i need diapers and formula" → {"rewritten":"baby supplies parenting support","categories":["parenting","baby resources"],"keywords":["baby","infant","diapers","formula","parenting","parent support","baby supplies"]}`
       }, {
         role: 'user',
-        content: rawQuery
+        content: sanitizedQuery
       }],
     });
 
@@ -194,6 +207,13 @@ Examples:
       console.warn('[ComprehensiveSearch] OpenAI returned unexpected JSON structure');
       return null;
     }
+
+    // Validate rewritten field length to prevent abuse
+    if (typeof parsed.rewritten !== 'string' || parsed.rewritten.length > 300) {
+      console.warn('[ComprehensiveSearch] OpenAI rewritten field too long or invalid, ignoring');
+      return null;
+    }
+
     const result: EnhancedQuery = {
       rewritten: parsed.rewritten.slice(0, 200),
       categories: parsed.categories.filter((c: unknown) => typeof c === 'string').slice(0, 5).map((c: string) => c.slice(0, 100)),
