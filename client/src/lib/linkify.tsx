@@ -37,7 +37,7 @@ export function linkifyText(text: string): React.ReactNode {
       }
     } else if (match[2]) {
       parts.push(
-        <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
+        <a key={key++} href={`mailto:${encodeURIComponent(matched)}`} className="text-primary hover:underline">
           {matched}
         </a>
       );

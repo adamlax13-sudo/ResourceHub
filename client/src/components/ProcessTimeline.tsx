@@ -17,7 +17,7 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
             key={index}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.15 }}
+            transition={{ delay: Math.min(index * 0.15, 0.6) }}
             className="relative pl-12"
           >
             {/* Dot Indicator */}

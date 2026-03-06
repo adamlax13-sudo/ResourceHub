@@ -97,16 +97,17 @@ export default function Home() {
   const { t } = useTranslation();
   const { toast } = useToast();
 
+  const searchStateRef = useRef(searchState);
+  searchStateRef.current = searchState;
+
   // Store search results when data changes
-  // Note: We only depend on data and setSearchResults
-  // The locations are already tracked in the context from when search was initiated
   useEffect(() => {
     if (data && data.services) {
-      // Pass current locations from searchState at time of update
       setSearchResults(data.query, data.services);
-      updateSearchUrl(data.query, searchState.locations[0], searchState.filters);
+      const current = searchStateRef.current;
+      updateSearchUrl(data.query, current.locations[0], current.filters);
     }
-  }, [data, setSearchResults]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [data, setSearchResults]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
