@@ -300,7 +300,8 @@ export function IntakeWizard({ isOpen, onClose, onComplete }: IntakeWizardProps)
             <button
               type="button"
               onClick={handleComplete}
-              className="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all"
+              disabled={!selectedCategory}
+              className="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
               Find Resources
             </button>

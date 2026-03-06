@@ -48,8 +48,14 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       const validLocations = isStringArray(parsedLocations) ? parsedLocations : [];
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (typeof parsed === 'object' && parsed !== null && (typeof parsed.query === 'string' || parsed.query === undefined)) {
-          return { ...parsed, locations: validLocations };
+        if (typeof parsed === 'object' && parsed !== null) {
+          return {
+            query: typeof parsed.query === 'string' ? parsed.query.slice(0, 500) : '',
+            services: Array.isArray(parsed.services) ? parsed.services : [],
+            hasSearched: typeof parsed.hasSearched === 'boolean' ? parsed.hasSearched : false,
+            filters: typeof parsed.filters === 'object' && parsed.filters !== null && !Array.isArray(parsed.filters) ? parsed.filters : {},
+            locations: validLocations,
+          };
         }
       }
       return { ...defaultState, locations: validLocations };
