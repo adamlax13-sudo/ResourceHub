@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import { timingSafeEqual, createHash } from 'crypto';
 
 /**
  * Admin authentication middleware
@@ -45,18 +46,13 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
- * Constant-time string comparison to prevent timing attacks
+ * Constant-time string comparison that doesn't leak string length.
+ * Hashes both values to fixed length before comparing.
  */
 function constantTimeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
+  const hashA = createHash('sha256').update(a).digest();
+  const hashB = createHash('sha256').update(b).digest();
+  return timingSafeEqual(hashA, hashB);
 }
 
 /**

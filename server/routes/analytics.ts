@@ -25,7 +25,7 @@ export function registerAnalyticsRoutes(app: Express): void {
       const sessionIdHeader = req.headers['x-session-id'];
       const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
       const userAgentHeader = req.headers['user-agent'];
-      const userAgent = Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader;
+      const userAgent = (Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader)?.slice(0, 500);
 
       // Track the click asynchronously (don't block response)
       storage.trackSearchClick({

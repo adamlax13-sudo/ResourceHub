@@ -20,6 +20,8 @@ export const pool = new Pool({
   idleTimeoutMillis: 30000,     // Close idle connections after 30s
   connectionTimeoutMillis: 5000, // Fail fast on connection issues (5s)
   // SSL configuration — required for Render.com hosted PostgreSQL
+  // Render.com free tier does not provide a CA certificate for client verification.
+  // rejectUnauthorized:false is an accepted risk for this deployment target.
   ssl: process.env.DATABASE_URL?.includes('localhost')
     ? false
     : { rejectUnauthorized: false },

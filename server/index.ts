@@ -12,7 +12,6 @@ const _currentDir: string = typeof __dirname !== 'undefined' ? __dirname : impor
 import { registerHealthRoutes } from "./routes/health";
 import { apiLimiter } from "./middleware/rateLimiter";
 import { pool } from "./db";
-import { csrfProtection, csrfTokenEndpoint } from "./middleware/csrf";
 
 const app = express();
 
@@ -83,11 +82,8 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// CSRF protection for state-changing requests
-app.use('/api', csrfProtection(allowedOrigins));
-
-// CSRF token endpoint for clients to fetch tokens
-app.get('/api/csrf-token', csrfTokenEndpoint);
+// CSRF defense: CORS origin allowlist (lines 60-66) rejects cross-origin requests.
+// See middleware/csrf.ts for strictCsrfProtection if token-based CSRF is needed later.
 
 // Apply global rate limiting to all routes (except health checks)
 app.use((req, res, next) => {
