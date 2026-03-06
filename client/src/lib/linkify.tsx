@@ -26,10 +26,11 @@ export function linkifyText(text: string): React.ReactNode {
 
     const matched = match[0];
     if (match[1]) {
-      if (isSafeUrl(matched)) {
+      const cleanUrl = matched.replace(/[.)>]+$/, '');
+      if (isSafeUrl(cleanUrl)) {
         parts.push(
-          <a key={key++} href={matched} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-            {matched}
+          <a key={key++} href={cleanUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+            {cleanUrl}
           </a>
         );
       } else {
@@ -37,7 +38,7 @@ export function linkifyText(text: string): React.ReactNode {
       }
     } else if (match[2]) {
       parts.push(
-        <a key={key++} href={`mailto:${encodeURIComponent(matched)}`} className="text-primary hover:underline">
+        <a key={key++} href={`mailto:${matched}`} className="text-primary hover:underline">
           {matched}
         </a>
       );
@@ -49,11 +50,12 @@ export function linkifyText(text: string): React.ReactNode {
         </a>
       );
     } else if (match[4]) {
-      const url = matched.startsWith('http') ? matched : `https://${matched}`;
+      const cleanDomain = matched.replace(/[.)>]+$/, '');
+      const url = cleanDomain.startsWith('http') ? cleanDomain : `https://${cleanDomain}`;
       if (isSafeUrl(url)) {
         parts.push(
           <a key={key++} href={url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-            {matched}
+            {cleanDomain}
           </a>
         );
       } else {

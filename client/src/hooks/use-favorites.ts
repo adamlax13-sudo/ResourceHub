@@ -18,6 +18,15 @@ interface FavoriteService {
   addedAt: number;
 }
 
+function isFavoriteService(v: unknown): v is FavoriteService {
+  return (
+    typeof v === 'object' && v !== null &&
+    typeof (v as any).id === 'string' &&
+    typeof (v as any).name === 'string' &&
+    typeof (v as any).category === 'string'
+  );
+}
+
 /**
  * Custom hook for managing favorite services using localStorage
  */
@@ -32,7 +41,7 @@ export function useFavorites() {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          setFavorites(parsed as FavoriteService[]);
+          setFavorites(parsed.filter(isFavoriteService));
         }
       }
     } catch (err) {

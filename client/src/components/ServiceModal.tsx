@@ -148,7 +148,11 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
       })
       .then(data => {
         if (!cancelled) {
-          setService(data);
+          setService({
+            ...data,
+            process: Array.isArray(data.process) ? data.process : [],
+            requiredDocs: Array.isArray(data.requiredDocs) ? data.requiredDocs : [],
+          });
           setIsLoading(false);
         }
       })

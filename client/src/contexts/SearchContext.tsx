@@ -48,7 +48,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       const validLocations = isStringArray(parsedLocations) ? parsedLocations : [];
       if (stored) {
         const parsed = JSON.parse(stored);
-        return { ...parsed, locations: validLocations };
+        if (typeof parsed === 'object' && parsed !== null && (typeof parsed.query === 'string' || parsed.query === undefined)) {
+          return { ...parsed, locations: validLocations };
+        }
       }
       return { ...defaultState, locations: validLocations };
     } catch (e) {
@@ -89,13 +91,26 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     const VALID_FORMATS = ['in_person', 'virtual', 'both'];
     const format = params.get('format');
     if (format && VALID_FORMATS.includes(format)) restoredFilters.serviceFormat = format;
-    const lang = params.get('lang'); if (lang) restoredFilters.languagesSupported = lang.split(',');
+    const VALID_LANGS = new Set(['en', 'fr', 'es', 'ar', 'zh', 'hi', 'ko', 'ja', 'de', 'pt', 'tl', 'pa', 'ur', 'vi', 'so', 'ti', 'am']);
+    const lang = params.get('lang');
+    if (lang) {
+      const validLangs = lang.split(',').filter(l => VALID_LANGS.has(l.trim().toLowerCase()));
+      if (validLangs.length > 0) restoredFilters.languagesSupported = validLangs;
+    }
 
+    const VALID_LOCATIONS = new Set([
+      'calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat',
+      'grande prairie', 'fort mcmurray', 'airdrie', 'spruce grove',
+      'leduc', 'okotoks', 'cochrane', 'camrose', 'brooks',
+      'lloydminster', 'wetaskiwin', 'canmore', 'banff', 'drumheller',
+      'st. albert', 'sherwood park', 'chestermere',
+    ]);
     const loc = params.get('loc');
+    const validLoc = loc && VALID_LOCATIONS.has(loc.toLowerCase()) ? loc : null;
     setSearchState(prev => ({
       ...prev,
       query: q,
-      locations: loc ? [loc] : prev.locations,
+      locations: validLoc ? [validLoc] : prev.locations,
       filters: restoredFilters,
       services: [],        // clear stale results — URL is the source of truth
       hasSearched: false,  // Home.tsx will trigger a fresh search from URL params
