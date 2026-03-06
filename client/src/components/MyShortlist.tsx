@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, ExternalLink, Trash2 } from "lucide-react";
 import { useFavoritesContext } from "@/hooks/use-favorites";
@@ -310,6 +310,15 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
   const { toast } = useToast();
   const panelRef = useFocusTrap(isOpen, onClose);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (confirmingClear) {
+      confirmTimerRef.current = setTimeout(() => setConfirmingClear(false), 3000);
+    }
+    return () => {
+      if (confirmTimerRef.current) clearTimeout(confirmTimerRef.current);
+    };
+  }, [confirmingClear]);
   const [includeSteps, setIncludeSteps] = useState(true);
   const [includeDocs, setIncludeDocs] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -536,7 +545,6 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
                       setConfirmingClear(true);
                     }
                   }}
-                  onBlur={() => setConfirmingClear(false)}
                   className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
                     confirmingClear
                       ? "border-destructive bg-destructive/10 text-destructive"

@@ -115,7 +115,7 @@ export default function Home() {
       hasTriggeredUrlSearch.current = true;
       handleSearchWithFilters(searchState.query, searchState.locations, searchState.filters);
     }
-  }, [searchState.query, searchState.hasSearched, isPending]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchState.query, searchState.hasSearched, isPending, handleSearchWithFilters, searchState.locations, searchState.filters]);
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
