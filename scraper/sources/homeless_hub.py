@@ -145,6 +145,12 @@ class HomelessHubSource(Source):
             logger.warning(f"[HomelessHub] Unexpected Algolia app ID format: {algolia_app_id!r}. Skipping.")
             return None
 
+        # Validate Algolia API key format (search-only keys are 32-char hex strings)
+        ALGOLIA_KEY_PATTERN = _re.compile(r'^[a-f0-9]{20,40}$', _re.IGNORECASE)
+        if not ALGOLIA_KEY_PATTERN.match(algolia_api_key):
+            logger.warning("[HomelessHub] Unexpected Algolia API key format, skipping Algolia search")
+            return None
+
         try:
             url = f"https://{algolia_app_id}-dsn.algolia.net/1/indexes/posts_resources/query"
             headers = {

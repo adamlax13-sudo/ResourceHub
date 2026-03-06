@@ -21,6 +21,18 @@ from claude_client import init_claude
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
+def _safe_json_loads(value):
+    """Safely parse a JSON field that may be a list, string, or None."""
+    if isinstance(value, list):
+        return value
+    if value:
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            return []
+    return []
+
+
 # Generic step patterns to detect boilerplate
 GENERIC_PATTERNS = [
     r"call\s+(to\s+)?(inquire|for\s+(more\s+)?info)",
@@ -86,7 +98,7 @@ def get_similar_services(session, category: str, exclude_id: str, limit: int = 3
             "name": r[0],
             "category": r[1],
             "description": r[2],
-            "process_steps": r[3] if isinstance(r[3], list) else json.loads(r[3]) if r[3] else []
+            "process_steps": _safe_json_loads(r[3])
         }
         for r in result
     ]
@@ -132,7 +144,7 @@ def main():
             "description": r[3],
             "eligibility": r[4],
             "location": r[5],
-            "process_steps": r[6] if isinstance(r[6], list) else json.loads(r[6]) if r[6] else []
+            "process_steps": _safe_json_loads(r[6])
         }
         for r in result
     ]
