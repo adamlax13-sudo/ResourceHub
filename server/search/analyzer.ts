@@ -51,7 +51,8 @@ export function analyzeQuery(
   const normalized = normalizeForCache(phoneticCorrected);
 
   // Extract negative terms (words user wants to exclude)
-  const negativeTerms = extractNegativeTerms(sanitized);
+  // Run on corrected query for consistency with extractKeywords/extractLocationContext
+  const negativeTerms = extractNegativeTerms(corrected);
 
   // Extract keywords (non-stop words, non-location terms)
   const rawKeywords = extractKeywords(corrected);
@@ -487,6 +488,8 @@ function extractNegativeTerms(query: string): string[] {
   const freeSafelist = new Set([
     'barrier', 'gluten', 'interest', 'toll', 'cost', 'rent', 'debt',
     'drug', 'smoke', 'alcohol', 'judgment', 'stigma', 'fee', 'charge',
+    'dairy', 'nut', 'soy', 'wheat', 'preservative', 'additive',
+    'caffeine', 'sugar', 'fat', 'calorie', 'lactose',
   ]);
   const freePattern = /\b(\w+)[- ]free\b/gi;
   let match;
