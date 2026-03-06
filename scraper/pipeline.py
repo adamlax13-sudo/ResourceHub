@@ -214,6 +214,7 @@ class Pipeline:
                 # Update service fields from enrichment
                 if result.process_steps:
                     svc.process_steps = result.process_steps
+                    svc.process_steps_inferred = result.enrichment_source == 'inferred'
                 if result.required_docs:
                     svc.required_docs = result.required_docs
                 if result.eligibility:
@@ -270,7 +271,8 @@ class Pipeline:
         try:
             from scraper import init_openai, HAS_OPENAI
             client = init_openai() if HAS_OPENAI else None
-        except Exception:
+        except Exception as e:
+            self.log.warning(f"Could not initialize OpenAI client for embeddings: {e}")
             client = None
         phase_generate_embeddings(self.session, client, self.log)
 

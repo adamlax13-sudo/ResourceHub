@@ -35,6 +35,26 @@ from scraper import SessionLocal, Service, should_enrich_field
 from scoring.confidence import calculate_confidence_score
 from claude_client import init_claude
 
+
+def _safe_json_loads(value):
+    """Safely parse a JSON field that may be a list, string, or None."""
+    if isinstance(value, list):
+        return value
+    if value:
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            return []
+    return []
+
+
+def _is_safe_url(url: str) -> bool:
+    """Validate URL uses http(s) scheme and has a valid host."""
+    if not url:
+        return False
+    parsed = urlparse(url)
+    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
@@ -254,6 +274,9 @@ class DuckDuckGoSearcher:
 
 def fetch_page_content(url: str, timeout: int = 15) -> Optional[str]:
     """Fetch a URL and return cleaned text content (up to 5000 chars)."""
+    if not _is_safe_url(url):
+        logger.warning(f"Refusing to fetch unsafe URL: {url!r}")
+        return None
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -388,11 +411,7 @@ def get_similar_services(
             "name": r[0],
             "category": r[1],
             "description": r[2],
-            "process_steps": r[3]
-            if isinstance(r[3], list)
-            else json.loads(r[3])
-            if r[3]
-            else [],
+            "process_steps": _safe_json_loads(r[3]),
         }
         for r in result
     ]
@@ -406,6 +425,10 @@ def get_similar_services(
 def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]:
     """Tier 1: Deep crawl the service website and extract all fields with Claude."""
     if not service.get("website_url"):
+        return None
+
+    if not _is_safe_url(service["website_url"]):
+        logger.warning(f"Refusing to crawl unsafe URL: {service['website_url']!r}")
         return None
 
     crawl_result = crawler.crawl_website(service["website_url"])
@@ -436,33 +459,7 @@ def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]
     if not extraction:
         return None
 
-    # Succeed if any useful field was extracted
-    has_useful_data = (
-        extraction.get("process_steps")
-        or extraction.get("required_docs")
-        or extraction.get("eligibility")
-        or extraction.get("phone")
-        or extraction.get("email")
-        or extraction.get("hours_of_operation")
-    )
-    if not has_useful_data:
-        return None
-
-    return {
-        "process_steps": extraction.get("process_steps"),
-        "required_docs": extraction.get("required_docs"),
-        "eligibility": extraction.get("eligibility"),
-        "phone": extraction.get("phone"),
-        "email": extraction.get("email"),
-        "hours_of_operation": extraction.get("hours_of_operation"),
-        "address": extraction.get("address"),
-        "description": extraction.get("description"),
-        "source_urls": source_urls,
-        "process_source": extraction.get("process_source"),
-        "eligibility_source": extraction.get("eligibility_source"),
-        "docs_source": extraction.get("docs_source"),
-        "hours_source": extraction.get("hours_source"),
-    }
+    return _build_enrichment_from_extraction(extraction, source_urls)
 
 
 def _build_enrichment_from_extraction(extraction: Dict, source_urls: List[str]) -> Optional[Dict]:
@@ -551,6 +548,9 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
             source_urls = []
             for sr in search_results[:3]:
                 url = sr["url"]
+                if not _is_safe_url(url):
+                    logger.debug(f"Skipping unsafe search result URL: {url!r}")
+                    continue
                 content = fetch_page_content(url)
                 if content and len(content) > 200:
                     combined_content += f"\n\n=== FROM {url} ===\n{content[:4000]}"

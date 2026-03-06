@@ -21,6 +21,7 @@ import csv
 import io
 import logging
 import os
+import re
 import time
 from typing import Optional
 
@@ -345,7 +346,11 @@ class CRACharitiesSource(Source):
             desc_parts.append(f"CRA Category: {category_code}")
         description = ". ".join(desc_parts) if desc_parts else None
 
-        source_url = CRA_DETAIL_URL.format(bn=bn[:9]) if bn else self.url
+        # Validate BN is digits only before URL interpolation
+        if bn and re.match(r'^\d{9}', bn):
+            source_url = CRA_DETAIL_URL.format(bn=bn[:9])
+        else:
+            source_url = self.url
 
         return RawService(
             name=legal_name,

@@ -97,7 +97,7 @@ def phase_normalize_contacts(session, log, dry_run: bool = False):
 
     phone_regex = re.compile(r'(?:\+1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}', re.I)
     email_regex = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', re.I)
-    url_regex = re.compile(r'(?:https?://)?(?:www\.)?[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:/[^\s,]*)?', re.I)
+    url_regex = re.compile(r'(?:https?://|www\.)[a-zA-Z0-9][-a-zA-Z0-9]*(?:\.[a-zA-Z]{2,})+(?:/[^\s,]*)?', re.I)
 
     all_services = session.query(Service).filter(
         or_(
