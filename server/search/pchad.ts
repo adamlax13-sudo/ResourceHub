@@ -39,7 +39,7 @@ export function pinPchadService(services: LiteService[]): LiteService[] {
   );
 
   // Prepend the pinned PCHAD service
-  filtered.unshift(config.pinnedServiceLite as LiteService);
+  filtered.unshift({ ...config.pinnedServiceLite } as LiteService);
 
   // Update the original array in place
   services.length = 0;

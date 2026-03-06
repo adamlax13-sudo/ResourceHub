@@ -194,9 +194,9 @@ Examples:
       return null;
     }
     const result: EnhancedQuery = {
-      rewritten: parsed.rewritten,
-      categories: parsed.categories.filter((c: unknown) => typeof c === 'string'),
-      keywords: parsed.keywords.filter((k: unknown) => typeof k === 'string'),
+      rewritten: parsed.rewritten.slice(0, 200),
+      categories: parsed.categories.filter((c: unknown) => typeof c === 'string').slice(0, 5).map((c: string) => c.slice(0, 100)),
+      keywords: parsed.keywords.filter((k: unknown) => typeof k === 'string').slice(0, 10).map((k: string) => k.slice(0, 100)),
     };
     console.log(`[ComprehensiveSearch] OpenAI query enhancement in ${Date.now() - startTime}ms: "${rawQuery}" → "${result.rewritten}"`);
     return result;
@@ -352,7 +352,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       return {
         services: finalServices,
         servicesWithDebug: input.debug ? finalServices as LiteServiceWithDebug[] : undefined,
-        summary: buildSummary(finalServices.length, analysis.raw, analysis.location.specified),
+        summary: buildSummary(finalServices.length, analysis.normalized, analysis.location.specified),
         searchType: enrichments.size > 0 ? 'sql+enrichment' : 'sql',
         totalResults: finalServices.length,
       };
@@ -497,7 +497,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     return {
       services,
       servicesWithDebug: input.debug ? services as LiteServiceWithDebug[] : undefined,
-      summary: buildSummary(services.length, analysis.raw, analysis.location.specified),
+      summary: buildSummary(services.length, analysis.normalized, analysis.location.specified),
       searchType,
       totalResults: services.length,
     };

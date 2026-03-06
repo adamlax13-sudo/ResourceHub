@@ -77,8 +77,10 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
 
       servicesCacheData = { hash, activeIds, lastFetched: Date.now() };
       return servicesCacheData;
-    } catch {
-      return servicesCacheData || { hash: 'default', activeIds: new Set(), lastFetched: Date.now() };
+    } catch (err) {
+      if (servicesCacheData) return servicesCacheData;
+      console.error('[SearchOrchestrator] Failed to load services cache and no prior cache available:', err);
+      throw new Error('Services cache unavailable');
     } finally {
       servicesCachePromise = null;
     }
@@ -296,7 +298,8 @@ function formatResponse(
   const paginatedServices = services.slice(startIndex, startIndex + input.pageSize);
 
   // When debug mode is enabled, return services with score explanations
-  const responseServices = input.debug && servicesWithDebug
+  const isDebugEnabled = process.env.NODE_ENV !== 'production' && input.debug;
+  const responseServices = isDebugEnabled && servicesWithDebug
     ? servicesWithDebug.slice(startIndex, startIndex + input.pageSize)
     : paginatedServices;
 

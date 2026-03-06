@@ -65,7 +65,7 @@ export function pinAlAnonService(services: LiteService[]): LiteService[] {
   );
 
   // Prepend the pinned Al-Anon service
-  filtered.unshift(ALANON_SERVICE);
+  filtered.unshift({ ...ALANON_SERVICE });
 
   // Update the original array in place
   services.length = 0;

@@ -501,7 +501,7 @@ function extractNegativeTerms(query: string): string[] {
     console.log(`[QueryAnalyzer] Negative terms detected: ${negatives.join(', ')}`);
   }
 
-  return negatives;
+  return negatives.slice(0, 10);
 }
 
 // Re-export types for convenience
