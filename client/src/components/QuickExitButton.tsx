@@ -10,6 +10,14 @@ export function QuickExitButton({ className = '' }: QuickExitButtonProps) {
   const { t } = useTranslation();
 
   const handleExit = () => {
+    try {
+      const depth = window.history.length;
+      for (let i = 0; i < depth; i++) {
+        window.history.pushState(null, '', 'https://www.google.com');
+      }
+    } catch {
+      // pushState may fail in rare edge cases — still navigate away
+    }
     window.location.replace('https://www.google.com');
   };
 
