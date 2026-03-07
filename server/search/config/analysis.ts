@@ -460,6 +460,9 @@ export const SEARCH_CONFIG = {
       /(?:family|loved one).*(?:'s|has).*(?:addiction|drinking|drug).*(?:problem|issue)/i,
       /\b(?:al-?anon|nar-?anon|family.*addiction.*support|codependent)\b/i,
       /(?:help|support).*(?:for|as).*(?:family|spouse|parent|child).*(?:of|with).*(?:addict|alcoholic)/i,
+      /(?:my|our).*(?:kid|child|son|daughter|teen|teenager).*(?:drugs?|using|smoking|snorting|out of control)/i,
+      /(?:worried|concerned|scared).*(?:about|for).*(?:my|our).*(?:spouse|husband|wife|partner|child|son|daughter|teen).*(?:drinking|using|drug|addiction|substance)/i,
+      /(?:how|what).*(?:can|do|should).*(?:I|we).*(?:do|help).*(?:my|our).*(?:spouse|husband|wife|partner|child|son|daughter).*(?:addict|drug|alcohol|substance|drinking)/i,
     ],
     // Financial support and debt help
     financial_support: [
@@ -480,11 +483,12 @@ export const SEARCH_CONFIG = {
     ],
     // LGBTQ+ services
     lgbtq_services: [
-      /\b(?:lgbtq|lgbt|lgbtq\+|2slgbtq|queer).*(?:services?|support|help|resources?)/i,
+      /\b(?:lgbtq|lgbt|lgbtq\+|2slgbtq|queer).*(?:services?|support|help|resources?|counsell?ing|therapy)/i,
       /\b(?:trans|transgender).*(?:healthcare|support|services?|help)/i,
       /(?:coming out|gay|lesbian|bisexual|non-?binary).*(?:support|help|counsell?ing)/i,
       /\b(?:pride|gender affirming|hormone therapy|gender identity)\b/i,
       /\b(?:lgbtq|lgbt|queer|trans).*(?:youth|teen|senior|elder)\b/i,
+      /\b(?:lgbtq|lgbt|2slgbtq|queer|gay|lesbian|bisexual|trans|transgender|non-?binary|gender identity).*(?:counsell?ing|therapy|mental health)/i,
     ],
     // Indigenous services (First Nations, Metis, Inuit)
     indigenous_services: [
