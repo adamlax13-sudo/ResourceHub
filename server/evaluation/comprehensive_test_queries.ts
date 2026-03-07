@@ -657,6 +657,124 @@ export const COMPREHENSIVE_QUERIES: TestQuery[] = [
     description: "LGBTQ senior services",
     expectedPatterns: ["LGBTQ", "senior", "housing"],
   },
+
+  // ===========================================
+  // TYPO & MISSPELLING QUERIES
+  // ===========================================
+  {
+    query: "dental services",
+    intent: "general",
+    description: "Must NOT be corrected to 'mental' — valid word",
+    mustExclude: ["mental health"],
+  },
+  {
+    query: "counslling near me",
+    intent: "mental_health",
+    description: "Typo: should correct to counselling",
+    expectedPatterns: ["counselling", "therapy", "mental health"],
+  },
+  {
+    query: "adiction help",
+    intent: "substance_abuse",
+    description: "Typo: should correct to addiction",
+    expectedPatterns: ["addiction", "recovery", "treatment"],
+  },
+  {
+    query: "fud bank",
+    intent: "food_insecurity",
+    description: "Phonetic typo: should correct to food bank",
+    expectedPatterns: ["food", "bank", "hamper"],
+  },
+  {
+    query: "sheltr tonight",
+    intent: "housing_urgent",
+    description: "Phonetic typo: should correct to shelter",
+    expectedPatterns: ["shelter", "emergency", "housing"],
+  },
+
+  // ===========================================
+  // NATURAL LANGUAGE / COLLOQUIAL QUERIES
+  // ===========================================
+  {
+    query: "I just got out of jail and need somewhere to stay",
+    intent: "housing_urgent",
+    description: "Reentry housing need",
+    expectedPatterns: ["shelter", "housing", "transitional"],
+  },
+  {
+    query: "where can I get free food today",
+    intent: "food_insecurity",
+    description: "Immediate food need",
+    expectedPatterns: ["food", "meal", "hamper"],
+  },
+  {
+    query: "my kid is out of control on drugs",
+    intent: "family_addiction_support",
+    description: "Parent seeking help for child substance abuse",
+    expectedPatterns: ["PCHAD", "family", "parent", "addiction"],
+  },
+  {
+    query: "I think I might be autistic",
+    intent: "disability_support",
+    description: "Self-identification autism query",
+    expectedPatterns: ["autism", "assessment", "support"],
+  },
+  {
+    query: "how do I apply for disability benefits",
+    intent: "disability_support",
+    description: "Benefits navigation query",
+    expectedPatterns: ["AISH", "disability", "benefits"],
+  },
+
+  // ===========================================
+  // MULTI-INTENT / COMPLEX QUERIES
+  // ===========================================
+  {
+    query: "housing for women fleeing abuse",
+    intent: "domestic_violence",
+    description: "DV + housing + gender intersection",
+    expectedPatterns: ["shelter", "women", "domestic violence", "abuse"],
+  },
+  {
+    query: "senior with dementia needs meals delivered",
+    intent: "senior_services",
+    description: "Senior + food + dementia intersection",
+    expectedPatterns: ["senior", "meals", "delivery", "dementia"],
+  },
+  {
+    query: "pregnant teenager needs housing",
+    intent: "housing_urgent",
+    description: "Youth + pregnancy + housing intersection",
+    expectedPatterns: ["housing", "youth", "pregnancy", "support"],
+  },
+
+  // ===========================================
+  // SPECIFIC SERVICE NAME SEARCHES
+  // ===========================================
+  {
+    query: "SMART Recovery",
+    intent: "substance_abuse",
+    description: "Specific service name lookup",
+    mustInclude: ["SMART Recovery"],
+  },
+  {
+    query: "211",
+    intent: "general",
+    description: "211 information line lookup",
+    expectedPatterns: ["211", "information"],
+  },
+  {
+    query: "Al-Anon",
+    intent: "family_addiction_support",
+    description: "Specific family support service lookup",
+    expectedPatterns: ["Al-Anon"],
+  },
+  {
+    query: "Kids Help Phone",
+    intent: "youth_services",
+    description: "Specific youth crisis service lookup",
+    expectedPatterns: ["Kids Help Phone"],
+  },
 ];
 
 // Category distribution check
