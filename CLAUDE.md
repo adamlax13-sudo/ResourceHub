@@ -59,6 +59,11 @@ pytest tests/ -v                     # Run scraper tests
 | `scraper/upserter.py` | Service upsert logic for discovery phase |
 | `scraper/finalize.py` | Finalize phase: contacts, tags, embeddings, dedup, views |
 | `scraper/pipeline.py` | 3-phase pipeline orchestrator |
+| `server/helpers/keywords.ts` | Typo correction, keyword expansion, stemming |
+| `server/evaluation/deterministic_evaluator.ts` | API-free search quality scoring |
+| `server/evaluation/comprehensive_test_queries.ts` | 96 test queries across all intents |
+| `server/evaluation/run_baseline_api.mjs` | Run baseline eval via production API |
+| `server/evaluation/diagnose_query.ts` | Debug single query through pipeline |
 
 ## Architecture Notes
 

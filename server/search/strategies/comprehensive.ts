@@ -303,7 +303,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // ============= TIER 2: FAST SQL PATH (<50ms) =============
     // For simple, high-confidence queries, SQL alone may be sufficient
     const sqlOnly = await storage.fastSearch(
-      analysis.raw,
+      analysis.corrected,
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults
@@ -356,10 +356,10 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
       // Apply name-match boosting first
       const aliasMap = await getAliasLookup();
-      const nameMatched = boostByNameMatch(services, analysis.raw, aliasMap, boostOptions);
+      const nameMatched = boostByNameMatch(services, analysis.corrected, aliasMap, boostOptions);
 
       // Apply minimal intent boosting and return early
-      const boosted = boostByIntent(nameMatched, analysis.intent, analysis.raw, analysis, boostOptions);
+      const boosted = boostByIntent(nameMatched, analysis.intent, analysis.corrected, analysis, boostOptions);
       let final = analysis.negativeTerms?.length
         ? applyNegativePenalty(boosted, analysis.negativeTerms, boostOptions)
         : boosted;
@@ -371,7 +371,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
         final = applyCategoryDiversity(final);
       }
 
-      const finalServices = applyOrganizationDiversity(final, analysis.raw);
+      const finalServices = applyOrganizationDiversity(final, analysis.corrected);
       return {
         services: finalServices,
         servicesWithDebug: input.debug ? finalServices as LiteServiceWithDebug[] : undefined,
@@ -389,19 +389,19 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // This saves 200-500ms compared to waiting for OpenAI before searching
 
     const sqlPromise = storage.fastSearch(
-      analysis.raw,  // Use raw query for initial search
+      analysis.corrected,  // Use typo-corrected query for search
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults
     );
 
     const semanticPromise = hasEmbeddings
-      ? this.runSemanticSearch(analysis.raw, analysis.location.specified)
+      ? this.runSemanticSearch(analysis.corrected, analysis.location.specified)
       : Promise.resolve([]);
 
     // OpenAI enhancement runs in parallel - no longer blocks initial search!
     const enhancePromise = (isDomainIntent && config.useOpenAI)
-      ? enhanceQueryWithOpenAI(analysis.raw)
+      ? enhanceQueryWithOpenAI(analysis.corrected)
       : Promise.resolve(null);
 
     // Wait for all three to complete
@@ -482,7 +482,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     // Apply name-match boosting (before intent boosting so it's not diluted)
     const aliasMap = await getAliasLookup();
-    services = boostByNameMatch(services, analysis.raw, aliasMap, boostOptions);
+    services = boostByNameMatch(services, analysis.corrected, aliasMap, boostOptions);
 
     // Apply intent-based boosting for domain intents or when any preference is detected
     const hasGenderPreference = detectGenderPreference(analysis.raw) !== null;
@@ -493,7 +493,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const hasAnyPreference = hasGenderPreference || hasAgeGroup || hasUrgency || hasFamilySituation || hasCommunityPref;
 
     if (isDomainIntent || hasAnyPreference) {
-      services = boostByIntent(services, analysis.intent, analysis.raw, analysis, boostOptions);
+      services = boostByIntent(services, analysis.intent, analysis.corrected, analysis, boostOptions);
     }
 
     // Apply negative keyword penalty (e.g., "shelter not religious")
@@ -507,7 +507,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     // Apply organization diversity to prevent monopoly in top results
     // Pass query so we can skip limiting when user searches for specific org
-    services = applyOrganizationDiversity(services, analysis.raw);
+    services = applyOrganizationDiversity(services, analysis.corrected);
 
     // Check if we need additional OpenAI enhancement (very few results)
     if (services.length < config.minResultsBeforeOpenAI &&

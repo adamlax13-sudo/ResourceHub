@@ -69,8 +69,10 @@ export interface SearchInput {
 // === QUERY ANALYSIS ===
 
 export interface QueryAnalysis {
-  /** Original query string */
+  /** Original query string (PII scrubbed, but NOT typo-corrected) */
   raw: string;
+  /** Typo-corrected query (use this for search operations) */
+  corrected: string;
   /** Normalized query (lowercase, trimmed, typos corrected) */
   normalized: string;
   /** Extracted keywords (non-location) */

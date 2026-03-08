@@ -100,6 +100,7 @@ export function analyzeQuery(
 
   return {
     raw: sanitized,
+    corrected: phoneticCorrected,
     normalized,
     keywords,
     intent,
