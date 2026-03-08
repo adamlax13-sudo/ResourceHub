@@ -37,7 +37,7 @@ export function registerSearchRoutes(app: Express): void {
         query: input.query,
         location: input.location,
         page: input.page ?? 1,
-        pageSize: input.pageSize ?? 20,
+        pageSize: input.pageSize ?? 50,
         debug: input.debug,
         emergency: input.emergency,
         filters: hasFilters ? activeFilters : undefined,
