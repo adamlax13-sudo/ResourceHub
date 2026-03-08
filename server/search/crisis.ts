@@ -122,11 +122,16 @@ export function filterToCrisisOnly(services: LiteService[]): LiteService[] {
   const isPinned988 = pinned.id?.includes('988');
   const rest = isPinned988 ? services.slice(1) : services;
 
-  // ONLY keep "Crisis Lines" — these are all phone/text/chat hotlines
+  // Keep "Crisis Lines" category + any service with hotline-indicating name
+  // (safety net for miscategorized crisis lines like "Distress Line (CMHA)")
   const crisisLines: LiteService[] = [];
   for (const svc of rest) {
     const cat = (svc.category || '').toLowerCase();
-    if (cat.includes('crisis lines')) {
+    const name = (svc.name || '').toLowerCase();
+    if (
+      cat.includes('crisis lines') ||
+      (cat.includes('crisis') && /\b(line|helpline|hotline|distress)\b/.test(name))
+    ) {
       crisisLines.push(svc);
     }
   }
