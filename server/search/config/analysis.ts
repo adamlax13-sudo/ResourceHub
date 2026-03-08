@@ -331,10 +331,13 @@ export const SEARCH_CONFIG = {
       /\b(?:habitat for humanity|housing.*waitlist|housing.*wait list)\b/i,
     ],
     substance_abuse: [
-      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict|gambling|betting)/i,
-      /(?:drinking|alcohol|drug|addict|gambling|betting).*(?:problem|issue|help|recovery)/i,
+      /(?:can'?t|cannot|struggling|help|stop|quit|trouble).*(?:drinking|alcohol|drug|using|addiction|addict|gambling|betting|coke|cocaine|crack|meth|crystal|heroin|fentanyl|pills?|weed|smoke|smoking)/i,
+      /(?:drinking|alcohol|drug|addict|gambling|betting|coke|cocaine|crack|meth|heroin|fentanyl).*(?:problem|issue|help|recovery)/i,
       /(?:relapse|withdrawal|detox|rehab|sober|sobriety)/i,
       /(?:addicted|hooked).*(?:to|on)/i,
+      // Street names and slang in distress context
+      /(?:can'?t|cannot|stop|quit|struggling).*\b(coke|blow|crack|meth|crystal|speed|heroin|smack|dope|fenny|percs?|oxy)\b/i,
+      /\b(coke|cocaine|crack|meth|crystal|fentanyl|heroin|opioid).*(?:addict|problem|help|recovery|quit|clean)\b/i,
       // Recovery-specific patterns (for queries like "recovery support no 12 step")
       /\b(?:recovery|recovering).*(?:support|program|group|meeting|help)/i,
       /\b(?:12[\s-]?step|twelve[\s-]?step|AA\b|NA\b|CA\b|SMART Recovery)\b/i,

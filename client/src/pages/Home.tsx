@@ -100,6 +100,17 @@ export default function Home() {
   const searchStateRef = useRef(searchState);
   searchStateRef.current = searchState;
 
+  // Fire-and-forget click tracking to /api/track-click
+  const trackClick = useCallback((serviceId: string, position: number) => {
+    const query = searchStateRef.current.query;
+    if (!query) return;
+    fetch("/api/track-click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ serviceId, query, position: position + 1 }),
+    }).catch(() => {}); // silent — never block UI
+  }, []);
+
   useEffect(() => {
     if (error) console.error('Search error:', error);
   }, [error]);
@@ -344,7 +355,7 @@ export default function Home() {
                     key={service.id}
                     service={service}
                     index={index}
-                    onClick={() => setSelectedServiceId(service.id)}
+                    onClick={() => { trackClick(String(service.id), index); setSelectedServiceId(service.id); }}
                     isFavorite={isFavorite(service.id)}
                     onToggleFavorite={toggleFavorite}
                   />

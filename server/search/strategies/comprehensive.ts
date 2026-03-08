@@ -43,6 +43,7 @@ import {
   applyNegativePenalty,
   applyPreferenceBoosts,
   applyFilterMatchBoosts,
+  llmRerank,
   type BoostOptions,
 } from './scoring';
 
@@ -493,7 +494,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const hasAnyPreference = hasGenderPreference || hasAgeGroup || hasUrgency || hasFamilySituation || hasCommunityPref;
 
     if (isDomainIntent || hasAnyPreference) {
-      services = boostByIntent(services, analysis.intent, analysis.corrected, analysis, boostOptions);
+      // Use LLM reranker for Tier 3 fresh searches (falls back to regex boostByIntent on failure)
+      services = await llmRerank(services, analysis.corrected, analysis, boostOptions);
     }
 
     // Apply negative keyword penalty (e.g., "shelter not religious")

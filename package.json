@@ -14,6 +14,7 @@
     "evaluate:comprehensive": "node --import tsx server/evaluation/auto_optimize.ts",
     "evaluate:loop": "node --import tsx server/evaluation/auto_optimize.ts --loop",
     "evaluate:baseline": "tsx server/evaluation/run_baseline.ts",
+    "evaluate:ci": "node server/evaluation/ci_runner.mjs",
     "diagnose": "tsx server/evaluation/diagnose_query.ts",
     "test": "vitest run"
   },

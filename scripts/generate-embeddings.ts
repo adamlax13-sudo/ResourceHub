@@ -32,6 +32,8 @@ interface ServiceRow {
   category: string | null;
   description: string | null;
   eligibility: string | null;
+  location: string | null;
+  tags: string[] | null;
 }
 
 async function generateEmbedding(text: string): Promise<number[]> {
@@ -43,21 +45,26 @@ async function generateEmbedding(text: string): Promise<number[]> {
 }
 
 function buildEmbeddingText(service: ServiceRow): string {
-  const parts = [
-    service.name,
-    service.category,
-    service.description,
-    service.eligibility,
-  ].filter(Boolean);
+  const parts: string[] = [];
+  if (service.name) parts.push(`Service: ${service.name}`);
+  if (service.category) {
+    parts.push(`Category: ${service.category}`);
+    parts.push(`This is a ${service.category} service.`);
+  }
+  if (service.description) parts.push(`Description: ${service.description}`);
+  if (service.eligibility) parts.push(`Eligibility: ${service.eligibility}`);
+  if (service.location) parts.push(`Location: ${service.location}`);
+  if (service.tags && Array.isArray(service.tags)) parts.push(`Tags: ${service.tags.join(', ')}`);
 
-  return parts.join(' ').substring(0, 8000);
+  // ~5000 tokens at ~4 chars/token — safely under text-embedding-3-small's 8191 token limit
+  return parts.join('\n').substring(0, 20000);
 }
 
 async function generateForService(serviceId: string): Promise<void> {
   console.log(`Generating embedding for service: ${serviceId}`);
 
   const result = await pool.query(
-    `SELECT id, service_id, name, category, description, eligibility
+    `SELECT id, service_id, name, category, description, eligibility, location, tags
      FROM services WHERE service_id = $1`,
     [serviceId]
   );
@@ -87,7 +94,7 @@ async function generateForService(serviceId: string): Promise<void> {
 
 async function generateForAllMissing(): Promise<void> {
   const result = await pool.query(
-    `SELECT id, service_id, name, category, description, eligibility
+    `SELECT id, service_id, name, category, description, eligibility, location, tags
      FROM services
      WHERE is_active = true AND embedding IS NULL
      ORDER BY id`

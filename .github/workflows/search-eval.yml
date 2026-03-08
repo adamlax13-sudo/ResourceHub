@@ -1,0 +1,66 @@
+name: Search Quality Evaluation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/search/**'
+      - 'server/helpers/keywords.ts'
+      - 'server/evaluation/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/search/**'
+      - 'server/helpers/keywords.ts'
+      - 'server/evaluation/**'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  search-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Don't run on fork PRs — workflow has access to production DB secrets
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Start server
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AI_INTEGRATIONS_OPENAI_API_KEY: ${{ secrets.AI_INTEGRATIONS_OPENAI_API_KEY }}
+          NODE_ENV: production
+        run: |
+          npm run build
+          node dist/index.cjs &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> "$GITHUB_ENV"
+
+          # Wait for server to be ready (max 60s)
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then
+              echo "Server ready after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+
+          # Fail fast if server never started
+          if ! curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then
+            echo "Server failed to start within 60 seconds"
+            exit 1
+          fi
+
+      - name: Run search quality evaluation
+        run: node server/evaluation/ci_runner.mjs
+
+      - name: Stop server
+        if: always()
+        run: kill "$SERVER_PID" 2>/dev/null || true

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v98'; // Bumped: intent boosts now write to rrfScore (were sort-only, undone by downstream re-sorts)
+const CACHE_VERSION = 'v100'; // Bumped: LLM reranker for Tier 3 fresh searches + substance slang + unrelated penalties
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -19,6 +19,7 @@ import type {
   SearchType,
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
+import { enhanceIntentWithLLM } from './llm-intent';
 import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
@@ -39,6 +40,7 @@ import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost'
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
+import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
@@ -165,14 +167,18 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyNegativePenalty(services, analysis.negativeTerms);
     }
 
+    // Click-through affinity boost — also on precomputed path
+    services = await applyClickAffinityBoost(services, normalizedQuery);
+
     return formatResponse(services, '', input, startTime, true);
   }
 
   // Load alias map for query analysis
   const aliasMap = await storage.getAliasLookup();
 
-  // Analyze the query
-  const analysis = analyzeQuery(input.query, input.location, aliasMap);
+  // Analyze the query (regex-based, then enhance with LLM)
+  let analysis = analyzeQuery(input.query, input.location, aliasMap);
+  analysis = await enhanceIntentWithLLM(analysis);
   const intentLog = analysis.intents.secondary
     ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
     : `${analysis.intent}(${analysis.intents.primary.confidence})`;
@@ -221,6 +227,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (analysis.negativeTerms?.length) {
       services = applyNegativePenalty(services, analysis.negativeTerms);
     }
+
+    // Click-through affinity boost — also on cached path
+    // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
+    services = await applyClickAffinityBoost(services, normalizedQuery);
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
@@ -303,6 +313,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Data quality boost applies regardless of filters
   const freshConfScores = await storage.getConfidenceScores(result.services.map(s => s.id));
   result.services = applyDataQualityBoost(result.services, freshConfScores);
+
+  // Click-through affinity boost — learn from user behavior over time
+  // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
+  result.services = await applyClickAffinityBoost(result.services, normalizedQuery);
 
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
 }

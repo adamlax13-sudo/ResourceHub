@@ -264,12 +264,14 @@ def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_al
 
     for row in services:
         svc = dict(zip(columns, row))
-        # Build embedding text
+        # Build embedding text — category is repeated to strengthen category signal
+        # in embedding space and reduce cross-category confusion (e.g., dental vs mental health)
         parts = []
         if svc.get("name"):
             parts.append(f"Service: {svc['name']}")
         if svc.get("category"):
             parts.append(f"Category: {svc['category']}")
+            parts.append(f"This is a {svc['category']} service.")
         if svc.get("description"):
             parts.append(f"Description: {svc['description']}")
         if svc.get("eligibility"):

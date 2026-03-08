@@ -8,12 +8,12 @@ import { storage } from "../storage";
 import { normalizeForCache } from "../helpers/keywords";
 import { createErrorResponse } from "../helpers/errors";
 import { adminAuth, adminLimiter } from "../middleware/adminAuth";
-import { feedbackLimiter } from "../middleware/rateLimiter";
+import { clickTrackingLimiter } from "../middleware/rateLimiter";
 
 export function registerAnalyticsRoutes(app: Express): void {
   // ============= CLICK TRACKING ENDPOINT =============
   // Tracks when users click on search results to improve ranking over time
-  app.post("/api/track-click", feedbackLimiter, async (req: Request, res: Response) => {
+  app.post("/api/track-click", clickTrackingLimiter, async (req: Request, res: Response) => {
     try {
       const clickSchema = z.object({
         serviceId: z.string().min(1).max(255),

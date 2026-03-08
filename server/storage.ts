@@ -119,6 +119,9 @@ export interface IStorage {
   getClickCountForService(serviceId: string): Promise<number>;
   getPopularSearches(limit?: number): Promise<{ query: string; count: number }[]>;
 
+  // Click-through affinities
+  getQueryAffinities(normalizedQuery: string): Promise<{ serviceId: string; clickScore: number; voteScore: number }[]>;
+
   // Service aliases
   getAliasesForServices(): Promise<Map<string, string[]>>;
   findServiceByAlias(alias: string): Promise<string | null>;
@@ -522,6 +525,27 @@ export class DatabaseStorage implements IStorage {
       .orderBy(sql`COUNT(*) DESC`)
       .limit(limit);
     return result.map(r => ({ query: r.query, count: Number(r.count) }));
+  }
+
+  // ============= CLICK-THROUGH AFFINITIES =============
+  async getQueryAffinities(normalizedQuery: string): Promise<{ serviceId: string; clickScore: number; voteScore: number }[]> {
+    try {
+      const result = await db.execute(sql`
+        SELECT service_id, click_score, vote_score
+        FROM query_service_affinities
+        WHERE normalized_query = ${normalizedQuery}
+        ORDER BY click_score DESC
+        LIMIT 50
+      `);
+      return (result.rows as any[]).map(r => ({
+        serviceId: r.service_id,
+        clickScore: r.click_score ?? 0,
+        voteScore: r.vote_score ?? 0,
+      }));
+    } catch {
+      // Table may not exist yet — return empty
+      return [];
+    }
   }
 
   // ============= SERVICE ALIASES =============
@@ -977,75 +1001,6 @@ export class DatabaseStorage implements IStorage {
     } catch (err) {
       console.error('[storage] getTopFailedQueries error:', err);
       return [];
-    }
-  }
-
-  // ============= QUERY-SERVICE AFFINITY =============
-
-  /**
-   * Get affinity scores for services based on historical query performance
-   * Returns services that users have clicked on for similar queries
-   */
-  async getQueryAffinities(
-    queryPattern: string,
-    serviceIds: string[]
-  ): Promise<Array<{ serviceId: string; affinityScore: number }>> {
-    if (serviceIds.length === 0) return [];
-
-    try {
-      const result = await db.execute(sql`
-        SELECT service_id, affinity_score
-        FROM query_service_affinity
-        WHERE query_pattern = ${queryPattern}
-          AND service_id = ANY(${serviceIds})
-          AND affinity_score > 0.1
-        ORDER BY affinity_score DESC
-        LIMIT 20
-      `);
-
-      return (result.rows as any[]).map(r => ({
-        serviceId: r.service_id as string,
-        affinityScore: r.affinity_score as number,
-      }));
-    } catch (err) {
-      console.error('[storage] getQueryAffinities error:', err);
-      return [];
-    }
-  }
-
-  /**
-   * Record a click on a service for a given query pattern
-   * Builds affinity over time
-   */
-  async recordQueryClick(queryPattern: string, serviceId: string): Promise<void> {
-    try {
-      await db.execute(sql`SELECT update_query_affinity(${queryPattern}, ${serviceId})`);
-    } catch (err) {
-      console.warn('[Affinity] Failed to record click:', err);
-    }
-  }
-
-  /**
-   * Record impressions for services appearing in search results
-   */
-  async recordQueryImpressions(queryPattern: string, serviceIds: string[]): Promise<void> {
-    if (serviceIds.length === 0) return;
-    try {
-      await db.execute(sql`SELECT record_query_impressions(${queryPattern}, ${serviceIds})`);
-    } catch (err) {
-      console.warn('[Affinity] Failed to record impressions:', err);
-    }
-  }
-
-  /**
-   * Recompute all affinity scores (run periodically)
-   */
-  async computeAffinityScores(): Promise<void> {
-    try {
-      await db.execute(sql`SELECT compute_affinity_scores()`);
-      console.log('[Affinity] Recomputed affinity scores');
-    } catch (err) {
-      console.warn('[Affinity] Failed to compute scores:', err);
     }
   }
 

@@ -659,6 +659,24 @@ export function boostByIntent(
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Mentoring for addiction query`);
         searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for mentoring (addiction query)`);
       }
+      // Gambling services are a separate intent — penalize when query is about substances
+      if (/\b(gambling|casino|slots|poker|betting|gambler|lottery|VLT|wagering|problem gambling)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery|dual diagnosis)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Gambling service for substance abuse query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for gambling (substance query)`);
+      }
+      // Employment/job services unrelated to addiction recovery
+      if (/\b(employment|job training|career|resume|workforce|interview skills|job search|job readiness)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery|treatment|sober)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Employment service for substance abuse query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for employment (substance query)`);
+      }
+      // General healthcare/medical clinics not related to addiction
+      if (/\b(medical clinic|walk-?in clinic|health clinic|youth clinic|family doctor|physician|family medicine|primary care)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery|methadone|suboxone|opioid|detox|withdrawal|RAAM)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Healthcare for substance abuse query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for healthcare (substance query)`);
+      }
     }
 
     // Financial support boosting

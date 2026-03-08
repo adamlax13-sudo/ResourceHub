@@ -13,3 +13,5 @@ export * from './penalty';
 export * from './preference-boost';
 export * from './filter-match-boost';
 export * from './quality-boost';
+export * from './llm-rerank';
+export * from './click-affinity-boost';

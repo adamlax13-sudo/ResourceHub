@@ -41,6 +41,18 @@ export const feedbackLimiter = rateLimit({
 });
 
 /**
+ * Lenient rate limiter for click tracking
+ * Higher limit than feedback since normal browsing generates many clicks
+ */
+export const clickTrackingLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 clicks per 15 minutes
+  message: 'Too many requests.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
  * Very strict rate limiter for authentication endpoints
  * Limits requests to 5 per 15 minutes per IP
  * Prevents brute force attacks

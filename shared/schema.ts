@@ -1,4 +1,4 @@
-import { pgTable, text, serial, jsonb, timestamp, varchar, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, jsonb, timestamp, varchar, boolean, integer, real, unique } from "drizzle-orm/pg-core";
 
 export const searches = pgTable("searches", {
   id: serial("id").primaryKey(),
@@ -137,4 +137,19 @@ export const serviceVotes = pgTable("service_votes", {
 });
 
 export type ServiceVote = typeof serviceVotes.$inferSelect;
+
+// Query-service affinity scores — computed from click-through data
+// Used to boost services that users consistently find helpful for specific queries
+export const queryServiceAffinities = pgTable("query_service_affinities", {
+  id: serial("id").primaryKey(),
+  normalizedQuery: text("normalized_query").notNull(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  clickScore: real("click_score").default(0),  // CTR-based score
+  voteScore: real("vote_score").default(0),     // Vote-based score
+  computedAt: timestamp("computed_at").defaultNow(),
+}, (table) => [
+  unique().on(table.normalizedQuery, table.serviceId),
+]);
+
+export type QueryServiceAffinity = typeof queryServiceAffinities.$inferSelect;
 
