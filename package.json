@@ -13,6 +13,8 @@
     "evaluate:query": "node --import tsx server/evaluation/evaluate_search.ts",
     "evaluate:comprehensive": "node --import tsx server/evaluation/auto_optimize.ts",
     "evaluate:loop": "node --import tsx server/evaluation/auto_optimize.ts --loop",
+    "evaluate:baseline": "tsx server/evaluation/run_baseline.ts",
+    "diagnose": "tsx server/evaluation/diagnose_query.ts",
     "test": "vitest run"
   },
   "dependencies": {
