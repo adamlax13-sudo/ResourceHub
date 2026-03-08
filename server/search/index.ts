@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v85'; // Bumped: Round 4 review fixes - fallbackSearch location case fix, ServiceDetail dedup
+const CACHE_VERSION = 'v86'; // Bumped: typo corrections, don't cache zero-result searches
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -269,11 +269,17 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   }
 
   // Cache the UNFILTERED results so future queries with different filters
-  // still have the full result set to filter from
-  await storage.createSearch({
-    query: cacheKey,
-    results: { services: result.services, summary: result.summary },
-  });
+  // still have the full result set to filter from.
+  // Don't cache zero-result searches — they may be transient failures.
+  if (result.services.length > 0) {
+    await storage.createSearch({
+      query: cacheKey,
+      results: { services: result.services, summary: result.summary },
+    });
+  }
+
+  // Filter out deactivated services from fresh results (materialized view may be stale)
+  result.services = filterActiveServices(result.services, servicesCache.activeIds);
 
   // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
   if (input.filters) {

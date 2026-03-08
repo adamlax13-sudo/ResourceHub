@@ -55,6 +55,8 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'worthless': 'worthless', // Emotional state word
   'dental': 'dental',      // Not "mental" (Levenshtein distance 1)
   'rental': 'rental',      // Not "mental" (Levenshtein distance 2)
+  // Short-word misspellings (bypasses length check via dictionary lookup)
+  'fud': 'food',           // Phonetic: "fud bank"
   // Actual misspellings
   'addicton': 'addiction',
   'addiciton': 'addiction',
@@ -66,9 +68,11 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'counceling': 'counselling',
   'counsling': 'counselling',
   'counsilling': 'counselling',
+  'counslling': 'counselling',
   'sheltar': 'shelter',
   'shleter': 'shelter',
   'sheler': 'shelter',
+  'sheltr': 'shelter',
   'mentol': 'mental',
   'mentla': 'mental',
   'anxeity': 'anxiety',
@@ -179,16 +183,17 @@ export function correctTypos(query: string): { corrected: string; corrections: s
   const words = query.toLowerCase().split(/\s+/);
   const corrections: string[] = [];
   const correctedWords = words.map(word => {
-    // Skip short words and stop words
-    if (word.length < 4 || STOP_WORDS.has(word)) return word;
-
-    // Check misspellings dictionary first (includes identity mappings to prevent false corrections)
+    // Check misspellings dictionary first — always, even for short words
+    // (includes identity mappings to prevent false corrections)
     if (COMMON_MISSPELLINGS[word]) {
       if (COMMON_MISSPELLINGS[word] !== word) {
         corrections.push(`${word} → ${COMMON_MISSPELLINGS[word]}`);
       }
       return COMMON_MISSPELLINGS[word];
     }
+
+    // Skip short words and stop words for fuzzy matching
+    if (word.length < 4 || STOP_WORDS.has(word)) return word;
 
     // Try fuzzy matching
     const closest = findClosestKeyword(word);
