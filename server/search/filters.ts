@@ -12,6 +12,32 @@
 import type { LiteService } from './types';
 import type { SearchFilters } from '@shared/routes';
 
+/**
+ * Filter services by location.
+ * When a user selects a city from the dropdown, exclude services clearly in other cities.
+ * Services with province-wide, null/empty, online, or ambiguous locations pass through.
+ */
+export function filterByLocation(services: LiteService[], location: string | null | undefined): LiteService[] {
+  if (!location) return services;
+  const loc = location.toLowerCase();
+  return services.filter(svc => {
+    const svcLoc = (svc.location || '').toLowerCase().trim();
+    // No location data → could be available anywhere → keep
+    if (!svcLoc) return true;
+    // Contains the specified city → keep
+    if (svcLoc.includes(loc)) return true;
+    // Province-wide / Alberta-wide → keep
+    // Must distinguish "Alberta-wide" from "Fort McMurray, Alberta T9H" (just a province in address)
+    if (svcLoc.includes('province-wide') || svcLoc.includes('alberta-wide') || svcLoc.includes('across alberta')) return true;
+    // Online/virtual/phone services → keep
+    if (svcLoc.includes('online') || svcLoc.includes('virtual') || svcLoc.includes('phone') || svcLoc.includes('telehealth')) return true;
+    // Bare "Multiple locations" with no city qualifier → could include any city → keep
+    if (svcLoc === 'multiple locations') return true;
+    // Everything else is clearly in a different city → exclude
+    return false;
+  });
+}
+
 export function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
   return services.filter(svc => {
     // Category: strict match (explicit scoping)

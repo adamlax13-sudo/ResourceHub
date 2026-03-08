@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v95'; // Bumped: full intent coverage audit — 15 new boost/penalty sections
+const CACHE_VERSION = 'v96'; // Bumped: location hard filter — exclude services from other cities
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -37,7 +37,7 @@ import type { ServiceDetail } from '@shared/routes';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
-import { applyHardFilters } from './filters';
+import { applyHardFilters, filterByLocation } from './filters';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 
 // Single search strategy - comprehensive mode only
@@ -147,6 +147,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       ensureLegalAidInResults(services);
     }
 
+    // Location hard filter — exclude services from other cities
+    services = filterByLocation(services, analysis.location.specified || input.location);
+
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
@@ -200,6 +203,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (isTenantLegalQuery(input.query)) {
       ensureLegalAidInResults(services);
     }
+
+    // Location hard filter — exclude services from other cities
+    services = filterByLocation(services, analysis.location.specified || input.location);
 
     if (input.filters) {
       services = applyHardFilters(services, input.filters);
@@ -279,6 +285,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     ensureLegalAidInResults(result.services);
     console.log(`[SearchOrchestrator] Tenant legal query - Legal aid service ensured in results`);
   }
+
+  // Location hard filter — exclude services from other cities
+  result.services = filterByLocation(result.services, analysis.location.specified || input.location);
 
   // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
   if (input.filters) {
