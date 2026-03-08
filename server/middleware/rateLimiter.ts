@@ -21,7 +21,7 @@ export const apiLimiter = rateLimit({
  */
 export const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // TEMP: raised for eval testing (normally 20)
+  max: 20, // Limit each IP to 20 requests per windowMs
   message: 'Too many requests to this endpoint, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
