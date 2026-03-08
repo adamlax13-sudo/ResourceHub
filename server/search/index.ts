@@ -227,7 +227,35 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     'Search operation'
   );
 
-  // For crisis queries, replace results entirely with all crisis lines from DB
+  // ============= LOG FAILED QUERIES =============
+  // Track zero-result queries for analysis and coverage improvement
+  if (result.services.length === 0) {
+    storage.logFailedQuery({
+      query: input.query,
+      queryNormalized: analysis.normalized,
+      intent: analysis.intent,
+      location: input.location,
+    }).catch(() => {}); // Fire and forget, don't block response
+    console.log(`[SearchOrchestrator] Zero results - logged as failed query`);
+  }
+
+  // Cache the UNFILTERED search results so future queries with different filters
+  // still have the full result set to filter from.
+  // Don't cache zero-result searches — they may be transient failures.
+  // Cache BEFORE crisis/pinned replacement — cached path rebuilds these anyway.
+  if (result.services.length > 0) {
+    await storage.createSearch({
+      query: cacheKey,
+      results: { services: result.services, summary: result.summary },
+    });
+  }
+
+  // Filter out deactivated services from fresh results (materialized view may be stale)
+  result.services = filterActiveServices(result.services, servicesCache.activeIds);
+
+  // For crisis queries, replace results entirely with all crisis lines from DB.
+  // MUST run AFTER filterActiveServices — 988 is a synthetic service not in the DB,
+  // so filterActiveServices would remove it if crisis replacement ran first.
   if (analysis.isCrisis || input.emergency) {
     const dbCrisisLines = await storage.getCrisisLines();
     result.services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
@@ -251,31 +279,6 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     ensureLegalAidInResults(result.services);
     console.log(`[SearchOrchestrator] Tenant legal query - Legal aid service ensured in results`);
   }
-
-  // ============= LOG FAILED QUERIES =============
-  // Track zero-result queries for analysis and coverage improvement
-  if (result.services.length === 0) {
-    storage.logFailedQuery({
-      query: input.query,
-      queryNormalized: analysis.normalized,
-      intent: analysis.intent,
-      location: input.location,
-    }).catch(() => {}); // Fire and forget, don't block response
-    console.log(`[SearchOrchestrator] Zero results - logged as failed query`);
-  }
-
-  // Cache the UNFILTERED results so future queries with different filters
-  // still have the full result set to filter from.
-  // Don't cache zero-result searches — they may be transient failures.
-  if (result.services.length > 0) {
-    await storage.createSearch({
-      query: cacheKey,
-      results: { services: result.services, summary: result.summary },
-    });
-  }
-
-  // Filter out deactivated services from fresh results (materialized view may be stale)
-  result.services = filterActiveServices(result.services, servicesCache.activeIds);
 
   // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
   if (input.filters) {
