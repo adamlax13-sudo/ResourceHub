@@ -41,6 +41,7 @@ export const serviceDetailSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   address: z.string().optional(),
+  hoursOfOperation: z.string().optional(),
 });
 
 // Pagination metadata schema

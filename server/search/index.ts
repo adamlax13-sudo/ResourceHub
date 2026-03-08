@@ -451,6 +451,7 @@ export async function getServiceDetails(serviceId: string): Promise<ServiceDetai
     phone: service.phone || '',
     email: service.email || '',
     address: displayLocation,
+    hoursOfOperation: service.hoursOfOperation || undefined,
   };
 }
 

@@ -322,6 +322,18 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
                       </div>
                     </div>
 
+                    {service.hoursOfOperation && (
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                          <Clock className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.hours')}</div>
+                          <div className="font-medium text-foreground mt-0.5 break-words whitespace-pre-line">{service.hoursOfOperation}</div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-start gap-3 min-w-0">
                       <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                         <CheckCircle className="w-4 h-4 text-green-600" />
