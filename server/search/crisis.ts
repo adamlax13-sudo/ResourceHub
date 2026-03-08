@@ -196,9 +196,10 @@ export function boostCrisisServices(services: LiteService[]): LiteService[] {
 /**
  * Build crisis-only results from DB Crisis Lines.
  * For crisis queries, we don't rely on search relevance — we show ALL crisis hotlines.
- * Returns: pinned 988 + all Crisis Lines from the database, sorted by location relevance.
+ * Returns: pinned 988 + crisis lines filtered to the user's location.
  *
- * Sort order: local city match → province-wide → Canada-wide → other cities.
+ * Keeps: lines matching user's city + province-wide + Canada-wide.
+ * Drops: lines from other cities (useless to someone in crisis).
  */
 export function buildCrisisResults(dbCrisisLines: Service[], userLocation: string | null): LiteService[] {
   const config = SEARCH_CONFIG.crisis;
@@ -207,11 +208,20 @@ export function buildCrisisResults(dbCrisisLines: Service[], userLocation: strin
   // Pin 988 first
   results.push({ ...config.pinnedServiceLite } as LiteService);
 
-  // Convert DB services to LiteService (skip 988 since it's already pinned)
-  const lines: LiteService[] = [];
+  const userCity = (userLocation || '').toLowerCase();
+
+  // Convert + filter DB services (skip 988 since it's already pinned)
+  const local: LiteService[] = [];
+  const broad: LiteService[] = [];
+
   for (const s of dbCrisisLines) {
     if (s.serviceId.includes('988') || s.name?.toLowerCase().includes('988')) continue;
-    lines.push({
+
+    const svcLoc = (s.location || '').toLowerCase();
+    const relevance = locationRelevance(svcLoc, userCity);
+    if (relevance === 'irrelevant') continue; // Drop other-city lines
+
+    const lite: LiteService = {
       id: s.serviceId,
       name: s.name || '',
       category: s.category || '',
@@ -220,27 +230,46 @@ export function buildCrisisResults(dbCrisisLines: Service[], userLocation: strin
       waitTimes: s.waitTimes || '',
       phone: s.phone || undefined,
       is24_7: s.is24_7 ?? undefined,
-    });
+    };
+
+    if (relevance === 'local') {
+      local.push(lite);
+    } else {
+      broad.push(lite); // province-wide or canada-wide
+    }
   }
 
-  // Sort by location relevance
-  const loc = (userLocation || '').toLowerCase();
-  lines.sort((a, b) => locationRank(a.location, loc) - locationRank(b.location, loc));
-
-  results.push(...lines);
-  console.log(`[CrisisResults] Built crisis results: ${results.length} services (988 + ${lines.length} crisis lines, location: ${userLocation || 'none'})`);
+  // Local lines first, then broader ones
+  results.push(...local, ...broad);
+  console.log(`[CrisisResults] Built ${results.length} results (988 + ${local.length} local + ${broad.length} broad, location: ${userLocation || 'none'})`);
   return results;
 }
 
-/** Rank a service location relative to the user's selected city. Lower = better. */
-function locationRank(serviceLocation: string, userCity: string): number {
-  const loc = serviceLocation.toLowerCase();
-  // City match (e.g., "Calgary" in "Calgary" or in service name/location)
-  if (userCity && loc.includes(userCity)) return 0;
-  // Province-wide
-  if (loc.includes('alberta') && !loc.includes('edmonton') && !loc.includes('calgary') && !loc.includes('lethbridge') && !loc.includes('red deer')) return 1;
-  // Canada-wide
-  if (loc.includes('canada')) return 2;
-  // Other specific city
-  return 3;
+/**
+ * Determine if a service location is relevant to the user's city.
+ * - 'local': serves user's city specifically
+ * - 'broad': province-wide or Canada-wide (no specific city)
+ * - 'irrelevant': serves a different city
+ */
+function locationRelevance(svcLocation: string, userCity: string): 'local' | 'broad' | 'irrelevant' {
+  // If user has a city and the service location mentions it → local
+  if (userCity && svcLocation.includes(userCity)) return 'local';
+
+  // Check if service location mentions any specific Alberta city
+  const mentionsSpecificCity = KNOWN_CITIES.some(city => svcLocation.includes(city));
+
+  if (mentionsSpecificCity) {
+    // Service is city-specific but doesn't match user's city → irrelevant
+    return 'irrelevant';
+  }
+
+  // No specific city mentioned → province-wide or Canada-wide → always relevant
+  return 'broad';
 }
+
+// Major Alberta cities to detect city-specific services
+const KNOWN_CITIES = [
+  'calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat',
+  'grande prairie', 'fort mcmurray', 'airdrie', 'st. albert', 'sherwood park',
+  'spruce grove', 'okotoks', 'cochrane', 'camrose', 'brooks', 'canmore',
+];
