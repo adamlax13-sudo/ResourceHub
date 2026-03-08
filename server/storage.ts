@@ -192,6 +192,19 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(services.lastChecked));
   }
 
+  async getCrisisLines(): Promise<Service[]> {
+    return await db
+      .select()
+      .from(services)
+      .where(
+        and(
+          eq(services.isActive, true),
+          eq(services.category, 'Crisis Lines')
+        )
+      )
+      .orderBy(services.name);
+  }
+
   async searchServices(searchTerm: string): Promise<Service[]> {
     const term = `%${searchTerm}%`;
     return await db

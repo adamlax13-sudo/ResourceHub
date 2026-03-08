@@ -7,6 +7,7 @@
 
 import { SEARCH_CONFIG } from './config';
 import type { LiteService, FullService } from './types';
+import type { Service } from '@shared/schema';
 
 /**
  * Pin the 988 crisis service to the top of search results.
@@ -190,4 +191,35 @@ export function boostCrisisServices(services: LiteService[]): LiteService[] {
   services.push(...nonCrisis);
 
   return services;
+}
+
+/**
+ * Build crisis-only results from DB Crisis Lines.
+ * For crisis queries, we don't rely on search relevance — we show ALL crisis hotlines.
+ * Returns: pinned 988 + all Crisis Lines from the database.
+ */
+export function buildCrisisResults(dbCrisisLines: Service[]): LiteService[] {
+  const config = SEARCH_CONFIG.crisis;
+  const results: LiteService[] = [];
+
+  // Pin 988 first
+  results.push({ ...config.pinnedServiceLite } as LiteService);
+
+  // Add all DB crisis lines (skip 988 since it's already pinned)
+  for (const s of dbCrisisLines) {
+    if (s.serviceId.includes('988') || s.name?.toLowerCase().includes('988')) continue;
+    results.push({
+      id: s.serviceId,
+      name: s.name || '',
+      category: s.category || '',
+      description: s.description || '',
+      location: s.location || '',
+      waitTimes: s.waitTimes || '',
+      phone: s.phone || undefined,
+      is24_7: s.is24_7 ?? undefined,
+    });
+  }
+
+  console.log(`[CrisisResults] Built crisis results: ${results.length} services (988 + ${results.length - 1} crisis lines)`);
+  return results;
 }

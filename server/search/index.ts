@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v90'; // Bumped: crisis filter now only keeps Crisis Lines (hotlines), not all Crisis Services
+const CACHE_VERSION = 'v91'; // Bumped: crisis queries now return ALL crisis lines from DB, not just search matches
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -22,7 +22,7 @@ import { analyzeQuery, buildCacheKey } from './analyzer';
 import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
-import { pinCrisisService, boostCrisisServices, filterToCrisisOnly, getCrisisServiceFull, isCrisisServiceId } from './crisis';
+import { pinCrisisService, boostCrisisServices, filterToCrisisOnly, buildCrisisResults, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
 import {
   isFamilyAddictionQuery,
@@ -130,12 +130,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Filter out any deactivated services from precomputed cache
     let services = filterActiveServices((precomputed.results as LiteService[]).map(s => ({ ...s })), servicesCache.activeIds);
 
-    // Still apply pinning for precomputed results
+    // For crisis queries, replace results entirely with all crisis lines from DB
     const analysis = analyzeQuery(input.query, input.location);
     const isEmergency = input.emergency === true;
     if (analysis.isCrisis || isEmergency) {
-      pinCrisisService(services);
-      filterToCrisisOnly(services);
+      const dbCrisisLines = await storage.getCrisisLines();
+      services = buildCrisisResults(dbCrisisLines);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -186,10 +186,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Filter out any deactivated services from cached results
     let services = filterActiveServices(cachedResults.services.map(s => ({ ...s })), servicesCache.activeIds);
 
-    // Apply pinning even for cached results
+    // For crisis queries, replace results entirely with all crisis lines from DB
     if (analysis.isCrisis || input.emergency) {
-      pinCrisisService(services);
-      filterToCrisisOnly(services);
+      const dbCrisisLines = await storage.getCrisisLines();
+      services = buildCrisisResults(dbCrisisLines);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -227,11 +227,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     'Search operation'
   );
 
-  // Apply crisis pinning and filtering — crisis queries show ONLY crisis resources
+  // For crisis queries, replace results entirely with all crisis lines from DB
   if (analysis.isCrisis || input.emergency) {
-    pinCrisisService(result.services);
-    filterToCrisisOnly(result.services);
-    console.log(`[SearchOrchestrator] Crisis query - filtered to crisis services only`);
+    const dbCrisisLines = await storage.getCrisisLines();
+    result.services = buildCrisisResults(dbCrisisLines);
+    console.log(`[SearchOrchestrator] Crisis query - replaced with all crisis lines from DB`);
   }
 
   // Apply PCHAD pinning for parent/child addiction queries
