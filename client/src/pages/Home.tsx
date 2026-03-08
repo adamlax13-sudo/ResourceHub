@@ -185,9 +185,9 @@ export default function Home() {
 
   const handleWizardComplete = useCallback((query: string, filters: SearchFilters) => {
     setFilters(filters);
-    handleSearchWithFilters(query, searchState.locations, filters);
+    handleSearchWithFilters(query, searchStateRef.current.locations, filters);
     setWizardOpen(false);
-  }, [setFilters, handleSearchWithFilters, searchState.locations]);
+  }, [setFilters, handleSearchWithFilters]);
 
   const handleFiltersChange = useCallback(
     (newFilters: SearchFilters) => {

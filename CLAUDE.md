@@ -16,7 +16,7 @@ Live at https://resourcehub-wwg6.onrender.com. Deployed on Render.com (free tier
 - **Backend:** Node.js, Express, TypeScript, Drizzle ORM
 - **Database:** PostgreSQL with pgvector extension
 - **Scraper:** Python, BeautifulSoup, SQLAlchemy, Playwright (for JS-heavy sites)
-- **AI:** OpenAI (embeddings, web search), Anthropic Claude (extraction)
+- **AI:** OpenAI (embeddings, web search, gpt-4o-mini for reranking + intent), Anthropic Claude (extraction)
 
 ## Common Commands
 
@@ -64,21 +64,31 @@ pytest tests/ -v                     # Run scraper tests
 | `server/evaluation/comprehensive_test_queries.ts` | 96 test queries across all intents |
 | `server/evaluation/run_baseline_api.mjs` | Run baseline eval via production API |
 | `server/evaluation/diagnose_query.ts` | Debug single query through pipeline |
+| `server/helpers/openai.ts` | Shared OpenAI singleton (`getOpenAI()`) + `extractJSON()` helper |
+| `server/search/llm-intent.ts` | LLM intent classification (enhances regex, LRU cached 24h) |
+| `server/search/strategies/scoring/llm-rerank.ts` | LLM reranking of top 20 RRF candidates for Tier 3 searches |
+| `server/search/strategies/scoring/click-affinity-boost.ts` | Click-through affinity boost (1.0-1.3x, LRU cached 1h) |
+| `server/evaluation/ci_runner.mjs` | CI test runner — 38 queries with per-intent thresholds |
+| `.github/workflows/search-eval.yml` | GitHub Actions CI for search quality regression testing |
+| `scripts/compute-click-affinities.mjs` | Batch job: compute (query, service) affinity scores from click data |
 
 ## Architecture Notes
 
 ### Search Pipeline
 1. Normalize query + correct typos
-2. Analyze intent (category, location, demographics, urgency)
-3. Check precomputed cache for popular queries
-4. Stage 1: Fast SQL search (indexed)
-5. Stage 2: Semantic search (pgvector embeddings)
-6. Merge results via Reciprocal Rank Fusion
-7. Apply filters (age, gender, exclusions, diversity)
-8. Apply intent-based boosting and scoring
-9. Pin crisis services if detected
-10. Apply data quality boost (confidence score, description richness)
-11. Return paginated results with summary
+2. Analyze intent via regex (`analyzeQuery()`)
+3. Enhance intent with LLM classifier (`enhanceIntentWithLLM()` — skips crisis/alias)
+4. Check precomputed cache for popular queries
+5. Stage 1: Fast SQL search (indexed)
+6. Stage 2: Semantic search (pgvector embeddings)
+7. Merge results via Reciprocal Rank Fusion
+8. Apply filters (age, gender, exclusions, diversity)
+9. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
+   **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
+10. Pin crisis services if detected
+11. Apply data quality boost (confidence score, description richness)
+12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
+13. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
@@ -90,6 +100,7 @@ pytest tests/ -v                     # Run scraper tests
 - `service_history` — change log for every modification
 - `ai_service_enrichments` — cached AI-generated descriptions
 - `search_analytics` — click tracking for ranking improvements
+- `query_service_affinities` — computed (query, service) click affinity scores (populated by `scripts/compute-click-affinities.mjs`)
 - `service_field_source` — tracks which scraper provided each field
 
 ### Scraper Pipeline (v2)
