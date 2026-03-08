@@ -389,7 +389,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // This saves 200-500ms compared to waiting for OpenAI before searching
 
     const sqlPromise = storage.fastSearch(
-      analysis.corrected,  // Use typo-corrected query for search
+      analysis.corrected,
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults

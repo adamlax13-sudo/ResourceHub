@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v87'; // Bumped: use typo-corrected query for search (not just analysis)
+const CACHE_VERSION = 'v88'; // Bumped: OR-based SQL search + keyword extraction for SQL queries
 
 import { SEARCH_CONFIG } from './config';
 import type {
