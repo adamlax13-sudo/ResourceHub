@@ -129,7 +129,22 @@ export default function Home() {
   const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
     // Single location from dropdown (or empty for "All of Alberta")
     const locationParam = locations.length > 0 ? locations[0] : undefined;
-    search({ query, location: locationParam, ...(hp ? { hp } : {}) });
+    const filters = searchStateRef.current.filters;
+    const filterParams: Partial<SearchFilters> = {};
+    if (filters.genderRestriction && filters.genderRestriction !== "all") {
+      filterParams.genderRestriction = filters.genderRestriction;
+    }
+    if (filters.ageGroup && filters.ageGroup !== "all_ages") {
+      filterParams.ageGroup = filters.ageGroup;
+    }
+    if (filters.is24_7) filterParams.is24_7 = true;
+    if (filters.isFaithBased) filterParams.isFaithBased = true;
+    if (filters.is12Step) filterParams.is12Step = true;
+    if (filters.serviceFormat) filterParams.serviceFormat = filters.serviceFormat;
+    if (filters.languagesSupported?.length) {
+      filterParams.languagesSupported = filters.languagesSupported;
+    }
+    search({ query, location: locationParam, ...filterParams, ...(hp ? { hp } : {}) });
   }, [search]);
 
   const handleSearchWithFilters = useCallback(
