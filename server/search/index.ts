@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v97'; // Bumped: penalize non-residential services for residential queries
+const CACHE_VERSION = 'v98'; // Bumped: intent boosts now write to rrfScore (were sort-only, undone by downstream re-sorts)
 
 import { SEARCH_CONFIG } from './config';
 import type {

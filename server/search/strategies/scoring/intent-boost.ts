@@ -601,8 +601,8 @@ export function boostByIntent(
         addFactor('substanceAbuse.addictionService', cfg.substanceAbuse.addictionService, `Addiction treatment/recovery service`);
         searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.addictionService} for addiction service`);
       }
-      // Extra boost for residential treatment specifically
-      if (isResidentialService) {
+      // Extra boost for residential treatment — only when query specifically asks for residential
+      if (isResidentialQuery && isResidentialService) {
         addFactor('substanceAbuse.residentialTreatment', cfg.substanceAbuse.residentialTreatment, `Residential addiction treatment`);
         searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.residentialTreatment} for residential treatment`);
       }
@@ -1346,8 +1346,15 @@ export function boostByIntent(
     return { svc, boost, explanations };
   });
 
-  // Sort by boost (highest first) while preserving relative order for equal scores
-  scored.sort((a, b) => b.boost - a.boost);
+  // Apply boost to rrfScore so downstream modules (quality-boost, preference-boost, etc.)
+  // see the adjusted score. Without this, downstream re-sorts by rrfScore discard intent ordering.
+  for (const s of scored) {
+    if (s.boost !== 0 && s.svc.rrfScore != null) {
+      s.svc.rrfScore += s.boost;
+    }
+  }
+  // Sort by rrfScore descending (consistent with other scoring modules)
+  scored.sort((a, b) => (b.svc.rrfScore ?? 0) - (a.svc.rrfScore ?? 0));
 
   const boostedCount = scored.filter(s => s.boost > 0).length;
   const penalizedCount = scored.filter(s => s.boost < 0).length;
