@@ -163,10 +163,14 @@ export default function Home() {
     }
   }, [searchState.query, searchState.hasSearched, isPending, handleSearchWithFilters, searchState.locations, searchState.filters]);
 
-  const handleLocationChange = (location: string) => {
-    // Set single location (empty string = "All of Alberta" = empty array)
-    setLocations(location ? [location] : []);
-  };
+  const handleLocationChange = useCallback((location: string) => {
+    const newLocations = location ? [location] : [];
+    setLocations(newLocations);
+    // Re-trigger search if one is already active
+    if (searchState.query) {
+      handleSearchWithFilters(searchState.query, newLocations, searchState.filters);
+    }
+  }, [setLocations, searchState.query, searchState.filters, handleSearchWithFilters]);
 
   const handleEmergencySearch = useCallback(() => {
     const locationParam = searchState.locations.length > 0 ? searchState.locations[0] : undefined;
