@@ -51,7 +51,11 @@ function buildPrintPage(
   services: ServiceDetail[],
   options: PrintOptions,
 ): void {
-  doc.open();
+  // Clear existing content (from loading state) using safe DOM methods.
+  // Avoids doc.open() which can leave head/body undefined in some browsers.
+  while (doc.head.firstChild) doc.head.removeChild(doc.head.firstChild);
+  while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
+  doc.body.removeAttribute("style");
   const style = doc.createElement("style");
   style.textContent = `
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -339,6 +343,29 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
     if (isExporting) return;
     setIsExporting(true);
 
+    // Open window immediately during user gesture to avoid popup blockers.
+    // Browsers block window.open() after async operations (fetch/await).
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast({
+        title: "Popup blocked",
+        description: "Please allow popups for this site to export your shortlist.",
+        variant: "destructive",
+      });
+      setIsExporting(false);
+      return;
+    }
+
+    // Show a loading state in the new window while data loads
+    const loadingDoc = printWindow.document;
+    const loadingTitle = loadingDoc.createElement("title");
+    loadingTitle.textContent = "My Shortlist";
+    loadingDoc.head.appendChild(loadingTitle);
+    loadingDoc.body.style.cssText = "font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#666";
+    const loadingMsg = loadingDoc.createElement("p");
+    loadingMsg.textContent = "Loading shortlist\u2026";
+    loadingDoc.body.appendChild(loadingMsg);
+
     try {
       // Fetch full details for all favorites in parallel
       const details = await Promise.all(
@@ -354,19 +381,10 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
       );
 
       if (services.length === 0) {
+        printWindow.close();
         toast({
           title: "Export failed",
           description: "Could not load service details. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        toast({
-          title: "Popup blocked",
-          description: "Please allow popups for this site to export your shortlist.",
           variant: "destructive",
         });
         return;
@@ -383,8 +401,8 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
         includeProcessSteps: includeSteps,
         includeRequiredDocs: includeDocs,
       });
-      printWindow.document.close();
     } catch {
+      printWindow.close();
       toast({
         title: "Export failed",
         description: "Something went wrong. Please try again.",
