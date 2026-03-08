@@ -353,9 +353,9 @@ export const SEARCH_CONFIG = {
       /(?:ruined|destroyed).*(?:finances|life|family).*(?:gambling|betting)/i,
       // Directory/informational patterns (not distress-phrased)
       /\b(?:addiction|addictions)\s+(?:treatment|program|services?|centre|center|residential|recovery|counsell?ing)\b/i,
-      /\b(?:residential)\s+(?:treatment|recovery|rehab|addiction|program)\b/i,
-      /\b(?:treatment|recovery)\s+(?:centre|center|house|facility|program)\b.*(?:addiction|alcohol|drug|substance)/i,
-      /\b(?:drug|alcohol|substance)\s+(?:treatment|rehabilitation|recovery|program|counsell?ing)\b/i,
+      /\b(?:residential)\s+(?:treatment|recovery|rehab|addiction|programs?)\b/i,
+      /\b(?:treatment|recovery)\s+(?:centre|center|house|facility|programs?)\b.*(?:addiction|alcohol|drug|substance)/i,
+      /\b(?:drug|alcohol|substance)\s+(?:treatment|rehabilitation|recovery|programs?|counsell?ing)\b/i,
     ],
     mental_health: [
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless|overwhelmed|lost)/i,

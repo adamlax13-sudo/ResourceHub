@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v100'; // Bumped: LLM reranker for Tier 3 fresh searches + substance slang + unrelated penalties
+const CACHE_VERSION = 'v101'; // Bumped: Tier 2 gate fix for location queries + plural intent regex + SQL location bonus reduction
 
 import { SEARCH_CONFIG } from './config';
 import type {

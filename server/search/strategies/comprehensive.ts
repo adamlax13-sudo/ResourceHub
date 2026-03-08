@@ -319,7 +319,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Skip this early-exit when UI filters are active: fast_search doesn't return
     // filter fields (gender_restriction, age_group, etc.), so hard filters would
     // silently fail on these results. Let the full pipeline run instead.
-    if (!input.filters && sqlOnly.length >= 10 && avgSqlScore > 80 && !isDomainIntent) {
+    const hasLocationFilter = !!(analysis.location.specified || input.location);
+    if (!input.filters && !hasLocationFilter && sqlOnly.length >= 10 && avgSqlScore > 80 && !isDomainIntent) {
       console.log(`[TieredSearch] Tier 2: High-confidence SQL (${sqlOnly.length} results, avg score ${avgSqlScore.toFixed(1)}) in ${Date.now() - startTime}ms`);
 
       // Convert to LiteService format
