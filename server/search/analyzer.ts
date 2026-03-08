@@ -209,6 +209,12 @@ const INDICATOR_TO_INTENT: Record<string, { intent: QueryIntent; requiresDistres
   indigenous: { intent: 'indigenous_services', requiresDistress: false },
   parenting: { intent: 'parenting_support', requiresDistress: false },
   community_social: { intent: 'community_social', requiresDistress: false },
+  substance_abuse: { intent: 'substance_abuse', requiresDistress: false },
+  healthcare: { intent: 'healthcare_access', requiresDistress: false },
+  employment: { intent: 'employment_support', requiresDistress: false },
+  veteran: { intent: 'veteran_services', requiresDistress: false },
+  basic_needs: { intent: 'basic_needs', requiresDistress: false },
+  transportation: { intent: 'basic_needs', requiresDistress: false },
 };
 
 /**

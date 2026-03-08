@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v93'; // Bumped: category audit — 72 services recategorized, 40→36 canonical categories
+const CACHE_VERSION = 'v95'; // Bumped: full intent coverage audit — 15 new boost/penalty sections
 
 import { SEARCH_CONFIG } from './config';
 import type {

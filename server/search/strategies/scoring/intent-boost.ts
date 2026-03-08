@@ -64,7 +64,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'substance_abuse': {
     serviceTypes: ['addiction_recovery', 'residential_treatment'],
-    categoryPatterns: /addiction|recovery|alcohol|drug|detox|rehab|sober|AA|NA|AADAC|peer support|treatment/i,
+    categoryPatterns: /addiction|alcohol|drug|detox|rehab|sober|AA\b|NA\b|AADAC|addiction recovery|addiction treatment|substance|harm reduction/i,
   },
   'mental_health': {
     serviceTypes: ['mental_health', 'counselling', 'crisis_line'],
@@ -133,6 +133,14 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   'community_social': {
     serviceTypes: ['community & social'],
     categoryPatterns: /recreation|drop-in|fitness|social connection|social support|community program|volunteer|hiking|outdoor|adaptive sport|wheelchair sport|inclusive recreation|makerspace|maker space|men'?s shed|community garden|friendship|lonely|isolation|YMCA|arts and crafts|woodworking|community farm/i,
+  },
+  'healthcare_access': {
+    serviceTypes: ['healthcare', 'medical'],
+    categoryPatterns: /doctor|physician|clinic|hospital|health centre|health center|811|health link|prescription|medication|chronic pain|patient|medical|dental|dentist|sexual health|STI|family planning/i,
+  },
+  'basic_needs': {
+    serviceTypes: ['basic_needs', 'material_aid'],
+    categoryPatterns: /clothing|furniture|household|supplies|hygiene|toiletries|emergency assistance|utility|rent assistance|donation|thrift|blanket|coat|backpack|basic needs|material aid/i,
   },
 };
 
@@ -579,6 +587,64 @@ export function boostByIntent(
       }
     }
 
+    // Substance abuse / addiction treatment boosting
+    const isAddictionQuery = hasIntent(analysis, 'substance_abuse', intent) ||
+      /\b(addiction|addictions|substance abuse|drug treatment|alcohol treatment|residential treatment|recovery program|rehab)\b/i.test(queryLower);
+    if (isAddictionQuery && !isFamilyAddictionQuery) {
+      // Strong boost for addiction-specific services
+      if (/\b(addiction|addictions|substance|detox|rehab|recovery house|sober living|treatment centre|treatment center)\b/i.test(textLower) &&
+          /\b(treatment|program|recovery|residential|counsell?ing|support)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.addictionService', cfg.substanceAbuse.addictionService, `Addiction treatment/recovery service`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.addictionService} for addiction service`);
+      }
+      // Extra boost for residential treatment specifically
+      if (/\b(residential|live-?in|inpatient|recovery house|sober living|halfway house|oxford house)\b/i.test(textLower) &&
+          /\b(addiction|recovery|treatment|substance|alcohol|drug)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.residentialTreatment', cfg.substanceAbuse.residentialTreatment, `Residential addiction treatment`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.residentialTreatment} for residential treatment`);
+      }
+      // Boost harm reduction
+      if (/\b(harm reduction|needle|syringe|naloxone|safe consumption|supervised|opioid agonist|methadone|suboxone)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.harmReduction', cfg.substanceAbuse.harmReduction, `Harm reduction service`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.harmReduction} for harm reduction`);
+      }
+      // Penalty for clearly unrelated categories
+      if (/\b(disability|autism|ASD|developmental|FASD|brain injury|AISH|PDD)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery|dual diagnosis)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Disability service for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for disability (addiction query)`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery|meals on wheels|food map)\b/i.test(textLower) &&
+          !/\b(addiction|recovery|treatment|residential)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Food service for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for food (addiction query)`);
+      }
+      if (/\b(senior|elderly|aging|dementia|alzheimer|geriatric|club 36)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Senior service for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for senior (addiction query)`);
+      }
+      if (/\b(legal aid|lawyer|law society|court|legal services|social benefits advocacy)\b/i.test(textLower) &&
+          !/\b(drug court|addiction|substance|DUI)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Legal service for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for legal (addiction query)`);
+      }
+      if (/\b(immigration|settlement|newcomer|ESL|refugee|citizenship|sponsorship)\b/i.test(textLower) &&
+          !/\b(addiction|substance|recovery)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Newcomer service for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for newcomer (addiction query)`);
+      }
+      if (/\b(eating disorder|anorexia|bulimia|binge eating)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Eating disorder for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for eating disorder (addiction query)`);
+      }
+      if (/\b(mentoring|big brothers|big sisters|youth mentor)\b/i.test(textLower) &&
+          !/\b(addiction|recovery|substance)\b/i.test(textLower)) {
+        addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Mentoring for addiction query`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for mentoring (addiction query)`);
+      }
+    }
+
     // Financial support boosting
     const isFinancialQuery = /\b(debt|bills?|financial|money|can'?t afford|bankruptcy|collections?|credit)\b/i.test(queryLower);
     const isCreditCounsellingQuery = /\b(credit counsell?ing|credit.*help|debt.*counsel|financial.*counsel)\b/i.test(queryLower);
@@ -706,6 +772,376 @@ export function boostByIntent(
           addFactor('veteran.womenSpecificPenalty', cfg.veteran.womenSpecificPenalty, `Women-specific for veteran query`);
           searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" ${cfg.veteran.womenSpecificPenalty} penalty for women-specific (veteran query)`);
         }
+      }
+    }
+
+    // Domestic violence boosting
+    const isDVQuery = hasIntent(analysis, 'domestic_violence', intent) ||
+      /\b(domestic violence|abusive relationship|women'?s shelter|safe house|sexual assault|family violence|intimate partner violence)\b/i.test(queryLower);
+    if (isDVQuery && !isCrisisQuery) {
+      if (/\b(shelter|safe house|safe.*home|women'?s.*shelter|emergency.*shelter|second stage)\b/i.test(textLower) &&
+          /\b(domestic|violence|abuse|women|family violence|intimate partner)\b/i.test(textLower)) {
+        addFactor('domesticViolence.dvShelter', cfg.domesticViolence.dvShelter, `DV shelter/safe house`);
+      }
+      if (/\b(domestic violence|family violence|abuse|victim|outreach|safety planning|protection order|restraining)\b/i.test(textLower) &&
+          /\b(support|counsell?ing|services|program|outreach|advocacy)\b/i.test(textLower)) {
+        addFactor('domesticViolence.dvServices', cfg.domesticViolence.dvServices, `DV services/counselling`);
+      }
+      if (/\b(crisis.*line|helpline|hotline|24.?7.*line|distress)\b/i.test(textLower)) {
+        addFactor('domesticViolence.crisisLine', cfg.domesticViolence.crisisLine, `Crisis line for DV`);
+      }
+      if (/\b(sexual assault|sexual violence|rape|SART|sexual abuse)\b/i.test(textLower)) {
+        addFactor('domesticViolence.sexualAssault', cfg.domesticViolence.sexualAssault, `Sexual assault service`);
+      }
+      // Penalties for unrelated services
+      if (/\b(addiction|detox|rehab|recovery house|sober living|residential treatment)\b/i.test(textLower) &&
+          !/\b(domestic|violence|abuse|assault|women|trauma)\b/i.test(textLower)) {
+        addFactor('domesticViolence.unrelatedPenalty', cfg.domesticViolence.unrelatedPenalty, `Addiction service for DV query`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery|meals on wheels)\b/i.test(textLower) &&
+          !/\b(domestic|violence|abuse|shelter|women)\b/i.test(textLower)) {
+        addFactor('domesticViolence.unrelatedPenalty', cfg.domesticViolence.unrelatedPenalty, `Food service for DV query`);
+      }
+      if (/\b(disability|autism|ASD|developmental|FASD|brain injury|AISH|PDD)\b/i.test(textLower) &&
+          !/\b(domestic|violence|abuse|assault|women)\b/i.test(textLower)) {
+        addFactor('domesticViolence.unrelatedPenalty', cfg.domesticViolence.unrelatedPenalty, `Disability service for DV query`);
+      }
+      if (/\b(senior|elderly|aging|dementia|alzheimer|geriatric)\b/i.test(textLower) &&
+          !/\b(domestic|violence|abuse|elder abuse)\b/i.test(textLower)) {
+        addFactor('domesticViolence.unrelatedPenalty', cfg.domesticViolence.unrelatedPenalty, `Senior service for DV query`);
+      }
+      if (/\b(employment|job|career|resume|interview|workforce)\b/i.test(textLower) &&
+          !/\b(domestic|violence|abuse|women|survivor)\b/i.test(textLower)) {
+        addFactor('domesticViolence.unrelatedPenalty', cfg.domesticViolence.unrelatedPenalty, `Employment service for DV query`);
+      }
+    }
+
+    // Mental health counselling boosting
+    const isMentalHealthQuery = hasIntent(analysis, 'mental_health', intent) ||
+      /\b(counselling|counseling|therapy|therapist|mental health|psychologist|psychiatrist)\b/i.test(queryLower);
+    if (isMentalHealthQuery && !isCrisisQuery && !isGriefQuery && !isPostpartumQuery && !isDVQuery) {
+      if (/\b(counsell?ing|therapy|therapist|psychologist|psychotherapy|CBT|DBT|EMDR)\b/i.test(textLower) &&
+          /\b(mental health|counsell?ing|therapy|wellness|psycholog|support)\b/i.test(textLower)) {
+        addFactor('mentalHealth.counsellingTherapy', cfg.mentalHealth.counsellingTherapy, `Counselling/therapy service`);
+      }
+      if (/\b(psychiatr|medication management|psychiatric|psychopharmac)\b/i.test(textLower)) {
+        addFactor('mentalHealth.psychiatry', cfg.mentalHealth.psychiatry, `Psychiatry service`);
+      }
+      if (/\b(support group|peer support|self-?help group|mutual aid)\b/i.test(textLower) &&
+          /\b(mental health|depression|anxiety|mood|emotion|wellness)\b/i.test(textLower)) {
+        addFactor('mentalHealth.supportGroup', cfg.mentalHealth.supportGroup, `Mental health support group`);
+      }
+      // Condition-specific match
+      const queryConditions = queryLower.match(/\b(depression|anxiety|bipolar|OCD|PTSD|schizophren|BPD|borderline|panic|phobia|agoraphobia)\b/i);
+      if (queryConditions && new RegExp(queryConditions[1], 'i').test(textLower)) {
+        addFactor('mentalHealth.specificCondition', cfg.mentalHealth.specificCondition, `Specific condition match`);
+      }
+      // Penalties for unrelated services
+      if (/\b(food bank|pantry|hamper|grocery|meals on wheels)\b/i.test(textLower) &&
+          !/\b(mental health|counsell?ing|therapy|psycholog)\b/i.test(textLower)) {
+        addFactor('mentalHealth.unrelatedPenalty', cfg.mentalHealth.unrelatedPenalty, `Food service for mental health query`);
+      }
+      if (/\b(legal aid|lawyer|law society|court|legal services)\b/i.test(textLower) &&
+          !/\b(mental health|counsell?ing|therapy|psycholog)\b/i.test(textLower)) {
+        addFactor('mentalHealth.unrelatedPenalty', cfg.mentalHealth.unrelatedPenalty, `Legal service for mental health query`);
+      }
+      if (/\b(employment|job|career|resume|interview|workforce)\b/i.test(textLower) &&
+          !/\b(mental health|counsell?ing|therapy|psycholog|wellness)\b/i.test(textLower)) {
+        addFactor('mentalHealth.unrelatedPenalty', cfg.mentalHealth.unrelatedPenalty, `Employment service for mental health query`);
+      }
+      if (/\b(emergency shelter|homeless shelter|housing first)\b/i.test(textLower) &&
+          !/\b(mental health|counsell?ing|therapy|psycholog|wellness)\b/i.test(textLower)) {
+        addFactor('mentalHealth.unrelatedPenalty', cfg.mentalHealth.unrelatedPenalty, `Housing/shelter for mental health query`);
+      }
+      if (/\b(addiction|detox|rehab|recovery house|sober living|residential treatment)\b/i.test(textLower) &&
+          !/\b(mental health|counsell?ing|therapy|psycholog|dual diagnosis)\b/i.test(textLower)) {
+        addFactor('mentalHealth.unrelatedPenalty', cfg.mentalHealth.unrelatedPenalty, `Addiction service for mental health query`);
+      }
+    }
+
+    // Food insecurity boosting
+    const isFoodQuery = hasIntent(analysis, 'food_insecurity', intent) ||
+      /\b(food bank|food pantry|free food|free meals|soup kitchen|meal program|food hamper|hungry|need food)\b/i.test(queryLower);
+    if (isFoodQuery) {
+      if (/\b(food bank|food pantry|food depot|food cupboard)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.foodBank', cfg.foodInsecurity.foodBank, `Food bank/pantry`);
+      }
+      if (/\b(community meal|soup kitchen|hot meal|meal program|free meal|lunch program|breakfast program)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.communityMeals', cfg.foodInsecurity.communityMeals, `Community meals/soup kitchen`);
+      }
+      if (/\b(hamper|grocery|food box|food basket|gift card|food voucher)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.grocerySupport', cfg.foodInsecurity.grocerySupport, `Grocery support/hampers`);
+      }
+      // Penalties for unrelated services
+      if (/\b(domestic violence|women'?s shelter|safe house|abuse)\b/i.test(textLower) &&
+          !/\b(food|meal|nutrition|grocery|pantry|hamper)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.unrelatedPenalty', cfg.foodInsecurity.unrelatedPenalty, `DV service for food query`);
+      }
+      if (/\b(disability|autism|ASD|developmental|FASD|brain injury)\b/i.test(textLower) &&
+          !/\b(food|meal|nutrition|grocery|pantry|hamper)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.unrelatedPenalty', cfg.foodInsecurity.unrelatedPenalty, `Disability service for food query`);
+      }
+      if (/\b(legal aid|lawyer|court|legal services)\b/i.test(textLower) &&
+          !/\b(food|meal|nutrition|grocery)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.unrelatedPenalty', cfg.foodInsecurity.unrelatedPenalty, `Legal service for food query`);
+      }
+      if (/\b(addiction|detox|rehab|recovery house|sober living)\b/i.test(textLower) &&
+          !/\b(food|meal|nutrition|grocery)\b/i.test(textLower)) {
+        addFactor('foodInsecurity.unrelatedPenalty', cfg.foodInsecurity.unrelatedPenalty, `Addiction service for food query`);
+      }
+    }
+
+    // Housing urgent / emergency shelter boosting
+    const isHousingUrgentQuery = hasIntent(analysis, 'housing_urgent', intent) ||
+      /\b(emergency shelter|homeless shelter|need a bed|nowhere to sleep|sleeping outside|homeless|need shelter)\b/i.test(queryLower);
+    const isStableHousingQuery = /\b(transitional housing|affordable housing|subsidized housing|rent supplement|rent assistance|long.?term housing|supportive housing|second stage|low.?income housing)\b/i.test(queryLower);
+    if (isHousingUrgentQuery && !isYouthQuery && !isStableHousingQuery) {
+      if (/\b(emergency shelter|homeless shelter|overnight shelter|shelter bed|emergency housing|shelter)\b/i.test(textLower) &&
+          /\b(shelter|beds?|overnight|emergency|housing|homeless)\b/i.test(textLower)) {
+        addFactor('housingUrgent.emergencyShelter', cfg.housingUrgent.emergencyShelter, `Emergency shelter`);
+      }
+      if (/\b(drop.?in|warming|overnight|mat program)\b/i.test(textLower) &&
+          /\b(shelter|beds?|sleep|stay|housing)\b/i.test(textLower)) {
+        addFactor('housingUrgent.dropInShelter', cfg.housingUrgent.dropInShelter, `Drop-in shelter`);
+      }
+      if (/\b(housing.*support|housing.*navigation|housing.*first|outreach|intake)\b/i.test(textLower) &&
+          /\b(homeless|housing|shelter)\b/i.test(textLower)) {
+        addFactor('housingUrgent.housingSupport', cfg.housingUrgent.housingSupport, `Housing support/navigation`);
+      }
+      // Penalties
+      if (/\b(food bank|pantry|hamper|grocery|meals on wheels)\b/i.test(textLower) &&
+          !/\b(shelter|housing|homeless|beds)\b/i.test(textLower)) {
+        addFactor('housingUrgent.unrelatedPenalty', cfg.housingUrgent.unrelatedPenalty, `Food service for shelter query`);
+      }
+      if (/\b(disability|autism|ASD|developmental|FASD|brain injury)\b/i.test(textLower) &&
+          !/\b(shelter|housing|homeless)\b/i.test(textLower)) {
+        addFactor('housingUrgent.unrelatedPenalty', cfg.housingUrgent.unrelatedPenalty, `Disability service for shelter query`);
+      }
+      if (/\b(legal aid|lawyer|court|legal services)\b/i.test(textLower) &&
+          !/\b(shelter|housing|homeless|eviction|tenant)\b/i.test(textLower)) {
+        addFactor('housingUrgent.unrelatedPenalty', cfg.housingUrgent.unrelatedPenalty, `Legal service for shelter query`);
+      }
+      if (/\b(counsell?ing|therapy|therapist|psycholog|mental health)\b/i.test(textLower) &&
+          !/\b(shelter|housing|homeless|outreach)\b/i.test(textLower)) {
+        addFactor('housingUrgent.unrelatedPenalty', cfg.housingUrgent.unrelatedPenalty, `Counselling for shelter query`);
+      }
+    }
+
+    // Stable/transitional housing boosting
+    if (isStableHousingQuery) {
+      if (/\b(transitional|second stage|interim|bridge)\b/i.test(textLower) &&
+          /\b(housing|home|residence|program)\b/i.test(textLower)) {
+        addFactor('housingStable.transitionalHousing', cfg.housingStable.transitionalHousing, `Transitional housing`);
+      }
+      if (/\b(affordable|subsidized|low.?income|social housing|community housing|public housing)\b/i.test(textLower) &&
+          /\b(housing|apartment|unit|home|rent)\b/i.test(textLower)) {
+        addFactor('housingStable.affordableHousing', cfg.housingStable.affordableHousing, `Affordable housing`);
+      }
+      if (/\b(rent supplement|rent subsidy|rent assistance|rental assistance|rent support)\b/i.test(textLower)) {
+        addFactor('housingStable.rentSupplement', cfg.housingStable.rentSupplement, `Rent supplement`);
+      }
+      if (/\b(emergency shelter|overnight shelter|mat program)\b/i.test(textLower) &&
+          !/\b(transitional|affordable|subsidized|long.?term|supportive|second stage)\b/i.test(textLower)) {
+        addFactor('housingStable.emergencyShelterPenalty', cfg.housingStable.emergencyShelterPenalty, `Emergency shelter for stable housing query`);
+      }
+    }
+
+    // Community & social connection boosting
+    const isCommunityQuery = hasIntent(analysis, 'community_social', intent) ||
+      /\b(recreation|drop-in center|social program|community program|volunteer|fitness class|sports league|social activit)\b/i.test(queryLower);
+    if (isCommunityQuery && !isCrisisQuery) {
+      if (/\b(recreation|fitness|sport|swimming|gym|yoga|exercise|adaptive sport|wheelchair sport)\b/i.test(textLower)) {
+        addFactor('communitySocial.recreationProgram', cfg.communitySocial.recreationProgram, `Recreation/fitness program`);
+      }
+      if (/\b(drop.?in|social.*group|friendship|social.*connection|community.*group|men'?s shed|craft|hobby|garden)\b/i.test(textLower)) {
+        addFactor('communitySocial.socialConnection', cfg.communitySocial.socialConnection, `Social connection program`);
+      }
+      if (/\b(volunteer|volunteering)\b/i.test(textLower)) {
+        addFactor('communitySocial.volunteerProgram', cfg.communitySocial.volunteerProgram, `Volunteer program`);
+      }
+      // Penalties
+      if (/\b(addiction|detox|rehab|recovery house|sober living)\b/i.test(textLower) &&
+          !/\b(recreation|social|community|drop.in|volunteer|fitness)\b/i.test(textLower)) {
+        addFactor('communitySocial.unrelatedPenalty', cfg.communitySocial.unrelatedPenalty, `Addiction service for community query`);
+      }
+      if (/\b(domestic violence|women'?s shelter|safe house|abuse)\b/i.test(textLower) &&
+          !/\b(recreation|social|community|drop.in|volunteer)\b/i.test(textLower)) {
+        addFactor('communitySocial.unrelatedPenalty', cfg.communitySocial.unrelatedPenalty, `DV service for community query`);
+      }
+      if (/\b(legal aid|lawyer|court|legal services)\b/i.test(textLower) &&
+          !/\b(recreation|social|community|volunteer)\b/i.test(textLower)) {
+        addFactor('communitySocial.unrelatedPenalty', cfg.communitySocial.unrelatedPenalty, `Legal service for community query`);
+      }
+    }
+
+    // Eating disorder boosting
+    const isEatingDisorderQuery = /\b(eating disorder|anorexia|bulimia|binge eating|purging|body dysmorphia|body image|orthorexia|ARFID)\b/i.test(queryLower);
+    if (isEatingDisorderQuery) {
+      if (/\b(eating disorder|anorexia|bulimia|binge|purging|body dysmorphia|ARFID|disordered eating)\b/i.test(textLower)) {
+        addFactor('eatingDisorder.edSpecific', cfg.eatingDisorder.edSpecific, `Eating disorder program`);
+      }
+      if (/\b(support group|peer support|anonymous|recovery group)\b/i.test(textLower) &&
+          /\b(eating|body|anorex|bulimi|food|weight)\b/i.test(textLower)) {
+        addFactor('eatingDisorder.edSupport', cfg.eatingDisorder.edSupport, `ED support group`);
+      }
+      if (/\b(body image|body positiv|body acceptance|self-?esteem)\b/i.test(textLower)) {
+        addFactor('eatingDisorder.bodyImage', cfg.eatingDisorder.bodyImage, `Body image program`);
+      }
+      // Penalties
+      if (/\b(addiction|detox|rehab|recovery house|sober living|substance|alcohol|drug)\b/i.test(textLower) &&
+          !/\b(eating disorder|anorex|bulimi|binge|body|food)\b/i.test(textLower)) {
+        addFactor('eatingDisorder.unrelatedPenalty', cfg.eatingDisorder.unrelatedPenalty, `Addiction service for ED query`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery|meals on wheels|soup kitchen)\b/i.test(textLower) &&
+          !/\b(eating disorder|anorex|bulimi|binge|body)\b/i.test(textLower)) {
+        addFactor('eatingDisorder.unrelatedPenalty', cfg.eatingDisorder.unrelatedPenalty, `Food bank for ED query`);
+      }
+    }
+
+    // Trauma & PTSD boosting (non-veteran, non-crisis)
+    const isTraumaQuery = /\b(trauma|PTSD|post.?traumatic|sexual assault|sexual abuse|childhood abuse|abuse survivor|ACE score|adverse childhood|trauma counselling|trauma therapy)\b/i.test(queryLower);
+    if (isTraumaQuery && !isVeteranQuery && !isCrisisQuery && !isDVQuery) {
+      if (/\b(trauma|PTSD|post.?traumatic|traumatic stress|trauma.?informed|trauma.*therap|trauma.*counsell|EMDR)\b/i.test(textLower)) {
+        addFactor('trauma.traumaSpecific', cfg.trauma.traumaSpecific, `Trauma-specific service`);
+      }
+      if (/\b(PTSD|post.?traumatic stress|trauma treatment|trauma recovery)\b/i.test(textLower) &&
+          /\b(treatment|program|therapy|counsell?ing)\b/i.test(textLower)) {
+        addFactor('trauma.ptsdServices', cfg.trauma.ptsdServices, `PTSD treatment service`);
+      }
+      if (/\b(sexual assault|sexual violence|rape|SART|sexual abuse)\b/i.test(textLower)) {
+        addFactor('trauma.sexualAssaultSupport', cfg.trauma.sexualAssaultSupport, `Sexual assault support`);
+      }
+      if (/\b(abuse.*recovery|abuse.*support|survivor|violence.*recovery)\b/i.test(textLower)) {
+        addFactor('trauma.abuseRecovery', cfg.trauma.abuseRecovery, `Abuse recovery program`);
+      }
+      // Penalties
+      if (/\b(food bank|pantry|hamper|grocery)\b/i.test(textLower) &&
+          !/\b(trauma|PTSD|assault|abuse|survivor)\b/i.test(textLower)) {
+        addFactor('trauma.unrelatedPenalty', cfg.trauma.unrelatedPenalty, `Food service for trauma query`);
+      }
+      if (/\b(employment|job|career|resume|workforce)\b/i.test(textLower) &&
+          !/\b(trauma|PTSD|assault|abuse|survivor)\b/i.test(textLower)) {
+        addFactor('trauma.unrelatedPenalty', cfg.trauma.unrelatedPenalty, `Employment service for trauma query`);
+      }
+      if (/\b(emergency shelter|homeless shelter)\b/i.test(textLower) &&
+          !/\b(trauma|PTSD|assault|abuse|survivor|violence)\b/i.test(textLower)) {
+        addFactor('trauma.unrelatedPenalty', cfg.trauma.unrelatedPenalty, `Shelter for trauma query`);
+      }
+    }
+
+    // Criminal justice reintegration boosting
+    const isCriminalJusticeQuery = /\b(criminal record|parole|probation|reintegration|ex-?offender|re-?entry|john howard|elizabeth fry|incarcerat|prison|jail|released from)\b/i.test(queryLower);
+    if (isCriminalJusticeQuery && !isLegalQuery) {
+      if (/\b(john howard|elizabeth fry|reintegration|re-?entry|ex-?offender|criminal justice|corrections)\b/i.test(textLower)) {
+        addFactor('criminalJustice.reintegration', cfg.criminalJustice.reintegration, `Reintegration program`);
+      }
+      if (/\b(criminal record|pardon|record suspension|police check|background check)\b/i.test(textLower)) {
+        addFactor('criminalJustice.recordSupport', cfg.criminalJustice.recordSupport, `Criminal record support`);
+      }
+      if (/\b(parole|probation|conditional|bail|remand|community corrections)\b/i.test(textLower)) {
+        addFactor('criminalJustice.paroleProbation', cfg.criminalJustice.paroleProbation, `Parole/probation support`);
+      }
+      // Penalties
+      if (/\b(counsell?ing|therapy|therapist|psycholog|mental health)\b/i.test(textLower) &&
+          !/\b(criminal|justice|reintegration|parole|probation|offender|forensic)\b/i.test(textLower)) {
+        addFactor('criminalJustice.unrelatedPenalty', cfg.criminalJustice.unrelatedPenalty, `Counselling for criminal justice query`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery)\b/i.test(textLower) &&
+          !/\b(criminal|justice|reintegration|parole|offender)\b/i.test(textLower)) {
+        addFactor('criminalJustice.unrelatedPenalty', cfg.criminalJustice.unrelatedPenalty, `Food service for criminal justice query`);
+      }
+      if (/\b(domestic violence|women'?s shelter|safe house)\b/i.test(textLower) &&
+          !/\b(criminal|justice|reintegration|parole|offender)\b/i.test(textLower)) {
+        addFactor('criminalJustice.unrelatedPenalty', cfg.criminalJustice.unrelatedPenalty, `DV service for criminal justice query`);
+      }
+    }
+
+    // Gambling support boosting
+    const isGamblingQuery = /\b(gambling|gambler|casino|betting|wagering|poker|VLT|slot machine|problem gambling|gambling addiction)\b/i.test(queryLower);
+    if (isGamblingQuery && !isCrisisQuery) {
+      if (/\b(gambling|problem gambling|gaming|wagering|gambler|GameSense)\b/i.test(textLower) &&
+          /\b(treatment|program|counsell?ing|support|help|therapy)\b/i.test(textLower)) {
+        addFactor('gambling.gamblingTreatment', cfg.gambling.gamblingTreatment, `Gambling treatment`);
+      }
+      if (/\b(gamblers anonymous|GA\b|gambling.*support|gambling.*peer|gambling.*group)\b/i.test(textLower)) {
+        addFactor('gambling.gamblingSupport', cfg.gambling.gamblingSupport, `Gambling support group`);
+      }
+      if (/\b(self.?exclusion|voluntary exclusion|GameSense)\b/i.test(textLower)) {
+        addFactor('gambling.selfExclusion', cfg.gambling.selfExclusion, `Self-exclusion program`);
+      }
+      // Penalties
+      if (/\b(alcohol|drug|opioid|cocaine|meth|heroin|detox|needle|syringe)\b/i.test(textLower) &&
+          !/\b(gambling|gaming|wagering|casino)\b/i.test(textLower)) {
+        addFactor('gambling.substancePenalty', cfg.gambling.substancePenalty, `Drug/alcohol treatment for gambling query`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery)\b/i.test(textLower) &&
+          !/\b(gambling|gaming)\b/i.test(textLower)) {
+        addFactor('gambling.unrelatedPenalty', cfg.gambling.unrelatedPenalty, `Food service for gambling query`);
+      }
+      if (/\b(disability|autism|ASD|developmental)\b/i.test(textLower) &&
+          !/\b(gambling|gaming)\b/i.test(textLower)) {
+        addFactor('gambling.unrelatedPenalty', cfg.gambling.unrelatedPenalty, `Disability service for gambling query`);
+      }
+    }
+
+    // Healthcare access boosting
+    const isHealthcareQuery = hasIntent(analysis, 'healthcare_access', intent) ||
+      /\b(doctor|walk.?in clinic|medical clinic|find a doctor|need a doctor|prescription help|health clinic|811|health link|dental|dentist)\b/i.test(queryLower);
+    if (isHealthcareQuery && !isMentalHealthQuery && !isCrisisQuery) {
+      if (/\b(doctor|physician|clinic|medical|health centre|health center|walk.?in|family medicine|primary care|811|health link)\b/i.test(textLower) &&
+          /\b(health|medical|clinic|doctor|care|services)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.healthcareService', cfg.healthcareAccess.healthcareService, `Healthcare service`);
+      }
+      if (/\b(health benefit|health coverage|insurance|prescription.*assist|medication.*assist|pharmacare|non-?insured|NIHB)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.healthBenefits', cfg.healthcareAccess.healthBenefits, `Health benefits program`);
+      }
+      if (/\b(community health|health centre|health center|primary care|family health)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.communityHealth', cfg.healthcareAccess.communityHealth, `Community health centre`);
+      }
+      if (/\b(sexual health|STI|STD|contraception|family planning)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.healthcareService', cfg.healthcareAccess.healthcareService, `Sexual health service`);
+      }
+      // Penalties
+      if (/\b(addiction|detox|rehab|recovery house|sober living)\b/i.test(textLower) &&
+          !/\b(health|medical|clinic|doctor|prescription)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.unrelatedPenalty', cfg.healthcareAccess.unrelatedPenalty, `Addiction service for healthcare query`);
+      }
+      if (/\b(domestic violence|women'?s shelter|safe house)\b/i.test(textLower) &&
+          !/\b(health|medical|clinic|doctor)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.unrelatedPenalty', cfg.healthcareAccess.unrelatedPenalty, `DV service for healthcare query`);
+      }
+      if (/\b(food bank|pantry|hamper|grocery)\b/i.test(textLower) &&
+          !/\b(health|medical|clinic|doctor)\b/i.test(textLower)) {
+        addFactor('healthcareAccess.unrelatedPenalty', cfg.healthcareAccess.unrelatedPenalty, `Food service for healthcare query`);
+      }
+    }
+
+    // Basic needs & material aid boosting
+    const isBasicNeedsQuery = hasIntent(analysis, 'basic_needs', intent) ||
+      /\b(clothing bank|clothing room|need clothes|need furniture|furniture bank|hygiene kit|emergency supplies|thrift|donation centre)\b/i.test(queryLower);
+    if (isBasicNeedsQuery && !isFoodQuery) {
+      if (/\b(clothing|clothes|coat|blanket|furniture|household|supplies|thrift|donation)\b/i.test(textLower) &&
+          /\b(bank|room|donation|free|assist|program|service|depot)\b/i.test(textLower)) {
+        addFactor('basicNeeds.materialAid', cfg.basicNeeds.materialAid, `Material aid service`);
+      }
+      if (/\b(emergency.*assist|emergency.*financial|utility.*assist|rent.*assist|bill.*help)\b/i.test(textLower)) {
+        addFactor('basicNeeds.emergencyAssistance', cfg.basicNeeds.emergencyAssistance, `Emergency assistance`);
+      }
+      if (/\b(hygiene|toiletries|personal care|shampoo|soap|toothbrush)\b/i.test(textLower)) {
+        addFactor('basicNeeds.hygieneSupplies', cfg.basicNeeds.hygieneSupplies, `Hygiene supplies`);
+      }
+      // Penalties
+      if (/\b(counsell?ing|therapy|therapist|psycholog|mental health)\b/i.test(textLower) &&
+          !/\b(clothing|furniture|supplies|basic needs|material|donation|thrift)\b/i.test(textLower)) {
+        addFactor('basicNeeds.unrelatedPenalty', cfg.basicNeeds.unrelatedPenalty, `Counselling for basic needs query`);
+      }
+      if (/\b(legal aid|lawyer|court|legal services)\b/i.test(textLower) &&
+          !/\b(clothing|furniture|supplies|basic needs|material)\b/i.test(textLower)) {
+        addFactor('basicNeeds.unrelatedPenalty', cfg.basicNeeds.unrelatedPenalty, `Legal service for basic needs query`);
+      }
+      if (/\b(addiction|detox|rehab|recovery house)\b/i.test(textLower) &&
+          !/\b(clothing|furniture|supplies|basic needs|material)\b/i.test(textLower)) {
+        addFactor('basicNeeds.unrelatedPenalty', cfg.basicNeeds.unrelatedPenalty, `Addiction service for basic needs query`);
       }
     }
 

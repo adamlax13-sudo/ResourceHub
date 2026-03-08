@@ -348,6 +348,11 @@ export const SEARCH_CONFIG = {
       /(?:lost|blew|spent|wasted).*(?:money|savings|paycheck|rent).*(?:on|to|at)/i,
       /(?:in debt|owe money).*(?:because|from|due to)/i,
       /(?:ruined|destroyed).*(?:finances|life|family).*(?:gambling|betting)/i,
+      // Directory/informational patterns (not distress-phrased)
+      /\b(?:addiction|addictions)\s+(?:treatment|program|services?|centre|center|residential|recovery|counsell?ing)\b/i,
+      /\b(?:residential)\s+(?:treatment|recovery|rehab|addiction|program)\b/i,
+      /\b(?:treatment|recovery)\s+(?:centre|center|house|facility|program)\b.*(?:addiction|alcohol|drug|substance)/i,
+      /\b(?:drug|alcohol|substance)\s+(?:treatment|rehabilitation|recovery|program|counsell?ing)\b/i,
     ],
     mental_health: [
       /(?:feel|i'?m|feeling|struggling|always).*(?:sad|depressed|anxious|hopeless|alone|empty|worthless|overwhelmed|lost)/i,
@@ -553,6 +558,24 @@ export const SEARCH_CONFIG = {
       /\b(?:child advocate|youth advocate|advancing futures)\b/i,
       // Midwifery / prenatal
       /\b(?:midwife|midwifery|doula|prenatal class|birth plan)\b/i,
+    ],
+    // Healthcare access (doctors, clinics, prescriptions)
+    healthcare_access: [
+      /\b(?:doctor|physician|family doctor|walk-?in clinic|medical clinic)\b/i,
+      /\b(?:prescription|medication|pharmacy|pharmacist)\b.*(?:help|afford|can't|program)/i,
+      /\b(?:no doctor|need a doctor|find a doctor|finding a doctor)\b/i,
+      /\b(?:health benefits|health coverage|health insurance)\b/i,
+      /\b(?:community health|health centre|health center)\b/i,
+      /\b(?:dental|dentist|dental clinic)\b.*(?:help|afford|low.?cost|free|program)/i,
+      /\b(?:sexual health|STI|STD|contraception|family planning)\b/i,
+    ],
+    // Basic needs & material aid (clothing, furniture, supplies)
+    basic_needs: [
+      /\b(?:need|looking for|where).*(?:clothes|clothing|furniture|household|supplies)\b/i,
+      /\b(?:emergency).*(?:supplies|assistance|financial|funds)\b/i,
+      /\b(?:hygiene|toiletries|personal care).*(?:products|supplies|kits)\b/i,
+      /\b(?:clothing bank|clothing room|thrift|donation centre|furniture bank)\b/i,
+      /\b(?:utility|rent|bill).*(?:help|assistance|arrears|subsidy|supplement)\b/i,
     ],
     // Community & social connection, recreation, hobbies
     community_social: [
@@ -774,6 +797,12 @@ export const SEARCH_CONFIG = {
       /\b(al-?anon|nar-?anon|family.*support.*addict|codependent)\b/i,
       /\b(loved one|family member).*(?:is|has).*(?:addiction|drinking|drug)\b/i,
     ],
+    // Substance abuse / addiction indicators (directory-style, not distress-required)
+    substance_abuse: [
+      /\b(?:addiction|addictions|addict)\b/i,
+      /\b(?:rehab|rehabilitation|treatment center|treatment centre)\b/i,
+      /\b(?:sober living|recovery house|halfway house|oxford house)\b/i,
+    ],
     // Caregiver indicators
     caregiver: [
       /\b(caregiver|caregiving|caring for|looking after)\b/i,
@@ -796,6 +825,29 @@ export const SEARCH_CONFIG = {
       /\b(baby|infant|newborn|toddler|diapers|formula|breastfeeding|nursing)\b/i,
       /\b(parent|parenting|mom|dad|single parent|teen parent|young parent)\b/i,
       /\b(childcare|daycare|car seat|crib|stroller|baby supplies)\b/i,
+    ],
+    // Employment indicators
+    employment: [
+      /\b(job|career|employment|resume|interview|work|workplace)\b/i,
+      /\b(apprentice|trades?|skills training|workforce)\b/i,
+      /\b(unemployed|laid off|fired|job loss|looking for work)\b/i,
+    ],
+    // Veteran/military indicators
+    veteran: [
+      /\b(veteran|military|armed forces|canadian forces|CAF|CFB)\b/i,
+      /\b(service member|deployment|combat|legion|VAC|veterans affairs)\b/i,
+    ],
+    // Basic needs & material aid indicators
+    basic_needs: [
+      /\b(clothes|clothing|furniture|household items|supplies|blankets|coats)\b/i,
+      /\b(hygiene|toiletries|personal care|shampoo|soap|toothbrush)\b/i,
+      /\b(emergency assistance|emergency financial|utility assistance|rent assistance)\b/i,
+      /\b(donation|donate|free stuff|thrift|clothing bank|furniture bank)\b/i,
+    ],
+    // Transportation indicators
+    transportation: [
+      /\b(transportation|transport|ride|rides|bus pass|bus ticket|shuttle)\b/i,
+      /\b(medical transportation|patient transport|DATS|access-a-bus)\b/i,
     ],
     // Community & social connection indicators
     community_social: [
@@ -888,7 +940,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'community_social' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'community_social' | 'healthcare_access' | 'basic_needs' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type
