@@ -8,7 +8,7 @@
     "build": "node --import tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "node --import tsx node_modules/typescript/bin/tsc",
-    "db:push": "node --import tsx node_modules/drizzle-kit/bin.cjs push",
+    "db:push": "node --env-file=.env --import tsx node_modules/drizzle-kit/bin.cjs push",
     "evaluate": "node --import tsx server/evaluation/evaluate_search.ts",
     "evaluate:query": "node --import tsx server/evaluation/evaluate_search.ts",
     "evaluate:comprehensive": "node --import tsx server/evaluation/auto_optimize.ts",

@@ -199,6 +199,7 @@ def main_v2():
     from sources.acds import ACDSSource
     from sources.veterans_affairs import VeteransAffairsSource
     from sources.cra_charities import CRACharitiesSource
+    from sources.university_wellness import UniversityWellnessSource
     from enrichment import EnrichmentEngine
 
     # Database session setup
@@ -221,6 +222,7 @@ def main_v2():
     pipeline.register_source(ACDSSource())
     pipeline.register_source(VeteransAffairsSource())
     pipeline.register_source(CRACharitiesSource())
+    pipeline.register_source(UniversityWellnessSource())
 
     # Set up enrichment engine
     claude_client = None
