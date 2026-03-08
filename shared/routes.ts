@@ -15,6 +15,10 @@ export const serviceSummarySchema = z.object({
   description: z.string(),  // Truncated for card display
   location: z.string().nullable().default(''),
   waitTimes: z.string().nullable().default(''),
+  // Phone number — shown on card for crisis lines so users don't have to expand
+  phone: z.string().optional(),
+  // 24/7 availability flag
+  is24_7: z.boolean().optional(),
   // Debug mode only - shows scoring breakdown
   scoreExplanation: z.array(scoreExplanationSchema).optional(),
 });

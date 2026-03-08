@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
+import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 import { type ServiceSummary } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
@@ -134,6 +134,18 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
             <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || "Contact service provider for wait time"}</span>
           </div>
+          {/* Show phone prominently for crisis lines — users in distress need the number immediately */}
+          {service.phone && service.category?.toLowerCase().includes('crisis') && (
+            <a
+              href={`tel:${service.phone.replace(/[^0-9+]/g, '')}`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 px-3 py-2 mt-1 rounded-lg bg-red-50 border border-red-200 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors"
+              aria-label={`Call ${service.name} at ${service.phone}`}
+            >
+              <Phone className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+              <span>Call Now: {service.phone}</span>
+            </a>
+          )}
         </div>
 
         <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
