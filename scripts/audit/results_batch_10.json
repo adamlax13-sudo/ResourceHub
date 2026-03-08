@@ -1,0 +1,705 @@
+[
+  {
+    "id": 2604,
+    "name": "Closer to Home Community Services Society",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2611,
+    "name": "Garneau United Assisted Living Place",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2612,
+    "name": "Edmonton Violence Prevention Centre",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2616,
+    "name": "Accessible Housing Society",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2620,
+    "name": "Saamis Immigration Services Association",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2632,
+    "name": "Ability Resource Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2634,
+    "name": "Edmonton Centre for Race and Culture.",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2635,
+    "name": "Parkland Turning Points Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2638,
+    "name": "Campus Food Bank Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2641,
+    "name": "Prairie Winds Clubhouse Society",
+    "current": "Mental Health & Counselling",
+    "proposed": "Employment Services",
+    "action": "CHANGE",
+    "reason": "Clubhouse model primarily provides employment/vocational rehabilitation"
+  },
+  {
+    "id": 2644,
+    "name": "Arch Enterprises & Training Association of Edmonton",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2654,
+    "name": "Care Human Services Ltd.",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2656,
+    "name": "Calvary Community Church of Edmonton",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2659,
+    "name": "Red Deer First Church of the Nazarene",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2662,
+    "name": "Highbanks Independent Living for Parenting Youth Society",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2677,
+    "name": "Foothills Academy Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2679,
+    "name": "Westside King's Church Society",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2682,
+    "name": "Special Olympics Alberta Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2685,
+    "name": "Centra Cam Vocational Training Association",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2686,
+    "name": "Crowsnest Community Support Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2687,
+    "name": "Student Association of Lethbridge Community College",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2699,
+    "name": "The Impact Society for Children & Families in Turmoil",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2701,
+    "name": "The Society for Selections: A Career Support Service",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2702,
+    "name": "Emma Maternity House Society",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2703,
+    "name": "Hillhurst-Sunnyside Community Association",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2707,
+    "name": "Getting Ready for Inclusion Today (The Grit Program) Society of Edmonton",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2711,
+    "name": "Red Deer Church of Christ",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2713,
+    "name": "The Alliance Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2714,
+    "name": "Grace United Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2715,
+    "name": "Youths Can Fish 2 Society",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2717,
+    "name": "St Matthews Evangelical Lutheran Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2721,
+    "name": "Bonnyville Community Church",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Church provides food, clothing and household items"
+  },
+  {
+    "id": 2723,
+    "name": "Fort Saskatchewan Pentecostal Assembly",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2724,
+    "name": "Pacekids Society for Children With Special Needs",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2729,
+    "name": "Silver Springs Community Association",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2731,
+    "name": "Hope City Church (Edmonton)",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2733,
+    "name": "Children's Ability Fund",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2736,
+    "name": "The Strongest Oak Foundation",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2745,
+    "name": "Womanspace Resource Centre Society",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2747,
+    "name": "Peace River Community Soup Kitchen Committee",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2749,
+    "name": "The Evangelical Covenant Church of Calgary",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2750,
+    "name": "Behaviour Therapy and Learning Centre Ltd.",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2756,
+    "name": "Leduc Hub Association",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 2759,
+    "name": "Mount View Special Riding Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2762,
+    "name": "Men's Educational Support Association",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2764,
+    "name": "Third Academy International Ltd.",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2771,
+    "name": "Edmonton Emergency Response and Newcomers Services",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2775,
+    "name": "Spirit West United Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2779,
+    "name": "Canadian Zalmi Society",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2792,
+    "name": "Emmanuel Seniors Living Society",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2793,
+    "name": "Inclusion Lethbridge Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2795,
+    "name": "Thrive Outreach Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and material aid"
+  },
+  {
+    "id": 2799,
+    "name": "O B A D the Organization for Bipolar Affective Disorders Society",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2803,
+    "name": "Leduc Regional Housing Foundation",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2804,
+    "name": "Bar Harbour Camp Society",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2808,
+    "name": "Mountain View Emergency Shelter Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2811,
+    "name": "Varsity Acres Presbyterian Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2817,
+    "name": "Grace Presbyterian Church of Calgary Alberta",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2818,
+    "name": "The Lethbridge Soup Kitchen Association 2013",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2819,
+    "name": "Living Springs Christian Fellowship of Airdrie",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2823,
+    "name": "Sexsmith and Area Food Bank Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2824,
+    "name": "Carstairs Bancroft United Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2828,
+    "name": "Profound Walk With God Ministry (Pentecostal Calgary)",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2830,
+    "name": "Living Springs Bible Camp Association",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2834,
+    "name": "Alberta Lawyers'assistance Society (The Assist Program)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2836,
+    "name": "Drive Happiness Seniors Association",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2843,
+    "name": "Alberta Northern Lights Wheelchair Basketball Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2848,
+    "name": "Canadian Reformed Church Coaldale",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2851,
+    "name": "Bethel Pentecostal Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2862,
+    "name": "Stop Abuse in Families (Saif) Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2863,
+    "name": "West Sturgeon People Aging in Place Foundation",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2864,
+    "name": "Inter-Denominational Christiancomm Centre Church of Camrose",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2865,
+    "name": "Mill Woods Moravian Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2866,
+    "name": "Stettler & District Handibus Society",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 2867,
+    "name": "Al Azhar Shrine Hospital Patient Transportation Fund",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 2868,
+    "name": "Leduc Community Living Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2869,
+    "name": "Okotoks Pastoral Charge",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2872,
+    "name": "The Marian Centre",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2878,
+    "name": "Al-Ansaar Islamic Foundation",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2880,
+    "name": "The Shaama Centre for Seniors and Women",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2882,
+    "name": "Momentum Community Economic Development Society",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2884,
+    "name": "Lamont County Housing Foundation",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2885,
+    "name": "Bright Lights for Africa Foundation",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2886,
+    "name": "Morinville Pastoral Charge",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2890,
+    "name": "The Young Men's Christian Association of Edmonton",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2891,
+    "name": "Cameroonian-Canadian Foundation/Fondation Camerounaise-Canadienne",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2896,
+    "name": "St. Albert Community Village and Food Bank Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2900,
+    "name": "Terra Centre for Teen Parents",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2910,
+    "name": "King of Kings Lutheran Church (Spruce View District)",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2918,
+    "name": "The Redeemers Food Bank Ltd.",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2922,
+    "name": "Potter's Hands Ministries Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2925,
+    "name": "St. Matthias Anglican Church",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2929,
+    "name": "Advent Lutheran Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2932,
+    "name": "Crosspointe Fellowship (Calgary)",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2942,
+    "name": "The Calgary Between Friends Club-Fun and Fellowship for Disabled Youth",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2945,
+    "name": "Helping Hands Society of Cochrane & Area",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2949,
+    "name": "Shalem Society for Senior Citizens Care",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2951,
+    "name": "Bow Valley Connections Centre",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2952,
+    "name": "Rocky View Regional Handibus Society",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 2954,
+    "name": "Willow Creek Foundation",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  }
+]

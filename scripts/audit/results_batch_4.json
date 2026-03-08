@@ -1,0 +1,705 @@
+[
+  {
+    "id": 403,
+    "name": "Youth Services Centre - Recovery & Detox (AHS Calgary)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 404,
+    "name": "Fresh Start Recovery Centre (AHS Calgary)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 408,
+    "name": "Lethbridge Youth Addiction Treatment Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 409,
+    "name": "AHS — Opioid Dependency Program (Lethbridge)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 410,
+    "name": "Streets Alive Family Support Association - Genesis Women's Life Recovery Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 411,
+    "name": "Streets Alive Family Support Association - Exodus Men's Life Recovery Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 412,
+    "name": "Southern Alcare Manor - Long-Term Residential (AHS)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 413,
+    "name": "Southern Alcare Manor - Transitional (AHS)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 415,
+    "name": "AHS - Enhanced Services for Women (Red Deer)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 416,
+    "name": "AHS — Adult Addiction Counselling (Red Deer)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 420,
+    "name": "AHS - Concurrent Disorders Enhanced Service (Ponoka)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 421,
+    "name": "AHS - Recovery Centre (Medically Supported Detox, Medicine Hat)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 422,
+    "name": "Bridges Family Programs - First Steps",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 423,
+    "name": "Pathways to Recovery",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 424,
+    "name": "Our Collective Journey - Recovery Coach Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 425,
+    "name": "Rising Above — Faith-Based Residential Addiction Recovery (Grande Prairie)",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 426,
+    "name": "Family Education Society — Family Support & Addiction Services (Grande Prairie)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 428,
+    "name": "Wood Buffalo Wellness Society - Sakihitowin Recovery Home Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 430,
+    "name": "Mainsprings Pregnancy and Family Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 431,
+    "name": "Distress Line (CMHA) Edmonton Region",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 432,
+    "name": "Live Crisis Chat (CMHA) Edmonton Region",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 438,
+    "name": "AHS - Mobile Response Team",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 439,
+    "name": "Distress and Suicide Prevention Line of Southwestern Alberta",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 441,
+    "name": "Capella Centre (formerly St Paul Crisis Centre Association)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 442,
+    "name": "Wellspring — Women's Crisis Shelter & Support (Whitecourt)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 443,
+    "name": "True North Society — Domestic Violence Shelter & Crisis Support",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 444,
+    "name": "Wood's Homes — Children's Mental Health Treatment & Crisis Support",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 445,
+    "name": "YWCA Lethbridge and District",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 446,
+    "name": "HomeFront - Red Deer and Area Domestic Violence Intervention and Resource Team",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 447,
+    "name": "Social Diversion Team - Safe Harbour Society",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 448,
+    "name": "Family Violence Helpline - Central Alberta Women's Emergency Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 449,
+    "name": "24-Hour Sexual Violence Support Line - Sendero Centre",
+    "current": "Crisis Services",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "Phone/text-based crisis line, not walk-in service"
+  },
+  {
+    "id": 450,
+    "name": "AHS — Child, Youth & Family Mental Health Therapy (Red Deer)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 452,
+    "name": "AHS - Police and Crisis Team (Adult, Medicine Hat)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 453,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 454,
+    "name": "AHS - Crisis Response Team (Grande Prairie)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 455,
+    "name": "Sunrise House - Youth Emergency Shelter",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 456,
+    "name": "Waypoints Community Services",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 457,
+    "name": "Child and Adolescent Mental Health Inpatient Services",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 458,
+    "name": "Medical Clinic for Vulnerable Youth — Health, Housing & Employment Support",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 459,
+    "name": "Emergency Services - Child and Adolescent Mental Health",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 460,
+    "name": "AHS - Youth Substance Use & Mental Health Services (Community Outpatient Clinic)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 461,
+    "name": "AHS - Child and Adolescent Psychiatry Service",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 462,
+    "name": "Child and Adolescent Addiction Mental Health and Psychiatry Program Community Clinics",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 463,
+    "name": "Exceptional Needs Program Service - Child and Adolescent Mental Health",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 464,
+    "name": "AHS - Edmonton Youth Stabilization Program",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 465,
+    "name": "AHS - Child and Adolescent Mental Health Walk-In Service",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 466,
+    "name": "iHuman Youth Society - LiNKS Mental Health Supports",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 467,
+    "name": "AHS - Addiction and Mental Health Community Services (Child and Adolescent)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 468,
+    "name": "AHS - Mobile Addiction Services (Adolescent)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 469,
+    "name": "AHS - Addiction and Mental Health Intake Services (Child and Adolescent)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 470,
+    "name": "AHS - Edmonton Youth Recovery Program",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 471,
+    "name": "Addiction and Mental Health - Child and Adolescent - Outpatient Psychiatry Clinic",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 472,
+    "name": "AHS — Children, Youth & Family Outpatient Groups (Red Deer)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 473,
+    "name": "Sheldon Kennedy Centre - Drop-in Counselling",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 474,
+    "name": "AHS — Children's Behavioural Health Services (Medicine Hat)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 475,
+    "name": "AHS — Palliser Adolescent Services (Medicine Hat)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 476,
+    "name": "AHS — Child, Youth & Family Mental Health Services (Medicine Hat)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 477,
+    "name": "Medicine Hat Family Service - Youth Support Group",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 478,
+    "name": "AHS — Provincial Mobile Addiction Outreach (Medicine Hat)",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 479,
+    "name": "Niitoiyis Family Support Society - Men's Healing Circle",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 480,
+    "name": "Sunrise Healing Lodge Society - Family Counselling",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 481,
+    "name": "BIPOC Healing and Wellness Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 482,
+    "name": "AHS - Indigenous Hospital Support Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 484,
+    "name": "Taproot — Spirit of Our Youth: Indigenous Youth & Family Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 485,
+    "name": "Aboriginal Counseling Services Association - Holding Our Anger Bundle",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 486,
+    "name": "AHS - Indigenous Wellness Clinic",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 487,
+    "name": "BIPOC Healing and Wellness Centre - Indigenous Women's Program",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 488,
+    "name": "First Nations Health Consortium",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 489,
+    "name": "AHS — Indigenous Mental Health Program (Calgary)",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 490,
+    "name": "Alberta Indigenous Virtual Care Clinic - Virtual Care Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 491,
+    "name": "AHS — Indigenous Wellness Core (Buffalo Lake)",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 492,
+    "name": "Canadian Mental Health Association - Alberta Division and Centre for Suicide Prevention - Indigenous Suicide Prevention Resources and Workshops",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 493,
+    "name": "Government of Canada - Indigenous Services Canada - Hope for Wellness Help Line",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 494,
+    "name": "YW Crisis Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 495,
+    "name": "YW Calgary - Domestic Violence Support Outreach Program",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 496,
+    "name": "Heart Home Network - Second Stage Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 497,
+    "name": "Calgary Counselling - Domestic Abuse Programs",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 498,
+    "name": "Victim Supports Outreach Program",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 501,
+    "name": "WINGS of Providence Society — Second-Stage Shelter for Women Fleeing Violence",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 503,
+    "name": "enCompass Community Safety Agency - Nalah Centre",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 504,
+    "name": "enCompass Community Safety Agency - Domestic Violence Complainant Program",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 505,
+    "name": "Rowan House Society - Domestic Violence and Abuse Emergency Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 506,
+    "name": "TODAY Family Violence Help Centre - Family Violence Training and Education",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 507,
+    "name": "Elk Point Healthcare Centre — Domestic Abuse Response Team (DART)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 508,
+    "name": "Harbour House — Women's Emergency Shelter (Lethbridge)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 509,
+    "name": "Taber Safe Haven Women's Shelter Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 511,
+    "name": "Women's Shelter and Support - Lethbridge",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 512,
+    "name": "Hope Transitional Housing",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 513,
+    "name": "Central Alberta Outreach Society - Domestic Violence Support",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 514,
+    "name": "Central Alberta Outreach Society - Julietta's Place",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 515,
+    "name": "Medicine Hat Women's Shelter Society - Outreach Services",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 516,
+    "name": "Grande Prairie John Howard Society - Domestic Violence Treatment Services",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 517,
+    "name": "Odyssey House — Women's Shelter & Crisis Housing",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 518,
+    "name": "Crossroads Resource Centre and Women's Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 520,
+    "name": "Family Access Services — Safe Visitation & Family Violence Support (Wood Buffalo)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 521,
+    "name": "Calgary Women's Emergency Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 522,
+    "name": "Maskan Family Association - Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 523,
+    "name": "YW Calgary Transitional Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 528,
+    "name": "Bent Arrow Traditional Healing Society - Nikihk Housing First",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  }
+]

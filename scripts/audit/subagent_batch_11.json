@@ -1,0 +1,702 @@
+[
+  {
+    "id": 2958,
+    "name": "High Prairie and District Food Bank Society",
+    "cat": "Food Banks & Meals",
+    "desc": "Providing food hampers to needy client as required. Taking into account their finacial status and eligibility provide food for local schools breakfast program as stock permits in consultation with other social agencies provide extra christmas hampers",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-523-5777 or visit hpfoodbank.com\",\"details\":\"Community food bank serving High Prairie and "
+  },
+  {
+    "id": 2963,
+    "name": "Dashmesh Culture Centre",
+    "cat": "Community & Social Connection",
+    "desc": "Places of worship; congregations; dioceses; parishes missionary organization; Training youth; social services & Evangelism & Social housing programs",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-590-0970 or visit dashmesh.ca\",\"details\":\"Sikh Gurdwara at 135 Gurdwara Sahib Blvd NE, Cal"
+  },
+  {
+    "id": 2967,
+    "name": "West Zion Mennonite Church",
+    "cat": "Community & Social Connection",
+    "desc": "- we provide opportunities for worship through religious ceremonies; sermons and bible studies. - we provide pastoral care; bible teaching and mentoring; ; we provide ministries for men; women; youth; seniors and children; weekly or monthly. - we pro",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-337-2020 or visit westzion.com\",\"details\":\"West Zion Bible Church in Carstairs. 'We are he"
+  },
+  {
+    "id": 2970,
+    "name": "Edmonton Down Syndrome Society",
+    "cat": "Disability & Autism Support",
+    "desc": "1. Monthly meetings for members and guests 2. Parent group meetings for education and support 3. Member communication via newsletter and website 4. New parent package for information 5. Resource library for families 6. Teachers conference 7. Speech t",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-944-4224\",\"details\":\"Reach out by phone at 780-944-4224 to learn abo"
+  },
+  {
+    "id": 2976,
+    "name": "Westwinds Communities",
+    "cat": "Affordable Housing",
+    "desc": "Westwinds communities provides and maintains diversified and affordable housing options for low to moderate income seniors; low income families; and those with special needs.; tenant support coordination with social servicing agencies.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-652-8600 or visit westwindscommunities.ca\",\"details\":\"Not-for-profit providing quality hou"
+  },
+  {
+    "id": 2977,
+    "name": "Sanatan Hindu Cultural Society",
+    "cat": "Community & Social Connection",
+    "desc": "Religious -teaching of scriptures to adults and children cultural- promote ethnic 7 unique art form through dance; music & drama to mainstream yoga classes; sholka classes for children community outreach- volunteer participating in supporting similar",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-351-7427 or visit shcscalgary.com\",\"details\":\"Hindu temple in Calgary promoting Sanatan Dh"
+  },
+  {
+    "id": 2979,
+    "name": "Al Fajr Islamic Centre Edmonton",
+    "cat": "Community & Social Connection",
+    "desc": "1. To advance religion by teaching the teachings; religious tenets; doctrines; and observances; associated with Islam 2. To advance religion by preaching the teachings; religious tenets; doctrines; and observances; associated with Islam 3. To advance",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-315-1666 or visit alfajr.ca\",\"details\":\"Islamic centre in Edmonton offering education prog"
+  },
+  {
+    "id": 2980,
+    "name": "Foothills Mennonite Church",
+    "cat": "Community & Social Connection",
+    "desc": "We hold worship servics weekly; and provide ministries for women; men; youth and children weekly; biweekly or monthly. We provide pastoral care. We donate funds to denominational head office for relief and development work. We provide physical; spirt",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-289-7172 or email office@foothillsmennonite.ca\",\"details\":\"Welcoming and inclusive Mennoni"
+  },
+  {
+    "id": 2981,
+    "name": "Robertson-Wesley United Church",
+    "cat": "Community & Social Connection",
+    "desc": "The Church provides normal programming associated with a Church (wedding; funerals; pastoral care and Christian development). In addition; the Church participates in various outreach programs such as community dinners; supporting refugees; and hostin",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-482-1587 or visit rwuc.org\",\"details\":\"Welcoming community hub and inclusive church in the"
+  },
+  {
+    "id": 2988,
+    "name": "International Swaminarayan Satsang Organization of Edmonton",
+    "cat": "Community & Social Connection",
+    "desc": "Provides community support programs including free food for visitors, food drives for those in need, care packages, winter clothing drives, and bottle drives for environmental causes. Located at the Swaminarayan temple in Edmonton. Also offers free l",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-469-2077 or visit swaminarayanmandir.ca\",\"details\":\"ISSO Canada — national charitable orga"
+  },
+  {
+    "id": 2995,
+    "name": "Excel Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Excel society works with our clients; their families and support networks to provide long-term; safe and healthy housing and supportive care solutions. Our clients come from every walk of life and may be living with a developmental disability; cognit",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-455-2601\",\"details\":\"Reach out by phone at 780-455-2601 to learn abo"
+  },
+  {
+    "id": 3001,
+    "name": "Lethbridge Pregnancy Care Centre",
+    "cat": "Family & Parenting Support",
+    "desc": "Offering compasionate support and education to anyone experiencing an unexpected pregnancy or pregnancy related loss. Offering practical help; including access to clothing; diapers; wipes; formula; to clients who are caring for infants and are withou",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-942-1819 or visit lethbridgepregcentre.com\",\"details\":\"Compassionate support and education"
+  },
+  {
+    "id": 3002,
+    "name": "The Sandwich Foundation of Canada",
+    "cat": "Food Banks & Meals",
+    "desc": "We provide healthy lunches for homeless individuals and families. We work in conjunction with shelters; and various social programs to assist them in meeting their growing needs.hrough the work of volunteers; groups; and donations; we are able to pro",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-870-5468 or email reachout@thesandwichfoundation.com\",\"details\":\"The Sandwich Foundation p"
+  },
+  {
+    "id": 3005,
+    "name": "The Calgary Chinese Elderly Citizens' Association",
+    "cat": "Senior Services",
+    "desc": "The association's mission is to provide a supportive environment aimed to enhance the well being of chinese older adults and their integration into Canadian society. The association achieves this mission by designing and administering social services",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about programs\",\"details\":\"Reach out by email at www.cceca@cceca.ca to learn about"
+  },
+  {
+    "id": 3010,
+    "name": "Abiding Life Ministries Canada",
+    "cat": "Community & Social Connection",
+    "desc": "Public seminars & classroom teaching private counseling to relieve poverty by providing food and other basic supplies to person of low income living wherw alc is active.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the organization\",\"details\":\"Reach out by email at info@abidinglifecanada.com to learn abou"
+  },
+  {
+    "id": 3014,
+    "name": "All Saints Traditional Anglican Church Renfrew",
+    "cat": "Food Banks & Meals",
+    "desc": "Worship and bible study services in the traditional anglican catholic expression outreach to the community in acts of christian charity collection of food donations for the veterans food bank",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 230-7089 or email allsaintscalgarytraditional@gmail.com\",\"details\":\"All Saints Tradition"
+  },
+  {
+    "id": 3016,
+    "name": "City View Christian Centre",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship services (sundays); additional other services or meetings for special occasions; mid-week bible studies; other social and outreach meetings like youth; young adults; married couples; children's; men's ladies; adult and family fellowshi",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-487-2001 or visit cityviewcc.org\",\"details\":\"Christian Centre in Edmonton. Hosts marriage "
+  },
+  {
+    "id": 3024,
+    "name": "The Champion's Centre Incorporated",
+    "cat": "Disability & Autism Support",
+    "desc": "To provide services for the physically and mentallly challenged; by providing housing and the offering of food programs to those in need.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-362-4440 or visit thechampionscentre.net\",\"details\":\"Provides affordable housing and basic"
+  },
+  {
+    "id": 3025,
+    "name": "Foundation for Oromian Culture, Education and Art Services (Focas)",
+    "cat": "Newcomer & Settlement",
+    "desc": "Community engagement programs Youth empowerment programs through training; connection to service providers Sponsorship and resettlement programs Canada summer jobs OST 2023 Walk-in community services including translation; application to different mu",
+    "steps": "[{\"step\":1,\"action\":\"Contact for settlement support — call 780-250-7007\",\"details\":\"Reach out by phone at 780-250-7007 t"
+  },
+  {
+    "id": 3026,
+    "name": "Dormition of the Most Holy Mother of God Ukrainian Catholic",
+    "cat": "Community & Social Connection",
+    "desc": "Worship and liturgical services; spiritual and religious education; bible study; charity and community outreach and fundraising events.; Fundraising activities have commenced and some community outreach programs have resumed. This including providing",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-489-8868 or visit dormition.eeparchy.com\",\"details\":\"Ukrainian Catholic Church at 15603 10"
+  },
+  {
+    "id": 3030,
+    "name": "The St Albert Library Board",
+    "cat": "Community & Social Connection",
+    "desc": "St. Albert Public Library provides free community resources including internet access, career resource centre, computer and technology training, settlement services for newcomers (via EISA partnership), accessible all-abilities programs, free resume ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-459-1530 (Downtown) or 780-544-0444 (Jensen Lakes) or visit sapl.ca\",\"details\":\"St. Albert"
+  },
+  {
+    "id": 3031,
+    "name": "Glenora Child Care Society",
+    "cat": "Family & Parenting Support",
+    "desc": "Glenora childcare society provides care for children ages 13 months through to 12 years of age. Daily programming includes an educational component. Nutritional meals and snacks are provided. A sense of community is impressed on the children through ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-452-1991 or email Nicole@Glenorachildcaresociety.ca\",\"details\":\"Glenora Child Care Society"
+  },
+  {
+    "id": 3038,
+    "name": "Peoples Pentecostal Church Edmonton",
+    "cat": "Community & Social Connection",
+    "desc": "Sunday services; bible studies; pastoral service; traditional ceremonies; affordable housing; community programs for parents; youth and children; missions and community outreach; online services.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-481-2244 or visit peopleschurchedmonton.com\",\"details\":\"People's Church Edmonton offering "
+  },
+  {
+    "id": 3039,
+    "name": "Camrose & District Home Support Service Society",
+    "cat": "Senior Services",
+    "desc": "Homemaking and meals on wheels for the elderly; disabled and shut-ins as well as families in crisis. We also offer a froen food program.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Camrose & District FCSS at 780-672-0141\",\"details\":\"Camrose & District Home Support Service"
+  },
+  {
+    "id": 3040,
+    "name": "Wainwright Public Library",
+    "cat": "Community & Social Connection",
+    "desc": "Wainwright Public Library offers free community resources including public computers and wifi, book and media lending, programming for all ages, exam invigilation for online courses, and monthly crafting programs for adults with disabilities.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-842-2673 or visit wainwrightlibrary.ab.ca\",\"details\":\"Wainwright Public Library offers fre"
+  },
+  {
+    "id": 3046,
+    "name": "Seniors Life Centre",
+    "cat": "Senior Services",
+    "desc": "Provide support such food; clothes; medical need to our seniors; social gathering for seniors in Calgary social housing.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-608-0457 or visit seniorslifecentre.org\",\"details\":\"Vision: every senior lives a life of d"
+  },
+  {
+    "id": 3052,
+    "name": "Ronald McDonald House Charities Alberta Society",
+    "cat": "Healthcare Access",
+    "desc": "Ronald McDonald House Charities Alberta provides a home-away-from-home for families of seriously ill or injured children receiving medical treatment in Calgary and Edmonton. Offers accommodation, meals, family support programs, and the Ronald McDonal",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-439-5437 or visit rmhcalberta.org\",\"details\":\"Housing for families with children receiving"
+  },
+  {
+    "id": 3053,
+    "name": "Lord of Life Lutheran Church",
+    "cat": "Community & Social Connection",
+    "desc": "Regular sunday services; lenten; good friday; easter and christmas services. Pastoral acts within the church as well as in homes and hospitals. Collecting clothing for the homeless throughout the year. Have a collection box for the food bank in the c",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-463-9350 or visit lordoflifemillwoods.com\",\"details\":\"Evangelical Lutheran Church in Mill "
+  },
+  {
+    "id": 3057,
+    "name": "Fifth Avenue Memorial United Church",
+    "cat": "Community & Social Connection",
+    "desc": "Sunday worship; community kitchen - teach & advice in kitchen skills to young people on social assistance or limited skills; outreach- provide emergency aid to persons in need ie; food bank; salvation army faith formation-perform charitable works.; f",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-526-2237 or visit famunitedchurch.ca\",\"details\":\"FAM United Church in Medicine Hat. Creati"
+  },
+  {
+    "id": 3058,
+    "name": "Red Deer Action Group Society",
+    "cat": "Transportation Assistance",
+    "desc": "We have 2 programs. 1. Subsidy ride for low income individuals reimbursement for transportation costs. 2. Donate a ride is a fundraising initiative for transit tickets we purchase and give to selected agencies to give to ind. In need.; what is new; w",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-343-1198 or visit rdags.ca\",\"details\":\"Improving quality of life for the disadvantaged, di"
+  },
+  {
+    "id": 3065,
+    "name": "North East Calgary Adopt A Family Society",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Baby hamper program: gift cards provided to families with limited income to purchase supplies four times a year emergency food/personal hygiene program: families in short term financial crisis receive gifts cards to purchase supplies school supplies ",
+    "steps": "[{\"step\":1,\"action\":\"Contact NECAAFS\",\"details\":\"Call 403-590-6656 or email via necaafs.com. A non-profit registered und"
+  },
+  {
+    "id": 3067,
+    "name": "Autism Calgary Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Family; public and community education; information and referral; advocacy; community presentations; in-house services and conferences; peer to peer networking; community based events providing opportunities for social interaction between families. F",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about disability supports\",\"details\":\"Reach out by call 403-250-5033, or email inf"
+  },
+  {
+    "id": 3068,
+    "name": "Pal Calgary",
+    "cat": "Affordable Housing",
+    "desc": "The organization continues to work on establishing affordable housing to persons who have worked or are working in the performing or visual arts",
+    "steps": "[{\"step\":1,\"action\":\"Visit palcalgary.com for resources and information\",\"details\":\"PAL Calgary — championing affordable"
+  },
+  {
+    "id": 3069,
+    "name": "The Refuge Mission Foundation",
+    "cat": "Food Banks & Meals",
+    "desc": "Drop in centre providing food and clothing to the homeless or near-homeless in downtown Edmonton. We preach a christian message of hope and redemption according to out faith in jesus christ.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-919-0608 or visit missionfoundation.ca\",\"details\":\"Mission Hall Drop-In Centre at 10542-96"
+  },
+  {
+    "id": 3071,
+    "name": "Little Bits Therapeutic Riding Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Little bits therapeutic riding association is a charitable non-profit organizaton that provides horseback riding with therapeutic benefits for children and adults with disabilities",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-476-1233 or visit littlebits.ca\",\"details\":\"Little Bits Therapeutic Riding Association has"
+  },
+  {
+    "id": 3072,
+    "name": "The Olive Tree Community Centre Inc.",
+    "cat": "Food Banks & Meals",
+    "desc": "-free community meal -food rescue/food bank -seniors outreach -mom's group -men's group -school support; housing first program",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-870-1060 or visit theolivetreelloyd.ca\",\"details\":\"Community centre in Lloydminster provid"
+  },
+  {
+    "id": 3073,
+    "name": "Safe Haven Foundation of Canada",
+    "cat": "Transitional Housing",
+    "desc": "Fundraising through personal and corporate donations; program run by a management agreement with the boys and girls club. Provision of long-term stable housing for homeless and at-risk teenage girls. Provision of educational scholarship opportunities",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-234-8843 or visit safehavenfoundation.ca\",\"details\":\"Founded in 1996. Provides secure, sup"
+  },
+  {
+    "id": 3075,
+    "name": "Gurmat Sikh Society of Alberta Canada",
+    "cat": "Community & Social Connection",
+    "desc": "Free kitchens; spritual teaching in sikh fath and knowelege about other religion; sikh religious society; classes for kids and youth for punjabi laungaes; give pastral services-concerning or appropriate to the the giving of spiritual guidance.summer ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-907-0165 or visit gurmatsikhsociety.org\",\"details\":\"Spiritual charitable Sikh organization"
+  },
+  {
+    "id": 3082,
+    "name": "Peace Area Riding for the Disabled Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Equine assisted therapy for persons with physical; developmental; behavioural and social disabilities. Horse boarding in support of therapeutic programs. Summer day camps for ages 6 to 14.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-538-3211\",\"details\":\"Reach out by phone at 780-538-3211 to learn abo"
+  },
+  {
+    "id": 3084,
+    "name": "Masjid Al-Fatima Tuz Zahra(Sa) and Shah Sufi Congregation Centre",
+    "cat": "Community & Social Connection",
+    "desc": "Masjid Al-Fatima offers community services including free tax clinics for low-income families, Quran and language classes (Arabic and Urdu), youth summer camps, women's empowerment training, and community support for those in need. Located in Edmonto",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-462-7077 or visit masjidalfatima.com\",\"details\":\"Ahle Sunnah mosque on the south side of E"
+  },
+  {
+    "id": 3086,
+    "name": "Opening Gaits Therapeutic Riding Society of Calgary",
+    "cat": "Disability & Autism Support",
+    "desc": "Providing children and adults with disabilities with opportunity to experience physical; social and emotional benefits of riding on and spending time what a horse",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-254-4184 or visit openinggaits.ca\",\"details\":\"Therapeutic riding program in Calgary for in"
+  },
+  {
+    "id": 3092,
+    "name": "The Simon Poultney Foundation",
+    "cat": "Crisis Services",
+    "desc": "Coordinated suicide prevention program",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for support\",\"details\":\"Reach out by call 780-963-1770, or email thecspp@gmail.com, or vi"
+  },
+  {
+    "id": 3097,
+    "name": "House of Refuge Mission",
+    "cat": "Food Banks & Meals",
+    "desc": "Food and clothing banks; soup kitchens; helping the homeless",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-758-4848 or visit in person\",\"details\":\"House of Refuge Mission — community support and ou"
+  },
+  {
+    "id": 3111,
+    "name": "Aboriginal Futures - Post Secondary Summer Employment Program",
+    "cat": "Employment Services",
+    "desc": "In partnership with Community Futures Treaty Seven (CFT7), Aboriginal Futures offers a Post Secondary Summer Employment Program that provides financial assistance towards the wage of a student, encouraging employers to hire post-secondary students fo",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aboriginal Futures at 403-253-5311 to book an appointment\",\"details\":\"Aboriginal Futures — "
+  },
+  {
+    "id": 3112,
+    "name": "Aboriginal Futures - Wage Subsidy Program",
+    "cat": "Employment Services",
+    "desc": "In partnership with Community Futures Treaty Seven (CFT7), Aboriginal Futures offers a Wage Subsidy program intended to assist First Nations and Inuit people who live in Calgary and the surrounding area secure employment. By providing financial assis",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aboriginal Futures at 403-253-5311 to book an appointment\",\"details\":\"Aboriginal Futures — "
+  },
+  {
+    "id": 3113,
+    "name": "Aboriginal Futures - Trade Winds to Success",
+    "cat": "Employment Services",
+    "desc": "A 14-week pre-apprenticeship training program offered in partnership with Trade Winds to Success Training Society. Ideal for Indigenous individuals interested in pursuing a career in the trades including boilermaker, ironworker, carpenter, plumber, s",
+    "steps": "[{\"step\":1,\"action\":\"Attend a Trade Winds to Success information session (call 1-877-362-4771)\",\"details\":\"Aboriginal Fu"
+  },
+  {
+    "id": 3114,
+    "name": "Aboriginal Futures - Aksistowapi'siaks Workplace Wellness Circle",
+    "cat": "Employment Services",
+    "desc": "Aksistowapi'siaks (formally Indigenous Workplace Wellness Circle) is an 8-week program designed to help participants gain confidence, learn essential skills, improve communication, and set solid career and employment goals. Participants build a perso",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aboriginal Futures at 403-253-5311 to inquire about next program dates\",\"details\":\"Aborigin"
+  },
+  {
+    "id": 3115,
+    "name": "Aboriginal Futures - Job Club Program",
+    "cat": "Employment Services",
+    "desc": "Job Club is a 2-week group-assisted job search program for individuals looking to find employment. Participants explore the hidden job market, build relationships with employers, learn how to get results using today's technology, and participate in i",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aboriginal Futures at 403-253-5311 to inquire about next dates\",\"details\":\"Aboriginal Futur"
+  },
+  {
+    "id": 3116,
+    "name": "Aboriginal Futures - SCcyber E-Learning Community",
+    "cat": "Indigenous Services",
+    "desc": "SCcyber E-Learning Community is an accredited school that offers a complete Grade 7-12 Alberta curriculum to Indigenous adult students (over the age of 19) living in Calgary. The program creates accountability and interaction between student and teac",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aboriginal Futures or SCcyber at 403-253-5311 to inquire\",\"details\":\"Aboriginal Futures — S"
+  },
+  {
+    "id": 3118,
+    "name": "Making Changes Association - Women in Technology",
+    "cat": "Employment Services",
+    "desc": "A free 19-week full-stack web development program for immigrant and Indigenous women in Calgary. The program combines technical training (Python, HTML, CSS, JavaScript, React, SQL, Firebase, Git, Figma, Power Platform), employment and professional sk",
+    "steps": "[{\"step\":1,\"action\":\"Complete online WIT Application Form at 403-262-5776\",\"details\":\"Making Changes Association — Women"
+  },
+  {
+    "id": 3119,
+    "name": "Making Changes Association - My Best Friend's Closet",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "A youth empowerment program providing high-quality, on-trend clothing, shoes, and accessories to youth aged 12-18 experiencing financial barriers. Participants work one-on-one with volunteer stylist mentors during 90-minute appointments to select ite",
+    "steps": "[{\"step\":1,\"action\":\"Submit referral (agency, self-referral, or online form) at 403-262-5776\",\"details\":\"Making Changes "
+  },
+  {
+    "id": 3120,
+    "name": "Making Changes Association - Working Women's Group",
+    "cat": "Employment Services",
+    "desc": "A free 6-week cohort-based professional development program for employed women. Expert-led weekly sessions cover LinkedIn optimization, financial planning, professional styling, Alberta labor laws, nutrition, and career action planning. Provides netw",
+    "steps": "[{\"step\":1,\"action\":\"Contact dfscalgary@makingchangesassociation.ca for registration\",\"details\":\"Making Changes Associat"
+  },
+  {
+    "id": 3121,
+    "name": "Making Changes Association - Basic Digital Skills for Women",
+    "cat": "Employment Services",
+    "desc": "A free 10-week community-based learning program teaching basic technology skills to women with low or no computer experience. Covers safe technology use, digital communication with family and services, internet research, accessing community resources",
+    "steps": "[{\"step\":1,\"action\":\"Complete self-registration online or submit referral through advocate/counselor\",\"details\":\"Making "
+  },
+  {
+    "id": 3122,
+    "name": "Making Changes Association - GREAT Program",
+    "cat": "Youth Services",
+    "desc": "Girl's Resilience, Empowerment, and Transformation (GREAT) is a free summer leadership program for girls aged 13-16. Uses a strengths-based learning approach grounded in the Impact Society's HEROES curriculum to build confidence, resilience, and auth",
+    "steps": "[{\"step\":1,\"action\":\"Register online at makingchangesassociation.ca/great when registration opens\",\"details\":\"Girl's Res"
+  },
+  {
+    "id": 3123,
+    "name": "Making Changes Association - Dress for Success Calgary",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "A free program providing 90-minute individual consultations on professional business attire to women facing financial barriers. Offers guidance on business culture and appropriate workplace dress, and provides gently used professional clothing and ac",
+    "steps": "[{\"step\":1,\"action\":\"Complete online referral form (agency or self-referral) at 403-262-5776\",\"details\":\"Making Changes "
+  },
+  {
+    "id": 3126,
+    "name": "Children's Cottage Society - Crisis Nursery",
+    "cat": "Crisis Services",
+    "desc": "24/7 emergency childcare providing up to 3 days of care for children aged newborn to 9 in a safe, playful, and nurturing setting. Serves up to 20 children per day while parents address crisis situations including health emergencies, housing instabili",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Cottage Link Line at 403-233-2273 (CARE)\",\"details\":\"Children's Cottage Society — Cri"
+  },
+  {
+    "id": 3127,
+    "name": "Children's Cottage Society - Nurturing Newborns",
+    "cat": "Family & Parenting Support",
+    "desc": "In-home respite care program for families with infants from newborn to 6 months old. A Perinatal Support Worker visits once weekly to provide infant care while parents take time for self-care, appointments, or family activities. Supports new parents ",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Family Support Line at 403-233-2273 (CARE) or email referral form\",\"details\":\"Childre"
+  },
+  {
+    "id": 3128,
+    "name": "Children's Cottage Society - Home Links",
+    "cat": "Affordable Housing",
+    "desc": "Housing support program helping families secure safe and stable living spaces. Assists families experiencing housing instability with finding appropriate accommodations and connecting to housing resources in the Calgary area.",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Cottage Link Line at 403-233-2273 (CARE)\",\"details\":\"Children's Cottage Society — Hom"
+  },
+  {
+    "id": 3129,
+    "name": "Children's Cottage Society - Home Visitation",
+    "cat": "Family & Parenting Support",
+    "desc": "In-home support program where trained workers visit families to provide parenting education, child development guidance, and connections to community resources. Helps families build on their strengths in their own environment.",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Cottage Link Line at 403-233-2273 (CARE)\",\"details\":\"Children's Cottage Society — Hom"
+  },
+  {
+    "id": 3130,
+    "name": "Children's Cottage Society - Hope's Cradle",
+    "cat": "Crisis Services",
+    "desc": "Calgary's first infant safe surrender site at the Child & Family Centre. Allows parents in crisis to safely and anonymously surrender their infant without interaction with staff. The cradle is accessible 24/7 and the facility is staffed around the cl",
+    "steps": "[{\"step\":1,\"action\":\"Go to the Child & Family Centre at 1804 Home Road NW, Calgary (accessible via Calgary Transit)\",\"de"
+  },
+  {
+    "id": 3131,
+    "name": "Children's Cottage Society - Family Mental Health & Wellness",
+    "cat": "Mental Health & Counselling",
+    "desc": "Mental health and wellness support services for families in distress. Provides counselling, therapeutic groups, and wellness resources to help families overcome challenges and build resilience.",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Cottage Link Line at 403-233-2273 (CARE)\",\"details\":\"Children's Cottage Society — Fam"
+  },
+  {
+    "id": 3132,
+    "name": "Children's Cottage Society - Family Resource Network",
+    "cat": "Family & Parenting Support",
+    "desc": "Community resource hub connecting families to support services, parenting resources, and community programs. Provides referrals, information, and peer support for families navigating challenges.",
+    "steps": "[{\"step\":1,\"action\":\"Call 24/7 Cottage Link Line at 403-233-2273 (CARE) or visit in person\",\"details\":\"Children's Cottag"
+  },
+  {
+    "id": 3133,
+    "name": "Community Kitchen Program of Calgary - Calgary's Cooking",
+    "cat": "Food Banks & Meals",
+    "desc": "Community cooking program that brings individuals together twice a month to plan and cook healthy, nutritious, and budget-friendly meals. At the planning meeting, members choose menus based on grocery store specials and split the cost equally. At the",
+    "steps": "[{\"step\":1,\"action\":\"Fill out the application form on the website\",\"details\":\"Community Kitchen Program of Calgary — Cal"
+  },
+  {
+    "id": 3134,
+    "name": "Community Kitchen Program of Calgary - Good Food Box",
+    "cat": "Food Banks & Meals",
+    "desc": "Affordable produce program where anyone can purchase boxes of fresh fruits and vegetables at low cost. Small box (20-25 lbs) $35, Medium (25-30 lbs) $40, Large (35-40 lbs) $45. Contents vary weekly based on seasonal availability. Pick up at community",
+    "steps": "[{\"step\":1,\"action\":\"Locate nearest depot using the online map (search by postal code)\",\"details\":\"Community Kitchen Pro"
+  },
+  {
+    "id": 3137,
+    "name": "Community Kitchen Program of Calgary - Spinz-A-Round",
+    "cat": "Food Banks & Meals",
+    "desc": "Food redistribution program helping families in Calgary receive food they otherwise may not have obtained on their own. Redistributes surplus food from retailers and producers to families in need at community locations.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Community Kitchen Program of Calgary at 403-275-0258\",\"details\":\"Spinz-A-Round — commun"
+  },
+  {
+    "id": 3138,
+    "name": "CCASA - Support & Information Line",
+    "cat": "Sexual Assault Support",
+    "desc": "Crisis support and information line for anyone impacted by sexual violence. Provides immediate emotional support, safety planning, information about options, and referrals to services. Available 9 AM to 9 PM MT, 7 days a week. All services are inclus",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-237-5888 (9am-9pm MT, 7 days/week)\",\"details\":\"Calgary Communities Against Sexual Abuse (C"
+  },
+  {
+    "id": 3139,
+    "name": "CCASA - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Free professional counselling for anyone aged 12+ impacted by any form of sexual violence. Offers up to 24 individual sessions for survivors and up to 6 sessions for support persons. Also provides youth support groups (5 weekly sessions), Safety & St",
+    "steps": "[{\"step\":1,\"action\":\"Call the Support and Information Line at 403-237-5888 (9 AM-9 PM, 7 days/week)\",\"details\":\"Calgary "
+  },
+  {
+    "id": 3140,
+    "name": "CCASA - Police and Court Support",
+    "cat": "Domestic Violence Support",
+    "desc": "Education and advocacy assistance for sexual violence survivors navigating the criminal justice system. Provides accompaniment, information about legal processes, and emotional support during police reporting and court proceedings.",
+    "steps": "[{\"step\":1,\"action\":\"Call the Support and Information Line at 403-237-5888\",\"details\":\"Calgary Communities Against Sexua"
+  },
+  {
+    "id": 3142,
+    "name": "Calgary Dream Centre - Men's Recovery Program",
+    "cat": "Residential Treatment",
+    "desc": "90-day residential, faith-based addiction recovery program for men. Daily schedule includes group classes on mindfulness, distress tolerance, interpersonal effectiveness, emotional regulation, and relapse prevention. Also offers recovery meetings, fi",
+    "steps": "[{\"step\":1,\"action\":\"Walk in Tuesday or Thursday 8 AM-2 PM at 4510 Macleod Trail SW, or apply online\",\"details\":\"Calgary"
+  },
+  {
+    "id": 3143,
+    "name": "Calgary Dream Centre - Housing Solutions",
+    "cat": "Affordable Housing",
+    "desc": "Affordable housing program providing stable homes throughout Calgary for men and women in recovery from addiction and homelessness. Includes transitional and longer-term housing options with ongoing support as part of the recovery journey.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Calgary Dream Centre at 403-243-5598\",\"details\":\"Calgary Dream Centre — Housing Solutions p"
+  },
+  {
+    "id": 3144,
+    "name": "Calgary Dream Centre - Alumni Program",
+    "cat": "Recovery & Peer Support",
+    "desc": "Lifelong supportive community for graduates of the Dream Centre recovery program. Provides ongoing guidance, peer connection, resources, and encouragement to maintain long-term recovery and community integration.",
+    "steps": "[{\"step\":1,\"action\":\"Complete a Calgary Dream Centre residential program\",\"details\":\"Calgary Dream Centre — Alumni Progr"
+  },
+  {
+    "id": 3145,
+    "name": "Inn from the Cold - Family Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "Emergency shelter for families with a pregnant mother or children under 18 experiencing or at risk of homelessness in Calgary. Average stay approximately 45 days with no set time limit. Provides three meals daily plus snacks, clothing, footwear, toil",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-263-8384 — 24/7 support line\",\"details\":\"Inn from the Cold — Family Emergency Shelter in C"
+  },
+  {
+    "id": 3146,
+    "name": "Inn from the Cold - Prevention & Diversion",
+    "cat": "Affordable Housing",
+    "desc": "Early intervention program helping families avoid or quickly exit homelessness. Provides financial assistance, housing navigation, and support services to stabilize families before they lose their housing.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-263-8384 — 24/7 support line\",\"details\":\"Inn from the Cold — Prevention & Diversion progra"
+  },
+  {
+    "id": 3147,
+    "name": "Inn from the Cold - Supportive Housing",
+    "cat": "Transitional Housing",
+    "desc": "Stable housing with ongoing support services for families transitioning out of homelessness. Provides longer-term accommodations with case management, life skills support, and community connections to help families achieve independence.",
+    "steps": "[{\"step\":1,\"action\":\"Referral through Inn from the Cold shelter or partner agencies\",\"details\":\"Inn from the Cold — Supp"
+  },
+  {
+    "id": 3148,
+    "name": "Inn from the Cold - Indigenous Programs",
+    "cat": "Indigenous Services",
+    "desc": "Culturally-tailored services and programming for Indigenous families experiencing homelessness. Provides culturally safe supports, traditional teachings, and connections to Indigenous community resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Inn from the Cold at 403-263-8384\",\"details\":\"Inn from the Cold — Indigenous Programs for f"
+  },
+  {
+    "id": 3149,
+    "name": "Kainai Transition Centre Society - Job Ready",
+    "cat": "Employment Services",
+    "desc": "5-month employment readiness program with 2.5 months of hands-on classroom training followed by 2.5 months of work experience placement. Provides resume and cover letter assistance, interview preparation, safety certifications, life management course",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kainai Transition Centre at 403-653-3946 or info@ktcsbloodtribe.com\",\"details\":\"Kainai Tran"
+  },
+  {
+    "id": 3150,
+    "name": "Kainai Transition Centre Society - Community Corrections",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Culturally sensitive and community-based corrections program for individuals in the Blood Tribe jurisdiction affected by the criminal justice system. Provides supervision, culturally grounded support with Elder teachings, and programming to assist wi",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or receive referral from justice system\",\"details\":\"Kainai Transition Centre Society — C"
+  },
+  {
+    "id": 3151,
+    "name": "Kainai Transition Centre Society - Transition Support",
+    "cat": "Transitional Housing",
+    "desc": "Residential post-treatment and post-incarceration program designed to transition addiction treatment and custodial clients into sustainable healthy lifestyles. Provides a structured living environment with Elder teachings, community support, and holi",
+    "steps": "[{\"step\":1,\"action\":\"Receive referral from treatment centre or corrections\",\"details\":\"Kainai Transition Centre Society "
+  },
+  {
+    "id": 3152,
+    "name": "Silver Linings Foundation - Recovery Navigation",
+    "cat": "Eating Disorder Services",
+    "desc": "Free one-on-one personalized guidance on eating disorder treatment options. A Recovery Navigator helps individuals understand available programs, creates a personalized recovery plan, and provides ongoing check-ins. Initial session includes supportiv",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment at silverlinings.janeapp.com or call 403-536-4025\",\"details\":\"Silver Linings Fo"
+  },
+  {
+    "id": 3153,
+    "name": "Silver Linings Foundation - Groups & Workshops",
+    "cat": "Eating Disorder Services",
+    "desc": "Group therapy and educational workshops connecting individuals on the eating disorder recovery journey. Provides peer support, psychoeducation, and shared experiences in a safe facilitated environment.",
+    "steps": "[{\"step\":1,\"action\":\"Visit silverliningsfoundation.ca/groups-workshops for current offerings\",\"details\":\"Silver Linings "
+  },
+  {
+    "id": 3154,
+    "name": "Silver Linings Foundation - Peer Support Program",
+    "cat": "Eating Disorder Services",
+    "desc": "Peer mentorship program connecting individuals currently in eating disorder recovery with a mentor who has lived experience on the other side of recovery. Provides hope, guidance, and relatable support from someone who understands the journey.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Silver Linings Foundation at 403-536-4025 or hello@silverliningsfoundation.ca\",\"details\":\"S"
+  },
+  {
+    "id": 3155,
+    "name": "Silver Linings Foundation - Live-In Treatment",
+    "cat": "Eating Disorder Services",
+    "desc": "Residential eating disorder treatment program providing intensive, live-in care for individuals requiring a higher level of support in their recovery from eating disorders.",
+    "steps": "[{\"step\":1,\"action\":\"Call Silver Linings Foundation at 403-536-4025\",\"details\":\"Silver Linings Foundation — eating disor"
+  },
+  {
+    "id": 3156,
+    "name": "Momentum - Start a Business",
+    "cat": "Employment Services",
+    "desc": "Free entrepreneurship program supporting low-income Calgarians to launch and grow their own ventures. Includes business plan development, coaching, mentoring, and access to microloans for start-up costs. Over 3,100 microloans distributed totaling $8.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Momentum at 403-272-9323 or welcome@momentum.org\",\"details\":\"Momentum — Start a Business pr"
+  },
+  {
+    "id": 3157,
+    "name": "Momentum - Manage Your Money",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Free financial education programs for low-income Calgarians. Eight programs available including financial coaching, tax filing assistance, benefits navigation, money management workshops, and matched savings programs (for youth and adults). Helps par",
+    "steps": "[{\"step\":1,\"action\":\"Contact Momentum at 403-272-9323 or welcome@momentum.org\",\"details\":\"Momentum — Manage Your Money f"
+  },
+  {
+    "id": 3158,
+    "name": "Momentum - Train For a Good Job",
+    "cat": "Employment Services",
+    "desc": "Free skills training program in trades and technology sectors for low-income Calgarians. Helps participants develop marketable skills and secure sustainable employment in high-demand industries with job preparation support.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Momentum at 403-272-9323 or welcome@momentum.org\",\"details\":\"Momentum — Train For a Good Jo"
+  },
+  {
+    "id": 3159,
+    "name": "Fresh Start Recovery Centre - Outreach Services",
+    "cat": "Addiction Treatment",
+    "desc": "Community-based outreach services connecting individuals affected by addiction with treatment options, harm reduction resources, and recovery support. Engages people where they are and builds pathways to treatment.",
+    "steps": "[{\"step\":1,\"action\":\"Call Fresh Start at 1-844-768-6266\",\"details\":\"Fresh Start Recovery Centre — Outreach Services in C"
+  },
+  {
+    "id": 3160,
+    "name": "Fresh Start Recovery Centre - Friends and Family: Coming Together",
+    "cat": "Recovery & Peer Support",
+    "desc": "Educational and support program for family members and loved ones of people affected by addiction. Helps families understand addiction, develop healthy boundaries, and support their loved one's recovery journey.",
+    "steps": "[{\"step\":1,\"action\":\"Call Fresh Start at 1-844-768-6266 or visit freshstartrecovery.ca\",\"details\":\"Fresh Start Recovery "
+  },
+  {
+    "id": 3161,
+    "name": "Fresh Start Recovery Centre - Housing",
+    "cat": "Transitional Housing",
+    "desc": "Recovery housing providing stable accommodations for individuals transitioning from treatment back to independent living. Supports continued recovery in a structured, substance-free environment with ongoing support.",
+    "steps": "[{\"step\":1,\"action\":\"Complete or be in treatment at Fresh Start Recovery, then apply for housing\",\"details\":\"Fresh Start"
+  },
+  {
+    "id": 3163,
+    "name": "Hope Mission - After-School Programs",
+    "cat": "Youth Services",
+    "desc": "Youth enrichment programs providing supervised activities, mentoring, and skill-building for children and youth after school hours. Offers a safe environment for learning and recreation in Edmonton communities.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Hope Mission at 780-422-2018 for program locations\",\"details\":\"Hope Mission — After-School "
+  },
+  {
+    "id": 3164,
+    "name": "Hope Mission - Camp Hope",
+    "cat": "Youth Services",
+    "desc": "Summer camp program for children and youth from low-income families. Provides outdoor experiences, team-building activities, and mentorship in a supportive environment away from the city.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Hope Mission at 780-422-2018 for Camp Hope registration\",\"details\":\"Hope Mission — Camp Hop"
+  },
+  {
+    "id": 3165,
+    "name": "Hope Mission - Health Services",
+    "cat": "Healthcare Access",
+    "desc": "Medical and wellness support services for individuals experiencing homelessness and poverty. Provides access to healthcare, mental health support, and health education through HopeHealth.",
+    "steps": "[{\"step\":1,\"action\":\"Visit Hope Mission during operating hours or call 780-422-2018\",\"details\":\"Hope Mission Health Serv"
+  },
+  {
+    "id": 3166,
+    "name": "Hope Mission - Housing Programs",
+    "cat": "Transitional Housing",
+    "desc": "Transitional and permanent housing programs helping individuals and families move from homelessness to stable housing. Includes supportive living environments with case management and community connections.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Hope Mission at 780-422-2018\",\"details\":\"Housing programs that house vulnerable people quic"
+  },
+  {
+    "id": 3167,
+    "name": "Carya - Family Functioning Programs",
+    "cat": "Family & Parenting Support",
+    "desc": "Programs supporting families in strengthening relationships and family functioning. Includes family counselling, parenting workshops, and group programs designed to build communication skills and healthy family dynamics. Low or no-cost.",
+    "steps": "[{\"step\":1,\"action\":\"Call Carya at 403-269-9888 or visit caryacalgary.ca\",\"details\":\"Carya — Family Functioning programs"
+  },
+  {
+    "id": 3168,
+    "name": "Carya - Mental Health and Well-Being",
+    "cat": "Mental Health & Counselling",
+    "desc": "Counselling and mental health support services for individuals managing life's challenges. Offers individual therapy, group programs, and workshops focused on emotional wellness and coping strategies. Low or no-cost.",
+    "steps": "[{\"step\":1,\"action\":\"Call Carya at 403-269-9888 or visit caryacalgary.ca\",\"details\":\"Carya — Mental Health and Well-Bein"
+  },
+  {
+    "id": 3169,
+    "name": "Carya - Financial Wellness",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Programs helping individuals and families achieve financial stability and literacy. Includes financial coaching, budgeting workshops, tax preparation assistance, and connections to financial resources. Low or no-cost.",
+    "steps": "[{\"step\":1,\"action\":\"Call Carya at 403-269-9888 or visit caryacalgary.ca\",\"details\":\"Carya — Financial Wellness programs"
+  },
+  {
+    "id": 3170,
+    "name": "YouCan Youth Services - Verto Project",
+    "cat": "Employment Services",
+    "desc": "A 20-week pre-employment program for youth aged 18-24 offering intensive training in personal development, technology skills, and job readiness. Helps vulnerable youth build the skills needed to enter the workforce or return to education.",
+    "steps": "[{\"step\":1,\"action\":\"Contact YouCan at 780-444-3348 or youcan.edmonton@youcan.ca\",\"details\":\"YouCan Youth Services — Ver"
+  },
+  {
+    "id": 3171,
+    "name": "YouCan Youth Services - Road To Work Program",
+    "cat": "Employment Services",
+    "desc": "A transformative 20-week pre-employment program for youth aged 18-24, guiding them out of harm's way and back into school or the workforce. Combines life skills training with employment readiness.",
+    "steps": "[{\"step\":1,\"action\":\"Contact YouCan at 780-444-3348 or youcan.edmonton@youcan.ca\",\"details\":\"YouCan Youth Services — Roa"
+  },
+  {
+    "id": 3172,
+    "name": "Taproot - Family and Community Supports",
+    "cat": "Family & Parenting Support",
+    "desc": "Collaborative, holistic support services focused on family and community. Provides in-home support, family preservation services, and community-based programming to strengthen families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Taproot at 780-439-5087 or info@taproot.ca\",\"details\":\"Taproot — Family and Community Suppo"
+  },
+  {
+    "id": 3173,
+    "name": "Taproot - Specialized Mental Health & Trauma Support",
+    "cat": "Mental Health & Counselling",
+    "desc": "Safe therapeutic environment for individuals and families to address emotional and mental health challenges. Provides specialized counselling for trauma, mental health conditions, and complex needs.",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-800-867-1987 or 780-439-5087, or email info@taproot.ca\",\"details\":\"Taproot Community Support"
+  },
+  {
+    "id": 3174,
+    "name": "Taproot - Acquired Brain Injury Program",
+    "cat": "Disability & Autism Support",
+    "desc": "Personalized programs helping adults with acquired brain injuries recover and reach their fullest potential. Provides rehabilitation support, life skills training, and community integration services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Taproot at 780-439-5087 or info@taproot.ca\",\"details\":\"Taproot — Acquired Brain Injury Prog"
+  }
+]

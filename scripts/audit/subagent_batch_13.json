@@ -1,0 +1,338 @@
+[
+  {
+    "id": 3276,
+    "name": "Trellis Society - Community Development",
+    "cat": "Community & Social Connection",
+    "desc": "Neighbourhood strengthening initiatives that build community capacity, foster connections, and create opportunities for residents to shape their communities.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional team: Bowness (403-681-7363), NE (403-390-8972), or SE (403-390-7400)\",\"detai"
+  },
+  {
+    "id": 3277,
+    "name": "Autism Edmonton - Occasio",
+    "cat": "Disability & Autism Support",
+    "desc": "Occasio is a recreation and social program for autistic individuals, offering junior and senior groups with opportunities for community engagement, skill building, and social connection.",
+    "steps": "[{\"step\":1,\"action\":\"Complete the intake form on the Autism Edmonton registration page\",\"details\":\"Autism Edmonton — Occ"
+  },
+  {
+    "id": 3278,
+    "name": "Autism Edmonton - The League",
+    "cat": "Disability & Autism Support",
+    "desc": "The League provides social opportunities and employment supports for autistic adults, helping them build community connections and develop job skills.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Adult Support Coordinator at 780-453-3971 ext. 255 or complete an inquiry form online\","
+  },
+  {
+    "id": 3279,
+    "name": "Autism Edmonton - Senior Supports",
+    "cat": "Disability & Autism Support",
+    "desc": "Programming designed for older autistic individuals, providing specialized support and social engagement tailored to the needs of autistic seniors.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Autism Edmonton at 780-453-3971 ext. 1 or complete an online form\",\"details\":\"Autism Edmont"
+  },
+  {
+    "id": 3280,
+    "name": "Autism Edmonton - Peer Discussion Groups",
+    "cat": "Recovery & Peer Support",
+    "desc": "Multiple peer discussion groups including groups for autistic adults, parents of autistic adults, and LGBTQ2S+ community discussions, providing safe spaces for sharing and mutual support.",
+    "steps": "[{\"step\":1,\"action\":\"Check the Autism Edmonton events calendar at 780-453-3971\",\"details\":\"Autism Edmonton — Peer Discus"
+  },
+  {
+    "id": 3281,
+    "name": "Autism Edmonton - Community Advocacy Support",
+    "cat": "Disability & Autism Support",
+    "desc": "Assistance with advocacy and community navigation for autistic individuals and families, helping them access services and exercise their rights.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Autism Edmonton at 780-453-3971 or complete the online inquiry form\",\"details\":\"Autism Edmo"
+  },
+  {
+    "id": 3282,
+    "name": "Autism Edmonton - The Pantry Food Support",
+    "cat": "Food Banks & Meals",
+    "desc": "The Pantry is a food support program for autistic community members, providing access to food resources for those experiencing food insecurity.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-453-3971 ext. 1 to book an appointment\",\"details\":\"Autism Edmonton — The Pantry Food Suppo"
+  },
+  {
+    "id": 3283,
+    "name": "Autism Edmonton - Support & Resource Navigation",
+    "cat": "Disability & Autism Support",
+    "desc": "Guidance for autistic individuals and families to access community services and resources, providing information and referrals to appropriate supports.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-453-3971 ext. 1 or complete the online inquiry form\",\"details\":\"Autism Edmonton — Support "
+  },
+  {
+    "id": 3284,
+    "name": "Autism Edmonton - Community Connections",
+    "cat": "Disability & Autism Support",
+    "desc": "Social and recreational community activities for autistic individuals, fostering connections, friendships, and a sense of belonging.",
+    "steps": "[{\"step\":1,\"action\":\"Check the Autism Edmonton events calendar at 780-453-3971\",\"details\":\"Autism Edmonton — Community C"
+  },
+  {
+    "id": 3285,
+    "name": "Autism Edmonton - Autism Housing Network of Alberta (AHNA)",
+    "cat": "Affordable Housing",
+    "desc": "The Autism Housing Network of Alberta provides housing support and development services for autistic individuals seeking appropriate and accessible housing options.",
+    "steps": "[{\"step\":1,\"action\":\"Complete the Housing Membership Form on the Autism Edmonton registration page\",\"details\":\"Autism Ed"
+  },
+  {
+    "id": 3286,
+    "name": "Autism Edmonton - E3 Employment Supports",
+    "cat": "Employment Services",
+    "desc": "E3 Employment Supports provides job training and employment assistance for autistic job seekers, helping them develop skills and find meaningful employment.",
+    "steps": "[{\"step\":1,\"action\":\"Contact employment@autismedmonton.ffmmedia.com to inquire about availability\",\"details\":\"Autism Edm"
+  },
+  {
+    "id": 3287,
+    "name": "Aventa Centre - Pregnancy Program",
+    "cat": "Addiction Treatment",
+    "desc": "Specialized admission pathway for pregnant women to decrease the risks associated with Fetal Alcohol Spectrum Disorder (FASD). Pregnant women are admitted without delay. Includes on-site medical services (family physician, psychiatrist, psychologist,",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aventa immediately at 403-245-9050 — pregnant women are prioritized\",\"details\":\"Aventa Cent"
+  },
+  {
+    "id": 3288,
+    "name": "Aventa Centre - FASD Transitions Program",
+    "cat": "Disability & Autism Support",
+    "desc": "The FASD Transitions Program provides specialized support for women with Fetal Alcohol Spectrum Disorder, addressing the intersection of FASD and addiction with tailored programming and care.",
+    "steps": "[{\"step\":1,\"action\":\"Complete online application at aventa.org or submit via fax (403-245-9485) or email\",\"details\":\"Ave"
+  },
+  {
+    "id": 3289,
+    "name": "Aventa Centre - Journeys Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Journeys Program supports women in their addiction recovery journey, providing structured programming and therapeutic support.",
+    "steps": "[{\"step\":1,\"action\":\"Complete the online application form at aventa.org or submit via fax/email\",\"details\":\"Aventa Centr"
+  },
+  {
+    "id": 3290,
+    "name": "Aventa Centre - Family and Friends Program",
+    "cat": "Recovery & Peer Support",
+    "desc": "A three-part information series for all family members and significant others of current or previous Aventa clients, or those on the waitlist. The program helps loved ones understand addiction and support recovery.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aventa at 403-245-9050 or info@aventa.org to register\",\"details\":\"Aventa Centre — licensed "
+  },
+  {
+    "id": 3291,
+    "name": "Aventa Centre - Continuing Care / Alumnae Services",
+    "cat": "Recovery & Peer Support",
+    "desc": "Ongoing support following completion of residential treatment, helping Aventa graduates maintain their recovery and transition back to independent living.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Aventa at 403-245-9050 or info@aventa.org\",\"details\":\"Aventa Centre — Continuing Care and A"
+  },
+  {
+    "id": 3292,
+    "name": "CNIB - Guide Dogs",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Guide Dogs raises and trains guide dogs exclusively for people with sight loss, providing highly trained canine partners to enhance mobility, independence, and quality of life.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 to express interest\",\"details\":\"CNIB — Guide Dogs program for people"
+  },
+  {
+    "id": 3293,
+    "name": "CNIB - Mobile Hub",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Mobile Hub visits communities to deliver in-person programming, bringing vision loss support services directly to people who may not be near a CNIB office.",
+    "steps": "[{\"step\":1,\"action\":\"Check CNIB website or call 1-800-563-2642 for Mobile Hub schedule\",\"details\":\"CNIB — Mobile Hub bri"
+  },
+  {
+    "id": 3294,
+    "name": "CNIB - Live (Daily Living Skills)",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Live provides support and daily living skill enhancement for people with sight loss, helping them achieve personal goals and maintain independence.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 or visit cnib.ca\",\"details\":\"CNIB — Live (Daily Living Skills) progr"
+  },
+  {
+    "id": 3295,
+    "name": "CNIB - Tech (Assistive Technology)",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Tech provides technology training focusing on accessible, available, and affordable tech solutions for people with sight loss.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 or visit cnib.ca\",\"details\":\"CNIB — Tech (Assistive Technology) prog"
+  },
+  {
+    "id": 3296,
+    "name": "CNIB - Learn (Education & Literacy)",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Learn emphasizes education, literacy, social skills, and independence development for people with sight loss, including children, youth, and adults.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 or visit cnib.ca\",\"details\":\"CNIB — Learn (Education & Literacy) pro"
+  },
+  {
+    "id": 3297,
+    "name": "CNIB - Play (Recreation & Wellness)",
+    "cat": "Disability & Autism Support",
+    "desc": "CNIB Play offers recreation and wellness activities fostering active lifestyles and community connection for people with sight loss.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 or visit cnib.ca\",\"details\":\"CNIB — Play (Recreation & Wellness) pro"
+  },
+  {
+    "id": 3298,
+    "name": "CNIB - Work (Career Development)",
+    "cat": "Employment Services",
+    "desc": "CNIB Work provides career development, academic support, and entrepreneurship resources for people with sight loss, helping them achieve professional goals.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CNIB at 1-800-563-2642 or visit cnib.ca\",\"details\":\"CNIB — Work (Career Development) progra"
+  },
+  {
+    "id": 3299,
+    "name": "Rise Calgary - Basic Needs Supports",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Rise Calgary provides basic needs supports including food hampers, referrals to community resources, and advocacy services to help individuals and families in Calgary access essential resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Rise Calgary at 403-204-8280 or visit during drop-in hours\",\"details\":\"Rise Calgary — Basic"
+  },
+  {
+    "id": 3300,
+    "name": "Rise Calgary - Good Food Box",
+    "cat": "Food Banks & Meals",
+    "desc": "The Good Food Box program provides affordable boxes of fresh fruits and vegetables. Participants order monthly and pick up at designated locations across Calgary.",
+    "steps": "[{\"step\":1,\"action\":\"Place an order online or by phone before the monthly deadline\",\"details\":\"Rise Calgary — Good Food "
+  },
+  {
+    "id": 3301,
+    "name": "Rise Calgary - Taxes & Benefits Support",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Rise Calgary offers free tax preparation services and benefits navigation to help low-income individuals and families access government benefits and file their taxes.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Rise Calgary at 403-204-8280 to book a tax appointment\",\"details\":\"Rise Calgary — Taxes & B"
+  },
+  {
+    "id": 3302,
+    "name": "Rise Calgary - Earn & Learn Employment Program",
+    "cat": "Employment Services",
+    "desc": "The Earn & Learn program combines paid employment with learning opportunities to help participants build skills, gain work experience, and move toward stable employment.",
+    "steps": "[{\"step\":1,\"action\":\"Apply through Rise Calgary at 403-204-8280 or in person\",\"details\":\"Rise Calgary — Earn & Learn Emp"
+  },
+  {
+    "id": 3303,
+    "name": "Rise Calgary - Financial Coaching",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "One-on-one financial coaching to help individuals build budgeting skills, manage debt, improve credit, and work toward financial stability.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Rise Calgary at 403-204-8280 to request financial coaching\",\"details\":\"Rise Calgary — Finan"
+  },
+  {
+    "id": 3304,
+    "name": "Rise Calgary - Mobility Coaching",
+    "cat": "Transportation Assistance",
+    "desc": "Mobility coaching helps individuals navigate transportation options in Calgary, including transit training, bike programs, and other mobility supports to improve access to employment and services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Rise Calgary at 403-204-8280 to request mobility coaching\",\"details\":\"Rise Calgary — Mobili"
+  },
+  {
+    "id": 3305,
+    "name": "Rise Calgary - Insight Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Insight Counselling through Rise Calgary provides affordable counselling services for individuals, couples, and families dealing with mental health challenges, relationship issues, and life transitions.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Rise Calgary at 403-204-8280\",\"details\":\"Rise Calgary — Insight Counselling program.\"},{\"st"
+  },
+  {
+    "id": 3306,
+    "name": "SCOPE Society - Children & Youth Services (Ages 0-18)",
+    "cat": "Disability & Autism Support",
+    "desc": "SCOPE Society provides community-based supports for children and youth aged 0-18 with developmental disabilities, including respite, life skills, recreational activities, and family support services in Calgary.",
+    "steps": "[{\"step\":1,\"action\":\"Contact SCOPE Society at 403-509-0200\",\"details\":\"SCOPE Society — Children & Youth Services for age"
+  },
+  {
+    "id": 3307,
+    "name": "SCOPE Society - Adult Services (Ages 18+)",
+    "cat": "Disability & Autism Support",
+    "desc": "SCOPE Society supports adults aged 18+ with developmental disabilities through community inclusion, employment readiness, life skills development, social and recreational programming, and independent living support.",
+    "steps": "[{\"step\":1,\"action\":\"Contact SCOPE Society at 403-509-0200\",\"details\":\"SCOPE Society — Adult Services for ages 18+ with "
+  },
+  {
+    "id": 3308,
+    "name": "SCOPE Society - Senior Services (Ages 45+)",
+    "cat": "Disability & Autism Support",
+    "desc": "SCOPE Society offers specialized programming for aging adults aged 45+ with developmental disabilities, focusing on health and wellness, social engagement, cognitive stimulation, and age-appropriate supports.",
+    "steps": "[{\"step\":1,\"action\":\"Contact SCOPE Society at 403-509-0200\",\"details\":\"SCOPE Society — Senior Services for adults ages 4"
+  },
+  {
+    "id": 3309,
+    "name": "SCOPE Society - Community Involvement & Development",
+    "cat": "Disability & Autism Support",
+    "desc": "SCOPE Society promotes community involvement and development by connecting individuals with developmental disabilities to volunteer opportunities, community events, and social activities to foster inclusion and belonging.",
+    "steps": "[{\"step\":1,\"action\":\"Speak with your SCOPE support worker about community involvement interests\",\"details\":\"SCOPE Societ"
+  },
+  {
+    "id": 3310,
+    "name": "Aboriginal Friendship Centre of Calgary - Community Outreach & Cultural Reconnection",
+    "cat": "Indigenous Services",
+    "desc": "AFCC provides community outreach and cultural reconnection programs for Indigenous community members in Calgary, including cultural events, Elder teachings, traditional ceremonies, and connection to Indigenous identity and heritage.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Aboriginal Friendship Centre or call 403-270-7379\",\"details\":\"Aboriginal Friendship Centr"
+  },
+  {
+    "id": 3311,
+    "name": "Aboriginal Friendship Centre of Calgary - Housing Services",
+    "cat": "Transitional Housing",
+    "desc": "AFCC Housing Services provides support for Indigenous community members seeking stable housing, including the Omahkitapioyis Elders' Lodge and the Aboriginal Housing Initiative. Services include housing referrals, landlord mediation, and transitional",
+    "steps": "[{\"step\":1,\"action\":\"Contact AFCC Housing Services at 403-270-7379 or visit in person\",\"details\":\"Aboriginal Friendship "
+  },
+  {
+    "id": 3312,
+    "name": "Aboriginal Friendship Centre of Calgary - Community Member Services",
+    "cat": "Indigenous Services",
+    "desc": "AFCC Community Member Services provides practical support including Status Card Clinic assistance, employment and education referrals, justice navigation and court support, and connection to government programs for Indigenous community members.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Friendship Centre or call 403-270-7379\",\"details\":\"Aboriginal Friendship Centre of Calgar"
+  },
+  {
+    "id": 3313,
+    "name": "Aboriginal Friendship Centre of Calgary - Elders Services & Kanakaa'tsinom Drop-in",
+    "cat": "Senior Services",
+    "desc": "AFCC operates the Kanakaa'tsinom Drop-in Centre providing culturally appropriate services for Indigenous Elders and seniors, including meals, social activities, cultural programming, health supports, and a welcoming gathering space.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Kanakaa'tsinom Drop-in Centre during open hours\",\"details\":\"Aboriginal Friendship Centre "
+  },
+  {
+    "id": 3314,
+    "name": "The Mustard Seed - Foothills Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed's Foothills Shelter provides 24/7 emergency shelter for men experiencing homelessness in Calgary, offering a safe place to sleep, meals, and connection to support services.",
+    "steps": "[{\"step\":1,\"action\":\"Arrive at the Foothills Shelter at any time — open 24/7\",\"details\":\"The Mustard Seed — Foothills Sh"
+  },
+  {
+    "id": 3315,
+    "name": "The Mustard Seed - Women's Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed's Women's Shelter provides 24/7 emergency shelter for women experiencing homelessness in Calgary, offering a safe and supportive environment with meals and connection to services.",
+    "steps": "[{\"step\":1,\"action\":\"Arrive at the Women's Shelter — open 24/7\",\"details\":\"The Mustard Seed Women's Shelter. Call 403-26"
+  },
+  {
+    "id": 3316,
+    "name": "The Mustard Seed - Community Impact Centre Downtown",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "The Mustard Seed's downtown Community Impact Centre provides daytime drop-in services including meals, showers, laundry, mail services, ID replacement assistance, and connection to housing and employment supports.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Community Impact Centre during operating hours\",\"details\":\"The Mustard Seed — Community I"
+  },
+  {
+    "id": 3317,
+    "name": "The Mustard Seed - Community Impact Centre Marlborough Park",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "The Mustard Seed's Marlborough Park location provides community-based support services including a food bank, clothing, household items, and connection to resources for individuals and families in northeast Calgary.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Marlborough Park Community Impact Centre\",\"details\":\"The Mustard Seed — Marlborough Park "
+  },
+  {
+    "id": 3318,
+    "name": "The Mustard Seed - Wellness Centre",
+    "cat": "Healthcare Access",
+    "desc": "The Mustard Seed's Wellness Centre provides healthcare services for individuals experiencing homelessness, including primary care, mental health support, addiction counselling, and health education in a low-barrier setting.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Wellness Centre during operating hours\",\"details\":\"The Mustard Seed — Wellness Centre. Ca"
+  },
+  {
+    "id": 3319,
+    "name": "The Mustard Seed - 1010 Centre (Permanent Supportive Housing)",
+    "cat": "Affordable Housing",
+    "desc": "The 1010 Centre is a permanent supportive housing facility operated by The Mustard Seed, providing 24/7 housing with on-site supports for individuals who have experienced chronic homelessness in Calgary.",
+    "steps": "[{\"step\":1,\"action\":\"Get referred through Calgary Homeless Foundation Coordinated Access\",\"details\":\"The Mustard Seed — "
+  },
+  {
+    "id": 3320,
+    "name": "Unison Alberta - Kerby Centre Programs & Services",
+    "cat": "Senior Services",
+    "desc": "Unison Alberta's Kerby Centre in Calgary offers a wide range of programs for older adults aged 50+, including fitness and wellness classes, social and recreational programs, education courses, volunteer opportunities, and community engagement activit",
+    "steps": "[{\"step\":1,\"action\":\"Visit Kerby Centre or contact Unison Alberta at 403-265-0661\",\"details\":\"Unison Alberta — Kerby Cen"
+  },
+  {
+    "id": 3321,
+    "name": "Unison Alberta - Kerby Centre Food Services",
+    "cat": "Food Banks & Meals",
+    "desc": "Unison Alberta's Kerby Centre provides affordable meal services for older adults, including a daily lunch program, Meals on Wheels delivery, and catering for community events. Meals are nutritious and subsidized for those in need.",
+    "steps": "[{\"step\":1,\"action\":\"Visit Kerby Centre for daily lunch or call 403-265-0661 for Meals on Wheels\",\"details\":\"Unison Albe"
+  },
+  {
+    "id": 3322,
+    "name": "Unison Alberta - Kerby Centre Information & Referral",
+    "cat": "Senior Services",
+    "desc": "Unison Alberta's Information & Referral service helps older adults navigate available community resources, government programs, and support services. Trained staff provide guidance on housing, financial assistance, health services, and legal matters.",
+    "steps": "[{\"step\":1,\"action\":\"Call Unison Alberta at 403-265-0661 or visit Kerby Centre in person\",\"details\":\"Unison Alberta — Ke"
+  },
+  {
+    "id": 3323,
+    "name": "Unison Alberta - Veiner Centre (Medicine Hat)",
+    "cat": "Senior Services",
+    "desc": "Unison Alberta's Veiner Centre in Medicine Hat offers programs and services for older adults aged 50+, including fitness programs, social activities, educational workshops, and community resources in southeastern Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Veiner Centre or call 403-529-8307\",\"details\":\"Unison Alberta — Veiner Centre in Medicine"
+  }
+]

@@ -1,0 +1,704 @@
+[
+  {
+    "id": 529,
+    "name": "Community of Hope Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 532,
+    "name": "Nexus Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 533,
+    "name": "Hope Mission - Emergency Shelter and Support Services",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 534,
+    "name": "Extreme Weather Temporary Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 535,
+    "name": "Community Impact Centres — Drop-In Meals, Clothing & Homelessness Support",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 536,
+    "name": "University of Alberta - Residence Safe House Program",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 539,
+    "name": "WIN House - Women in Need III",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 540,
+    "name": "Jessica Martel Memorial Foundation — Domestic Violence Shelter & Support",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 541,
+    "name": "HousingConnect",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 542,
+    "name": "Safe Harbour Society - Coordinated Entry Housing Program",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 543,
+    "name": "Central Alberta Outreach Society - Red Deer Housing Team",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 545,
+    "name": "Youth HQ - 49th Street Youth Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 547,
+    "name": "Wapiti House Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 548,
+    "name": "Sunrise House - the Loft Program",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 549,
+    "name": "Centerpoint Facilitation - Rural Housing Outreach",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 551,
+    "name": "Centre of Hope — Homelessness & Housing Support (Fort McMurray)",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 552,
+    "name": "City of Calgary - Calgary Community Food Map",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 553,
+    "name": "Dashmesh Culture Centre - Meals and Food Hampers",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 554,
+    "name": "Calgary Meals on Wheels - Low Cost Home Meal Delivery Services",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 556,
+    "name": "Candora Society of Edmonton — Community Food & Family Programs",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 557,
+    "name": "Edmonton's Food Bank - Warehouse and Gleaning Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 558,
+    "name": "Edmonton's Food Bank - Hamper and Food Service Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 559,
+    "name": "Edmonton Meals on Wheels",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 560,
+    "name": "Mustard Seed - Edmonton - Drop-In Food Pantry",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 561,
+    "name": "Okotoks Meals on Wheels Society - Meal Delivery",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 562,
+    "name": "University of Alberta Students' Union - Campus Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 563,
+    "name": "Interfaith Food Bank Society of Lethbridge - Emergency Food Services",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 564,
+    "name": "Lethbridge Soup Kitchen",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 565,
+    "name": "Lethbridge Senior Citizens Organization - Meals on Wheels",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 566,
+    "name": "MyCityCare - Basic Needs Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides clothing, household items, and basic needs beyond food"
+  },
+  {
+    "id": 567,
+    "name": "Red Deer Meals on Wheels",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 568,
+    "name": "Mustard Seed - Red Deer - Community Impact Centre",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 569,
+    "name": "Red Deer Christmas Bureau Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 570,
+    "name": "Root Cellar Food and Wellness Hub - Emergency Food Pantry",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 571,
+    "name": "Furry Friends Food Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 572,
+    "name": "Community Food Connections Association - Good Food Club",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 573,
+    "name": "Family and Community Support Services of the County of Grande Prairie - Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 574,
+    "name": "Grande Prairie Friendship Centre - Community Kitchen",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 575,
+    "name": "Northreach Society - Helping Hands",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 578,
+    "name": "AHS — Opioid Dependency Program (Edmonton)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 579,
+    "name": "Lakeview Recovery Community — Men's Residential Addiction Treatment",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 580,
+    "name": "Centre for Sexuality - Sexual Health, Gender and Sexual Diversity Counselling Support",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 581,
+    "name": "Centre for Sexuality - Sexual Health Programs for Parents and LGBTQ+",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 582,
+    "name": "Trellis Aura — 2SLGBTQ+ Youth Housing First Program",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 584,
+    "name": "PFLAG Red Deer",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 587,
+    "name": "YW Calgary - Family Resource Network",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 588,
+    "name": "Calgary Family Therapy Centre - Calgary Family Therapy Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 589,
+    "name": "YW Calgary - Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 590,
+    "name": "AMARIS Adoption and Family Support Services - Adoption Counselling and Consulting",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 591,
+    "name": "Family and Community Support Services of High River - Foothills Community Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 592,
+    "name": "Calgary Immigrant Women's Association - Family Conflict Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 593,
+    "name": "Radiance Family Society - Centre Safe Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 594,
+    "name": "McMan Youth, Family and Community Services Association of Edmonton and North Region - Family Intervention Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 595,
+    "name": "Native Counselling Services of Alberta - Family Reconciliation",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 596,
+    "name": "Family and Community Support Services of Barons-Eureka-Warner - Counselling Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 597,
+    "name": "Catholic Social Services - Counselling - Individual and Family Therapy Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 598,
+    "name": "Family and Community Support Services of Cold Lake and District - Counselling Service",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 599,
+    "name": "Family and Community Support Services of Fort Saskatchewan - Counselling Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 600,
+    "name": "Abide Adoption and Family Services - Adoption and Pregnancy Options Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 601,
+    "name": "Family and Community Support Services of Canmore - Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 602,
+    "name": "Bob Glasgow Grief Support Centre",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 603,
+    "name": "Hospice Calgary - Children's Grief Centre",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 604,
+    "name": "Calgary Homicide Support Society - Homicide Support Group",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 605,
+    "name": "Strong Daughters YYC - Bereavement Support Meetings",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 606,
+    "name": "Pilgrims Hospice Society - Drop-In Grief Support Groups",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 607,
+    "name": "Healing Hearts — Peer Grief Support for Substance/Overdose Loss (Edmonton)",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 608,
+    "name": "Momentum Counselling Society - Counselling and Support Groups",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 609,
+    "name": "Solace Grief Support Society",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 610,
+    "name": "Alberta Northwest Palliative Care Society",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 611,
+    "name": "Red Deer Hospice Society - Good Grief Group - Bereavement Support",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 612,
+    "name": "St. Albert Bereavement Fellowship - Support Group Meetings",
+    "current": "Grief & Bereavement",
+    "proposed": "Grief & Bereavement",
+    "action": "KEEP"
+  },
+  {
+    "id": 613,
+    "name": "Manpower Alberta - Training for Work",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 614,
+    "name": "The Immigrant Education Society - Clerical Computer Skills Training Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 615,
+    "name": "The Immigrant Education Society - Employment Skills Training",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 616,
+    "name": "Momentum Community Economic Development Society - Trades Training Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 617,
+    "name": "Columbia College - Employment Training Programs",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 618,
+    "name": "Calgary Immigrant Women's Association - Career Services for Foreign Trained Professionals",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 619,
+    "name": "City of Calgary - Youth Employment Centre",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 621,
+    "name": "EmployAbilities - Restart Your Career Skills Training Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 624,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Entrepreneurial Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 625,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Training to Employment",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 626,
+    "name": "Training and Employment Services Directory",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 627,
+    "name": "MCG Careers — Free Employment Services",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 628,
+    "name": "Saamis Employment and Training Association",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 629,
+    "name": "YMCA of Southeastern Alberta — Employment & Skills Training Programs",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 630,
+    "name": "Immigrant Services Calgary",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 631,
+    "name": "Calgary Immigrant Support Society — Settlement Resources & Donation Connections",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 632,
+    "name": "Calgary Board of Education — International Student Settlement & Support",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 633,
+    "name": "Edmonton Immigrant Services Association - Children and Youth Settlement Services",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 634,
+    "name": "Edmonton Immigrant Services Association - New Neighbours",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 635,
+    "name": "Mustard Seed Edmonton — Health, Wellness & Employment Support",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 636,
+    "name": "Edmonton Immigrant Services Association - Library Settlement Services",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 637,
+    "name": "Care for Newcomers Society — Immigrant & Refugee Settlement (Central Alberta)",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 638,
+    "name": "Community Legal Clinic",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 639,
+    "name": "Calgary Immigrant Women's Association - Intake, Settlement, and Referral Services",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 640,
+    "name": "Centre d'Accueil pour Nouveaux Arrivants Francophones de Calgary",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 641,
+    "name": "Calgary Personal and Community Support Association - Disability Inclusion",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 642,
+    "name": "Resicare Society — Residential & Community Support for Developmental Disabilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 644,
+    "name": "Centre for Autism Services Alberta",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 645,
+    "name": "Calgary Progressive Lifestyles Foundation — Adult Disability Support & Independent Living",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  }
+]

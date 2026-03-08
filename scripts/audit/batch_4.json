@@ -1,0 +1,2256 @@
+[
+  {
+    "id": 601,
+    "name": "Family and Community Support Services of Canmore - Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Family and Community Support Services (FCSS) of Canmore offers short-term, solution-focused counselling for individuals. This service is available to adults and is provided by social workers. Counselling sessions are by appointment, and there is ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-678-7131 to book an appointment\",\"details\":\"Family and Community Support Services of Canmo"
+  },
+  {
+    "id": 602,
+    "name": "Bob Glasgow Grief Support Centre",
+    "cat": "Grief & Bereavement",
+    "desc": "The Bob Glasgow Grief Support Centre offers grief counseling services for adults in the Calgary Zone who have experienced the death of a family member or significant other. The program provides both individual and group counseling in a supportive env",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-955-8011 to book an appointment\",\"details\":\"Bob Glasgow Grief Support Centre — bereavement"
+  },
+  {
+    "id": 603,
+    "name": "Hospice Calgary - Children's Grief Centre",
+    "cat": "Grief & Bereavement",
+    "desc": "The Children's Grief Centre, part of Hospice Calgary, offers support to families with children aged 19 and under who are coping with the loss of someone close to them. They provide individual and family counseling, support groups, and various program",
+    "steps": "[{\"step\": 1, \"action\": \"Contact through one of the options below the centre of care you are interested in\", \"details\": \""
+  },
+  {
+    "id": 604,
+    "name": "Calgary Homicide Support Society - Homicide Support Group",
+    "cat": "Grief & Bereavement",
+    "desc": "The Calgary Homicide Support Society offers a peer support group for individuals aged 18 and older who have lost a loved one to homicide. This group provides a safe and compassionate environment for sharing experiences and receiving support from othe",
+    "steps": "[{\"step\":1,\"action\":\"Contact Calgary Homicide Support Society\",\"details\":\"Email Emily Rau at e.dawne7@gmail.com for inqu"
+  },
+  {
+    "id": 605,
+    "name": "Strong Daughters YYC - Bereavement Support Meetings",
+    "cat": "Grief & Bereavement",
+    "desc": "Strong Daughters YYC is a peer support group in Calgary, Alberta, dedicated to young adult women aged 18 to 35 who are grieving the loss of a parent. The group offers a safe and confidential space for members to connect, share experiences, and suppor",
+    "steps": "[{\"step\":1,\"action\":\"Email yycdaughters@gmail.com to RSVP for meetings\",\"details\":\"YYC Strong Daughters — peer support g"
+  },
+  {
+    "id": 606,
+    "name": "Pilgrims Hospice Society - Drop-In Grief Support Groups",
+    "cat": "Grief & Bereavement",
+    "desc": "Provides a compassionate space for adults to connect and share their grief journeys. The drop-in support groups are designed for individuals who are navigating the challenges of loss and bereavement.",
+    "steps": "[{\"step\": 1, \"action\": \"Attend a Mandatory Information Session\", \"details\": \"Everyone interested in grief support at Pil"
+  },
+  {
+    "id": 607,
+    "name": "Healing Hearts — Peer Grief Support for Substance/Overdose Loss (Edmonton)",
+    "cat": "Grief & Bereavement",
+    "desc": "Healing Hearts - Edmonton is a peer-led support group for individuals who have lost a loved one to substance-related harms. Facilitated by individuals with lived experience, the group offers a confidential and supportive environment for those grievin",
+    "steps": "[{\"step\":1,\"action\":\"Find a group near you\",\"details\":\"Visit healingheartscanada.org/find-a-group. Healing Hearts provid"
+  },
+  {
+    "id": 608,
+    "name": "Momentum Counselling Society - Counselling and Support Groups",
+    "cat": "Mental Health & Counselling",
+    "desc": "Momentum Counselling Society is a non-profit organization based in Edmonton, Alberta, dedicated to providing accessible mental health support and solution-focused therapy to individuals who might otherwise face barriers such as long wait times or fin",
+    "steps": "[{\"step\": 1, \"action\": \"Submit application by deadline\", \"details\": \"For January Start: Application deadline: May 1st; F"
+  },
+  {
+    "id": 609,
+    "name": "Solace Grief Support Society",
+    "cat": "Grief & Bereavement",
+    "desc": "Solace Grief Support Society is a registered charity and not-for-profit organization dedicated to providing free, compassionate, and professional grief support and counseling services to individuals experiencing grief due to the death of a loved one.",
+    "steps": "[{\"step\": 1, \"action\": \"Book your free appointment\", \"details\": \"Choose in-person, Zoom or phone\"}, {\"step\": 2, \"action\""
+  },
+  {
+    "id": 610,
+    "name": "Alberta Northwest Palliative Care Society",
+    "cat": "Grief & Bereavement",
+    "desc": "The Alberta Northwest Palliative Care Society is a registered charity dedicated to providing compassionate end-of-life care in Northwest Alberta. They support individuals and families affected by progressive life-limiting illnesses through high-quali",
+    "steps": "[{\"step\":1,\"action\":\"Contact the society\",\"details\":\"Reach out via email at admin@gpcare.ca for information about pallia"
+  },
+  {
+    "id": 611,
+    "name": "Red Deer Hospice Society - Good Grief Group - Bereavement Support",
+    "cat": "Grief & Bereavement",
+    "desc": "The Red Deer Hospice Society offers the 'Good Grief Support Group,' an eight-week program designed to assist individuals navigating the complexities of grief. This group provides a supportive environment where participants can share their experiences",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Bereavement Support Team at 403-309-4344 or bsupport1@reddeerhospice.com\",\"details\":\"Re"
+  },
+  {
+    "id": 612,
+    "name": "St. Albert Bereavement Fellowship - Support Group Meetings",
+    "cat": "Grief & Bereavement",
+    "desc": "The St. Albert Bereavement Fellowship offers support for individuals grieving the loss of a loved one. Their services include a year-round program providing information on coping, communication skills, and self-care to enhance mental and physical wel",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-851-6562 or email contact@stalbertbereavement.ca\",\"details\":\"St. Albert Bereavement Fellow"
+  },
+  {
+    "id": 613,
+    "name": "Manpower Alberta - Training for Work",
+    "cat": "Employment Services",
+    "desc": "Manpower Alberta offers the 'Training for Work' program, a no-cost, government-funded initiative designed for Employment Insurance (EI)-eligible residents of Calgary and Edmonton who are actively seeking employment opportunities.",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-577-5327 or visit manpowerab.com\",\"details\":\"70+ years experience as Alberta's leading sta"
+  },
+  {
+    "id": 614,
+    "name": "The Immigrant Education Society - Clerical Computer Skills Training Program",
+    "cat": "Employment Services",
+    "desc": "The Immigrant Education Society offers a Clerical Computer Skills Training Program at their Whitehorn campus. This program provides 15 weeks of training in office administration and business communications, covering topics such as computer terminolog",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-235-3666 or visit immigrant-education.ca\",\"details\":\"The Immigrant Education Society — Cle"
+  },
+  {
+    "id": 615,
+    "name": "The Immigrant Education Society - Employment Skills Training",
+    "cat": "Employment Services",
+    "desc": "The Immigrant Education Society (TIES) offers the Employment Skills Training (EST) program to assist unemployed and underemployed immigrants in acquiring the necessary skills to secure employment in Canada. This program is designed for individuals wh",
+    "steps": "[{\"step\": 1, \"action\": \"Call the school directly or chat online at www.immigrant-education.ca\", \"details\": null}, {\"step"
+  },
+  {
+    "id": 616,
+    "name": "Momentum Community Economic Development Society - Trades Training Program",
+    "cat": "Employment Services",
+    "desc": "The Trades Training Program offered by the Momentum Community Economic Development Society is designed to equip participants with the employability and technical skills required to pursue a career in the trades. The program includes upgrading in Engl",
+    "steps": "[{\"step\":1,\"action\":\"Explore available trades programs\",\"details\":\"Visit momentum.org/trades to browse current offerings"
+  },
+  {
+    "id": 617,
+    "name": "Columbia College - Employment Training Programs",
+    "cat": "Employment Services",
+    "desc": "Columbia College offers Employment Training Programs designed to prepare students for entry-level positions across various sectors. These programs include Child Care Assistant and Accounting Assistant courses, available in 32-week and 48-week formats",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-235-9300 or visit columbia.ca to talk to an advisor\",\"details\":\"Columbia College Calgary —"
+  },
+  {
+    "id": 618,
+    "name": "Calgary Immigrant Women's Association - Career Services for Foreign Trained Professionals",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Career Services for Foreign Trained Professionals program, offered by the Calgary Immigrant Women's Association (CIWA), is designed to support immigrant women in Calgary by enhancing their skills and providing the experience necessary to enter th",
+    "steps": "[{\"step\": 1, \"action\": \"Contact CIWA Career Services\", \"details\": \"Call 403-263-4414 or visit the office at 138 4 Avenue"
+  },
+  {
+    "id": 619,
+    "name": "City of Calgary - Youth Employment Centre",
+    "cat": "Employment Services",
+    "desc": "The City of Calgary - Youth Employment Centre provides career and employment services to youth ages 15 to 24. It aims to support young individuals in their job search and career development through various programs and resources tailored to their nee",
+    "steps": "[{\"step\":1,\"action\":\"Attend during drop-in hours to register — call 403-268-2490\",\"details\":\"City of Calgary Youth Emplo"
+  },
+  {
+    "id": 621,
+    "name": "EmployAbilities - Restart Your Career Skills Training Program",
+    "cat": "Employment Services",
+    "desc": "EmployAbilities offers the 'Restart Your Career Skills Training Program,' a comprehensive 24-week course designed to equip individuals with the skills necessary for entry-level positions in computerized environments. The program includes professional",
+    "steps": "[{\"step\": 1, \"action\": \"Contact EmployAbilities at their Edmonton office located at 10909 Jasper Avenue NW to inquire ab"
+  },
+  {
+    "id": 624,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Entrepreneurial Program",
+    "cat": "Employment Services",
+    "desc": "The Rupertsland Institute - Métis Centre of Excellence offers the Métis Entrepreneurial Program designed to support Métis individuals in starting or growing their businesses. The program provides resources and guidance to help participants develop vi",
+    "steps": "[{\"step\": 1, \"action\": \"Ensure you are a member of the Otipemisiwak M\\u00e9tis Student and Alumni Association (OMSA)\", \""
+  },
+  {
+    "id": 625,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Training to Employment",
+    "cat": "Employment Services",
+    "desc": "Rupertsland Institute's Métis Training to Employment program offers services to assist Métis individuals in preparing for, finding, and maintaining employment. These services are provided through their office locations, mobile employment units, and v",
+    "steps": "[{\"step\": 1, \"action\": \"Ensure you are a member of the Otipemisiwak M\\u00e9tis Student and Alumni Association (OMSA)\", \""
+  },
+  {
+    "id": 626,
+    "name": "Training and Employment Services Directory",
+    "cat": "Employment Services",
+    "desc": "The Training and Employment Services Directory is a resource provided by the Government of Alberta's Ministry of Assisted Living and Social Services. It offers a comprehensive list of agencies across Alberta that provide training programs and employm",
+    "steps": "[{\"step\": 1, \"action\": \"Search free programs and services in your area to support your job search, build skills, get tra"
+  },
+  {
+    "id": 627,
+    "name": "MCG Careers — Free Employment Services",
+    "cat": "Employment Services",
+    "desc": "MCG Careers offers free career and employment services, including workshops, resume assistance, job postings, career counseling, and computer tutorials. They provide employment programs and workshops aimed at helping clients obtain full-time employme",
+    "steps": "[{\"step\":1,\"action\":\"Contact your local MCG Careers office\",\"details\":\"MCG has been providing career and employment serv"
+  },
+  {
+    "id": 628,
+    "name": "Saamis Employment and Training Association",
+    "cat": "Employment Services",
+    "desc": "Saamis Employment and Training Association (SETA) is a non-profit organization dedicated to providing career counseling and job search preparation supports to Indigenous communities in Medicine Hat, Lethbridge, and surrounding areas. They offer skill",
+    "steps": "[{\"step\":1,\"action\":\"Contact SETA for employment support\",\"details\":\"Saamis Employment & Training Association (SETA) is "
+  },
+  {
+    "id": 629,
+    "name": "YMCA of Southeastern Alberta — Employment & Skills Training Programs",
+    "cat": "Employment Services",
+    "desc": "The YMCA of Southeastern Alberta is a registered charity dedicated to strengthening communities by connecting individuals and families to programs that cultivate relationships, increase skills and knowledge, and promote wellness. They offer a range o",
+    "steps": "[{\"step\": 1, \"action\": \"Confirm you are 15 years or older and reside in Medicine Hat or Brooks, Alberta\", \"details\": \"Ve"
+  },
+  {
+    "id": 630,
+    "name": "Immigrant Services Calgary",
+    "cat": "Newcomer & Settlement",
+    "desc": "Immigrant Services Calgary (ISC) provides holistic support and case management services for newcomers to Canada, offering personalized plans and referrals to appropriate services. They assist newcomers in starting a new life in Canada through practic",
+    "steps": "[{\"step\":1,\"action\":\"Contact ISC at 403-265-1120 or visit immigrantservicescalgary.ca\",\"details\":\"Immigrant Services Cal"
+  },
+  {
+    "id": 631,
+    "name": "Calgary Immigrant Support Society — Settlement Resources & Donation Connections",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Immigrant Support Society, formerly known as the Syrian Refugee Support Group (SRSG), is a registered not-for-profit organization dedicated to supporting refugees, low-income immigrants, and newcomers in Calgary. They assist by connecting",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Calgary Immigrant Support Society to discuss your needs\", \"details\": \"Reach out to the o"
+  },
+  {
+    "id": 632,
+    "name": "Calgary Board of Education — International Student Settlement & Support",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Board of Education (CBE) provides support and resources for international students, including orientation, counseling, and cultural activities. Their mission is to create an environment where each student can become an engaged learner, pr",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-817-4000 (general) or 403-817-7789 (admissions) or visit cbe.ab.ca\",\"details\":\"Calgary Boa"
+  },
+  {
+    "id": 633,
+    "name": "Edmonton Immigrant Services Association - Children and Youth Settlement Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Edmonton Immigrant Services Association (EISA) offers Children and Youth Settlement Services to support newcomer children and youth in their integration into the Alberta school system. These services include academic support, mentorship, leadersh",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-474-8445 or visit eisa-edmonton.org\",\"details\":\"Edmonton Immigrant Services Association. O"
+  },
+  {
+    "id": 634,
+    "name": "Edmonton Immigrant Services Association - New Neighbours",
+    "cat": "Newcomer & Settlement",
+    "desc": "The New Neighbours Program supports all newcomers to Edmonton, including Temporary Foreign Workers, International Students, Refugee Claimants, Protected Persons, Visitors, Permanent Residents, and Naturalized Citizens. Services include matching newco",
+    "steps": "[{\"step\": 1, \"action\": \"Book an appointment using one of three methods: call 780-474-8445 and book with Gemalil or Glori"
+  },
+  {
+    "id": 635,
+    "name": "Mustard Seed Edmonton — Health, Wellness & Employment Support",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed's Health and Wellness Program in Edmonton offers a range of services to individuals experiencing homelessness and poverty. These services include occupational therapy, mental health counseling, advocacy, employment support, identific",
+    "steps": "[{\"step\":1,\"action\":\"Call 825-222-4816 or visit theseed.ca\",\"details\":\"The Mustard Seed Edmonton — health and wellness p"
+  },
+  {
+    "id": 636,
+    "name": "Edmonton Immigrant Services Association - Library Settlement Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "EISA provides settlement services to newcomers in partner library branches, assisting with needs assessment, information on settlement and immigration, access to programs and services, and supportive counseling.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact EISA directly via phone or email to arrange services\", \"details\": null}, {\"step\": 2, \"ac"
+  },
+  {
+    "id": 637,
+    "name": "Care for Newcomers Society — Immigrant & Refugee Settlement (Central Alberta)",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Care for Newcomers Society, also known as the CARE Committee, is a registered charity dedicated to supporting immigrants and refugees in Central Alberta. Their mission is to help newcomers fully participate in Canadian life by providing coordinat",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-346-8818 or visit the website for program information\",\"details\":\"Care for Newcomers Socie"
+  },
+  {
+    "id": 638,
+    "name": "Community Legal Clinic",
+    "cat": "Legal Aid",
+    "desc": "The Community Legal Clinic is a registered charity dedicated to providing pro bono legal assistance and advice to individuals with low income or those facing barriers to accessing justice due to language, literacy skills, or mental and physical disab",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the clinic\", \"details\": \"Contact the clinic by phone, in-person, or by filling out the o"
+  },
+  {
+    "id": 639,
+    "name": "Calgary Immigrant Women's Association - Intake, Settlement, and Referral Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Immigrant Women's Association (CIWA) offers Intake, Settlement, and Referral Services to support immigrant and refugee women in Calgary. These services include brief counseling, healthcare support, emergency housing assistance, social ser",
+    "steps": "[{\"step\":1,\"action\":\"Book an intake appointment\",\"details\":\"Call 403-263-4414 or email welcome@ciwa.org to schedule. Off"
+  },
+  {
+    "id": 640,
+    "name": "Centre d'Accueil pour Nouveaux Arrivants Francophones de Calgary",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Centre d'Accueil pour Nouveaux Arrivants Francophones de Calgary (CANAF) is a non-profit organization dedicated to assisting Francophone newcomers in settling and integrating into Canadian society. Their services are tailored for individuals who ",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"If you are already a CANAF client, you can either contact your cou"
+  },
+  {
+    "id": 641,
+    "name": "Calgary Personal and Community Support Association - Disability Inclusion",
+    "cat": "Disability & Autism Support",
+    "desc": "The Calgary Personal and Community Support Association (CPCSA) is a registered not-for-profit organization dedicated to promoting the participation of adults with developmental disabilities in the community. They provide support for individuals with ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-630-1831 to register\",\"details\":\"Calgary Personal and Community Support Association — Disa"
+  },
+  {
+    "id": 642,
+    "name": "Resicare Society — Residential & Community Support for Developmental Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Resicare Society of Calgary is a registered not-for-profit organization dedicated to providing individualized community-based residential, day, and outreach support services to individuals with developmental disabilities. They offer programs aimed at",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for a conversation\",\"details\":\"Contact Resicare via their website or by phone to discuss "
+  },
+  {
+    "id": 644,
+    "name": "Centre for Autism Services Alberta",
+    "cat": "Disability & Autism Support",
+    "desc": "The Centre for Autism Services Alberta (CFASA) is a non-profit organization dedicated to providing comprehensive and innovative services to individuals with autism and their families. Their mission is to empower children, teens, and adults with autis",
+    "steps": "[{\"step\":1,\"action\":\"Call toll-free 1-844-488-6600 or local 825-210-9284\",\"details\":\"Centre for Autism Services Alberta "
+  },
+  {
+    "id": 645,
+    "name": "Calgary Progressive Lifestyles Foundation — Adult Disability Support & Independent Living",
+    "cat": "Disability & Autism Support",
+    "desc": "Calgary Progressive Lifestyles Foundation (CPLF) is a non-profit organization dedicated to empowering adults with disabilities to achieve independence, fulfillment, and autonomy through customized support services. Established in 1989, CPLF offers a ",
+    "steps": "[{\"step\": 1, \"action\": \"Applying for government funding programs (like PDD or AISH) first\", \"details\": null}, {\"step\": 2"
+  },
+  {
+    "id": 646,
+    "name": "Autism Aspergers Friendship Society of Calgary, The",
+    "cat": "Disability & Autism Support",
+    "desc": "The Autism Aspergers Friendship Society of Calgary (AAFS) is a registered charity dedicated to providing respite care in a social and recreational environment for children, youth, and adults on the autism spectrum. This includes individuals with Auti",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 246-7383 or email info@aafscalgary.com\",\"details\":\"The Autism Aspergers Friendship Socie"
+  },
+  {
+    "id": 647,
+    "name": "Alberta AdaptAbilities Association — Disability Support & Advocacy (Edmonton)",
+    "cat": "Disability & Autism Support",
+    "desc": "Alberta AdaptAbilities Association is a non-profit organization dedicated to providing support and resources for individuals with disabilities in the Edmonton area. Their mission is to empower individuals to reach their full potential by offering per",
+    "steps": "[{\"step\":1,\"action\":\"Contact AdaptAbilities\",\"details\":\"Reach out to learn about programs for individuals with visible a"
+  },
+  {
+    "id": 648,
+    "name": "The Good Samaritan Society — Senior Home Care & Long-Term Care",
+    "cat": "Senior Services",
+    "desc": "The Good Samaritan Society offers the Comprehensive Home Option for Integrated Care for the Elderly (CHOICE) program, which provides supportive services to seniors with complex medical needs, enabling them to remain in their own homes. Additionally, ",
+    "steps": "[{\"step\":1,\"action\":\"Contact AHS Community Care Access line or call 780-496-1300\",\"details\":\"The Good Samaritan Society "
+  },
+  {
+    "id": 651,
+    "name": "Skills Society - Supporting the Citizenship of People with Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Skills Society is a non-profit organization based in Edmonton, Alberta, dedicated to supporting individuals with disabilities and their families. Their mission is to empower people with disabilities to lead meaningful lives as valued citizens within ",
+    "steps": "[{\"step\": 1, \"action\": \"Meet Government of Alberta eligibility criteria\", \"details\": \"Obtain approved funding for PDD Se"
+  },
+  {
+    "id": 652,
+    "name": "Elves Special Needs Society — Programs for Individuals with Severe Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Elves Special Needs Society is a non-profit organization dedicated to providing inclusive, developmentally appropriate, and individualized services for individuals with severe disabilities or special needs. Their programs cater to children, youth, an",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 454-5310 to inquire about programs\",\"details\":\"Elves Special Needs Society is a non-prof"
+  },
+  {
+    "id": 653,
+    "name": "Voice of Albertans with Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Voice of Albertans with Disabilities (VAD) is a non-profit organization dedicated to advocating for the rights, needs, and opportunities of Albertans with disabilities. They provide education and awareness programs, support and referral services, and",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-488-9088 or email vad@vadsociety.ca to schedule an appointment\",\"details\":\"Voice of Albert"
+  },
+  {
+    "id": 654,
+    "name": "YWCA Edmonton - Disability Services",
+    "cat": "Disability & Autism Support",
+    "desc": "YWCA Edmonton offers Disability Services to individuals and families, including hourly respite, host respite, support homes, and family behavioural consultation. These services aim to support individuals with developmental disabilities, mental health",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from FSCD, PDD, or Children's Services\",\"details\":\"YWCA Edmonton — Disability Ser"
+  },
+  {
+    "id": 655,
+    "name": "Bridge to Care - Disability Services",
+    "cat": "Disability & Autism Support",
+    "desc": "Bridge to Care - Disability Services is a not-for-profit organization dedicated to providing support and healthcare services for individuals with physical and mental disabilities. Their mission is to promote dignity, individuality, independence, pers",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-591-1000 to book an assessment (by appointment only)\",\"details\":\"Bridge to Care — not-for-"
+  },
+  {
+    "id": 656,
+    "name": "NorQuest College - Accessibility Services",
+    "cat": "Disability & Autism Support",
+    "desc": "NorQuest College's Accessibility Services offer a comprehensive range of support for students with disabilities, including assistive technology, academic coaching, accommodated exams, and sign language interpretation. The services aim to create an in",
+    "steps": "[{\"step\": 1, \"action\": \"Complete a form and book an appointment\", \"details\": \"To register with Accessibility Services, w"
+  },
+  {
+    "id": 657,
+    "name": "Lethbridge Family Services - DaCapo Disability Services",
+    "cat": "Disability & Autism Support",
+    "desc": "Lethbridge Family Services - DaCapo Disability Services provides assistance to adults with disabilities, including developmental disabilities, Fetal Alcohol Spectrum Disorder (FASD), and brain injuries. The program focuses on developing skills and re",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the service by phone, in person, virtual/online, walk-in or referral\", \"details\": \"This "
+  },
+  {
+    "id": 658,
+    "name": "Family and Community Support Services of Viking / Beaver - Senior and Disability Support Services",
+    "cat": "Disability & Autism Support",
+    "desc": "The Family and Community Support Services (FCSS) of Viking / Beaver provides support services for older adults and individuals with illness or disabilities. This includes home help through a light housekeeping program, meals on wheels, and assistance",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Viking/Beaver FCSS Office at 780-336-4024 to request services\", \"details\": \"For Meal"
+  },
+  {
+    "id": 659,
+    "name": "Government of Alberta - Ministry of Assisted Living and Social Services - Disability Services - Information and Referral",
+    "cat": "Disability & Autism Support",
+    "desc": "The 'Disability Services - Information and Referral' program is offered by the Government of Alberta's Ministry of Assisted Living and Social Services. This service provides information, case management, referral services, and support to families of ",
+    "steps": "[{\"step\": 1, \"action\": \"Start a new application or continue your current application online through MyAlbertaSupports\", "
+  },
+  {
+    "id": 660,
+    "name": "AHS — Community Geriatric Mental Health (Calgary)",
+    "cat": "Senior Services",
+    "desc": "The Community Geriatric Mental Health Service, offered by Alberta Health Services in Calgary, provides mental health services for seniors living in the community who have moderate to severe mental health and substance use concerns. This program offer",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Mental Health to refer patient\", \"details\": \"Access Mental Health is available Monda"
+  },
+  {
+    "id": 661,
+    "name": "Seniors Mental Health and Addiction Response Team",
+    "cat": "Senior Services",
+    "desc": "The Seniors Mental Health and Addiction Response Team (SMHART) is a program offered by Jewish Family Service Calgary that provides seniors with access to mental health and addiction services within the community. This interdisciplinary team, consisti",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 287-3510 or email info@jfsc.org\",\"details\":\"SMHART is offered by Jewish Family Service C"
+  },
+  {
+    "id": 662,
+    "name": "Rockyview General Hospital - Seniors Health Clinic",
+    "cat": "Senior Services",
+    "desc": "The Seniors Health Clinic at Rockyview General Hospital offers comprehensive care and services for older adults in the Calgary Zone. This includes programs such as Comprehensive Community Care for the Frail Elderly, Day Hospitals, Fall Prevention Ser",
+    "steps": "[{\"step\": 1, \"action\": \"Healthcare provider consults the Alberta Referral Directory for service referral information\", \""
+  },
+  {
+    "id": 663,
+    "name": "Specialized Geriatric Services Neuropsychology Clinic",
+    "cat": "Senior Services",
+    "desc": "The Specialized Geriatric Services Neuropsychology Clinic provides neuropsychological assessment and intervention for older adults experiencing memory and/or thinking problems, such as mild cognitive impairment and dementia. Services include assessme",
+    "steps": "[{\"step\": 1, \"action\": \"Get referred by doctor to Seniors Health Clinic\", \"details\": \"You cannot self-refer or have your"
+  },
+  {
+    "id": 664,
+    "name": "AHS — Geriatric Mental Health Day Treatment (Calgary)",
+    "cat": "Senior Services",
+    "desc": "The Day Treatment Service - Community Geriatric Mental Health is a 12+ week program designed for geriatric clients aged 65 and over who have mental health concerns, specifically depression and/or anxiety. The program includes mental health assessment",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Mental Health to refer patient\", \"details\": \"Include information on the client's cur"
+  },
+  {
+    "id": 665,
+    "name": "Geriatric Psychiatry Clinic (AHS Edmonton)",
+    "cat": "Senior Services",
+    "desc": "The Geriatric Psychiatry Clinic, provided by Alberta Health Services - Edmonton Zone, is an outpatient service offering assessment and treatment for older adults with mental health concerns who are not hospitalized.",
+    "steps": "[{\"step\": 1, \"action\": \"Healthcare provider completes referral form\", \"details\": \"For physicians using Connect Care: Com"
+  },
+  {
+    "id": 667,
+    "name": "Sage Seniors Association - Life Enrichment",
+    "cat": "Senior Services",
+    "desc": "Sage Seniors Association offers a variety of programs and services aimed at enhancing the quality of life for seniors. The Life Enrichment program provides opportunities for seniors to learn, play, connect with others, and engage in physical and crea",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 423-5510 or email info@mysage.ca\",\"details\":\"Sage Seniors Association Life Enrichment pr"
+  },
+  {
+    "id": 668,
+    "name": "Sage Seniors Association - Community Animation Program",
+    "cat": "Senior Services",
+    "desc": "The Sage Seniors Association offers a Community Animation Program designed to empower older adults to lead and develop grassroots initiatives within their neighborhoods. This program is guided by five dedicated Community Animators, each focusing on d",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-423-5510 or email info@mysage.ca\",\"details\":\"Sage Seniors Association's Community Animatio"
+  },
+  {
+    "id": 669,
+    "name": "ASSIST Community Services Centre - Seniors Services",
+    "cat": "Senior Services",
+    "desc": "ASSIST Community Services Centre offers a range of services to support seniors in the community, including mental health services and various programs tailored to enhance their well-being. The centre focuses on providing a supportive environment for ",
+    "steps": "[{\"step\":1,\"action\":\"Contact ASSIST Community Services Centre\",\"details\":\"ASSIST serves the community at large with prog"
+  },
+  {
+    "id": 670,
+    "name": "Edmonton Seniors Centre - Arts and Leisure Programs",
+    "cat": "Senior Services",
+    "desc": "The Edmonton Seniors Centre offers a variety of arts and leisure programs designed to enhance the quality of life for adults aged 55 and older. These programs include online and in-person live sessions where attendees can interact with instructors an",
+    "steps": "[{\"step\": 1, \"action\": \"Obtain Membership\", \"details\": \"A valid ESC membership is required to register for classes and p"
+  },
+  {
+    "id": 671,
+    "name": "Jewish Senior Citizen's Centre - Leisure Activities and Outings",
+    "cat": "Senior Services",
+    "desc": "The Jewish Senior Citizen's Centre, also known as the Jewish Drop-In Centre, is dedicated to enhancing the lives of seniors in Edmonton through a variety of programs, courses, outings, events, and nutritious meal services. It offers leisure activitie",
+    "steps": "[{\"step\": 1, \"action\": \"Register with the Office\", \"details\": \"For Yiddish Club: Please register with the Office to rece"
+  },
+  {
+    "id": 672,
+    "name": "Central Lions Seniors Association - Programs and Activities for Seniors",
+    "cat": "Senior Services",
+    "desc": "The Central Lions Seniors Association (CLSA) provides a welcoming and supportive environment for individuals aged 55 and older to engage in recreational, educational, and social programs that enhance their well-being. Established in 1979, CLSA offers",
+    "steps": "[{\"step\": 1, \"action\": \"Register online, by phone, or in person\", \"details\": \"Online at https://app.bookking.ca/centrall"
+  },
+  {
+    "id": 673,
+    "name": "AHS — Seniors Mental Health Inpatient (Ponoka)",
+    "cat": "Senior Services",
+    "desc": "The Seniors Mental Health Program Inpatient Services is an acute geriatric psychiatry program offered by Alberta Health Services - Central Zone. It provides assessment and treatment for individuals, generally over the age of 65, with psychiatric illn",
+    "steps": "[{\"step\": 1, \"action\": \"Healthcare providers should consult the Alberta Referral Directory for service referral informat"
+  },
+  {
+    "id": 675,
+    "name": "AHS — Seniors Mental Health Outreach Nurses (Central Alberta)",
+    "cat": "Senior Services",
+    "desc": "The Seniors Mental Health Program Community Services, Seniors Outreach Nurses, provided by Alberta Health Services - Central Zone, offers non-urgent comprehensive mental health assessments for seniors. This program assesses a variety of mental health",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a professional referral\",\"details\":\"AHS Central Zone — Seniors Mental Health Program. Requir"
+  },
+  {
+    "id": 677,
+    "name": "Calgary Alpha House Society - HELP Team",
+    "cat": "Harm Reduction",
+    "desc": "The Calgary Alpha House Society's HELP Team offers street-level outreach services for individuals dealing with substance abuse issues in Calgary. Their services include information, referrals, case management, transportation assistance to appropriate",
+    "steps": "[{\"step\": 1, \"action\": \"The HELP Team responds to calls from businesses, community members, and other homeless-serving a"
+  },
+  {
+    "id": 678,
+    "name": "CUPS - Addiction and Recovery Supports",
+    "cat": "Harm Reduction",
+    "desc": "CUPS provides trauma-informed addiction and recovery supports, including opioid replacement therapy, addiction recovery education, counseling, and referrals. Their services are designed to assist individuals facing addiction challenges in a supportiv",
+    "steps": "[{\"step\":1,\"action\":\"Call CUPS at 403-206-1062 or visit the website\",\"details\":\"CUPS — Addiction and Recovery Supports i"
+  },
+  {
+    "id": 679,
+    "name": "Calgary Alternative Support Services - Langin Place",
+    "cat": "Transitional Housing",
+    "desc": "Calgary Alternative Support Services - Langin Place provides supportive housing for single males experiencing mental health or addictions issues who have trouble maintaining housing. The service is part of a broader initiative by Calgary Alternative ",
+    "steps": "[{\"step\": 1, \"action\": \"Seek referral from SORCe\", \"details\": \"Unit 2 316 7 Ave SE Calgary\"}, {\"step\": 2, \"action\": \"Con"
+  },
+  {
+    "id": 681,
+    "name": "AHS Safeworks — Supervised Consumption & Connect Program (Calgary)",
+    "cat": "Harm Reduction",
+    "desc": "The Supervised Consumption Service & Safeworks Connect Program provides a monitored, hygienic environment where individuals can consume substances to reduce harm. Additional services include counseling, social work, and opioid-dependency treatment.",
+    "steps": "[{\"step\": 1, \"action\": \"Go to the supervised consumption site located on main floor of Sheldon M. Chumir Health Centre\","
+  },
+  {
+    "id": 682,
+    "name": "AHS - Streetworks Needle Exchange",
+    "cat": "Harm Reduction",
+    "desc": "Streetworks Needle Exchange is Edmonton's harm reduction and needle exchange program, operating across multiple locations in the city. The program is a collaboration between outreach workers with lived experience and healthcare professionals, aiming ",
+    "steps": "[{\"step\": 1, \"action\": \"Visit any of the 16 different agencies throughout Edmonton where Streetworks operates\", \"details"
+  },
+  {
+    "id": 685,
+    "name": "City of Edmonton - Community Outreach Transit Team",
+    "cat": "Harm Reduction",
+    "desc": "Provides community support, resources, and relationship building within the transit system to increase safety and reduce harm. Supports individuals with concerns such as housing, mental health, substance use, and financial assistance.",
+    "steps": "[{\"step\": 1, \"action\": \"Teams patrol transit facilities and approach individuals who appear to need support (proactive d"
+  },
+  {
+    "id": 686,
+    "name": "sakihta kikinaw — Indigenous Women's Transitional Housing",
+    "cat": "Transitional Housing",
+    "desc": "Offers a 27-bed flexible housing program for female-identifying individuals experiencing homelessness and poverty in Edmonton. Operates with a harm-reduction and Indigenous focus, providing 24/7 single-staff support for light-touch services.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Homeward Trust Coordinated Access\", \"details\": \"780-702-5267, coordinatedaccess@homeward"
+  },
+  {
+    "id": 687,
+    "name": "Student Mental Health & Wellness Supports",
+    "cat": "Campus & Student Services",
+    "desc": "Provides ongoing health promotion, community development, mental health, and one-on-one social work case management support for students, focusing on mental health and wellness.",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during operating hours or call 780-492-1619 to book an appointment\",\"details\":\"Wellness Sup"
+  },
+  {
+    "id": 690,
+    "name": "Recovery Acres Society: Supportive Housing",
+    "cat": "Transitional Housing",
+    "desc": "Recovery Acres Society provides a residential treatment program for men with addictions, including supportive housing services. They connect community participants with affordable housing and community supports using a Housing First model, offering v",
+    "steps": "[{\"step\": 1, \"action\": \"Download and complete application form\", \"details\": \"There is a specific Supportive Housing Appl"
+  },
+  {
+    "id": 691,
+    "name": "Northreach Society - Needle Distribution and Disposal Program",
+    "cat": "Harm Reduction",
+    "desc": "The Northreach Society's Needle Distribution and Disposal Program offers confidential and free access to clean injection and inhalation supplies, as well as needle disposal services. The program provides items such as alcohol swabs, steri-cups, steri",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 538-3388 or email info@northreach.ca\",\"details\":\"Northreach Society in Grande Prairie of"
+  },
+  {
+    "id": 692,
+    "name": "Turning Point Society of Central Alberta - NightReach",
+    "cat": "Harm Reduction",
+    "desc": "Turning Point Society of Central Alberta - NightReach provides a mobile outreach team that offers harm reduction materials, safer sex materials, seasonal clothing, first aid supplies, and non-judgmental support to marginalized populations. The servic",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 896-3879 or email administration@turningpoint-ca.org\",\"details\":\"NightReach is a mobile "
+  },
+  {
+    "id": 693,
+    "name": "Silver Linings Foundation — Eating Disorder Support & Recovery",
+    "cat": "Eating Disorder Services",
+    "desc": "The Silver Linings Foundation is a registered not-for-profit organization dedicated to providing support and recovery resources for individuals affected by eating disorders and their loved ones. Established in 2014, the foundation offers various prog",
+    "steps": "[{\"step\": 1, \"action\": \"Request a referral from a healthcare provider you are currently working with (Physician, Psychol"
+  },
+  {
+    "id": 694,
+    "name": "Calgary Narrative Collective — Counselling & Therapy Services",
+    "cat": "Eating Disorder Services",
+    "desc": "The Calgary Narrative Collective is a not-for-profit counselling agency located in downtown Calgary, offering compassionate and social justice-focused therapy for individuals and couples. They provide services such as anxiety and depression support, ",
+    "steps": "[{\"step\":1,\"action\":\"Contact Calgary Narrative Collective\",\"details\":\"Reach out to book a session. The Collective offers"
+  },
+  {
+    "id": 695,
+    "name": "AHS — Adult Eating Disorder Nutrition Counselling (Calgary)",
+    "cat": "Eating Disorder Services",
+    "desc": "Alberta Health Services offers Adult Nutrition Counselling at the South Health Campus in Calgary. A registered dietitian assists clients in following special diets and improving their eating patterns to manage medical conditions. The majority of teac",
+    "steps": "[{\"step\": 1, \"action\": \"Self-referral or healthcare provider referral\", \"details\": \"Both healthcare provider referrals a"
+  },
+  {
+    "id": 696,
+    "name": "AHS — Eating Disorder Program (Edmonton)",
+    "cat": "Eating Disorder Services",
+    "desc": "The Addiction and Mental Health – Eating Disorder Program is a specialized service offered by Alberta Health Services in Edmonton, designed to support individuals aged 13 and older who are experiencing eating disorders resulting in a weight lower tha",
+    "steps": "[{\"step\": 1, \"action\": \"Obtain a Physician Referral\", \"details\": \"The Edmonton Eating Disorders Program receives referra"
+  },
+  {
+    "id": 697,
+    "name": "AHS — Adult Feeding & Swallowing Service (Edmonton)",
+    "cat": "Healthcare Access",
+    "desc": "This service assists adults experiencing eating and swallowing difficulties, aiming to ensure safe eating and drinking, provide necessary nutrition and fluids, and enhance the eating experience with families and caregivers.",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from a healthcare provider\",\"details\":\"AHS Edmonton Zone — Adult Feeding/Swallowi"
+  },
+  {
+    "id": 698,
+    "name": "YWCA Edmonton - Individual Counselling",
+    "cat": "Domestic Violence Support",
+    "desc": "YWCA Edmonton offers individual counselling sessions that address various issues, including eating disorders. The service is designed to support individuals impacted by domestic violence, human trafficking, and other challenges, providing a safe spac",
+    "steps": "[{\"step\":1,\"action\":\"Contact YWCA Edmonton\",\"details\":\"Reach out to YWCA Edmonton, serving the capital region since 1907"
+  },
+  {
+    "id": 700,
+    "name": "Bowline Health — Virtual Addiction Recovery Coaching",
+    "cat": "Addiction Treatment",
+    "desc": "Bowline Health is a for-profit organization specializing in virtual recovery coaching services, focusing on empowering participants through personalized support for individuals dealing with various addictions, including gambling.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Bowline Health or visit bowlinehealth.ca\",\"details\":\"Virtual Recovery Coaching Navigation C"
+  },
+  {
+    "id": 701,
+    "name": "Rocky Mountain House Health Centre - Addiction Counselling (AHS Central)",
+    "cat": "Addiction Treatment",
+    "desc": "Alberta Health Services - Central Zone offers Addiction Counselling services at the Rocky Mountain House Health Centre. This program provides counseling and related assessments for individuals concerned about their own or another person's use of alco",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Addiction and Mental Health (AAMH)\", \"details\": \"Call 1-888-594-0211 to initiate an "
+  },
+  {
+    "id": 702,
+    "name": "Alberta Gaming, Liquor, and Cannabis - Voluntary Gambling Self-Exclusion Program",
+    "cat": "Gambling Support",
+    "desc": "The Alberta Gaming, Liquor, and Cannabis (AGLC) - Voluntary Gambling Self-Exclusion Program is designed to assist individuals in managing their gambling behaviors by allowing them to voluntarily exclude themselves from all Alberta casinos, racing ent",
+    "steps": "[{\"step\": 1, \"action\": \"Choose sign-up method\", \"details\": \"Virtual sign-up via Microsoft Teams/Webex, in-person at Game"
+  },
+  {
+    "id": 703,
+    "name": "Thorpe Recovery Centre - Residential Addiction Treatment",
+    "cat": "Residential Treatment",
+    "desc": "Thorpe Recovery Centre offers a 42 to 90-day residential addictions treatment program for adults with chemical dependencies, including gambling. The program includes individualized assessment and treatment planning, structured programming, daily lect",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 875-8890 to begin intake\",\"details\":\"Thorpe Recovery Centre offers a 42- to 90-day resid"
+  },
+  {
+    "id": 704,
+    "name": "Gamblers Anonymous Support Groups",
+    "cat": "Gambling Support",
+    "desc": "Gamblers Anonymous Support Groups in Lethbridge are part of the Alberta Gamblers Anonymous organization, which offers support for individuals struggling with compulsive gambling through a 12-step program. The program is designed for those who have a ",
+    "steps": "[{\"step\": 1, \"action\": \"Find a Gamblers Anonymous meeting in Lethbridge\", \"details\": \"Contact Alberta Gamblers Anonymous"
+  },
+  {
+    "id": 705,
+    "name": "Alcoholics Anonymous in Alberta",
+    "cat": "Recovery & Peer Support",
+    "desc": "Alcoholics Anonymous (AA) in Alberta is a fellowship of men and women who share their experiences to help each other achieve and maintain sobriety. The Red Deer Central Service Office serves the AA community in Red Deer and surrounding areas, offerin",
+    "steps": "[{\"step\":1,\"action\":\"Call (587) 377-1117 or email centraloffice@reddeeraa.org\",\"details\":\"The Red Deer Central Service O"
+  },
+  {
+    "id": 706,
+    "name": "Grande Prairie John Howard Society - Drug Treatment Court Services",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "The Drug Treatment Court Services offered by the John Howard Society of Grande Prairie is an intensive, court-supervised program designed for adults who commit crimes to support their drug use and are committed to change. Participants are supported i",
+    "steps": "[{\"step\":1,\"action\":\"Complete application forms with the assistance of a lawyer\",\"details\":\"Grande Prairie John Howard S"
+  },
+  {
+    "id": 708,
+    "name": "AHS - Calgary Sexual Assault Response Team (CSART)",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Calgary Sexual Assault Response Team (CSART) provides specialized care to individuals who have been sexually assaulted within the past 7 days. Services include confidential medical care, emotional support, reporting options, forensic examination,",
+    "steps": "[{\"step\": 1, \"action\": \"If you are 14 years old or older and have been sexually assaulted in the past 7 days, go to Shel"
+  },
+  {
+    "id": 709,
+    "name": "Sexual Violence Survivors Legal Advice Program",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Sexual Violence Survivors Legal Advice Program offers support to survivors of sexual violence, helping them understand their legal rights, options, and available resources. This program provides free legal advice and information, including guidan",
+    "steps": "[{\"step\": 1, \"action\": \"Call to connect with Program Coordinator\", \"details\": \"Call 403-234-9266 to connect with the Pro"
+  },
+  {
+    "id": 710,
+    "name": "Sagesse — Domestic Violence Peer Support",
+    "cat": "Trauma & PTSD Support",
+    "desc": "Sagesse provides peer support programs for individuals affected by domestic violence, including Growth Circle, Step Forward, and Stand By: for Informal Supporters. These programs offer support groups, workshops, and resources aimed at helping individ",
+    "steps": "[{\"step\":1,\"action\":\"Book an intake appointment at (403) 234-7337\",\"details\":\"Sagesse provides peer support programs for"
+  },
+  {
+    "id": 711,
+    "name": "PCHS Calgary - Counselling and Resource Navigation",
+    "cat": "Trauma & PTSD Support",
+    "desc": "PCHS Calgary, also known as Punjabi Community Health Services, offers counselling services and resource navigation for individuals affected by trauma and PTSD. They provide safe, accessible, and culturally informed support, including referrals to oth",
+    "steps": "[{\"step\": 1, \"action\": \"Call PCHS to book a time slot to meet with a counsellor\", \"details\": \"Call 587-500-5630 or main "
+  },
+  {
+    "id": 712,
+    "name": "Sexual Assault Centre of Edmonton - Sexual Assault Group Counselling",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Sexual Assault Centre of Edmonton (SACE) offers support services for individuals who have experienced sexual violence, including sexual assault group counselling. Current groups include Sexual Assault Survivors Support (SASS), Adult Survivors Hea",
+    "steps": "[{\"step\": 1, \"action\": \"Complete individual counselling\", \"details\": \"To participate in group counselling, individuals n"
+  },
+  {
+    "id": 713,
+    "name": "AHS — Sexual Assault Response Team (Edmonton)",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Sexual Assault Response Team (SART) at Grey Nuns Community Hospital in Edmonton provides specialized medical and emotional support to individuals who have experienced sexual assault. This service is available to individuals aged 14 and older who ",
+    "steps": "[{\"step\":1,\"action\":\"Access the Emergency Department at Grey Nuns Community Hospital\",\"details\":\"AHS Edmonton Zone — Sex"
+  },
+  {
+    "id": 714,
+    "name": "YWCA Edmonton - Towards Healing - Group Counselling",
+    "cat": "Trauma & PTSD Support",
+    "desc": "YWCA Edmonton offers the 'Towards Healing' program, a weekly support group for women impacted by domestic violence. This group provides participants with opportunities to create new social connections, build resiliency, and enhance their understandin",
+    "steps": "[{\"step\":1,\"action\":\"Email counselling@ywcaedm.org to apply for services\",\"details\":\"YWCA Edmonton Counselling Centre — "
+  },
+  {
+    "id": 715,
+    "name": "Cornerstone Counselling - Counselling and Therapy Services",
+    "cat": "Trauma & PTSD Support",
+    "desc": "Cornerstone Counselling provides professional, confidential psychological services for children, adolescents, adults, couples, families, and groups on a variety of issues, including stress management, anxiety, depression, grief, relationships, anger,",
+    "steps": "[{\"step\": 1, \"action\": \"Call Cornerstone Counselling at their Edmonton office to request an initial intake appointment\","
+  },
+  {
+    "id": 716,
+    "name": "YWCA Banff - Sexual Violence Response Program",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The YWCA Banff's Sexual Violence Response Program offers comprehensive support to individuals in the Bow Valley region who have experienced sexual violence. This program provides a safe and appropriate environment for survivors, assisting them in nav",
+    "steps": "[{\"step\": 1, \"action\": \"Apply online or download PDF application\", \"details\": \"All units are currently full. We will con"
+  },
+  {
+    "id": 717,
+    "name": "Canadian Mental Health Association - Calgary Region - Peer Support Services",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Canadian Mental Health Association (CMHA) – Calgary Region offers Peer Support Services at their Welcome Centre, providing individuals, family members, and professionals the opportunity to connect with trained Peer Support Workers who have lived ",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 297-1402 or email peer@cmha.calgary.ab.ca\",\"details\":\"CMHA Calgary Region offers Peer Su"
+  },
+  {
+    "id": 718,
+    "name": "PATH - Peer Support After a Substance Loss",
+    "cat": "Recovery & Peer Support",
+    "desc": "Healing PATH Alberta offers peer support for individuals grieving the loss of a loved one due to substance use. The program provides both virtual and in-person gatherings, fostering a compassionate community for those mourning such losses.",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-353-5987 to inquire about meeting times and registration\",\"details\":\"PATH — Peer Support A"
+  },
+  {
+    "id": 719,
+    "name": "Alberta Alliance Who Educates and Advocates Responsibly - Addiction Peer Support Group",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Alberta Alliance Who Educates and Advocates Responsibly (AAWEAR) is a registered not-for-profit organization dedicated to improving the quality of life for individuals in the drug-using community through education and health awareness. They provi",
+    "steps": "[{\"step\": 1, \"action\": \"Contact or attend in-person programs - no formal intake or application process required\", \"detai"
+  },
+  {
+    "id": 720,
+    "name": "Peer Wellness Services — Substance Use Support",
+    "cat": "Recovery & Peer Support",
+    "desc": "Peer support services for individuals affected by substance use.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Peer Wellness Services by phone or email to express interest in peer support\", \"details\""
+  },
+  {
+    "id": 721,
+    "name": "Nicotine Anonymous",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Nicotine Support Group, provided by Nicotine Anonymous, offers support groups and fellowship to help individuals live nicotine-free lives. This program is designed for those seeking to quit nicotine use and provides a supportive environment for i",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-877-879-6422 or visit nicotine-anonymous.org\",\"details\":\"12-step fellowship for those who wa"
+  },
+  {
+    "id": 723,
+    "name": "SMART Recovery Association",
+    "cat": "Recovery & Peer Support",
+    "desc": "The SMART Recovery Association in Edmonton offers peer-supported recovery meetings for individuals and families affected by addictive behaviors. Their mission is to empower individuals and families to overcome addiction and lead fulfilling lives by p",
+    "steps": "[{\"step\":1,\"action\":\"Visit smartrecoveryalberta.org for meeting information\",\"details\":\"SMART Recovery — Self-Management"
+  },
+  {
+    "id": 724,
+    "name": "Adult Children of Alcoholics",
+    "cat": "Recovery & Peer Support",
+    "desc": "Adult Children of Alcoholics (ACA) is a registered not-for-profit organization dedicated to providing peer support groups for adults aged 18 and older who have experienced living in an alcoholic, addictive, or otherwise dysfunctional family environme",
+    "steps": "[{\"step\":1,\"action\":\"Visit adultchildren.org and find a meeting\",\"details\":\"Virtual and in-person meetings available. Se"
+  },
+  {
+    "id": 725,
+    "name": "Families for Addiction Recovery",
+    "cat": "Recovery & Peer Support",
+    "desc": "Families for Addiction Recovery, also known as FAR Canada, is a registered not-for-profit organization dedicated to providing recovery support to families and their teenagers dealing with addictions or substance use. They offer online parent support ",
+    "steps": "[{\"step\":1,\"action\":\"Reach out to FAR for support\",\"details\":\"Contact Families for Addiction Recovery (FAR), a national "
+  },
+  {
+    "id": 726,
+    "name": "Hoarding Disorder Foundation of Alberta",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Hoarding Disorder Foundation of Alberta (HDFA) is a registered charity and self-help group dedicated to providing education and compassionate, informed, collaborative services for individuals struggling with hoarding behaviors, their loved ones, ",
+    "steps": "[{\"step\":1,\"action\":\"Contact HDFA or visit hdfa.ca\",\"details\":\"First stop in Alberta for those affected by hoarding beha"
+  },
+  {
+    "id": 727,
+    "name": "Students' Association of Mount Royal University - Peer Support Centre",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Peer Support Centre is a student-focused service provided by the Students' Association of Mount Royal University (SAMRU). It offers a range of programs and services designed to support students in various aspects of their university life, includi",
+    "steps": "[{\"step\": 1, \"action\": \"For Peer Counselling and General Support: Submit a contact form through their website or drop in"
+  },
+  {
+    "id": 728,
+    "name": "Kidney Foundation of Canada, the - Kidney Community Programs",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Kidney Foundation of Canada offers Kidney Community Programs that provide research, information, and support for individuals with kidney disease. This includes both in-person and online peer support services tailored to the needs of individuals a",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Kidney Foundation office in Lethbridge at 740 4 Avenue S by phone or visit in person"
+  },
+  {
+    "id": 729,
+    "name": "Canadian Centre for Men and Families of Alberta - Men's Peer Support Program",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Canadian Centre for Men and Families (CCMF) Alberta offers a Men's Peer Support Group (MPSG) designed to provide a safe and welcoming environment for men to connect with others who have experienced similar challenges. This group focuses on issues",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"If you or someone you know is interested in registering for a prog"
+  },
+  {
+    "id": 730,
+    "name": "AHS — Assertive Outreach, Addiction & Mental Health (Central Alberta)",
+    "cat": "Addiction Treatment",
+    "desc": "The Adult Addiction and Mental Health Services - Assertive Outreach program in Central Alberta is designed to assist individuals with severe and persistent mental illnesses, aiming to help them live independently within their communities and reduce t",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Addiction and Mental Health (AAMH) to initiate an intake\", \"details\": \"Call 1-888-59"
+  },
+  {
+    "id": 731,
+    "name": "AHS — Young Adult Walk-In Clinic (Edmonton)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Alberta Health Services - Edmonton Zone - Addiction and Mental Health - Young Adult Walk-In Clinic is a walk-in, single-session clinic designed for individuals aged 16 to 24 seeking support for mental health or substance use concerns. The clinic ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to the Kickstand Edmonton location operated by YMCA\",\"details\":\"Young adult walk-in mental "
+  },
+  {
+    "id": 732,
+    "name": "Metis Child and Family Services Society Edmonton",
+    "cat": "Indigenous Services",
+    "desc": "The Metis Child and Family Services Society Edmonton is a registered not-for-profit organization dedicated to promoting the health and well-being of Métis children and families. They achieve this by building on the capacity of the Métis community thr",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-452-6100\",\"details\":\"Metis Child and Family Services Society is a registered not-for-profi"
+  },
+  {
+    "id": 733,
+    "name": "City of Edmonton — Extreme Weather Response",
+    "cat": "Crisis Services",
+    "desc": "Provides extreme weather response services.",
+    "steps": "[{\"step\":1,\"action\":\"Call 3-1-1 for information on available services\",\"details\":\"City of Edmonton — municipal services "
+  },
+  {
+    "id": 734,
+    "name": "Stepping Stones Crisis Society - Community Support (Outreach) Program",
+    "cat": "Crisis Services",
+    "desc": "The Community Support (Outreach) Program offered by Stepping Stones Crisis Society in Cold Lake, Alberta, provides free, confidential support to individuals and families facing life's challenges. This program is open to all community members, includi",
+    "steps": "[{\"step\":1,\"action\":\"Contact the program at 780-826-9586\",\"details\":\"Stepping Stones Crisis Society — Community Support "
+  },
+  {
+    "id": 735,
+    "name": "AHS — ER Outreach Team, Mental Health (Calgary)",
+    "cat": "Crisis Services",
+    "desc": "The Emergency Room Outreach Team - Mental Health is a service provided by Alberta Health Services in the Calgary Zone. This team offers timely community-based follow-up to clients referred by psychiatric emergency services, providing emotional or men",
+    "steps": "[{\"step\":1,\"action\":\"Contact Access Mental Health for a referral\",\"details\":\"AHS Calgary Zone Emergency Room Outreach Te"
+  },
+  {
+    "id": 736,
+    "name": "REACH Edmonton Council for Safe Communities - 24/7 Edmonton Crisis Diversion Team",
+    "cat": "Crisis Services",
+    "desc": "The 24/7 Edmonton Crisis Diversion Team, operated by REACH Edmonton Council for Safe Communities, is a mobile assistance program designed to support vulnerable individuals in Edmonton experiencing non-emergency crises. The program aims to divert non-",
+    "steps": "[{\"step\": 1, \"action\": \"Call 211 and press 3\", \"details\": \"You'll be connected with a Crisis Diversion operator who can "
+  },
+  {
+    "id": 737,
+    "name": "YOUCAN Youth Services - Relentless Youth Outreach Worker Project",
+    "cat": "Youth Services",
+    "desc": "The Relentless Youth Outreach Worker Project is a program offered by YOUCAN Youth Services in Edmonton, Alberta. This initiative focuses on engaging at-risk youth to empower them in making positive, healthy, and life-changing decisions. The program a",
+    "steps": "[{\"step\":1,\"action\":\"Contact YOUCAN Youth Services in Edmonton or visit youcan.ca\",\"details\":\"Relentless approach to sup"
+  },
+  {
+    "id": 738,
+    "name": "Central Alberta Pregnancy Care Centre — The Aerie Maternity Home (Red Deer)",
+    "cat": "Family & Parenting Support",
+    "desc": "A nurturing home supporting healthy pregnancy and positive parenting. The Aerie is a two-phase maternity home program in Red Deer, Alberta, for single pregnant women, offering a nurturing home that supports a healthy pregnancy and positive parenting.",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"Contact the Central Alberta Pregnancy Care Centre at 403-343-1611 "
+  },
+  {
+    "id": 739,
+    "name": "Golden Circle Senior Resource Centre",
+    "cat": "Senior Services",
+    "desc": "The Golden Circle Senior Resource Centre is a community hub dedicated to supporting older adults, their families, and caregivers. It offers a variety of programs and services aimed at promoting independent and healthy lifestyles, including outreach s",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-454-2580 or visit goldencircle.ca\",\"details\":\"Senior resource centre in Red Deer. No refer"
+  },
+  {
+    "id": 741,
+    "name": "AHS — Police & Crisis Team (Grande Prairie)",
+    "cat": "Crisis Services",
+    "desc": "The Police and Crisis Team (PACT) in Grande Prairie is a collaborative initiative between Alberta Health Services (AHS) and the Royal Canadian Mounted Police (RCMP). This team comprises an RCMP officer and a Registered Psychiatric Nurse, working toge",
+    "steps": "[{\"step\": 1, \"action\": \"For crisis situations: Call 911 and request the PACT Team\", \"details\": null}, {\"step\": 2, \"actio"
+  },
+  {
+    "id": 742,
+    "name": "Nistawoyou Association Friendship Centre - Outreach Team",
+    "cat": "Indigenous Services",
+    "desc": "The Nistawoyou Association Friendship Centre's Outreach Team provides information, outreach, and referrals to individuals in need. They support individuals in the community through various outreach services.",
+    "steps": "[{\"step\":1,\"action\":\"Walk in or call 780-743-8555\",\"details\":\"Nistawoyou Association Friendship Centre, 8310 Manning Ave"
+  },
+  {
+    "id": 745,
+    "name": "AHS - Addiction and Mental Health Day Hospital",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Day Hospital offers intensive treatment for individuals facing mental health challenges that could require acute inpatient psychiatric care without intervention. This program is designed for those who need structured",
+    "steps": "[{\"step\":1,\"action\":\"Walk in between 10:00 AM and 11:00 AM for triage — no referral needed\",\"details\":\"AHS — Addiction a"
+  },
+  {
+    "id": 746,
+    "name": "Thorpe Recovery Centre - Medically Supported Detox",
+    "cat": "Detox & Withdrawal",
+    "desc": "Thorpe Recovery Centre, also known as Alberta Health Services - Central Zone - Addiction Services - Adult Detoxification, offers a 24/7 medically supported structured environment to assist adults withdrawing from alcohol and other drugs. The facility",
+    "steps": "[{\"step\": 1, \"action\": \"Complete application form\", \"details\": \"Application form available on website includes sections "
+  },
+  {
+    "id": 749,
+    "name": "Oxford House Foundation of Canada - Pre-treatment Recovery Housing Program",
+    "cat": "Transitional Housing",
+    "desc": "The Oxford House Foundation of Canada offers a Pre-Treatment Recovery Housing Program that provides a safe, sober, and supportive environment for individuals who have completed detoxification and are awaiting addiction treatment. This program aims to",
+    "steps": "[{\"step\":1,\"action\":\"Complete the Pre-Treatment Housing Application form on the website\",\"details\":\"Oxford House Foundat"
+  },
+  {
+    "id": 750,
+    "name": "Safe Haven Foundation of Canada - Haven's Way",
+    "cat": "Transitional Housing",
+    "desc": "Haven's Way provides a safe, family-like environment where residents receive comprehensive support, including education, healthcare, counseling, and life skills development. This program is designed for young women aged 14 to 24 who are homeless or a",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-230-2613 or email for intake/referral\",\"details\":\"Safe Haven Foundation — established 1996"
+  },
+  {
+    "id": 751,
+    "name": "Canadian Centre for Men and Families of Alberta - Interim Housing Program",
+    "cat": "Transitional Housing",
+    "desc": "The Canadian Centre for Men and Families of Alberta offers an Interim Housing Program in Calgary. This program provides transitional housing services to men and their families facing challenges such as divorce, separation, custody disputes, co-parent",
+    "steps": "[{\"step\": 1, \"action\": \"Register online by clicking the registration link on their housing page, or call 1-587-885-2839 "
+  },
+  {
+    "id": 752,
+    "name": "Alberta Seventh Step Society - Community Residential Facility",
+    "cat": "Transitional Housing",
+    "desc": "The Alberta Seventh Step Society operates a Community Residential Facility (CRF) that provides transitional housing and support services for individuals reintegrating into society after incarceration or rehabilitation. This facility serves as a halfw",
+    "steps": "[{\"step\": 1, \"action\": \"Residency must be mandated by the Parole Board of Canada as part of release conditions\", \"detail"
+  },
+  {
+    "id": 753,
+    "name": "Elizabeth Fry Society of Calgary - Dana's House Transitional Housing Support",
+    "cat": "Domestic Violence Support",
+    "desc": "The Elizabeth Fry Society of Calgary offers Dana's House Transitional Housing Support, a culturally supportive program for Indigenous women who have been criminalized and are prepared to address issues contributing to their interactions with the lega",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Dana's House at Elizabeth Fry Society of Calgary\", \"details\": \"Call the Elizabeth Fry So"
+  },
+  {
+    "id": 754,
+    "name": "GEF Seniors Housing - Subsidized Apartment Program",
+    "cat": "Transitional Housing",
+    "desc": "Ritchie Pioneer Place is a subsidized apartment program managed by GEF Seniors Housing, providing affordable accommodation for low-income seniors. The four-storey building features 51 one-bedroom apartments designed to offer secure and comfortable li",
+    "steps": "[{\"step\": 1, \"action\": \"Complete and submit application\", \"details\": \"Complete application at https://housing.gef.org an"
+  },
+  {
+    "id": 755,
+    "name": "Bissell Centre — Integrated Housing, Financial & Community Support",
+    "cat": "Disability & Autism Support",
+    "desc": "The Service Hub at Bissell Centre offers integrated support in a one-stop model designed to meet individuals where they are and support them on a path toward stability. Services include assistance in finding housing, personal finance coaching, Indige",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours — drop-in services available\",\"details\":\"Bissell Centre — Service Hu"
+  },
+  {
+    "id": 756,
+    "name": "Housing - Life Opportunities for Transition",
+    "cat": "Transitional Housing",
+    "desc": "The Housing - Life Opportunities for Transition program provides a supported living environment for at-risk youth, assisting them in transitioning from homelessness to independent living. It is designed to help youth aged 16 to 24 who are experiencin",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Housing - Life Opportunities for Transition program intake line\", \"details\": \"Call o"
+  },
+  {
+    "id": 757,
+    "name": "Cunningham Place — Youth Transitional Housing (Edmonton)",
+    "cat": "Transitional Housing",
+    "desc": "Cunningham Place is a 28-bed supportive transitional housing program for young adults aged 18 to 30, located in Edmonton, AB. The program offers private bedrooms with shared bathrooms and living areas, fostering a drug and alcohol-free environment wi",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Cunningham Place to inquire about availability and request an intake application\", \"deta"
+  },
+  {
+    "id": 758,
+    "name": "The Salvation Army - Transitional Housing Program",
+    "cat": "Transitional Housing",
+    "desc": "The Salvation Army Edmonton Centre of Hope offers a Transitional Housing Program that provides safe, inclusive, and accessible transitional housing for adults of all genders (18+). Participants work closely with staff to create personalized transitio",
+    "steps": "[{\"step\": 1, \"action\": \"Obtain referral form\", \"details\": \"A Referral Form is required for admission. No self-referrals "
+  },
+  {
+    "id": 759,
+    "name": "Pimatisiwin — Supportive Housing Program",
+    "cat": "Transitional Housing",
+    "desc": "Pimatisiwin, meaning 'Life' in Cree, is a supportive housing program offered by NiGiNan Housing Ventures. This program provides shelter accommodations and support services to assist individuals in connecting to permanent housing.",
+    "steps": "[{\"step\":1,\"action\":\"Contact NiGiNan Housing Ventures\",\"details\":\"An Indigenous-led registered charity in Edmonton servi"
+  },
+  {
+    "id": 761,
+    "name": "YWCA Banff - Emergency Shelter and Transitional Housing",
+    "cat": "Emergency Shelter",
+    "desc": "YWCA Banff provides a safe space for individuals and families fleeing domestic or sexual violence in the Bow Valley region. Their services include a short-term (21-day) crisis shelter and transitional housing with case management to assist in plannin",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 762-3560 or email yps@ywcabanff.ca\",\"details\":\"YWCA Banff provides a safe space for indi"
+  },
+  {
+    "id": 762,
+    "name": "Calgary Legal Guidance - Social Benefits Advocacy Program",
+    "cat": "Legal Aid",
+    "desc": "Calgary Legal Guidance (CLG) offers a Social Benefits Advocacy Program (SBAP) designed to assist individuals facing challenges with the Assured Income for the Severely Handicapped (AISH) Program. This program provides information, advice, and guidanc",
+    "steps": "[{\"step\": 1, \"action\": \"Call the SBAP hotline\", \"details\": \"To access support or for information on the Social Benefits "
+  },
+  {
+    "id": 763,
+    "name": "Calgary Legal Guidance - Legal Advice Clinics",
+    "cat": "Legal Aid",
+    "desc": "Calgary Legal Guidance (CLG) is a non-profit organization dedicated to providing free legal assistance, information, and advocacy to individuals facing financial hardships and social challenges in Calgary, Alberta. Their services are particularly ben",
+    "steps": "[{\"step\": 1, \"action\": \"Call the main phone line\", \"details\": \"403-234-9266\"}, {\"step\": 2, \"action\": \"Leave a message\", "
+  },
+  {
+    "id": 764,
+    "name": "Legal Aid Alberta - Duty Counsel Services",
+    "cat": "Legal Aid",
+    "desc": "Duty Counsel lawyers provide free, on-the-spot legal advice to individuals making their first appearance in court. They assist with adult and youth criminal cases, as well as family law matters, including domestic violence issues. Services are availa",
+    "steps": "[{\"step\":1,\"action\":\"If self-represented, call 1-866-845-3425 for phone advice before your first court date\",\"details\":\""
+  },
+  {
+    "id": 765,
+    "name": "Calgary Catholic Immigration Society - Notary Public / Legal Workshops Program",
+    "cat": "Legal Aid",
+    "desc": "The program provides legal workshops covering immigrant and refugee-oriented legal information, including topics such as immigration issues, family law, and criminal law. Limited notary public services are available for clients on Fridays.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CCIS for services\",\"details\":\"Reach out to CCIS, the largest immigrant-serving organization"
+  },
+  {
+    "id": 766,
+    "name": "Calgary Immigrant Women's Association - Legal Clinic",
+    "cat": "Legal Aid",
+    "desc": "The Calgary Immigrant Women's Association (CIWA) offers a Legal Clinic that provides legal services specifically for immigrant women and their families. This includes assistance for Canadian citizens and temporary foreign workers facing legal issues ",
+    "steps": "[{\"step\":1,\"action\":\"Call CIWA at 403-263-4414 to book an appointment\",\"details\":\"The Legal Clinic provides family and i"
+  },
+  {
+    "id": 767,
+    "name": "Women's Centre of Calgary - Legal Advice Clinic",
+    "cat": "Legal Aid",
+    "desc": "The Women's Centre of Calgary offers a Legal Advice Clinic providing free, confidential, half-hour legal advice sessions for women. These clinics address family issues, civil cases, immigration, and other legal matters, excluding criminal law.",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 264-1155 or drop in during open hours\",\"details\":\"The Women's Centre of Calgary provides"
+  },
+  {
+    "id": 768,
+    "name": "Pro Bono Law Alberta - Civil Claims Duty Counsel Project",
+    "cat": "Legal Aid",
+    "desc": "The Civil Claims Duty Counsel (CCDC) Project is a service provided by Pro Bono Law Alberta (PBLA) to assist self-represented litigants with civil matters in the Alberta Court of Justice in Calgary. This program offers free 30-minute consultations on ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to the courthouse — no appointment needed\",\"details\":\"The Civil Claims Duty Counsel (CCDC) "
+  },
+  {
+    "id": 769,
+    "name": "Pro Bono Law Alberta - King's Bench Court Assistance Program",
+    "cat": "Legal Aid",
+    "desc": "The King's Bench Court Assistance Program, also known as the KB Amicus Program, provides summary legal assistance to self-represented litigants with civil matters at the Court of King's Bench in Calgary. Services include in-person help with morning c",
+    "steps": "[{\"step\": 1, \"action\": \"Arrive at the Calgary Courts Centre at 601 5 Street SW on the day you have a chambers applicatio"
+  },
+  {
+    "id": 770,
+    "name": "Government of Alberta - Ministry of Justice - Resolution Services - Information Services",
+    "cat": "Legal Aid",
+    "desc": "The Resolution Services - Information Services at the Calgary Courts Centre assist Albertans with court processes and provide information to help resolve legal issues. They offer self-help services and in-person assistance at selected locations, incl",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Resolution Services yourself, or the Court can refer you\", \"details\": \"Services are avai"
+  },
+  {
+    "id": 772,
+    "name": "Student Legal Services of Edmonton — Free Legal Aid for Low-Income Individuals",
+    "cat": "Legal Aid",
+    "desc": "Student Legal Services of Edmonton (SLS) is a student-managed, non-profit society dedicated to assisting low-income individuals in Edmonton with access to justice. Operated by law students from the University of Alberta, SLS provides free legal infor",
+    "steps": "[{\"step\": 1, \"action\": \"Call or fill out contact form to book appointment\", \"details\": \"Call 780-492-8180 or fill out th"
+  },
+  {
+    "id": 773,
+    "name": "Legal Aid Alberta - Client Contact Centre",
+    "cat": "Legal Aid",
+    "desc": "Legal Aid Alberta's Client Contact Centre offers legal representation through assigned lawyers for qualifying clients across Alberta. They provide support in various legal areas, including serious adult criminal charges, family law issues, child welf",
+    "steps": "[{\"step\":1,\"action\":\"Contact Legal Aid Alberta Client Contact Centre or visit legalaid.ab.ca\",\"details\":\"Legal aid servi"
+  },
+  {
+    "id": 774,
+    "name": "AHS — Forensic Mental Health Assessment & Community Services (Edmonton)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services (AHS) offers the Addiction and Mental Health - Forensic Assessment and Community Services (FACS) at their Edmonton 106th Street Clinic. This program provides assessment and treatment to adults who have a legal obligation, addi",
+    "steps": "[{\"step\": 1, \"action\": \"Referrals to FACS are accepted from the Courts and Community Corrections\", \"details\": \"This is N"
+  },
+  {
+    "id": 775,
+    "name": "AHS — Social Work Services (Strathmore)",
+    "cat": "Healthcare Access",
+    "desc": "The Social Work Services at Strathmore District Health Services, part of Alberta Health Services' Calgary Zone, offer support to patients and their families facing social and personal challenges. These services include assessments, interventions, and",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 361-7176\",\"details\":\"Social Work Services at Strathmore District Health Services (AHS Ca"
+  },
+  {
+    "id": 776,
+    "name": "Canadian Mental Health Association - Central Region - Alberta Brain Injury Network Program",
+    "cat": "Disability & Autism Support",
+    "desc": "The Alberta Brain Injury Network Program, offered by the Canadian Mental Health Association (CMHA) - Central Region, provides support, education, and service navigation to survivors of acquired brain injuries and their families. This includes assista",
+    "steps": "[{\"step\": 1, \"action\": \"Contact office or submit referral\", \"details\": \"Referrals can be made by directly contacting the"
+  },
+  {
+    "id": 782,
+    "name": "Alberta Health Services — Provincial Family Violence Treatment Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services (AHS) offers the Provincial Family Violence Treatment Program for individuals affected by family violence. This program is part of a broader range of mental health counseling services provided to support residents of Alberta. ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-407-8822 or visit ahs.ca\",\"details\":\"Alberta Health Services — provincial mental health se"
+  },
+  {
+    "id": 783,
+    "name": "United Cultures of Canada Association — Newcomer Mental Health Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The United Cultures of Canada Association is a registered not-for-profit organization based in Edmonton, Alberta, dedicated to fostering inclusion for newcomers and facilitating their effective participation and integration into Canadian society. The",
+    "steps": "[{\"step\": 1, \"action\": \"Contact UCCA for a therapy referral\", \"details\": \"Contact at info@ucca.ca, freepsychologicalcoun"
+  },
+  {
+    "id": 784,
+    "name": "AHS — Adult & Youth Addiction & Mental Health (Fairview)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Adult and Youth services provide mental health support for individuals of all ages, including crisis response and assistance for those dealing with symptoms of mental illness or substance use issues. Parental involve",
+    "steps": "[{\"step\":1,\"action\":\"Call Access AAMH at 1-888-594-0211 or walk in Thursdays 1-4 PM\",\"details\":\"AHS North Zone — Addicti"
+  },
+  {
+    "id": 785,
+    "name": "University of Lethbridge - Counselling Services",
+    "cat": "Campus & Student Services",
+    "desc": "The University of Lethbridge offers confidential counselling services to assist students with a variety of personal, career, or academic concerns. Services include in-person or virtual counselling, group counselling, wellness workshops, career counse",
+    "steps": "[{\"step\": 1, \"action\": \"Email counselling.services@uleth.ca or call 403-317-2845 to start the onboarding process\", \"deta"
+  },
+  {
+    "id": 786,
+    "name": "Southern Alberta Self-Help Association — Recovery Housing for Mental Illness",
+    "cat": "Transitional Housing",
+    "desc": "The Southern Alberta Self-Help Association (SASHA) offers recovery-focused housing opportunities for individuals experiencing mental illnesses. Their Residential Living service provides support to individuals in their mental health journey.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Southern Alberta Self-Help Association (SASHA) or visit sashasupports.org\",\"details\":\"Suppo"
+  },
+  {
+    "id": 787,
+    "name": "Recovery College Lethbridge - Canadian Mental Health Association - Alberta South Region",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Recovery College Lethbridge, operated by the Canadian Mental Health Association (CMHA) Alberta South Region, offers free educational courses designed to help individuals develop their own resourcefulness and support their mental health recovery j",
+    "steps": "[{\"step\":1,\"action\":\"Visit recoverycollegelethbridge.ca to find a course\",\"details\":\"Free courses supporting mental heal"
+  },
+  {
+    "id": 788,
+    "name": "AHS — Family Violence Treatment Program (Red Deer)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Provincial Family Violence Treatment Program in Red Deer, Alberta, offers assessment and treatment services to individuals engaged in intimate partner violence. This program aims to provide support and resources to those affected by family violen",
+    "steps": "[{\"step\":1,\"action\":\"Referral from Community Corrections (Probation) or Children & Family Services\",\"details\":\"AHS — Pro"
+  },
+  {
+    "id": 790,
+    "name": "Parkinson Association of Alberta — Support & Education Programs",
+    "cat": "Healthcare Access",
+    "desc": "The Parkinson Association of Alberta offers support, education, and programs for individuals with Parkinson's disease and their families. They provide various support programs tailored to the needs of those affected by the disease.",
+    "steps": "[{\"step\":1,\"action\":\"Call toll-free 1-800-561-1911 or email info@parkinsonassociation.ca\",\"details\":\"The Parkinson Assoc"
+  },
+  {
+    "id": 793,
+    "name": "Huntington Society of Canada — Disease Support & Resources (Alberta)",
+    "cat": "Healthcare Access",
+    "desc": "The Huntington Society of Canada offers support services for individuals affected by Huntington's disease in Alberta, including the Central Zone, which encompasses Red Deer. These services aim to provide assistance and resources to those impacted by ",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Family Services support\", \"details\": \"By phone at 1-800-998-7398 ext. 204 or online by c"
+  },
+  {
+    "id": 794,
+    "name": "CMHA Central Alberta - Pathways to Housing",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Canadian Mental Health Association Central Alberta offers the Pathways to Housing (P2H) program, targeting chronically homeless persons with serious mental illness and addiction. The program provides housing with wraparound supports from a multid",
+    "steps": "[{\"step\": 1, \"action\": \"Register online through the Recovery College Calendar Page\", \"details\": \"https://recoverycollege"
+  },
+  {
+    "id": 795,
+    "name": "Central Alberta Cancer Centre - Psychosocial Oncology",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Psychosocial Oncology service in Red Deer, Alberta, is provided by the Central Alberta Cancer Centre, which is part of Alberta Health Services - Cancer Care Alberta. This department comprises healthcare professionals specializing in cancer care, ",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or be referred by a doctor or nurse\",\"details\":\"Central Alberta Cancer Centre — Psychoso"
+  },
+  {
+    "id": 796,
+    "name": "AHS — Adult Community Psychiatric Services (Medicine Hat)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services - South Zone - Addiction and Mental Health - Community Psychiatric Services, Adult provides psychiatric services and consultations to clients attached to Adult Addiction and Mental Health Community Services. The service is des",
+    "steps": "[{\"step\":1,\"action\":\"First register with Adult Addiction and Mental Health Community Services (call 1-888-594-0211, opti"
+  },
+  {
+    "id": 797,
+    "name": "AHS — Street Connect Outreach (Grande Prairie)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Street Connect program, offered by Alberta Health Services (AHS) in the North Zone, is designed to reduce barriers for vulnerable individuals seeking health and medical support. This voluntary outpatient program caters to clients who prefer not t",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-833-4323 to speak with a program representative\",\"details\":\"AHS North Zone — Street Connec"
+  },
+  {
+    "id": 798,
+    "name": "Grande Prairie Aberdeen Centre - Complex Needs (AHS North)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Complex Needs Program is a mental health counseling service offered by Alberta Health Services at the Grande Prairie Aberdeen Centre. This program is designed for adults with concurrent and persistent mental health illnesses or disorders who requ",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from a healthcare provider\",\"details\":\"AHS North Zone — Grande Prairie Aberdeen C"
+  },
+  {
+    "id": 799,
+    "name": "Fort City Church — Counselling Services (Fort McMurray)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Fort City Church, formerly known as Fort McMurray Alliance Church, is a registered charity that provides counseling services in Fort McMurray. In addition to counseling, they also offer various programs including a kids camp.",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 791-2434 or email connect@fortcitychurch.ca\",\"details\":\"Fort City Church (formerly Fort "
+  },
+  {
+    "id": 800,
+    "name": "Stepping Stones Youth Shelter- Woods Homes",
+    "cat": "Youth Services",
+    "desc": "Stepping Stones Youth Shelter, operated by Wood's Homes, offers a short-term, secure haven for young people in Fort McMurray facing challenges that lead them to stay away from home for various reasons or those encountering difficulties with their par",
+    "steps": "[{\"step\":1,\"action\":\"Contact Stepping Stones at 780-750-2252 or 780-714-7007 in Fort McMurray\",\"details\":\"Located at 102"
+  },
+  {
+    "id": 801,
+    "name": "Family Christian Centre - Legacy Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Legacy Counselling Centre is a mental health counselling service located within the Family Christian Centre at 160 Dickins Drive, Fort McMurray, Alberta T9K 1R4. Operated by a registered charity and not-for-profit religious organization, this cen",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Pastor Rhoda or Stephanie for questions or more information\", \"details\": \"Pastor Rhoda 7"
+  },
+  {
+    "id": 802,
+    "name": "Some Other Solutions (SOS) — Crisis Line, Wellness & Community Outreach",
+    "cat": "Mental Health & Counselling",
+    "desc": "Some Other Solutions Society for Crisis Prevention (SOS) is a registered not-for-profit organization dedicated to empowering individuals to meet life's challenges and build their capacity to support others. They provide health and wellness services, ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-743-8605 or email reception@someothersolutions.ca\",\"details\":\"Some Other Solutions Society"
+  },
+  {
+    "id": 803,
+    "name": "AHS - Crisis Response Team (Fort McMurray)",
+    "cat": "Crisis Services",
+    "desc": "The Crisis Response Team (CRT) at Northern Lights Regional Health Centre in Fort McMurray, Alberta, is a multidisciplinary team comprising Registered Nurses and Mental Health Therapists. They collaborate with on-call psychiatrists to support individu",
+    "steps": "[{\"step\": 1, \"action\": \"Present to the Emergency Department at Northern Lights Regional Health Centre\", \"details\": null}"
+  },
+  {
+    "id": 805,
+    "name": "Care Gateway Medical Clinic — Addiction Treatment & OAT Programs",
+    "cat": "Addiction Treatment",
+    "desc": "Care Gateway Medical Clinic offers comprehensive addiction treatment programs through both in-person and virtual appointments. They provide a full range of personal and family medical services, including referrals to specialists, assistance with soci",
+    "steps": "[{\"step\": 1, \"action\": \"Schedule an appointment by clicking on their website or contact them at (587) 457-2589\", \"detail"
+  },
+  {
+    "id": 806,
+    "name": "AHS — Adult Addiction Day Treatment (Red Deer)",
+    "cat": "Addiction Treatment",
+    "desc": "Alberta Health Services offers the Addiction Services - Adult Day Treatment program at the Red Deer 49 Street facility. This community-based day treatment program is designed for individuals experiencing substance use or gambling issues. The program ",
+    "steps": "[{\"step\": 1, \"action\": \"Talk to a doctor first and ask which service is best for you\", \"details\": \"You may need a referr"
+  },
+  {
+    "id": 809,
+    "name": "AHS - Opioid Dependency Program (Red Deer)",
+    "cat": "Addiction Treatment",
+    "desc": "The Addiction and Mental Health - Opioid Dependency Program in Red Deer, Alberta, offers comprehensive services for individuals dealing with opioid dependency. This program provides ongoing support and monitoring, health and safety education, communi",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-314-5632 for intake\",\"details\":\"Contact the Red Deer clinic at 4805 48 Avenue (Wood Buildi"
+  },
+  {
+    "id": 810,
+    "name": "AHS - Adult Residential Addiction Treatment (Ponoka)",
+    "cat": "Addiction Treatment",
+    "desc": "The Centennial Centre for Mental Health and Brain Injury offers residential treatment programs for adults dealing with addiction. This service provides inpatient assessment and integrated treatment for adults aged 18 to 64 with severe mental health a",
+    "steps": "[{\"step\": 1, \"action\": \"Referral Required\", \"details\": \"A doctor's referral is needed. Include relevant psychiatric and "
+  },
+  {
+    "id": 811,
+    "name": "Wood Buffalo Wellness Society — Residential Addiction Treatment",
+    "cat": "Addiction Treatment",
+    "desc": "The Wood Buffalo Wellness Society, also known as the Mark Amy Treatment Centre, is a registered not-for-profit organization dedicated to promoting the health of the body, mind, and spirit. They offer community services, residential addictions treatme",
+    "steps": "[{\"step\":1,\"action\":\"Contact Wood Buffalo Wellness Society\",\"details\":\"Call (587) 537-8477 or email admin@woodbuffalowel"
+  },
+  {
+    "id": 813,
+    "name": "Fort McMurray Recovery Centre",
+    "cat": "Residential Treatment",
+    "desc": "The Fort McMurray Recovery Centre, operated by Alberta Health Services - North Zone, offers a residential intensive treatment program for adults with addiction issues. The program includes one-on-one and group counseling, tobacco cessation, interacti",
+    "steps": "[{\"step\": 1, \"action\": \"Complete Application\", \"details\": \"Return all pages by fax, mail, or email to the appropriate ce"
+  },
+  {
+    "id": 814,
+    "name": "AHS — Addiction Prevention Services (Fort McMurray)",
+    "cat": "Addiction Treatment",
+    "desc": "The Wood Buffalo Addiction & Mental Health Services offers prevention programs for alcohol, other drugs, tobacco, and gambling. These services are available to individuals, groups, schools, communities, and workplaces, focusing on raising awareness a",
+    "steps": "[{\"step\": 1, \"action\": \"Call the local addictions office for information on prevention activities\", \"details\": \"Service "
+  },
+  {
+    "id": 815,
+    "name": "SafeLink Alberta — Harm Reduction & STBBI Testing (Calgary)",
+    "cat": "Harm Reduction",
+    "desc": "SafeLink Alberta is a non-profit organization dedicated to reducing the risks associated with sexual activity and substance use by providing education, non-judgmental services, and harm reduction programming. They offer a variety of services includin",
+    "steps": "[{\"step\":1,\"action\":\"Visit drop-in or call 403-508-2500\",\"details\":\"Calgary: 201, 1950 10 Ave SW (M–F 9am–12pm, 1pm–4pm)"
+  },
+  {
+    "id": 818,
+    "name": "Edmonton Police Service - Police and Crisis Team",
+    "cat": "Crisis Services",
+    "desc": "The Edmonton Police Service (EPS) operates a specialized Police and Crisis Team (PACT) to respond to mental health crises. This team provides on-site assessments and interventions for individuals experiencing psychiatric emergencies. The PACT is a co",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-2424 or 911 in an emergency\",\"details\":\"The Police and Crisis Team (PACT) responds to "
+  },
+  {
+    "id": 819,
+    "name": "AHS CAST — Crisis & Stabilization for Children & Youth (Edmonton)",
+    "cat": "Crisis Services",
+    "desc": "The Addiction and Mental Health, Crisis and Stabilization Team for Children and Youth (CAST) offers immediate crisis support through a dedicated Crisis Line to children and youth aged 5 to 17, as well as their caregivers. The team also provides suppo",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Crisis Line at 780-407-1000\", \"details\": \"Professional referral not required - families"
+  },
+  {
+    "id": 821,
+    "name": "Elizabeth Fry Society of Northern Alberta - Resources and Referrals Centre",
+    "cat": "Crisis Services",
+    "desc": "The Elizabeth Fry Society of Northern Alberta is dedicated to supporting women, girls, and gender-diverse individuals who are at risk of becoming criminalized. They offer a variety of resources and referrals for individuals in crisis, ensuring access",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-421-1175 or email courtmanager@efrynorthernalberta.com\",\"details\":\"Elizabeth Fry Society o"
+  },
+  {
+    "id": 822,
+    "name": "University of Alberta Students' Union - Peer Support Centre",
+    "cat": "Crisis Services",
+    "desc": "The Peer Support Centre, provided by the University of Alberta Students' Union, offers supportive listening and resource way-finding to the University of Alberta community. It provides peer support and crisis intervention services to students and com",
+    "steps": "[{\"step\": 1, \"action\": \"Make an appointment online by clicking the button on their website and filling out a form that r"
+  },
+  {
+    "id": 823,
+    "name": "Fyrefly Institute for Gender and Sexual Diversity - Community, Health, Empowerment, Wellness Project",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The Fyrefly Institute for Gender and Sexual Diversity is a non-profit organization that supports the 2SLGBTQ+ community and its allies through various programs and services. The Community, Health, Empowerment, Wellness (CHEW) Project offers frontline",
+    "steps": "[{\"step\":1,\"action\":\"Visit the drop-in space at the University of Alberta or call 780-492-0772\",\"details\":\"Fyrefly Insti"
+  },
+  {
+    "id": 825,
+    "name": "Pregnancy Options Support - Central Alberta Pregnancy Care Centre Society",
+    "cat": "Family & Parenting Support",
+    "desc": "The Central Alberta Pregnancy Care Centre Society offers the Pregnancy Options Support program, providing education and compassionate support before, during, and after pregnancy. They do not provide abortion referrals and are not a medical facility.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Central Alberta Pregnancy Care Centre at their Red Deer location (5116 47 Street) by"
+  },
+  {
+    "id": 828,
+    "name": "City of Grande Prairie — Recreation Access Program",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "The City of Grande Prairie offers social programs and initiatives including recreation programs, subsidies, and booking services. The Recreation Access Program provides a 75% subsidy on memberships, passes and registered programs to qualifying applic",
+    "steps": "[{\"step\": 1, \"action\": \"Login or Create a FREE Account\", \"details\": \"In order to create a family account, you must first"
+  },
+  {
+    "id": 831,
+    "name": "Unison Society Wellness Connection Centre",
+    "cat": "Senior Services",
+    "desc": "The Wellness Connection Centre, operated by Unison Society, is dedicated to enhancing the emotional, mental, social, and spiritual well-being of older adults. The centre offers a variety of programs and services tailored to support seniors in their c",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 234-6566 or email helloyyc@unisonalberta.com\",\"details\":\"The Wellness Connection Centre,"
+  },
+  {
+    "id": 832,
+    "name": "Ben Calf Robe Society - Our Children Are Sacred",
+    "cat": "Indigenous Services",
+    "desc": "The 'Our Children Are Sacred' program is offered by the Ben Calf Robe Society, an Indigenous mental health and wellness services organization located in Edmonton, Alberta. This program aims to protect and enhance the sacredness of Indigenous children",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the organization\", \"details\": \"If you are a parent within the Edmonton region and you ar"
+  },
+  {
+    "id": 833,
+    "name": "Alberta Council of Women's Shelters — Shelter Directory & DV Advocacy",
+    "cat": "Domestic Violence Support",
+    "desc": "The Alberta Council of Women's Shelters (ACWS) is a registered not-for-profit organization dedicated to supporting its members and collaboratively working to end domestic violence and abuse. They provide a comprehensive list of domestic violence shel",
+    "steps": "[{\"step\": 1, \"action\": \"Call the confidential and toll-free 24/7 line at 1-866-331-3933 to speak with someone at a shelt"
+  },
+  {
+    "id": 838,
+    "name": "Waypoints - Unity House Emergency Women's Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "Unity House Emergency Women's Shelter, operated by Waypoints Community Services Association, is Fort McMurray's sole emergency shelter dedicated to adult female-identifying individuals, with or without children, fleeing domestic violence, in crisis, ",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"Women interested in shelter accommodation are encouraged to visit "
+  },
+  {
+    "id": 839,
+    "name": "Stepping Stones Crisis Society - Women's Shelter (Cold Lake)",
+    "cat": "Domestic Violence Support",
+    "desc": "Stepping Stones Crisis Society provides safe, confidential accommodations and outreach supports for women fleeing family violence or in crisis. As a registered charity and not-for-profit organization, they are dedicated to preventing family violence ",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24/7 Helpline at 780-594-3353\",\"details\":\"Stepping Stones Crisis Society — Women's Shelter"
+  },
+  {
+    "id": 842,
+    "name": "Safer Spaces — Lease Termination Rights for DV Victims (Government of Alberta)",
+    "cat": "Domestic Violence Support",
+    "desc": "The 'Safer Spaces for Victims of Domestic Violence' program is offered by the Government of Alberta's Ministry of Assisted Living and Social Services. This initiative allows victims of family violence to terminate a residential tenancy agreement with",
+    "steps": "[{\"step\":1,\"action\":\"Call Alberta Supports at 1-877-644-9992\",\"details\":\"Safer Spaces program — helps victims of domesti"
+  },
+  {
+    "id": 844,
+    "name": "Pincher Creek Women's Emergency Shelter Association",
+    "cat": "Domestic Violence Support",
+    "desc": "The Pincher Creek Women's Emergency Shelter Association (PCWESA) is a non-profit organization established in 1992, dedicated to providing free, safe shelter and support services for women and children fleeing domestic violence and crisis situations. ",
+    "steps": "[{\"step\": 1, \"action\": \"Call crisis hotline for Residential program\", \"details\": \"To enter our Residential program pleas"
+  },
+  {
+    "id": 845,
+    "name": "Phoenix Safe House — Women's Emergency Shelter (Medicine Hat)",
+    "cat": "Domestic Violence Support",
+    "desc": "The Phoenix Safe House Emergency Shelter is a 30-bed facility operated by the Medicine Hat Women's Shelter Society, providing safe shelter and support services for individuals and families fleeing family violence. It offers emergency accommodation, s",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the organization\", \"details\": \"Phone: (403) 529-1091 or Email: outreach@mhwss.ca for out"
+  },
+  {
+    "id": 846,
+    "name": "North Peace Society for the Prevention of Domestic Violence - Healthy Relationship Program",
+    "cat": "Domestic Violence Support",
+    "desc": "The North Peace Society for the Prevention of Domestic Violence (NPSPDV) offers the Healthy Relationship Program, a 16-week group therapy initiative designed for individuals aged 18 and older who have been affected by family violence. This program ai",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the North Peace Society for the Prevention of Domestic Violence\", \"details\": \"Call 780-6"
+  },
+  {
+    "id": 847,
+    "name": "Child and Youth Advocacy Centre",
+    "cat": "Domestic Violence Support",
+    "desc": "The Child and Youth Advocacy Centre is a program offered by Waypoints Community Services, dedicated to supporting, assisting, and advocating for children and youth who have experienced abuse or witnessed violence. This service aims to provide a safe ",
+    "steps": "[{\"step\":1,\"action\":\"Referral from RCMP or Child and Family Services required\",\"details\":\"Child and Youth Advocacy Centr"
+  },
+  {
+    "id": 850,
+    "name": "McMan Calgary — Wicihitowin Indigenous Youth Shelter & Support",
+    "cat": "Emergency Shelter",
+    "desc": "McMan Youth, Family and Community Services Association of Calgary provides the Wicihitowin program, offering shelter and support services specifically for Indigenous youth. As a registered not-for-profit organization, they are dedicated to supporting",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Wicihitowin program\", \"details\": \"Call McMan Youth, Family and Community Services As"
+  },
+  {
+    "id": 851,
+    "name": "Hope Mission - the Karis Centre Women's Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Karis Centre - Women's Emergency Shelter offers emergency shelter services for women, including those with health, mobility, or addiction challenges. Services provided include access to laundry facilities, basic necessities such as clothing and h",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 229-3475 or email we.care@hopemission.com\",\"details\":\"The Karis Centre Women's Emergency"
+  },
+  {
+    "id": 852,
+    "name": "Supportive Residential Housing Services",
+    "cat": "Emergency Shelter",
+    "desc": "Provides residential support to individuals requiring assistance to live in the community. Services include low-income, secure accommodations with varying levels of care, personal care, social and recreational activities, and community-based supports",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Excel Society\",\"details\":\"Call Edmonton at (780) 455-2601 or Calgary at (403) 730-2117."
+  },
+  {
+    "id": 853,
+    "name": "Lethbridge Regional Community Housing — Affordable & Social Housing",
+    "cat": "Emergency Shelter",
+    "desc": "The Lethbridge and Regional Community Housing Corporation, also known as the Lethbridge Housing Authority, is a registered charity and not-for-profit organization dedicated to providing safe, secure, and affordable housing for individuals and familie",
+    "steps": "[{\"step\":1,\"action\":\"Contact Lethbridge Housing Authority\",\"details\":\"Reach out to apply for affordable housing. Serving"
+  },
+  {
+    "id": 854,
+    "name": "Mustard Seed - Red Deer - Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed in Red Deer offers emergency shelter and housing support services to individuals experiencing homelessness and poverty. Their shelter provides accommodation for up to 46 individuals, offering shelter, breakfast, hot showers, hygiene ",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-457-5473 or visit theseed.ca\",\"details\":\"The Mustard Seed Red Deer — emergency shelter and"
+  },
+  {
+    "id": 856,
+    "name": "Mustard Seed - Edmonton - Community Impact Centres",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mustard Seed's Community Impact Centre Canora offers a warm, safe, and inclusive space for community members in west Edmonton. It provides services such as meals, recreational activities, art nights, housing supports, hygiene and clothing items, ",
+    "steps": "[{\"step\": 1, \"action\": \"Simply drop in during operating hours\", \"details\": \"everyone is welcome\"}, {\"step\": 2, \"action\":"
+  },
+  {
+    "id": 857,
+    "name": "Veterans Association Food Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "The Veterans Association Food Bank (VAFB) operates a location at 242 12B Street N, Lethbridge, AB T1H 2K7. This facility provides food hampers and services to veterans and their families.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the organization\", \"details\": \"Call the main number (1-833-422-8387) or the Lethbridge c"
+  },
+  {
+    "id": 859,
+    "name": "Red Deer Christmas Bureau Society - Food Hampers",
+    "cat": "Food Banks & Meals",
+    "desc": "The Red Deer Christmas Bureau Society provides food hampers to individuals and families in need during the Christmas season. Their services are available to residents of Red Deer, Red Deer County, Penhold, and Springbrook.",
+    "steps": "[{\"step\": 1, \"action\": \"Come in person for an interview\", \"details\": \"Interviews start November 12, 2026 at 9:00 am, run"
+  },
+  {
+    "id": 860,
+    "name": "Wood Buffalo Food Bank Association - Food Hampers",
+    "cat": "Food Banks & Meals",
+    "desc": "The Wood Buffalo Food Bank Association (WBFB) is a registered charity and not-for-profit organization dedicated to ensuring food security for all citizens in the Regional Municipality of Wood Buffalo. They provide monthly food hampers to individuals ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-743-1125 to schedule an appointment\",\"details\":\"Wood Buffalo Food Bank Association — Food "
+  },
+  {
+    "id": 861,
+    "name": "Wood Buffalo Food Bank Association - Mobile Pantry Program",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mobile Pantry Program provides monthly hampers containing essential items like milk, eggs, potatoes, meat, fresh produce, canned goods, and bread. These hampers are distributed at local community sites, with staff collaborating with community mem",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 743-1125 for the schedule\",\"details\":\"The Mobile Pantry Program distributes monthly food"
+  },
+  {
+    "id": 862,
+    "name": "Calgary Drug Treatment Court",
+    "cat": "Addiction Treatment",
+    "desc": "The Calgary Drug Treatment Court (CDTC) is an evidence-based program that integrates court intervention and treatment services to end drug-driven crime and assist participants in returning to family, work, and community. It provides an alternative to",
+    "steps": "[{\"step\": 1, \"action\": \"Engage legal counsel\", \"details\": \"It is a requirement of the CDTC program that you engage the h"
+  },
+  {
+    "id": 863,
+    "name": "Government of Alberta - Ministry of Justice - Edmonton Drug Treatment Court Service",
+    "cat": "Addiction Treatment",
+    "desc": "The Edmonton Drug Treatment Court Service (EDTCS) offers an intensive, one- to two-year court-supervised drug treatment program for adults at high risk of re-offending due to addiction. Participants receive support in overcoming drug dependence, redu",
+    "steps": "[{\"step\": 1, \"action\": \"Contact legal counsel or probation officer for a referral\", \"details\": \"To apply, you must conta"
+  },
+  {
+    "id": 864,
+    "name": "Hope Mission - Wellspring Recovery Community",
+    "cat": "Addiction Treatment",
+    "desc": "A program offered by Hope Mission Edmonton to support individuals in recovery from substance abuse.",
+    "steps": "[{\"step\": 1, \"action\": \"Complete application package (both application forms and medical assessment) and email to the co"
+  },
+  {
+    "id": 865,
+    "name": "Residents in Recovery Society - Post-Treatment Family Sober Living",
+    "cat": "Addiction Treatment",
+    "desc": "Residents in Recovery Society provides sober living accommodations for mothers with a substance use disorder who have completed residential treatment and have care of their children under 15 years old. The program supports individuals and families af",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-201-3955 or visit residentsinrecovery.com\",\"details\":\"Two-stage, ten-month fee-for-service"
+  },
+  {
+    "id": 866,
+    "name": "PFLAG Calgary - Support, Information and Resources",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "PFLAG Canada is a national charitable organization dedicated to supporting 2SLGBTQIA+ individuals and their families across Canada. In Calgary, the local chapter offers peer support, education, and resources to individuals and families navigating iss",
+    "steps": "[{\"step\": 1, \"action\": \"Attend a monthly meeting\", \"details\": \"No formal application or intake process required\"}, {\"ste"
+  },
+  {
+    "id": 867,
+    "name": "Sexual Assault Centre of Edmonton (SACE)",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Sexual Assault Centre of Edmonton (SACE) is a non-profit organization dedicated to supporting individuals impacted by sexual violence and promoting a culture of consent within the community. Established in 1975, SACE offers a range of free servic",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Support and Information Line\", \"details\": \"Dial 780.423.4121 between 9 am to 9 pm daily"
+  },
+  {
+    "id": 869,
+    "name": "MacEwan University Health Centre - Rainbow Clinic",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The MacEwan University Health Centre, through its Rainbow Clinic, offers comprehensive physical and mental health care services tailored to the primary care needs of the university's LGBTQ+ community. The clinic provides a supportive and welcoming en",
+    "steps": "[{\"step\": 1, \"action\": \"Call to book an appointment\", \"details\": \"We are not a walk-in clinic, so appointments must be m"
+  },
+  {
+    "id": 870,
+    "name": "University of Alberta - Interfaith Chaplains' Association",
+    "cat": "Campus & Student Services",
+    "desc": "The University of Alberta's Interfaith Chaplains' Association offers pastoral and spiritually grounded care to the university community from a variety of religious and spiritual perspectives. They provide spiritual guidance, care, and support to all ",
+    "steps": "[{\"step\": 1, \"action\": \"Chaplains are available by appointment, or during drop-in hours from 11 a.m.\", \"details\": null},"
+  },
+  {
+    "id": 875,
+    "name": "Wellspring Alberta - Group Support",
+    "cat": "Grief & Bereavement",
+    "desc": "Wellspring Alberta offers facilitated group support programs at their Randy O'Dell House location in Calgary, Alberta. These programs provide a network of peers to discuss circumstances and concerns in a shared way.",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-747-0260 or email to inquire about programs\",\"details\":\"Wellspring Alberta — free support "
+  },
+  {
+    "id": 876,
+    "name": "Alzheimer Society of Calgary - Support Services",
+    "cat": "Senior Services",
+    "desc": "The Alzheimer Society of Calgary offers support services for individuals and families affected by dementia. They provide one-on-one support regarding dementia management and care, including individual support, consultation, and assistance with coping",
+    "steps": "[{\"step\":1,\"action\":\"Request a Dementia Support Navigator\",\"details\":\"Contact Alzheimer Calgary to be connected with a n"
+  },
+  {
+    "id": 877,
+    "name": "Alzheimer Society of Calgary - Club 36 Day Program",
+    "cat": "Senior Services",
+    "desc": "The Club 36 Day Program is an Adult Day Program offered by the Alzheimer Society of Calgary in partnership with Alberta Health Services. It provides a caring and supportive environment where individuals living with dementia can engage in meaningful a",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-569-4357 or visit alzheimercalgary.ca\",\"details\":\"Alzheimer Society of Calgary — Club 36 A"
+  },
+  {
+    "id": 878,
+    "name": "Family Centre (of Northern Alberta), the - Grieving Through Art Therapy Group",
+    "cat": "Grief & Bereavement",
+    "desc": "The Family Centre (of Northern Alberta) offers the 'Grieving Through Art' therapy group, an 8-week support program designed to help individuals process the loss of a loved one through creative and mindfulness activities. Participants engage in art th",
+    "steps": "[{\"step\": 1, \"action\": \"Registration\", \"details\": \"Fill out the form on their website to sign up\"}, {\"step\": 2, \"action\""
+  },
+  {
+    "id": 880,
+    "name": "Alberta Northwest Palliative Care Society - Grief Companion",
+    "cat": "Grief & Bereavement",
+    "desc": "The Alberta Northwest Palliative Care Society offers the Grief Companion program, providing compassionate support to individuals experiencing grief. This service is available to anyone who is terminally ill or has recently suffered a loss. Specially ",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Alberta Northwest Palliative Care Society at their Grande Prairie office to inquire "
+  },
+  {
+    "id": 881,
+    "name": "Red Deer Hospice Society - Bereavement Support - Bridging",
+    "cat": "Grief & Bereavement",
+    "desc": "The Red Deer Hospice Society offers the 'Bereavement Support - Bridging' program, providing one-on-one support to individuals experiencing the loss of a loved one. This program assists participants through their grief journey and typically involves 1",
+    "steps": "[{\"step\": 1, \"action\": \"Call Red Deer Hospice Society at their main line or visit their office at 99 Arnot Avenue to exp"
+  },
+  {
+    "id": 882,
+    "name": "Gateway Association - Employment Resource Centre",
+    "cat": "Employment Services",
+    "desc": "The Gateway Association's Employment Resource Centre (ERC) in Calgary offers support to individuals with disabilities seeking employment. Their mission is to empower families and individuals living with disabilities to lead authentic lives, fostering",
+    "steps": "[{\"step\":1,\"action\":\"Contact Gateway Association Calgary\",\"details\":\"Reach out to the Employment Resource Centre (ERC) f"
+  },
+  {
+    "id": 883,
+    "name": "NorQuest College - Employment Programs",
+    "cat": "Employment Services",
+    "desc": "NorQuest College offers a variety of employment preparation programs that combine classroom training with work experience. These programs include Apprenticeship Preparation, Day Home Provider, and Transitions to Employment, focusing on essential skil",
+    "steps": "[{\"step\": 1, \"action\": \"Read correspondence from NorQuest College\", \"details\": \"Log in to MyMail account and review emai"
+  },
+  {
+    "id": 884,
+    "name": "Bredin Centre for Career Advancement - CareerLink",
+    "cat": "Employment Services",
+    "desc": "The Bredin Centre for Career Advancement offers the CareerLink program to assist individuals in obtaining and maintaining employment. This program includes a combination of group sessions, one-on-one assistance, and employer events, providing service",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 425-3730 or visit bredin.ca\",\"details\":\"The Bredin Centre for Career Advancement offers "
+  },
+  {
+    "id": 885,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Mobile Métis Employment Services",
+    "cat": "Employment Services",
+    "desc": "Rupertsland Institute - Métis Centre of Excellence offers a range of employment and job training programs tailored for Métis individuals in Alberta. Their services include job search assistance, employment assessment, counselling, and support for mai",
+    "steps": "[{\"step\": 1, \"action\": \"Ensure membership in OMSA\", \"details\": \"Ensure you are a member of the Otipemisiwak M\\u00e9tis S"
+  },
+  {
+    "id": 886,
+    "name": "Edmonton Immigrant Services Association — Settlement & Integration Support",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Edmonton Immigrant Services Association (EISA) is a registered not-for-profit organization dedicated to assisting newcomers, refugees, refugee claimants, first-generation Canadians, and temporary visa holders in their integration, settlement, ada",
+    "steps": "[{\"step\": 1, \"action\": \"Visit in-person at main office, partner community schools, partner library branches, or other pa"
+  },
+  {
+    "id": 887,
+    "name": "The Mustard Seed - Edmonton - Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed is a Christian non-profit organization dedicated to alleviating poverty and homelessness through acceptance, empowerment, and practical solutions. They provide a safe and supportive environment where individuals can have their physic",
+    "steps": "[{\"step\":1,\"action\":\"Call (825) 222-4816 or walk in\",\"details\":\"The Mustard Seed is a Christian non-profit dedicated to "
+  },
+  {
+    "id": 888,
+    "name": "Multicultural Association of Wood Buffalo — Newcomer Settlement & Integration",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Multicultural Association of Wood Buffalo (MCAWB) is a registered charity and not-for-profit organization dedicated to supporting cultural groups and newcomers to Canada. They offer programs, events, and initiatives that promote cross-cultural aw",
+    "steps": "[{\"step\": 1, \"action\": \"Contact to check if ELLA program is available at your school\", \"details\": \"Want to know if the E"
+  },
+  {
+    "id": 890,
+    "name": "Bridge to Care — Disability Healthcare & Support",
+    "cat": "Disability & Autism Support",
+    "desc": "Bridge to Care is a registered not-for-profit organization dedicated to providing support and healthcare services for individuals with physical and mental disabilities. Their services are available across multiple locations in Alberta, including Ston",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 591-1000 or email info@bridgetocare.org\",\"details\":\"Bridge to Care is a not-for-profit h"
+  },
+  {
+    "id": 891,
+    "name": "SeniorConnect — Urgent Social Work for Isolated Seniors",
+    "cat": "Senior Services",
+    "desc": "The SeniorConnect program is a proactive, short-term, community-driven initiative designed to train community members to identify and refer isolated or at-risk seniors (60+) in need of rapid social work services. It provides urgent social work interv",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Distress Centre 24-hour helpline\", \"details\": \"Call The Distress Centre 24-hr help line"
+  },
+  {
+    "id": 892,
+    "name": "Edmonton Seniors Coordinating Council — Senior Services Navigation & Resources",
+    "cat": "Senior Services",
+    "desc": "The Edmonton Seniors Coordinating Council (ESCC) is a non-profit organization that enhances coordination among seniors-serving organizations in Edmonton. Established in 2005, ESCC focuses on improving outcomes for older adults through collaborative a",
+    "steps": "[{\"step\":1,\"action\":\"Visit seniorscouncil.net or contact ESCC\",\"details\":\"ESCC brings people, ideas, and information tog"
+  },
+  {
+    "id": 893,
+    "name": "Canadian Mental Health Association - Edmonton Region - Seniors' Abuse Helpline",
+    "cat": "Crisis Services",
+    "desc": "The Seniors' Abuse Helpline is a 24-hour, confidential service provided by the Canadian Mental Health Association (CMHA) - Edmonton Region. It offers crisis intervention, emotional support, and resources to individuals experiencing or concerned about",
+    "steps": "[{\"step\": 1, \"action\": \"Simply call the helpline at 780-454-8888 at any time\", \"details\": null}, {\"step\": 2, \"action\": \""
+  },
+  {
+    "id": 894,
+    "name": "GEF Seniors Housing - Ottewell Manor — Affordable Seniors Lodge Care",
+    "cat": "Senior Services",
+    "desc": "Virginia Park Lodge provides affordable, lodge-level care for seniors, including those with addiction and/or mental health issues. The facility offers community housing with support services such as three meals per day, weekly housekeeping and linen ",
+    "steps": "[{\"step\": 1, \"action\": \"Complete the eligibility questionnaire\", \"details\": null}, {\"step\": 2, \"action\": \"Review housing"
+  },
+  {
+    "id": 895,
+    "name": "Metis Child and Family Services Society Edmonton - Avenue Program",
+    "cat": "Harm Reduction",
+    "desc": "The Avenue Program, offered by the Metis Child and Family Services Society Edmonton, provides trauma-informed community outreach to promote harm reduction for individuals involved in sex work. Services include community outreach and advocacy, harm re",
+    "steps": "[{\"step\":1,\"action\":\"Drop in to the location or call 780-452-6100\",\"details\":\"Metis Child and Family Services Society Ed"
+  },
+  {
+    "id": 898,
+    "name": "HIV Edmonton - Support and Outreach",
+    "cat": "Harm Reduction",
+    "desc": "HIV Edmonton offers supports in prevention, testing, treatment, and linkage to care for HIV and other sexually transmitted and blood-borne infections. Their services include harm reduction supply distribution and needle exchange services, aimed at ad",
+    "steps": "[{\"step\": 1, \"action\": \"Contact support team\", \"details\": \"Phone 780-488-5742 ext 101 or 102 or email Sandra.J@hivedmont"
+  },
+  {
+    "id": 899,
+    "name": "Old Strathcona Youth Society - Get Connected",
+    "cat": "Harm Reduction",
+    "desc": "The Old Strathcona Youth Society (OSYS) offers the 'Get Connected' program, providing drop-in information, activities, and resources for youth aged 14 to 24. Services include housing referrals, art and recreation activities, student legal services, e",
+    "steps": "[{\"step\":1,\"action\":\"Drop in at 9912 81 Ave NW (back alley entrance)\",\"details\":\"Old Strathcona Youth Society (OSYS) has"
+  },
+  {
+    "id": 900,
+    "name": "Turning Point Society of Central Alberta — Mobile Harm Reduction Outreach",
+    "cat": "Harm Reduction",
+    "desc": "The Turning Point Society of Central Alberta is a registered charity dedicated to building individual and community capacity through evidence-informed practices to meet the needs of marginalized populations across Central Alberta. They provide a mobi",
+    "steps": "[{\"step\": 1, \"action\": \"In-Person at Office\", \"details\": \"Safe drug paraphernalia and other critical supports can be acc"
+  },
+  {
+    "id": 901,
+    "name": "AHS — Eating Disorder Nutrition Counselling (Red Deer)",
+    "cat": "Eating Disorder Services",
+    "desc": "The Eating Disorder Nutrition Counselling service for adults and pediatrics is provided by Alberta Health Services at the Red Deer 49 Street Community Health Centre. This program offers nutrition counseling by registered dietitians for individuals st",
+    "steps": "[{\"step\": 1, \"action\": \"Self-refer through Central Intake\", \"details\": \"Call 1-888-594-0211 (Access Addiction and Mental"
+  },
+  {
+    "id": 902,
+    "name": "AHS — Pediatric Eating, Feeding & Swallowing Services (Calgary)",
+    "cat": "Eating Disorder Services",
+    "desc": "The Pediatric Eating, Feeding & Swallowing - Outpatient Services at Alberta Children's Hospital provides assessment and management for children with Pediatric Feeding Disorder, particularly those with complex medical or neurological conditions or who",
+    "steps": "[{\"step\": 1, \"action\": \"Obtain a Professional Referral\", \"details\": \"Healthcare providers should consult the Alberta Ref"
+  },
+  {
+    "id": 903,
+    "name": "Aventa Centre of Excellence for Women with Addictions - Young Adult Treatment",
+    "cat": "Addiction Treatment",
+    "desc": "Aventa Centre of Excellence for Women with Addictions offers a comprehensive live-in treatment program tailored for young women aged 18 to 24 who are experiencing alcohol, drug, or gambling addictions. This 90-day program provides trauma-informed, ge",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Aventa Centre at 403-289-9696 to inquire about the Young Adult Treatment program and exp"
+  },
+  {
+    "id": 905,
+    "name": "Co-Dependents Anonymous",
+    "cat": "Recovery & Peer Support",
+    "desc": "Co-Dependents Anonymous (CoDA) is a self-help group dedicated to offering a 12-step program for individuals seeking healthy relationships. While their primary focus is on codependency, they may provide support for various behavioral issues, including",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 436-6853 or visit codacanada.ca\",\"details\":\"Co-Dependents Anonymous (CoDA) is a 12-step "
+  },
+  {
+    "id": 906,
+    "name": "Alcoholics Anonymous Edmonton & Alberta Information",
+    "cat": "Recovery & Peer Support",
+    "desc": "Alcoholics Anonymous (AA) in Alberta is a fellowship of men and women who share their experiences to help each other achieve and maintain sobriety. Membership is open to anyone with a desire to stop drinking; there are no dues or fees. AA offers vari",
+    "steps": "[{\"step\":1,\"action\":\"Call the Edmonton Help Line at 780-424-5900\",\"details\":\"Speak to a sober alcoholic. The help line i"
+  },
+  {
+    "id": 907,
+    "name": "The Mustard Seed - Medicine Hat - Homelessness Support",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed - Medicine Hat provided support services for individuals experiencing homelessness, including wellness advocacy, short-term counseling, Celebrate Recovery from Addiction, and employment supports. The center aimed to assist those in n",
+    "steps": "[{\"step\":1,\"action\":\"Visit 503A Allowance Avenue SE during operating hours\",\"details\":\"The Mustard Seed — Medicine Hat l"
+  },
+  {
+    "id": 908,
+    "name": "FCJ Christian Life Centre — Counselling & Trauma Support",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The FCJ Christian Life Centre offers counseling services for individuals seeking support for various issues, including trauma and PTSD. It serves as a sanctuary for spiritual growth and renewal through various programs, workshops, and retreats. Estab",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Centre\", \"details\": \"To access service phone or email to request an appointment\"}, {"
+  },
+  {
+    "id": 909,
+    "name": "Calgary Legal Guidance — Free Legal Aid for Low-Income Calgarians",
+    "cat": "Legal Aid",
+    "desc": "Calgary Legal Guidance (CLG) is a non-profit organization dedicated to providing free legal assistance and information to disadvantaged individuals in Calgary who lack access to paid legal services. Their services are particularly beneficial for thos",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-234-9266 or visit clg.ab.ca\",\"details\":\"Free legal guidance for people who cannot afford a"
+  },
+  {
+    "id": 910,
+    "name": "FearIsNotLove — Abuse Counselling & Family Support",
+    "cat": "Trauma & PTSD Support",
+    "desc": "FearIsNotLove, formerly known as the Calgary Women's Emergency Shelter, is a registered charity dedicated to supporting individuals in Calgary to live free from fear, neglect, violence, and abuse. They provide a 24-hour helpline with counselling, saf",
+    "steps": "[{\"step\": 1, \"action\": \"Call the 24-hour Helpline\", \"details\": \"Counsellors provide counselling, safety planning, and re"
+  },
+  {
+    "id": 911,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre - Caribou Child and Youth Centre",
+    "cat": "Trauma & PTSD Support",
+    "desc": "The Caribou Child and Youth Centre, operated by Pace Community Support, Sexual Assault, and Trauma Centre, offers support services for children and youth who have experienced abuse or trauma. This includes court support, therapy services, family supp",
+    "steps": "[{\"step\": 1, \"action\": \"Report abuse to RCMP & GPPS or Child & Family Services\", \"details\": \"CHILD AND FAMILY SERVICES: "
+  },
+  {
+    "id": 912,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre - Sexual Violence Treatment Program",
+    "cat": "Trauma & PTSD Support",
+    "desc": "Pace Community Support, Sexual Assault, and Trauma Centre provides support and services to children, youth, and adults who have experienced trauma due to sexual violence. This includes one-on-one counseling, play therapy, couples therapy, educational",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-539-6692 for intake\",\"details\":\"Contact the intake worker in Grande Prairie to arrange an "
+  },
+  {
+    "id": 915,
+    "name": "Sagesse — Growth Circle: Domestic Abuse Recovery Group Program",
+    "cat": "Recovery & Peer Support",
+    "desc": "Sagesse offers the 'Growth Circle' program, a 14-week group initiative designed to explore the experience of domestic abuse. Topics covered include understanding the effects of abuse, shame and compassion, creating healthy support systems, building p",
+    "steps": "[{\"step\":1,\"action\":\"Book an intake appointment at (403) 234-7337\",\"details\":\"Sagesse peer-support programs are open to "
+  },
+  {
+    "id": 916,
+    "name": "Sagesse — Step Forward: Domestic Abuse Peer Mentor Support",
+    "cat": "Recovery & Peer Support",
+    "desc": "Sagesse's 'Step Forward' program offers peer mentor support to individuals impacted by domestic abuse. Participants are paired with trained volunteer mentors for one-on-one support, available through in-person meetings, telephone, Zoom, or email. The",
+    "steps": "[{\"step\":1,\"action\":\"Contact Sagesse or visit sagesse.org\",\"details\":\"Domestic abuse affects one in three Canadians. Res"
+  },
+  {
+    "id": 917,
+    "name": "Sagesse — Stand By: Support for Those Helping Domestic Abuse Survivors",
+    "cat": "Domestic Violence Support",
+    "desc": "Sagesse's 'Stand By: for Informal Supporters' program offers group support for individuals assisting someone experiencing domestic abuse. Participants can discuss experiences, ask questions, and provide mutual encouragement in a group setting.",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 234-7337 or email info@sagesse.org\",\"details\":\"Stand By: for Informal Supporters is a Sa"
+  },
+  {
+    "id": 918,
+    "name": "Peer N Peer Substance Use Program",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Peer N Peer Substance Use Program is a peer-led initiative offered by the Queer & Trans Health Collective (QTHC) in Edmonton, Alberta. Rooted in harm reduction principles, the program provides support to individuals on their substance use journey",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the PNP team at connect@peernpeer.ca or 587-599-7290 (call or text)\", \"details\": \"to acc"
+  },
+  {
+    "id": 919,
+    "name": "AHS - STI Clinic Edmonton",
+    "cat": "Sexual Health Services",
+    "desc": "The Sexually Transmitted Infections (STI) Clinic, operated by Alberta Health Services, offers confidential assessment, diagnosis, testing, and treatment for sexually transmitted infections. Services are available to individuals aged 14 and over, rega",
+    "steps": "[{\"step\": 1, \"action\": \"Call for an appointment\", \"details\": \"Phone the STI Clinic before coming in, calling early in th"
+  },
+  {
+    "id": 920,
+    "name": "Boyle Street Community Services — Peer Support & Drop-In Services",
+    "cat": "Recovery & Peer Support",
+    "desc": "Boyle Street Community Services is a non-profit organization that provides a safe and supportive environment for individuals seeking assistance. They offer a variety of programs, including peer support services, aimed at helping individuals facing mu",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Community Space (walk-in/drop-in) or call 780-424-4106\",\"details\":\"Boyle Street Community"
+  },
+  {
+    "id": 921,
+    "name": "OSI-CAN Alberta - Peer Support Group",
+    "cat": "Recovery & Peer Support",
+    "desc": "OSI-CAN Alberta is a free, confidential, community-based peer support initiative for Veterans, first responders, and public safety personnel. The program offers support groups, family support groups, assistance with service dog acquisition, and refer",
+    "steps": "[{\"step\": 1, \"action\": \"Groups may require pre-registration to ensure availability and the confidentiality of participan"
+  },
+  {
+    "id": 922,
+    "name": "Alberta Addiction Support Groups & Peer Programs",
+    "cat": "Recovery & Peer Support",
+    "desc": "Various addiction support groups and peer programs are available across Alberta, including services in Red Deer, Calgary, and Edmonton. These programs aim to provide support and resources for individuals struggling with addiction and their families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact via phone at 589-4050 or visit the website for meeting details\",\"details\":\"Addiction Suppor"
+  },
+  {
+    "id": 924,
+    "name": "Mobile Outreach Addictions Team",
+    "cat": "Harm Reduction",
+    "desc": "The Mobile Outreach Addictions Team (MOAT) is a program offered by Boyle Street Community Services that engages with street-involved individuals to increase access to substance use treatment services and programs. This initiative provides integrated ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-4106 to arrange an appointment (leave voicemail for callback)\",\"details\":\"Mobile Outre"
+  },
+  {
+    "id": 926,
+    "name": "Bissell Centre - Outreach Housing Team",
+    "cat": "Transitional Housing",
+    "desc": "The Outreach Housing Team, operated by the Bissell Centre, is dedicated to locating, engaging, and housing individuals experiencing homelessness in Edmonton. The team comprises seven outreach workers who focus on under-serviced and unreached areas of",
+    "steps": "[{\"step\": 1, \"action\": \"Fill out the online application form\", \"details\": null}, {\"step\": 2, \"action\": \"You will be cont"
+  },
+  {
+    "id": 927,
+    "name": "Al Rashid Mosque - Extreme Weather Response",
+    "cat": "Crisis Services",
+    "desc": "Al Rashid Mosque offers an Extreme Weather Temporary Emergency Shelter to assist individuals during severe weather conditions. This service provides emergency shelter and support specifically for those experiencing homelessness during extreme weather",
+    "steps": "[{\"step\": 1, \"action\": \"Check if extreme weather response is activated\", \"details\": \"The City of Edmonton activates an e"
+  },
+  {
+    "id": 929,
+    "name": "AHS — Community Mental Health Services (Medicine Hat)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services - South Zone (Community Mental Health Services) offers outpatient assessment, treatment, and follow-up for individuals experiencing addiction and/or mental health concerns. Clinicians work with individuals and families to deve",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer by calling 403-529-3500 and asking for intake\",\"details\":\"AHS South Zone — Community Men"
+  },
+  {
+    "id": 930,
+    "name": "McMan South — Youth & Family Services (Southeast Alberta)",
+    "cat": "Youth Services",
+    "desc": "McMan South is a non-profit organization that provides social services to the communities of Brooks, Crowsnest Pass, Lethbridge, Medicine Hat, Pincher Creek and the surrounding area of southern Alberta. They provide space for growth and guide partici",
+    "steps": "[{\"step\":1,\"action\":\"Contact McMan South\",\"details\":\"Reach out to McMan Southeast Alberta for youth, family, and communi"
+  },
+  {
+    "id": 931,
+    "name": "City of Grande Prairie — Community Diversion Program",
+    "cat": "Crisis Services",
+    "desc": "A diversion program focused on mitigating the impacts of street-level social disorder, addiction, and public intoxication. It assists businesses and residents in handling concerns related to the street-engaged population, including trespassing, loite",
+    "steps": "[{\"step\": 1, \"action\": \"Login or Create a FREE Account\", \"details\": \"In order to create a family account, you must first"
+  },
+  {
+    "id": 933,
+    "name": "Jim Mason Therapy — Addiction & Relationship Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Jim Mason Therapy offers personal therapy and relationship counseling services, providing support for individuals dealing with addiction-related challenges. While not a detox center, the therapy focuses on personal and relationship issues, helping cl",
+    "steps": "[{\"step\":1,\"action\":\"Book a free 15-minute virtual consultation\",\"details\":\"Schedule online through the Jim Mason Therap"
+  },
+  {
+    "id": 934,
+    "name": "Covenant Health - Psychiatric Acute Inpatient Care Units",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Psychiatric Acute Inpatient Care Units at Grey Nuns Community Hospital, part of Covenant Health, provide comprehensive care for individuals experiencing mental health crises. These units cater to both voluntary and formal patients, offering a ran",
+    "steps": "[{\"step\": 1, \"action\": \"Go to the Emergency Room at Grey Nuns Community Hospital\", \"details\": \"You must first go to the "
+  },
+  {
+    "id": 935,
+    "name": "Hope in Strathcona - Sober Living",
+    "cat": "Recovery & Peer Support",
+    "desc": "Hope in Strathcona is a registered not-for-profit organization dedicated to improving the lives of individuals affected by alcohol and drug misuse, as well as those in vulnerable situations. Their mission is to help clients achieve a balanced and hea",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Hope in Strathcona to express interest in the sober living program\", \"details\": \"Call or"
+  },
+  {
+    "id": 936,
+    "name": "Iskwew Healing Lodge - Poundmaker's Lodge Treatment Centres",
+    "cat": "Indigenous Services",
+    "desc": "Iskwew Healing Lodge is a residential aftercare program for women aged 18 to 65, focusing on addiction recovery within a culturally grounded environment. It offers a safe space for women to build upon their treatment programs and prepare for independ",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 458-1884 or email admissions@poundmaker.org\",\"details\":\"Iskwew Healing Lodge is a reside"
+  },
+  {
+    "id": 939,
+    "name": "Inglewood Opportunity Hub — Youth Services Centre",
+    "cat": "Transitional Housing",
+    "desc": "The Inglewood Opportunity Hub, operated by Wood's Homes, is a comprehensive service center dedicated to supporting vulnerable youth aged 14 to 29 in Calgary, Alberta. It offers a range of services under one roof, including basic needs support, crisis",
+    "steps": "[{\"step\": 1, \"action\": \"Walk in directly (drop-in model)\", \"details\": \"The Hub provides barrier-free, easy-to-access, wr"
+  },
+  {
+    "id": 940,
+    "name": "Citizen and New Arrival Information Centre",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Citizen and New Arrival Information Centre offers referrals and information about Edmonton to assist citizens and newcomers in settling effectively. It provides comprehensive information on city services, community services, education, housing, h",
+    "steps": "[{\"step\": 1, \"action\": \"Visit the Citizen and New Arrival Information Centre on the main floor of City Hall\", \"details\":"
+  },
+  {
+    "id": 941,
+    "name": "Nisa Foundation - Transitional House",
+    "cat": "Transitional Housing",
+    "desc": "The Nisa Foundation's 'Transitional House' program in Edmonton, Alberta, offers shelter and support services for women and children experiencing domestic violence, poverty, homelessness, or seeking asylum. Established in 2019, Nisa Homes Edmonton pro",
+    "steps": "[{\"step\": 1, \"action\": \"Fill out the application form\", \"details\": \"Application form available online or can be download"
+  },
+  {
+    "id": 943,
+    "name": "Diversecities Community Service Association - Law and Advocacy Program",
+    "cat": "Legal Aid",
+    "desc": "The Diversecities Community Service Association's Law and Advocacy Program offers services to assist individuals in understanding their legal rights and responsibilities. Their offerings include legal clinics for advice on legal issues, wills and est",
+    "steps": "[{\"step\": 1, \"action\": \"Call the office directly at 403-265-8446 to access their legal helpline\", \"details\": null}, {\"st"
+  },
+  {
+    "id": 944,
+    "name": "Law Society of Alberta - Services for Community Members",
+    "cat": "Legal Aid",
+    "desc": "The Law Society of Alberta offers services to help community members understand aspects of the legal system and find resources to meet their needs. These services include advice on various areas of law practiced by lawyers, resources on legal informa",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Law Society of Alberta's public inquiry line or visit their office at 333 11 Avenue "
+  },
+  {
+    "id": 945,
+    "name": "Edmonton Community Legal Centre",
+    "cat": "Legal Aid",
+    "desc": "The Edmonton Community Legal Centre (ECLC) is a non-profit organization dedicated to providing free legal services to individuals with low income in Edmonton and Northern Alberta. Their focus areas include Family Law, Landlord and Tenant issues, Empl",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-702-1725 or submit an online intake form at eclc.ca\",\"details\":\"Edmonton Community Legal C"
+  },
+  {
+    "id": 946,
+    "name": "Student Legal Services of Edmonton - Civil Law Project",
+    "cat": "Legal Aid",
+    "desc": "Student Legal Services of Edmonton (SLS) is a student-managed, non-profit society dedicated to assisting low-income individuals in Edmonton with legal information and assistance. The Civil Law Project provides free legal information and assistance to",
+    "steps": "[{\"step\": 1, \"action\": \"Call 780-492-8244 to inquire about opening a file\", \"details\": \"To inquire about opening a file "
+  },
+  {
+    "id": 947,
+    "name": "Canadian Mental Health Association - Edmonton Region - Mental Health First Aid",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Canadian Mental Health Association - Edmonton Region offers a 2-day training program teaching participants how to assist individuals developing a mental health problem, experiencing a worsening of an existing mental health problem, or in a mental",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-482-4357 (HELP) for 24-hour distress line, or visit edmonton.cmha.ca\",\"details\":\"24-hour d"
+  },
+  {
+    "id": 948,
+    "name": "Alberta Health Services - Central Zone - Social Work",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Alberta Health Services - Central Zone - Social Work provides a broad range of social and family support services to assist clients from various backgrounds in resolving issues related to human relationships and enhancing their social well-being. Ser",
+    "steps": "[{\"step\":1,\"action\":\"Contact AHS Central Zone Social Work at 403-343-4422\",\"details\":\"Alberta Health Services — Central "
+  },
+  {
+    "id": 949,
+    "name": "PFLAG Grande Prairie - North Peace, AB",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The PFLAG Canada Grande Prairie Chapter provides peer support, education, and advocacy for 2SLGBTQ+ individuals and their families.",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 978-1171 or email northpeacepflagab@pflagcanada.ca\",\"details\":\"The PFLAG Canada Grande P"
+  },
+  {
+    "id": 950,
+    "name": "Calgary Drop-In Centre - Withdrawal Management",
+    "cat": "Detox & Withdrawal",
+    "desc": "The Calgary Drop-In Centre offers a Withdrawal Management service aimed at connecting vulnerable adults (18+) experiencing or at risk of experiencing homelessness with housing, shelter, and health programs. The service provides low-barrier access to ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to 1 Dermot Baldwin Way SE, Calgary\",\"details\":\"Calgary Drop-In Centre — emergency shelter,"
+  },
+  {
+    "id": 951,
+    "name": "Calgary Drop-In Centre - Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Calgary Drop-In Centre is a nationally accredited organization that connects vulnerable adults (18+) experiencing or at risk of experiencing homelessness with housing, shelter, and health programs. It provides low-barrier access to care, aiming t",
+    "steps": "[{\"step\": 1, \"action\": \"Show up to access emergency shelter services\", \"details\": \"The Calgary Drop-In Centre offers low"
+  },
+  {
+    "id": 952,
+    "name": "Health Upwardly Mobile - Outpatient addiction treatment and mental health services",
+    "cat": "Addiction Treatment",
+    "desc": "Addiction and Mental Health Company HUM is an Integrated Health and Wellness company based in Calgary, Alberta. Our team includes a variety of healthcare providers including nurses, physicians, psychologists and social workers. HUM offers personal an",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"Contact the HUM office by phone or e-mail to get started\"}, {\"step"
+  },
+  {
+    "id": 953,
+    "name": "StreetLight - Youth Unlimited Calgary",
+    "cat": "Food Banks & Meals",
+    "desc": "StreetLight is a mobile drop-in centre that brings hope to Calgary's young homeless and at-risk population. The mobile drop-in provides physical resources, warm meals, and a safe space away from the pressure of the streets. They serve youth ages 12-2",
+    "steps": "[{\"step\": 1, \"action\": \"Locate the Mobile Drop-In unit at scheduled locations\", \"details\": \"FOREST LAWN (near Jack James"
+  },
+  {
+    "id": 957,
+    "name": "Fort Road Victory Church - Free Meals Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Fort Road Victory Church provides free bagged lunches daily and hot dinners on Tuesdays to community members in need. This church-based meal program serves individuals experiencing food insecurity in the Beverly and northeast Edmonton area. The progr",
+    "steps": "[{\"step\": 1, \"action\": \"Go to 13470 Fort Road and use the south entrance\", \"details\": null}, {\"step\": 2, \"action\": \"For "
+  },
+  {
+    "id": 958,
+    "name": "Building Hope Compassionate Association — Meals, Food Hampers & Clothing Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "Building Hope Compassionate Association serves the Beverly and surrounding communities in northeast Edmonton. They provide hot meals, emergency food hampers, a clothing bank, and community support services. The organization has been serving families ",
+    "steps": "[{\"step\": 1, \"action\": \"Simply walk in during operating hours (Monday-Wednesday, 9:00 AM - 3:00 PM)\", \"details\": null}, "
+  },
+  {
+    "id": 959,
+    "name": "Boyle Street Community Services - Meals Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Boyle Street Community Services has been supporting people experiencing homelessness and poverty in Edmonton since 1971. The drop-in centre provides free and low-cost meals, along with laundry facilities, showers, and various support programs. Major ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in or call (780) 424-4106\",\"details\":\"Boyle Street Community Services has been supporting peop"
+  },
+  {
+    "id": 960,
+    "name": "Bissell Centre - Meals and Basic Services",
+    "cat": "Food Banks & Meals",
+    "desc": "Bissell Centre helps people move out of poverty through housing-focused services, family supports, and financial empowerment programs. The centre provides meals, laundry facilities, and showers, ensuring visitors have access to basic needs. They offe",
+    "steps": "[{\"step\": 1, \"action\": \"Fill out the online application form\", \"details\": null}, {\"step\": 2, \"action\": \"You will be cont"
+  },
+  {
+    "id": 961,
+    "name": "e4c (Edmonton City Centre Church) - Meals Program",
+    "cat": "Food Banks & Meals",
+    "desc": "e4c (Edmonton City Centre Church Corporation) provides food security programs including three meals a day in their emergency shelter. The organization works to increase food security by providing essential support to individuals experiencing homeless",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-7543 or email info@e4calberta.org\",\"details\":\"e4c has been working for over 50 years t"
+  },
+  {
+    "id": 962,
+    "name": "Jasper Place Wellness Centre - Drop-in Meals",
+    "cat": "Food Banks & Meals",
+    "desc": "Jasper Place Wellness Centre (JPWC) is a registered charity dedicated to building stronger communities by addressing inequities in health, housing, and employment in west Edmonton. The centre provides complimentary coffee, hot soup, and small snack o",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours or call (780) 964-5755\",\"details\":\"Jasper Place Wellness Centre (JPW"
+  },
+  {
+    "id": 963,
+    "name": "George Spady Centre - Detox with Meals",
+    "cat": "Detox & Withdrawal",
+    "desc": "The George Spady Society operates a Medically Supported Detox program at the Aurora Centre in Edmonton. The 60-bed program includes 41 medically supported detox beds and 19 post-detox recovery beds. Services are free and include food and laundry. The",
+    "steps": "[{\"step\": 1, \"action\": \"Walk-in Triage (Primary Method)\", \"details\": \"Attend daily triage from 8:30\\u20139:30 a.m. at th"
+  },
+  {
+    "id": 964,
+    "name": "Robertson-Wesley United Church - Community Dinner",
+    "cat": "Food Banks & Meals",
+    "desc": "Robertson-Wesley United Church hosts a monthly Community Dinner in Memorial Hall, offering a free hot meal to up to 200 people. This church-based meal program provides a welcoming environment where community members can enjoy a nutritious meal and co",
+    "steps": "[{\"step\":1,\"action\":\"Show up on the scheduled day — no registration needed\",\"details\":\"Robertson-Wesley United Church ho"
+  },
+  {
+    "id": 965,
+    "name": "Veterans Affairs Canada - Calgary Office",
+    "cat": "Veterans Services",
+    "desc": "Veterans Affairs Canada Calgary Office. Provides services including disability benefits, mental health support, financial assistance, and transition services for veterans and their families.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact by phone, secure message, or request in-person appointment\", \"details\": \"Call toll-free "
+  },
+  {
+    "id": 966,
+    "name": "Veterans Affairs Canada - Edmonton Office",
+    "cat": "Veterans Services",
+    "desc": "Veterans Affairs Canada Edmonton Office. Provides services including disability benefits, mental health support, financial assistance, and transition services for veterans and their families.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the Bureau of Pensions Advocates (BPA)\", \"details\": \"Their team will review your file an"
+  },
+  {
+    "id": 967,
+    "name": "The Alex Rapid Access Addiction Medicine (RAAM) Clinic",
+    "cat": "Addiction Treatment",
+    "desc": "Our walk-in Rapid Access Addiction Medicine (RAAM) clinic team at The Alex offers counselling and medication to help you break the cycle of chemical dependency. The clinic is the first step on a journey of long-term wraparound, team-based care, helpi",
+    "steps": "[{\"step\":1,\"action\":\"Walk in 9-11 AM, call for phone intake 1-3 PM, or access virtual walk-ins in the afternoon\",\"detail"
+  },
+  {
+    "id": 968,
+    "name": "City of Calgary Recreation - Drop-In Programs",
+    "cat": "Community & Social Connection",
+    "desc": "The City of Calgary operates numerous recreation centres offering drop-in fitness classes, swimming, skating, pickleball, basketball, and more across all quadrants. No registration required for drop-in activities. The Fair Entry Program provides subs",
+    "steps": "[{\"step\":1,\"action\":\"Visit the City of Calgary recreation website for drop-in schedules\",\"details\":\"City of Calgary Recr"
+  },
+  {
+    "id": 969,
+    "name": "Trico Centre — Community Recreation & Fitness Centre",
+    "cat": "Community & Social Connection",
+    "desc": "Community-owned, not-for-profit recreation centre offering over 90 drop-in fitness classes per week, a warm water wave pool, waterslide, arenas for skating and shinny, and registered programs including sports, gymnastics, dance, art, and martial arts",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Trico Centre website or call 403-278-7542\",\"details\":\"Trico Centre for Family Wellness — "
+  },
+  {
+    "id": 970,
+    "name": "City of Edmonton - Drop-In Recreation & Leisure Access Program",
+    "cat": "Community & Social Connection",
+    "desc": "The City of Edmonton offers over 450 weekly free drop-in fitness classes (Zumba, yoga, cycle, barre, and more) across its recreation centres and pools. The Leisure Access Program (LAP) provides free or reduced-cost admission for low-income Edmontonia",
+    "steps": "[{\"step\":1,\"action\":\"Visit the City of Edmonton recreation website for drop-in schedules\",\"details\":\"City of Edmonton — "
+  },
+  {
+    "id": 971,
+    "name": "Canadian Native Friendship Centre — Indigenous Cultural & Community Programs",
+    "cat": "Community & Social Connection",
+    "desc": "The Canadian Native Friendship Centre serves approximately 10,000 people annually with cultural and social programs that foster community connection. Programs include Pow Wow Fitness, Wellbriety Support Group, Dene Drumming, Conversational Cree Class",
+    "steps": "[{\"step\":1,\"action\":\"Visit cnfc.ca or call 780-761-1900 for program schedules\",\"details\":\"Canadian Native Friendship Cen"
+  },
+  {
+    "id": 972,
+    "name": "In Her Circle - Women's Friendship Club",
+    "cat": "Community & Social Connection",
+    "desc": "In Her Circle is a women's friendship club and events company designed to fight loneliness and help women create authentic friendships. Events are kept intentionally small (max 20 people) to foster genuine connection. Monthly events include workshops",
+    "steps": "[{\"step\":1,\"action\":\"Visit the In Her Circle website to see upcoming events\",\"details\":\"In Her Circle — Women's Friendsh"
+  },
+  {
+    "id": 973,
+    "name": "Carya - Social Connections Programs",
+    "cat": "Community & Social Connection",
+    "desc": "Carya runs Social Connections programs specifically designed to reduce isolation and build community in Calgary. Programs include food, art, wellness, social, and educational activities - all providing space to build meaningful relationships. They al",
+    "steps": "[{\"step\":1,\"action\":\"Visit caryacalgary.ca or call 403-205-5244\",\"details\":\"Carya — Social Connections Programs in Calga"
+  },
+  {
+    "id": 974,
+    "name": "Volunteer Alberta - Volunteer Connector",
+    "cat": "Community & Social Connection",
+    "desc": "Volunteer Alberta's Volunteer Connector is a province-wide platform that matches individuals with volunteer opportunities based on location, interests, and time commitment. Volunteering is one of the most effective ways to build social connections wh",
+    "steps": "[{\"step\":1,\"action\":\"Visit volunteerconnector.org\",\"details\":\"Volunteer Alberta — Volunteer Connector platform. Call 1-8"
+  },
+  {
+    "id": 975,
+    "name": "CORE Society - Calgary Outdoor Recreation Enthusiasts",
+    "cat": "Community & Social Connection",
+    "desc": "CORE (Calgary Outdoor Recreation Enthusiasts) is an outdoor recreation club founded in 1999 with approximately 125 members. Activities include hiking, scrambling, cycling, cross-country skiing, snowshoeing, urban walking, and social outings. A welcom",
+    "steps": "[{\"step\":1,\"action\":\"Visit corehike.org to see upcoming activities\",\"details\":\"CORE Society — Calgary Outdoor Recreation"
+  },
+  {
+    "id": 976,
+    "name": "Between Friends - Inclusive Recreation",
+    "cat": "Community & Social Connection",
+    "desc": "Between Friends creates opportunities for people with disabilities to connect, grow, and belong through inclusive social and recreational activities. Offers approximately 150 programs per year including Zumba, hip hop, swimming, pottery, badminton, d",
+    "steps": "[{\"step\":1,\"action\":\"Visit betweenfriends.ab.ca to view the seasonal program guide\",\"details\":\"Between Friends — Inclusi"
+  },
+  {
+    "id": 977,
+    "name": "Paralympic Sports Association",
+    "cat": "Community & Social Connection",
+    "desc": "A charitable, volunteer-driven organization providing sport and recreation opportunities for children, youth, teens, adults, and seniors with disabilities. Programs include Wheelchair Floor Hockey, Sledge Hockey, Paracycling, Adapted Swimming, Adapte",
+    "steps": "[{\"step\":1,\"action\":\"Visit parasportsab.com to explore available sports\",\"details\":\"Paralympic Sports Association — adap"
+  },
+  {
+    "id": 978,
+    "name": "Wheelchair Sports Alberta",
+    "cat": "Community & Social Connection",
+    "desc": "Provincial organization for wheelchair basketball, para athletics, wheelchair rugby, para ice hockey, and wheelchair tennis. Offers school programs with wheelchair rentals and instruction, equipment rental/loan programs, coaching programs, and grants",
+    "steps": "[{\"step\":1,\"action\":\"Visit wheelchairsportsalberta.com to learn about available sports\",\"details\":\"Wheelchair Sports Alb"
+  },
+  {
+    "id": 979,
+    "name": "Rocky Mountain Adaptive",
+    "cat": "Community & Social Connection",
+    "desc": "A not-for-profit providing individuals of all abilities the chance to access sporting and recreational activities in the Canadian Rockies. Offers over 20 different adaptive sport and recreational activities for children and adults with physical, inte",
+    "steps": "[{\"step\":1,\"action\":\"Visit rockymountainadaptive.com to explore activities\",\"details\":\"Rocky Mountain Adaptive — outdoor"
+  },
+  {
+    "id": 980,
+    "name": "Calgary Adapted Hub",
+    "cat": "Community & Social Connection",
+    "desc": "The go-to resource for inclusive and accessible sport and recreation programming in Calgary. Connects children, youth, and families living with disabilities to recreational, developmental, or high-performance adapted sport opportunities. Offers free ",
+    "steps": "[{\"step\":1,\"action\":\"Visit calgaryadaptedhub.com to browse adapted sport programs\",\"details\":\"Calgary Adapted Hub — adap"
+  },
+  {
+    "id": 981,
+    "name": "Grow Calgary - Community Farm",
+    "cat": "Community & Social Connection",
+    "desc": "A 100% volunteer-run community farm on 11 acres near Canada Olympic Park that donates all produce grown to social agencies with food access programs. Volunteers participate in gardening, administration, and fundraising. Team-building opportunities av",
+    "steps": "[{\"step\":1,\"action\":\"Visit growcalgary.ca to learn about volunteer opportunities\",\"details\":\"Grow Calgary — Community Fa"
+  },
+  {
+    "id": 982,
+    "name": "City of Edmonton - Community Gardens",
+    "cat": "Community & Social Connection",
+    "desc": "Over 80 community gardens (50 on public land) where residents grow food, connect with neighbours, and participate in outdoor recreation. Each garden is managed by a local garden group. The City also offers a Pop-Up Community Gardens Program for tempo",
+    "steps": "[{\"step\":1,\"action\":\"Visit the City of Edmonton website to find a community garden near you\",\"details\":\"City of Edmonton"
+  },
+  {
+    "id": 983,
+    "name": "Alberta Men's Shed Association",
+    "cat": "Community & Social Connection",
+    "desc": "Men's Sheds provide a space for men (especially retirees) to connect, share knowledge, and work on projects shoulder-to-shoulder. Over 31 sheds across Alberta, including locations in Calgary, Edmonton, Airdrie, Beaumont, Chestermere, Cochrane, Cold L",
+    "steps": "[{\"step\":1,\"action\":\"Visit albertamenssheds.ca and use the Find a Shed tool\",\"details\":\"Alberta Men's Shed Association —"
+  },
+  {
+    "id": 984,
+    "name": "Protospace — Calgary Community Workshop & Makerspace",
+    "cat": "Community & Social Connection",
+    "desc": "Calgary's original makerspace and community workshop. Offers access to laser cutters, 3D printers, woodworking tools, electronics equipment, and more. Free open house every Tuesday 7-9 PM where the public can tour, interact with members, and try thin",
+    "steps": "[{\"step\":1,\"action\":\"Attend a free Tuesday open house (7-9 PM) to tour the space\",\"details\":\"Protospace — Calgary's comm"
+  },
+  {
+    "id": 985,
+    "name": "YMCA Calgary",
+    "cat": "Community & Social Connection",
+    "desc": "The YMCA of Calgary operates 6 health and wellness facilities, child development centres, and over 60 community program sites across Calgary. Programs include fitness classes, swimming, youth programs, child care, community outreach, and social recre",
+    "steps": "[{\"step\":1,\"action\":\"Visit ymcacalgary.org to find a location and programs\",\"details\":\"YMCA Calgary — fitness, recreatio"
+  },
+  {
+    "id": 986,
+    "name": "YMCA of Northern Alberta",
+    "cat": "Community & Social Connection",
+    "desc": "The YMCA of Northern Alberta serves Edmonton, Red Deer, Grande Prairie, and Wood Buffalo with fitness, child care, youth programs, newcomer settlement, and the free Y Mind mental health program for youth aged 15-25. A comprehensive community organiza",
+    "steps": "[{\"step\":1,\"action\":\"Visit ymcanab.ca to find locations and programs\",\"details\":\"YMCA of Northern Alberta — fitness, chi"
+  },
+  {
+    "id": 987,
+    "name": "OSISS — Veterans Stress Injury Peer Support",
+    "cat": "Veterans Services",
+    "desc": "Operational Stress Injury Social Support program for Canadian Armed Forces members, veterans, and families dealing with PTSD and operational stress injuries. Trained peer support coordinators with lived experience provide confidential one-on-one supp",
+    "steps": "[{\"step\":1,\"action\":\"Contact for confidential support\",\"details\":\"Reach out by visiting https://www.osiss.ca. Peer suppo"
+  },
+  {
+    "id": 988,
+    "name": "Homes for Heroes Foundation — Veteran Transitional Housing",
+    "cat": "Veterans Services",
+    "desc": "Transitional housing through tiny home communities for homeless veterans. Edmonton village includes individual tiny homes with wraparound supports including mental health, employment assistance, and life skills. Goal is permanent housing within one y",
+    "steps": "[{\"step\":1,\"action\":\"Contact for housing application\",\"details\":\"Reach out by visiting https://www.homesforheroes.ca to "
+  },
+  {
+    "id": 989,
+    "name": "VETS Canada — Emergency Veteran Outreach & Crisis Assistance",
+    "cat": "Veterans Services",
+    "desc": "Emergency assistance for veterans in crisis including food, clothing, shelter, and referrals. Operates street patrols to locate and help homeless veterans. Provides immediate emergency support while connecting veterans to longer-term resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for veteran support\",\"details\":\"Reach out by visit https://vetscanada.org to inquire about "
+  },
+  {
+    "id": 990,
+    "name": "Wounded Warriors Canada - Can Praxis",
+    "cat": "Veterans Services",
+    "desc": "Mental health programs for veterans and first responders including trauma-focused therapy, couples counselling, equine therapy at Can Praxis program near Rocky Mountain House, service dog program, and veterans transition program.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for confidential support\",\"details\":\"Reach out by visiting https://woundedwarriors.ca. Peer"
+  },
+  {
+    "id": 992,
+    "name": "Carewest Colonel Belcher — Veterans Long-Term Care & Rehabilitation",
+    "cat": "Veterans Services",
+    "desc": "Long-term care facility in Calgary specifically serving veterans and seniors. Provides 24-hour nursing care, rehabilitation services, and specialized veteran programming. Dedicated veteran care beds funded by Veterans Affairs Canada.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for veteran support\",\"details\":\"Reach out by visit https://www.carewest.ca/our-centres/care"
+  },
+  {
+    "id": 993,
+    "name": "Royal Canadian Legion - AB/NWT Command",
+    "cat": "Veterans Services",
+    "desc": "Provides veteran advocacy, emergency financial assistance through the Poppy Fund, housing assistance, and social programming for veterans and families. Over 100 branches across Alberta offering community support and help navigating VAC benefits.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for veteran support\",\"details\":\"Reach out by visit https://www.albertanwtcommand.com to inq"
+  },
+  {
+    "id": 994,
+    "name": "Edmonton Military Family Resource Centre",
+    "cat": "Veterans Services",
+    "desc": "Comprehensive support for military families including deployment support, children's programs, employment assistance for military spouses, counselling, crisis support, and community integration programs.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for veteran support\",\"details\":\"Reach out by visit https://www.cafconnection.ca/edmonton/ t"
+  },
+  {
+    "id": 995,
+    "name": "4 Wing Cold Lake Military Family Resource Centre",
+    "cat": "Veterans Services",
+    "desc": "Family support services for the 4 Wing Cold Lake military community. Programs include childcare, deployment support, mental health counselling, employment assistance, second language training, and community connection.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the resource centre\",\"details\":\"Reach out by visiting https://www.cafconnection.ca/cold-lak"
+  },
+  {
+    "id": 996,
+    "name": "CFB Suffield Military Family Resource Centre",
+    "cat": "Veterans Services",
+    "desc": "Family support services for the CFB Suffield military community in southeastern Alberta. Provides deployment support, family counselling, children's programs, and community integration for military families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the resource centre\",\"details\":\"Reach out by visiting https://www.cafconnection.ca/suffield"
+  },
+  {
+    "id": 997,
+    "name": "Wainwright Military Family Resource Centre",
+    "cat": "Veterans Services",
+    "desc": "Family support for the 3rd Canadian Division Support Base Wainwright community. Services include childcare, deployment support, mental health services, employment support for spouses, and emergency assistance.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the resource centre\",\"details\":\"Reach out by visiting https://www.cafconnection.ca/wainwrig"
+  },
+  {
+    "id": 998,
+    "name": "AHS Addiction Helpline (Gambling Support)",
+    "cat": "Gambling Support",
+    "desc": "24/7 confidential helpline providing information, support, and referrals for gambling addiction. Connects callers with local gambling treatment resources across Alberta. Available in multiple languages.",
+    "steps": "[{\"step\":1,\"action\":\"Contact to book an appointment — call 1-866-332-2322\",\"details\":\"Reach out by phone at 1-866-332-23"
+  },
+  {
+    "id": 999,
+    "name": "AGLC GameSense Program",
+    "cat": "Gambling Support",
+    "desc": "AGLC's responsible gambling program with GameSense information centres at major Alberta casinos. Provides information about how gambling works, odds, self-exclusion, voluntary spending limits, and connections to treatment resources.",
+    "steps": "[{\"step\":1,\"action\":\"Visit a casino or contact AGLC\",\"details\":\"Visit https://gamesense.aglc.ca or visit any Alberta cas"
+  },
+  {
+    "id": 1000,
+    "name": "AGLC Voluntary Self-Exclusion Program",
+    "cat": "Gambling Support",
+    "desc": "Free, voluntary program allowing individuals to ban themselves from all Alberta casinos and racing entertainment centres. Available in 6-month, 1-year, 3-year, or lifetime periods. Includes referral to counselling services.",
+    "steps": "[{\"step\":1,\"action\":\"Visit a casino or contact AGLC\",\"details\":\"Visit https://aglc.ca/responsible-gambling/self-exclusio"
+  }
+]

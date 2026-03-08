@@ -25,15 +25,15 @@ TIMEOUT_SECONDS = 15
 
 CATEGORY_MAP = {
     "addiction & mental health": "Addiction Treatment",
-    "mental health": "Mental Health Counselling",
-    "hospitals": "Health Care Access",
-    "emergency departments": "Health Care Access",
-    "urgent care": "Health Care Access",
-    "community care": "Health Care Access",
-    "public health": "Health Care Access",
-    "cancer care": "Health Care Access",
-    "labs": "Health Care Access",
-    "x-ray": "Health Care Access",
+    "mental health": "Mental Health & Counselling",
+    "hospitals": "Healthcare Access",
+    "emergency departments": "Healthcare Access",
+    "urgent care": "Healthcare Access",
+    "community care": "Healthcare Access",
+    "public health": "Healthcare Access",
+    "cancer care": "Healthcare Access",
+    "labs": "Healthcare Access",
+    "x-ray": "Healthcare Access",
 }
 
 

@@ -1,0 +1,728 @@
+[
+  {
+    "id": 1,
+    "name": "211 Alberta",
+    "current": "Information & Referral",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "211 Alberta is a 24/7 helpline, not generic info & referral"
+  },
+  {
+    "id": 2,
+    "name": "988 Suicide Crisis Helpline",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 3,
+    "name": "Mental Health Help Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 6,
+    "name": "Calgary Counselling Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 8,
+    "name": "311 Calgary",
+    "current": "Information & Referral",
+    "proposed": "Community & Social Connection",
+    "action": "CHANGE",
+    "reason": "311 Calgary is city services info, not crisis/referral"
+  },
+  {
+    "id": 9,
+    "name": "811 Health Link",
+    "current": "Information & Referral",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "811 Health Link is a health advice line staffed by nurses"
+  },
+  {
+    "id": 10,
+    "name": "AHS - Addiction Helpline",
+    "current": "Gambling Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "AHS Addiction Helpline is a 24/7 crisis line, not gambling-specific"
+  },
+  {
+    "id": 11,
+    "name": "Recovery Alberta Help Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 12,
+    "name": "Distress Centre Calgary",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 14,
+    "name": "ConnecTeen — Youth Crisis & Distress Line (Calgary)",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 15,
+    "name": "Kids Help Phone — 24/7 Youth Crisis Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 16,
+    "name": "Hope for Wellness — Indigenous Crisis Helpline",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 17,
+    "name": "AHS — Indigenous Crisis & Support Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 18,
+    "name": "Talk Suicide Canada — 24/7 Crisis Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 19,
+    "name": "Alberta Family Violence Info Line",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 21,
+    "name": "Unison Elder Abuse Resource Team",
+    "current": "Elder Support",
+    "proposed": "Senior Services",
+    "action": "CHANGE",
+    "reason": "Elder Support is not a valid category"
+  },
+  {
+    "id": 22,
+    "name": "Alberta Emergency Financial Assistance",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 23,
+    "name": "Calgary Police Non-Emergency",
+    "current": "Information & Referral",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Calgary Police non-emergency is a public safety service"
+  },
+  {
+    "id": 24,
+    "name": "AHS — Access 24/7 Mental Health Crisis Line (Edmonton)",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 26,
+    "name": "ECMHS (Eastside Community Mental Health) Crisis Counselling Line",
+    "current": "Crisis Lines",
+    "proposed": "Crisis Lines",
+    "action": "KEEP"
+  },
+  {
+    "id": 27,
+    "name": "Protection for Persons in Care",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 28,
+    "name": "South Calgary Health Centre",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 29,
+    "name": "AHS - Airdrie Mental Health Urgent Care",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 30,
+    "name": "AHS - Banff Mental Health Urgent Care",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 31,
+    "name": "AHS - Canmore Urgent Mental Health",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 32,
+    "name": "AHS - Cochrane Mental Health Urgent Care",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 33,
+    "name": "AHS - Okotoks Mental Health Urgent Care",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 35,
+    "name": "CMHA Calgary — Mental Health Programs & Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 36,
+    "name": "Recovery College Calgary (CMHA)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 37,
+    "name": "AHS - Rapid Access Addiction Medicine (RAAM)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 38,
+    "name": "AHS Opioid Dependency Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 39,
+    "name": "Renfrew Recovery Centre (Adult Detox)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 43,
+    "name": "Woods Homes Calgary — Youth Mental Health, Housing & Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 44,
+    "name": "Eastside Community Mental Health (Woods Homes)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 45,
+    "name": "The Summit (Sinneave Centre)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 46,
+    "name": "Hull Services Calgary — Child & Youth Mental Health Programs",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 47,
+    "name": "YouthSMART — Online Mental Health Resources for Teens",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 48,
+    "name": "Community Connect YYC — Affordable Counselling & Basic Needs",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 49,
+    "name": "Carya Calgary — Family Mental Health & Community Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 50,
+    "name": "CUPS Calgary — Community Health, Housing & Family Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "CUPS is a community health centre providing primary care, dental, etc."
+  },
+  {
+    "id": 51,
+    "name": "Calgary Navigation and Support Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Emergency Shelter",
+    "action": "CHANGE",
+    "reason": "Navigation centre for homeless individuals seeking shelter"
+  },
+  {
+    "id": 52,
+    "name": "Alpha House Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 53,
+    "name": "Salvation Army Centre of Hope",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 56,
+    "name": "YW Calgary Emergency Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 58,
+    "name": "Trellis Society Avenue 15",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 59,
+    "name": "HELP Team — Mobile Outreach for Homelessness (Calgary)",
+    "current": "Emergency Shelter",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "HELP Team is mobile outreach for homelessness/intoxication"
+  },
+  {
+    "id": 60,
+    "name": "Calgary Homeless Foundation — Housing System Coordination & Advocacy",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 61,
+    "name": "Affordable Therapy Network",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 62,
+    "name": "Virtuous Circle Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 63,
+    "name": "Jade Counselling Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 65,
+    "name": "Alpha House Detox & Transitional",
+    "current": "Residential Treatment",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Alpha House Detox is a detox program, not residential treatment"
+  },
+  {
+    "id": 66,
+    "name": "AARC Adolescent Recovery Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "AARC is a residential treatment facility"
+  },
+  {
+    "id": 71,
+    "name": "Hull Services Youth Recovery",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 72,
+    "name": "NAM Niwas — Residential Addiction Recovery Housing (Calgary)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 73,
+    "name": "Oxford House Foundation Calgary",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 74,
+    "name": "Recovery Acres Calgary",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 75,
+    "name": "Alcove Addiction Recovery for Women",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 76,
+    "name": "Sunrise Healing Lodge Society",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Sunrise Healing Lodge is residential addiction treatment (Indigenous-led)"
+  },
+  {
+    "id": 77,
+    "name": "Miskanawah — Indigenous Family & Mental Health Support (Calgary)",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 79,
+    "name": "Niitoiyis — Indigenous Family Violence Shelter & Support (Calgary)",
+    "current": "Indigenous Services",
+    "proposed": "Domestic Violence Support",
+    "action": "CHANGE",
+    "reason": "Niitoiyis is a family violence shelter"
+  },
+  {
+    "id": 80,
+    "name": "Calgary Indigenous Sharing Network — Social, Cultural & Employment Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 81,
+    "name": "Walking Eagle / New Beginnings (Indigenous AA)",
+    "current": "Indigenous Services",
+    "proposed": "Recovery & Peer Support",
+    "action": "CHANGE",
+    "reason": "Walking Eagle is an AA group, not general Indigenous services"
+  },
+  {
+    "id": 82,
+    "name": "Native Network Family Centre",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 85,
+    "name": "AHS NNADAP — Indigenous Addiction & Mental Health Referral",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 86,
+    "name": "Poundmakers Lodge Treatment Centres",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 87,
+    "name": "Bonnyville Indian Metis Rehabilitation Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Bonnyville IMRC is a 42-day residential treatment program"
+  },
+  {
+    "id": 88,
+    "name": "Akokatssini Medical Detox (Brocket)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 89,
+    "name": "Nightwind Treatment Centre (Athabasca)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 90,
+    "name": "Okisikow Iskwew Centre — Indigenous Youth Addiction Treatment (Frog Lake)",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Okisikow Iskwew is residential addiction treatment for youth"
+  },
+  {
+    "id": 91,
+    "name": "Kainai Transition Centre Society",
+    "current": "Addiction Treatment",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "CHANGE",
+    "reason": "Kainai focuses on reintegration, employment, corrections"
+  },
+  {
+    "id": 92,
+    "name": "Bringing the Spirit Home (BTSH) — Indigenous Addiction Treatment (Blood Tribe)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 94,
+    "name": "Wellbriety Program Red Deer (Safe Harbour)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 95,
+    "name": "Aboriginal Counseling Services Association",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 96,
+    "name": "Métis Nation of Alberta Health",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 97,
+    "name": "Jordan's Principle — First Nations Children's Service Access",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 98,
+    "name": "CMHA Edmonton — Mental Health Programs & Crisis Support",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 99,
+    "name": "Mobile Crisis Adults Edmonton",
+    "current": "Addiction Treatment",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Mobile Crisis Adults Edmonton is a mobile crisis team"
+  },
+  {
+    "id": 100,
+    "name": "Mobile Crisis Children Edmonton",
+    "current": "Mental Health & Counselling",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Mobile Crisis Children Edmonton is a mobile crisis service"
+  },
+  {
+    "id": 102,
+    "name": "Boyle Street Community Services — Homelessness & Poverty Support",
+    "current": "Indigenous Services",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Boyle Street primarily serves homeless with harm reduction approach"
+  },
+  {
+    "id": 103,
+    "name": "Boyle Street Managed Alcohol Program",
+    "current": "Addiction Treatment",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Managed Alcohol Program is a harm reduction service"
+  },
+  {
+    "id": 105,
+    "name": "Hope Mission - Breakout Recovery Community",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Breakout is a one-year residential recovery program"
+  },
+  {
+    "id": 106,
+    "name": "Wellspring by Hope Mission",
+    "current": "Food Banks & Meals",
+    "proposed": "Emergency Shelter",
+    "action": "CHANGE",
+    "reason": "Wellspring is a shelter/drop-in, not food bank"
+  },
+  {
+    "id": 107,
+    "name": "Jellinek Society — Men's Addiction Recovery Residence (Edmonton)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 108,
+    "name": "McDougall House — Women's Addiction Recovery Program (Edmonton)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 109,
+    "name": "Our House Addiction Recovery Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 110,
+    "name": "Recovery Acres Society",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 111,
+    "name": "Urban Manor — Men's Supportive Housing (Edmonton)",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 112,
+    "name": "YWCA Edmonton Counselling",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 113,
+    "name": "The Family Centre Edmonton — Parenting & Postpartum Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Family Centre provides parenting support and postpartum counselling"
+  },
+  {
+    "id": 114,
+    "name": "Pride Centre of Edmonton",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 116,
+    "name": "Youth Empowerment and Support Services Edmonton (YESS)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 117,
+    "name": "AHS - Henwood Treatment Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "McDougall House is residential treatment for women"
+  },
+  {
+    "id": 118,
+    "name": "Edmonton Navigation and Support Centre",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 119,
+    "name": "Edmontons Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 120,
+    "name": "Envision Mind Care — Inpatient Addiction Treatment (Non-12-Step)",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Our House is residential addiction recovery"
+  },
+  {
+    "id": 124,
+    "name": "AHS Addiction & Mental Health Services (Lethbridge)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 125,
+    "name": "CMHA Lethbridge",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 127,
+    "name": "Lethbridge Wellness Shelter - Stabilization Unit",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 131,
+    "name": "Iikaisskini Indigenous Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 134,
+    "name": "Intensive Outreach & Diversion — Community Addiction & Mental Health Support (Medicine Hat)",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  }
+]

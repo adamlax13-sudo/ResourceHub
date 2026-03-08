@@ -1,0 +1,578 @@
+[
+  {
+    "id": 1,
+    "name": "211 Alberta",
+    "current": "Information & Referral",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "211 Alberta is a 24/7 helpline, not generic info & referral"
+  },
+  {
+    "id": 8,
+    "name": "311 Calgary",
+    "current": "Information & Referral",
+    "proposed": "Community & Social Connection",
+    "action": "CHANGE",
+    "reason": "311 Calgary is city services info, not crisis/referral"
+  },
+  {
+    "id": 9,
+    "name": "811 Health Link",
+    "current": "Information & Referral",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "811 Health Link is a health advice line staffed by nurses"
+  },
+  {
+    "id": 10,
+    "name": "AHS - Addiction Helpline",
+    "current": "Gambling Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "AHS Addiction Helpline is a 24/7 crisis line, not gambling-specific"
+  },
+  {
+    "id": 21,
+    "name": "Unison Elder Abuse Resource Team",
+    "current": "Elder Support",
+    "proposed": "Senior Services",
+    "action": "CHANGE",
+    "reason": "Elder Support is not a valid category"
+  },
+  {
+    "id": 23,
+    "name": "Calgary Police Non-Emergency",
+    "current": "Information & Referral",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Calgary Police non-emergency is a public safety service"
+  },
+  {
+    "id": 50,
+    "name": "CUPS Calgary — Community Health, Housing & Family Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "CUPS is a community health centre providing primary care, dental, etc."
+  },
+  {
+    "id": 51,
+    "name": "Calgary Navigation and Support Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Emergency Shelter",
+    "action": "CHANGE",
+    "reason": "Navigation centre for homeless individuals seeking shelter"
+  },
+  {
+    "id": 59,
+    "name": "HELP Team — Mobile Outreach for Homelessness (Calgary)",
+    "current": "Emergency Shelter",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "HELP Team is mobile outreach for homelessness/intoxication"
+  },
+  {
+    "id": 65,
+    "name": "Alpha House Detox & Transitional",
+    "current": "Residential Treatment",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Alpha House Detox is a detox program, not residential treatment"
+  },
+  {
+    "id": 66,
+    "name": "AARC Adolescent Recovery Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "AARC is a residential treatment facility"
+  },
+  {
+    "id": 76,
+    "name": "Sunrise Healing Lodge Society",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Sunrise Healing Lodge is residential addiction treatment (Indigenous-led)"
+  },
+  {
+    "id": 79,
+    "name": "Niitoiyis — Indigenous Family Violence Shelter & Support (Calgary)",
+    "current": "Indigenous Services",
+    "proposed": "Domestic Violence Support",
+    "action": "CHANGE",
+    "reason": "Niitoiyis is a family violence shelter"
+  },
+  {
+    "id": 81,
+    "name": "Walking Eagle / New Beginnings (Indigenous AA)",
+    "current": "Indigenous Services",
+    "proposed": "Recovery & Peer Support",
+    "action": "CHANGE",
+    "reason": "Walking Eagle is an AA group, not general Indigenous services"
+  },
+  {
+    "id": 87,
+    "name": "Bonnyville Indian Metis Rehabilitation Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Bonnyville IMRC is a 42-day residential treatment program"
+  },
+  {
+    "id": 90,
+    "name": "Okisikow Iskwew Centre — Indigenous Youth Addiction Treatment (Frog Lake)",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Okisikow Iskwew is residential addiction treatment for youth"
+  },
+  {
+    "id": 91,
+    "name": "Kainai Transition Centre Society",
+    "current": "Addiction Treatment",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "CHANGE",
+    "reason": "Kainai focuses on reintegration, employment, corrections"
+  },
+  {
+    "id": 99,
+    "name": "Mobile Crisis Adults Edmonton",
+    "current": "Addiction Treatment",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Mobile Crisis Adults Edmonton is a mobile crisis team"
+  },
+  {
+    "id": 100,
+    "name": "Mobile Crisis Children Edmonton",
+    "current": "Mental Health & Counselling",
+    "proposed": "Crisis Services",
+    "action": "CHANGE",
+    "reason": "Mobile Crisis Children Edmonton is a mobile crisis service"
+  },
+  {
+    "id": 102,
+    "name": "Boyle Street Community Services — Homelessness & Poverty Support",
+    "current": "Indigenous Services",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Boyle Street primarily serves homeless with harm reduction approach"
+  },
+  {
+    "id": 103,
+    "name": "Boyle Street Managed Alcohol Program",
+    "current": "Addiction Treatment",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Managed Alcohol Program is a harm reduction service"
+  },
+  {
+    "id": 105,
+    "name": "Hope Mission - Breakout Recovery Community",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Breakout is a one-year residential recovery program"
+  },
+  {
+    "id": 106,
+    "name": "Wellspring by Hope Mission",
+    "current": "Food Banks & Meals",
+    "proposed": "Emergency Shelter",
+    "action": "CHANGE",
+    "reason": "Wellspring is a shelter/drop-in, not food bank"
+  },
+  {
+    "id": 113,
+    "name": "The Family Centre Edmonton — Parenting & Postpartum Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Family Centre provides parenting support and postpartum counselling"
+  },
+  {
+    "id": 117,
+    "name": "AHS - Henwood Treatment Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "McDougall House is residential treatment for women"
+  },
+  {
+    "id": 120,
+    "name": "Envision Mind Care — Inpatient Addiction Treatment (Non-12-Step)",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Our House is residential addiction recovery"
+  },
+  {
+    "id": 137,
+    "name": "Medicine Hat Women's Shelter Society 24-Hour Help Line",
+    "current": "Domestic Violence Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "24-Hour Help Line is phone-based crisis support"
+  },
+  {
+    "id": 139,
+    "name": "Northern Addictions Centre - Medically Supported Detox (Grande Prairie)",
+    "current": "Residential Treatment",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Explicitly medical detox program"
+  },
+  {
+    "id": 164,
+    "name": "Overeaters Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Overeaters Anonymous addresses compulsive overeating"
+  },
+  {
+    "id": 165,
+    "name": "Food Addicts in Recovery",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Food addiction/disordered eating support"
+  },
+  {
+    "id": 166,
+    "name": "Anorexics and Bulimics Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Anorexia and bulimia recovery group"
+  },
+  {
+    "id": 167,
+    "name": "Clean Scene — Therapeutic Mentorship for Youth (Ages 14-29)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "Youth-specific mentoring program ages 14-29"
+  },
+  {
+    "id": 169,
+    "name": "Parents Empowering Parents (PEP)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Supports families of those with substance use"
+  },
+  {
+    "id": 172,
+    "name": "UCalgary Harm Reduction Support",
+    "current": "Harm Reduction",
+    "proposed": "Campus & Student Services",
+    "action": "CHANGE",
+    "reason": "University-specific harm reduction service"
+  },
+  {
+    "id": 173,
+    "name": "UCalgary Crisis (24/7)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "UCalgary Crisis is a phone/text crisis line"
+  },
+  {
+    "id": 197,
+    "name": "The Alex Youth Health Centre Calgary",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "General youth health centre, not LGBTQ-specific"
+  },
+  {
+    "id": 211,
+    "name": "SAGE Seniors Safe House Edmonton",
+    "current": "Senior Services",
+    "proposed": "Domestic Violence Support",
+    "action": "CHANGE",
+    "reason": "Senior abuse protection shelter"
+  },
+  {
+    "id": 224,
+    "name": "Calgary Food Bank (Baby Items)",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Diapers, wipes, formula are material goods"
+  },
+  {
+    "id": 227,
+    "name": "Salvation Army (Infant Essentials)",
+    "current": "Family & Parenting Support",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Material goods distribution for infants"
+  },
+  {
+    "id": 276,
+    "name": "Poundmakers Lodge Detox St. Albert",
+    "current": "Indigenous Services",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Poundmakers Detox is a detox program"
+  },
+  {
+    "id": 277,
+    "name": "Addiction Services - Prevention (Red Deer)",
+    "current": "Addiction Treatment",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Prevention/harm reduction focus, not treatment"
+  },
+  {
+    "id": 280,
+    "name": "M.I.T.A.A. Detox Centre — Indigenous Day Treatment for Substance Use",
+    "current": "Indigenous Services",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "MITAA is a day treatment detox centre"
+  },
+  {
+    "id": 328,
+    "name": "Find a Doctor Alberta",
+    "current": "Mental Health & Counselling",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "Primary care/doctor finding service, not mental health"
+  },
+  {
+    "id": 346,
+    "name": "Edmonton Newcomer Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Newcomer & Settlement",
+    "action": "CHANGE",
+    "reason": "Edmonton Newcomer Centre primarily serves newcomers with settlement"
+  },
+  {
+    "id": 398,
+    "name": "iRecover Treatment Centres",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 408,
+    "name": "Lethbridge Youth Addiction Treatment Centre",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 425,
+    "name": "Rising Above — Faith-Based Residential Addiction Recovery (Grande Prairie)",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 449,
+    "name": "24-Hour Sexual Violence Support Line - Sendero Centre",
+    "current": "Crisis Services",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "Phone/text-based crisis line, not walk-in service"
+  },
+  {
+    "id": 566,
+    "name": "MyCityCare - Basic Needs Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides clothing, household items, and basic needs beyond food"
+  },
+  {
+    "id": 579,
+    "name": "Lakeview Recovery Community — Men's Residential Addiction Treatment",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 794,
+    "name": "CMHA Central Alberta - Pathways to Housing",
+    "current": "Mental Health & Counselling",
+    "proposed": "Affordable Housing",
+    "action": "CHANGE",
+    "reason": "CMHA Pathways to Housing is a housing-first program"
+  },
+  {
+    "id": 810,
+    "name": "AHS - Adult Residential Addiction Treatment (Ponoka)",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 811,
+    "name": "Wood Buffalo Wellness Society — Residential Addiction Treatment",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 856,
+    "name": "Mustard Seed - Edmonton - Community Impact Centres",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Community Impact Centres provide clothing, hygiene, mail services beyond food"
+  },
+  {
+    "id": 863,
+    "name": "Government of Alberta - Ministry of Justice - Edmonton Drug Treatment Court Service",
+    "current": "Addiction Treatment",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "CHANGE",
+    "reason": "Drug Treatment Court is a justice-system diversion program"
+  },
+  {
+    "id": 893,
+    "name": "Canadian Mental Health Association - Edmonton Region - Seniors' Abuse Helpline",
+    "current": "Crisis Services",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "Phone/text-based crisis line, not walk-in service"
+  },
+  {
+    "id": 903,
+    "name": "Aventa Centre of Excellence for Women with Addictions - Young Adult Treatment",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 936,
+    "name": "Iskwew Healing Lodge - Poundmaker's Lodge Treatment Centres",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Iskwew Healing Lodge is residential addiction treatment"
+  },
+  {
+    "id": 958,
+    "name": "Building Hope Compassionate Association — Meals, Food Hampers & Clothing Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides meals, food AND clothing bank - mixed basic needs"
+  },
+  {
+    "id": 998,
+    "name": "AHS Addiction Helpline (Gambling Support)",
+    "current": "Gambling Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "General addiction helpline, not gambling-specific"
+  },
+  {
+    "id": 1071,
+    "name": "Office of the Child and Youth Advocate (OCYA)",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Child welfare redistributed to Family & Parenting"
+  },
+  {
+    "id": 1072,
+    "name": "Advancing Futures Bursary — Post-Secondary Funding for Youth from Care",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Child welfare redistributed to Family & Parenting"
+  },
+  {
+    "id": 1073,
+    "name": "Youth Aging Out of Care - Transition to Adulthood",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "Youth aging out of care = youth services"
+  },
+  {
+    "id": 1076,
+    "name": "Kinship Care Alberta — Support for Relatives Raising Children",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Kinship/foster care = family support"
+  },
+  {
+    "id": 2641,
+    "name": "Prairie Winds Clubhouse Society",
+    "current": "Mental Health & Counselling",
+    "proposed": "Employment Services",
+    "action": "CHANGE",
+    "reason": "Clubhouse model primarily provides employment/vocational rehabilitation"
+  },
+  {
+    "id": 2721,
+    "name": "Bonnyville Community Church",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Church provides food, clothing and household items"
+  },
+  {
+    "id": 2795,
+    "name": "Thrive Outreach Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and material aid"
+  },
+  {
+    "id": 3069,
+    "name": "The Refuge Mission Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and shelter services"
+  },
+  {
+    "id": 3097,
+    "name": "House of Refuge Mission",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and basic necessities"
+  },
+  {
+    "id": 3138,
+    "name": "CCASA - Support & Information Line",
+    "current": "Sexual Assault Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "CHANGE",
+    "reason": "Sexual Assault Support merged into Trauma & PTSD"
+  },
+  {
+    "id": 3280,
+    "name": "Autism Edmonton - Peer Discussion Groups",
+    "current": "Recovery & Peer Support",
+    "proposed": "Disability & Autism Support",
+    "action": "CHANGE",
+    "reason": "Peer groups specifically for autistic adults/families, not addiction recovery peer support"
+  },
+  {
+    "id": 3313,
+    "name": "Aboriginal Friendship Centre of Calgary - Elders Services & Kanakaa'tsinom Drop-in",
+    "current": "Senior Services",
+    "proposed": "Indigenous Services",
+    "action": "CHANGE",
+    "reason": "Culturally-specific Indigenous Elder services with ceremonies and traditional supports"
+  }
+]

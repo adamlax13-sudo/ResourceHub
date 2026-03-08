@@ -1,0 +1,828 @@
+[
+  {
+    "id": 1002,
+    "name": "Calgary Counselling Centre - Problem Gambling",
+    "cat": "Gambling Support",
+    "desc": "Individual and group counselling for problem gambling with sliding scale fees based on income. Experienced counsellors specializing in gambling addiction, financial impacts, and family effects of prob",
+    "steps": "[{\"step\":1,\"action\":\"Contact to book an appointment\",\"details\":\"Reach out by vis"
+  },
+  {
+    "id": 1003,
+    "name": "AHS Problem Gambling Treatment - Edmonton",
+    "cat": "Gambling Support",
+    "desc": "Alberta Health Services outpatient gambling treatment programs in Edmonton. Provides assessment, individual counselling, group therapy, and relapse prevention for adults with gambling problems. No cha",
+    "steps": "[{\"step\":1,\"action\":\"Contact to book an appointment\",\"details\":\"Reach out by vis"
+  },
+  {
+    "id": 1004,
+    "name": "AHS Problem Gambling Treatment - Calgary",
+    "cat": "Gambling Support",
+    "desc": "Alberta Health Services outpatient gambling treatment in Calgary. Individual and group counselling for problem gambling available at multiple AHS addiction and mental health clinics. No charge.",
+    "steps": "[{\"step\":1,\"action\":\"Contact to book an appointment\",\"details\":\"Reach out by vis"
+  },
+  {
+    "id": 1006,
+    "name": "AHS Edmonton Eating Disorder Program",
+    "cat": "Eating Disorder Services",
+    "desc": "Specialized AHS eating disorder treatment program offering assessment, outpatient treatment, day treatment, and inpatient care for adults and adolescents with anorexia nervosa, bulimia nervosa, and ot",
+    "steps": "[{\"step\":1,\"action\":\"Get a referral from your doctor\",\"details\":\"Ask your family"
+  },
+  {
+    "id": 1007,
+    "name": "AHS Calgary Eating Disorder Program",
+    "cat": "Eating Disorder Services",
+    "desc": "Comprehensive AHS eating disorder program at Foothills Medical Centre providing assessment, outpatient counselling, intensive day treatment, and inpatient stabilization. Multidisciplinary team includi",
+    "steps": "[{\"step\":1,\"action\":\"Contact for eating disorder support\",\"details\":\"Reach out b"
+  },
+  {
+    "id": 1008,
+    "name": "Alberta Children's Hospital - Eating Disorder Program",
+    "cat": "Eating Disorder Services",
+    "desc": "Specialized pediatric eating disorder treatment for children and adolescents. Provides medical stabilization, nutritional rehabilitation, family-based treatment (Maudsley approach), and outpatient fol",
+    "steps": "[{\"step\":1,\"action\":\"Contact for eating disorder support\",\"details\":\"Reach out b"
+  },
+  {
+    "id": 1009,
+    "name": "Stollery Children's Hospital - Eating Disorder Program",
+    "cat": "Eating Disorder Services",
+    "desc": "Pediatric and adolescent eating disorder treatment in Edmonton. Provides medical assessment, inpatient stabilization, day treatment, and outpatient follow-up for youth with eating disorders.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for eating disorder support\",\"details\":\"Reach out b"
+  },
+  {
+    "id": 1010,
+    "name": "Body Brave (Virtual) — Eating Disorder Treatment & Support",
+    "cat": "Eating Disorder Services",
+    "desc": "Virtual eating disorder treatment programs accessible to Albertans including intensive outpatient program, individual therapy, dietitian support, and peer support groups. Sliding scale fees available.",
+    "steps": "[{\"step\":1,\"action\":\"Register online at https://bodybrave.ca\",\"details\":\"Visit h"
+  },
+  {
+    "id": 1011,
+    "name": "Sheena's Place — Eating Disorder Support Groups (Virtual)",
+    "cat": "Eating Disorder Services",
+    "desc": "Free virtual support groups for people affected by eating disorders. Offers over 30 weekly support groups covering body image, recovery, family support, and art therapy. No diagnosis or referral requi",
+    "steps": "[{\"step\":1,\"action\":\"Register online at https://sheenasplace.org\",\"details\":\"Vis"
+  },
+  {
+    "id": 1012,
+    "name": "Parent Link Centres",
+    "cat": "Family & Parenting Support",
+    "desc": "Government-funded family resource centres across Alberta (46+ locations). Free drop-in programs for families with children 0-6 including parenting workshops, early childhood development, play groups, ",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during open hours\",\"details\":\"Visit during program "
+  },
+  {
+    "id": 1013,
+    "name": "City of Calgary — Family & Community Support Services (FCSS)",
+    "cat": "Family & Parenting Support",
+    "desc": "Municipally funded preventive social services. Funds numerous family programs including parenting courses, family counselling, home visitation for new parents, and family resource centres across Calga",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1015,
+    "name": "Boys & Girls Clubs of Calgary",
+    "cat": "Family & Parenting Support",
+    "desc": "After-school and summer programs for children and youth ages 5-18. Programs include homework help, leadership development, recreation, arts, STEM activities, and mentoring in a safe environment.",
+    "steps": "[{\"step\":1,\"action\":\"Apply to the program\",\"details\":\"Contact by visiting https:"
+  },
+  {
+    "id": 1016,
+    "name": "Boys & Girls Clubs Big Brothers Big Sisters of Edmonton",
+    "cat": "Family & Parenting Support",
+    "desc": "Combined organization providing youth mentoring programs, after-school clubs, summer camps, and one-to-one mentoring matches. Serves children and youth aged 6-18.",
+    "steps": "[{\"step\":1,\"action\":\"Apply to the program\",\"details\":\"Contact by visiting https:"
+  },
+  {
+    "id": 1017,
+    "name": "Big Brothers Big Sisters of Calgary",
+    "cat": "Family & Parenting Support",
+    "desc": "Mentoring programs matching children and youth with adult volunteer mentors. Programs include traditional one-to-one mentoring, in-school mentoring, group mentoring, and teen mentoring for ages 6-16.",
+    "steps": "[{\"step\":1,\"action\":\"Apply to the program\",\"details\":\"Contact by visiting https:"
+  },
+  {
+    "id": 1018,
+    "name": "Catholic Family Service of Calgary",
+    "cat": "Family & Parenting Support",
+    "desc": "Comprehensive family services including individual and family counselling, parenting programs, refugee and immigrant support, adoption services, in-home family support, and mental health services. Ope",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1019,
+    "name": "Jewish Family Service Calgary",
+    "cat": "Family & Parenting Support",
+    "desc": "Counselling, family support, seniors services, and community programs including individual/family/couples counselling, parenting support, financial assistance, immigrant settlement, and seniors wellne",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1020,
+    "name": "McMan — In-Home Family Support & Youth Transition Services",
+    "cat": "Family & Parenting Support",
+    "desc": "Major Alberta non-profit providing family strengthening programs, in-home family support, parent education, youth transitioning out of care support, early intervention, and community-based family serv",
+    "steps": "[{\"step\":1,\"action\":\"Contact for family support\",\"details\":\"Reach out by visitin"
+  },
+  {
+    "id": 1021,
+    "name": "Hull Services - Family Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Family support services including family counselling, in-home support, foster care, residential treatment for youth, and early intervention programs. Specializes in serving families with complex needs",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1022,
+    "name": "Calgary Counselling Centre - Family Programs",
+    "cat": "Family & Parenting Support",
+    "desc": "Affordable counselling services including family therapy, parent-child relationship counselling, co-parenting support, blended family counselling, and parenting skills programs. Sliding scale fees. On",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1023,
+    "name": "Money Mentors — Non-Profit Credit Counselling & Debt Help",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Alberta's only non-profit credit counselling agency. Offers free one-on-one consultations, budgeting and money management tools, financial literacy courses, and the Orderly Payment of Debts (OPD) prog",
+    "steps": "[{\"step\":1,\"action\":\"Book a free consultation — call 1-888-294-0076\",\"details\":\""
+  },
+  {
+    "id": 1024,
+    "name": "Credit Counselling Society - Alberta",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "National non-profit with Alberta offices offering free credit counselling, debt management programs, budgeting help, and financial education workshops.",
+    "steps": "[{\"step\":1,\"action\":\"Book a free consultation\",\"details\":\"Contact by visiting ht"
+  },
+  {
+    "id": 1025,
+    "name": "Momentum — Financial Empowerment Services (Calgary)",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Financial empowerment for low-income Calgarians. Programs include free financial coaching (up to 5 sessions), matched savings accounts, money management courses, micro-lending, business development tr",
+    "steps": "[{\"step\":1,\"action\":\"Find a clinic near you at https://momentum.org\",\"details\":\""
+  },
+  {
+    "id": 1026,
+    "name": "Bissell Centre - Financial Programs",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Multi-service organization offering emergency financial assistance, free tax clinics, financial literacy programs, and employment readiness services for people experiencing poverty and homelessness.",
+    "steps": "[{\"step\":1,\"action\":\"Find a clinic near you at https://www.bissellcentre.org\",\"d"
+  },
+  {
+    "id": 1027,
+    "name": "Free Tax Clinics (CVITP)",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "CRA-supported free tax filing by trained volunteers for low-income individuals. Available February through April (some sites year-round). Hosted at community centres, libraries, and non-profits across",
+    "steps": "[{\"step\":1,\"action\":\"Find a clinic near you at https://www.canada.ca/en/revenue-"
+  },
+  {
+    "id": 1029,
+    "name": "Calgary Low-Income Transit Pass",
+    "cat": "Transportation Assistance",
+    "desc": "Subsidized monthly transit pass (~$5.60/month) for low-income Calgarians through the Fair Entry program. Covers all CTrain and bus services. Apply through the City of Calgary Fair Entry program.",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program — call 311\",\"details\":\"Visit https://"
+  },
+  {
+    "id": 1030,
+    "name": "Edmonton Ride Transit Program",
+    "cat": "Transportation Assistance",
+    "desc": "Reduced-cost Arc card ($36/month) for eligible low-income Edmontonians. Qualifying income at or below LICO + 10%. Also available to those on AISH, CPP Disability, EI, or newcomers. Covers ETS and DATS",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program — call 311\",\"details\":\"Visit https://"
+  },
+  {
+    "id": 1031,
+    "name": "DATS (Disabled Adult Transit Service)",
+    "cat": "Transportation Assistance",
+    "desc": "Door-to-door shared-ride transit service for Edmonton residents with disabilities who cannot use conventional transit. Operates 365 days per year. Requires eligibility assessment.",
+    "steps": "[{\"step\":1,\"action\":\"Book a ride — call 780-496-4567\",\"details\":\"Contact by phon"
+  },
+  {
+    "id": 1032,
+    "name": "Calgary Transit Access",
+    "cat": "Transportation Assistance",
+    "desc": "Specialized door-to-door transit for Calgarians with disabilities who cannot use conventional transit. Shared-ride service requiring advance booking.",
+    "steps": "[{\"step\":1,\"action\":\"Book a ride — call 403-537-7777\",\"details\":\"Contact by phon"
+  },
+  {
+    "id": 1033,
+    "name": "DriveHappiness — Volunteer Transportation for Seniors",
+    "cat": "Transportation Assistance",
+    "desc": "Non-profit volunteer-based transportation service for seniors. Door-to-door service for medical appointments, social outings, and errands in the Edmonton area.",
+    "steps": "[{\"step\":1,\"action\":\"Book a ride\",\"details\":\"Contact by visiting https://www.dri"
+  },
+  {
+    "id": 1034,
+    "name": "Alberta Community Transit Fund",
+    "cat": "Transportation Assistance",
+    "desc": "Provincial grants supporting local and regional transit in rural and smaller urban communities across Alberta. Funds capital and operating costs for community transit services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for transportation assistance\",\"details\":\"Reach out"
+  },
+  {
+    "id": 1035,
+    "name": "Centre for Sexuality — Sexual Health Education & Youth Programs",
+    "cat": "Sexual Health Services",
+    "desc": "Community-based organization providing comprehensive sexual health education in schools, youth programs (WiseGuyz, Camp fYrefly for LGBTQ2S+ youth), parent workshops, and individual support on sexual ",
+    "steps": "[{\"step\":1,\"action\":\"Visit or call the clinic at 403-930-9946\",\"details\":\"Walk i"
+  },
+  {
+    "id": 1036,
+    "name": "Options Sexual Health",
+    "cat": "Sexual Health Services",
+    "desc": "Low-cost/no-cost sexual health clinic offering STI testing, pregnancy testing and options counselling, birth control, and Pap tests. Walk-ins welcome at multiple Edmonton locations.",
+    "steps": "[{\"step\":1,\"action\":\"Visit or call the clinic\",\"details\":\"Walk in during clinic "
+  },
+  {
+    "id": 1037,
+    "name": "AHS STI Clinic - Calgary (Sheldon Chumir)",
+    "cat": "Sexual Health Services",
+    "desc": "Free confidential STI and HIV testing and treatment, hepatitis vaccinations, PrEP/PEP. No health care card or referral required. Walk-in and appointment-based services.",
+    "steps": "[{\"step\":1,\"action\":\"Visit or call the clinic\",\"details\":\"Walk in during clinic "
+  },
+  {
+    "id": 1039,
+    "name": "Central Alberta Sexual Assault Support Centre",
+    "cat": "Trauma & PTSD Support",
+    "desc": "Crisis support, counselling, court support, and public education for sexual assault survivors in Central Alberta including Red Deer and surrounding communities.",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis line\",\"details\":\"Reach out by visiting http"
+  },
+  {
+    "id": 1041,
+    "name": "Healthy Parents, Healthy Children (AHS)",
+    "cat": "Family & Parenting Support",
+    "desc": "AHS prenatal education and parenting resources including online guides, in-person classes, and public health nurse connections. Free comprehensive resource covering pregnancy, birth, and early childho",
+    "steps": "[{\"step\":1,\"action\":\"Contact for prenatal support\",\"details\":\"Reach out by visit"
+  },
+  {
+    "id": 1042,
+    "name": "Alberta Prenatal Benefit",
+    "cat": "Family & Parenting Support",
+    "desc": "Monthly financial benefit for low-income pregnant women to purchase nutritious food. Apply through Alberta Supports. Supports maternal and fetal health during pregnancy.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for prenatal support\",\"details\":\"Reach out by visit"
+  },
+  {
+    "id": 1045,
+    "name": "AHS Postpartum Mental Health Screening",
+    "cat": "Family & Parenting Support",
+    "desc": "Public health nurses screen for postpartum depression and connect new parents to counselling, support groups, and psychiatric services. Available through AHS public health offices province-wide.",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment\",\"details\":\"Contact by visiting https:/"
+  },
+  {
+    "id": 1046,
+    "name": "John Howard Society of Alberta — Criminal Justice Reintegration & Reentry",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Major reintegration provider offering halfway houses, employment readiness, community reintegration, crime prevention, victim-offender mediation, and youth justice programs across Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for intake\",\"details\":\"Reach out by visiting https:"
+  },
+  {
+    "id": 1048,
+    "name": "John Howard Society of Red Deer — Reintegration & Crime Prevention",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Community-based organization providing reintegration support, crime prevention programs, and criminal justice education in central Alberta including rural northwestern communities.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for intake\",\"details\":\"Reach out by visiting https:"
+  },
+  {
+    "id": 1049,
+    "name": "Elizabeth Fry Society of Edmonton — Women's Justice Support & Reintegration",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Supports women and girls in the justice system with transitional housing/halfway house, community reintegration programs, court support, advocacy, and in-facility programming.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for intake\",\"details\":\"Reach out by visiting https:"
+  },
+  {
+    "id": 1051,
+    "name": "Native Counselling Services of Alberta (NCSA)",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Culturally-based programs for Indigenous people in the justice system. Operates Section 81 Healing Lodges including Stan Daniels Healing Centre and Buffalo Sage Wellness House in Edmonton. Court worke",
+    "steps": "[{\"step\":1,\"action\":\"Contact for intake — call 780-423-2141\",\"details\":\"Reach ou"
+  },
+  {
+    "id": 1052,
+    "name": "St. Leonard's Society (Calgary) — Halfway House & Community Reintegration",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Community residential facility (halfway house) for federal offenders transitioning to community. Provides structured reintegration support and supervision.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for intake\",\"details\":\"Reach out by visiting https:"
+  },
+  {
+    "id": 1053,
+    "name": "Alberta FASD Service Networks",
+    "cat": "Disability & Autism Support",
+    "desc": "Twelve regional networks funded by the Government of Alberta providing FASD assessment, diagnosis, support services, mentoring, and caregiver resources across every region of the province. Single poin",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1055,
+    "name": "South Alberta FASD Network",
+    "cat": "Disability & Autism Support",
+    "desc": "Regional FASD service network delivering awareness, prevention, assessment, diagnosis, and support services across southern Alberta including the Lethbridge area.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1056,
+    "name": "Central Alberta FASD Network",
+    "cat": "Disability & Autism Support",
+    "desc": "Serving Red Deer and surrounding areas with FASD education, outreach, assessment coordination, and advocacy for individuals and families affected by FASD.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1057,
+    "name": "South East Alberta FASD Network (SEAFAN)",
+    "cat": "Disability & Autism Support",
+    "desc": "FASD service network providing assessment coordination, family support, and community education in the Medicine Hat and southeast Alberta region.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1058,
+    "name": "Northeast FASD Network (NEAFAN)",
+    "cat": "Disability & Autism Support",
+    "desc": "FASD service network operating within the Wood Buffalo Municipal Area including Fort McMurray and surrounding communities. Provides assessment, diagnosis, and support services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1059,
+    "name": "Willow Winds — FASD Support Network",
+    "cat": "Disability & Autism Support",
+    "desc": "Prevention, awareness, assessment, diagnosis, and support services for FASD and brain domain challenges in northwest-central Alberta. Serves Jasper, Hinton, Edson, Barrhead, Westlock, Whitecourt, Swan",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1060,
+    "name": "Edmonton Fetal Alcohol Network Society (EFAN)",
+    "cat": "Disability & Autism Support",
+    "desc": "Edmonton's FASD service network providing diagnostic clinic referrals, caregiver support groups, training for professionals, and community education about FASD.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your regional FASD network\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1062,
+    "name": "Alberta Brain Injury Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Province-wide no-cost support services for people affected by acquired brain injury including peer support groups, education, and referral navigation.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-477-7575\",\"details\":\"Reach o"
+  },
+  {
+    "id": 1064,
+    "name": "Brain Care Centre — Brain Injury Community Support (Edmonton)",
+    "cat": "Disability & Autism Support",
+    "desc": "Community resource centre for brain injury in Edmonton offering drop-in support, recreation programs, computer access, lending library, peer support, and referral services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-477-7575\",\"details\":\"Reach o"
+  },
+  {
+    "id": 1065,
+    "name": "Glenrose Rehabilitation Hospital - ABI Program",
+    "cat": "Disability & Autism Support",
+    "desc": "AHS tertiary rehabilitation centre providing inpatient and outpatient acquired brain injury rehabilitation, neuropsychological assessment, and multidisciplinary therapy.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support\",\"details\":\"Reach out by visiting https"
+  },
+  {
+    "id": 1066,
+    "name": "Foothills Medical Centre - Brain Injury Rehabilitation",
+    "cat": "Disability & Autism Support",
+    "desc": "AHS Calgary zone brain injury services including acute neurosurgery, inpatient rehabilitation, and outpatient brain injury clinics at Foothills Medical Centre.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support\",\"details\":\"Reach out by visiting https"
+  },
+  {
+    "id": 1067,
+    "name": "Calgary Chronic Pain Centre",
+    "cat": "Healthcare Access",
+    "desc": "AHS multidisciplinary chronic pain program offering medical management, physiotherapy, psychology, occupational therapy, group programs, and self-management education. Physician referral required.",
+    "steps": "[{\"step\":1,\"action\":\"Get a referral from your doctor\",\"details\":\"Ask your family"
+  },
+  {
+    "id": 1068,
+    "name": "Edmonton Multidisciplinary Pain Centre",
+    "cat": "Healthcare Access",
+    "desc": "AHS chronic pain program at the University of Alberta Hospital providing comprehensive pain assessment, medication management, physiotherapy, and cognitive behavioral therapy.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the service\",\"details\":\"Reach out by call 780-407-1"
+  },
+  {
+    "id": 1070,
+    "name": "AHS Alberta Pain Strategy — Community Chronic Pain Programs",
+    "cat": "Healthcare Access",
+    "desc": "AHS strategic initiative improving chronic pain care across Alberta through community-based pain programs, primary care pain supports, and reduced reliance on opioids. Non-opioid treatment options.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the service\",\"details\":\"Reach out by visit https://"
+  },
+  {
+    "id": 1071,
+    "name": "Office of the Child and Youth Advocate (OCYA)",
+    "cat": "Child Welfare & Aging Out of Care",
+    "desc": "Independent office of the Alberta Legislature that investigates complaints about child intervention services, advocates for children and youth in care, and makes systemic recommendations to improve ou",
+    "steps": "[{\"step\":1,\"action\":\"Contact the office at 1-800-661-3446\",\"details\":\"Reach out "
+  },
+  {
+    "id": 1072,
+    "name": "Advancing Futures Bursary — Post-Secondary Funding for Youth from Care",
+    "cat": "Child Welfare & Aging Out of Care",
+    "desc": "Post-secondary bursary and support program for youth who were in government care. Covers tuition, living expenses, and provides mentorship and academic support to help former youth in care succeed.",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program\",\"details\":\"Visit https://www.alberta"
+  },
+  {
+    "id": 1073,
+    "name": "Youth Aging Out of Care - Transition to Adulthood",
+    "cat": "Child Welfare & Aging Out of Care",
+    "desc": "Government of Alberta supports for youth leaving care at age 18. Includes financial benefits, housing support, education funding, and life skills programming through the Support and Financial Assistan",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program\",\"details\":\"Visit https://www.alberta"
+  },
+  {
+    "id": 1076,
+    "name": "Kinship Care Alberta — Support for Relatives Raising Children",
+    "cat": "Child Welfare & Aging Out of Care",
+    "desc": "Government program supporting relatives and close family friends caring for children who cannot live with their parents. Provides financial supports, respite care, and navigation services.",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program\",\"details\":\"Visit https://www.alberta"
+  },
+  {
+    "id": 1077,
+    "name": "Capital Region Housing — Subsidized & Affordable Housing (Edmonton)",
+    "cat": "Affordable Housing",
+    "desc": "Manages 4,500+ affordable and subsidized housing units in the Edmonton area. Programs include community housing, rent supplements, and near-market rental programs for low-income individuals and famili",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program — call 780-420-6161\",\"details\":\"Apply"
+  },
+  {
+    "id": 1078,
+    "name": "Calgary Housing Company — Subsidized & Affordable Housing",
+    "cat": "Affordable Housing",
+    "desc": "Calgary's largest residential landlord managing 10,000+ affordable housing units including subsidized housing, community housing, and rent supplement programs for low-income Calgarians.",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program — call 403-265-3350\",\"details\":\"Apply"
+  },
+  {
+    "id": 1079,
+    "name": "Habitat for Humanity Southern Alberta",
+    "cat": "Affordable Housing",
+    "desc": "Builds affordable homes for qualifying families through volunteer labour and donations. Homeowners contribute sweat equity and pay affordable mortgages. Serving Calgary and southern Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Apply through the website at https://www.habitatsouthernalb"
+  },
+  {
+    "id": 1080,
+    "name": "Habitat for Humanity Edmonton",
+    "cat": "Affordable Housing",
+    "desc": "Builds affordable homes in the Edmonton area. Partner families earn home ownership through volunteer hours, financial literacy training, and affordable mortgage payments.",
+    "steps": "[{\"step\":1,\"action\":\"Apply through the website at https://www.hfrp.ca\",\"details\""
+  },
+  {
+    "id": 1081,
+    "name": "Alberta Rent Supplement Program",
+    "cat": "Affordable Housing",
+    "desc": "Provincial rent assistance for low-income Albertans. Supplements paid directly to landlords to bridge the gap between market rent and what tenants can afford. Apply through local housing management bo",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program\",\"details\":\"Apply online at https://w"
+  },
+  {
+    "id": 1082,
+    "name": "HomeSpace Society — Affordable Rental Housing (Calgary)",
+    "cat": "Affordable Housing",
+    "desc": "Non-profit housing developer and operator in Calgary that builds and manages permanent affordable rental housing for individuals and families with low incomes.",
+    "steps": "[{\"step\":1,\"action\":\"Apply through the website at https://www.homespace.org\",\"de"
+  },
+  {
+    "id": 1083,
+    "name": "Silvera for Seniors",
+    "cat": "Affordable Housing",
+    "desc": "Affordable and supportive housing for seniors in Calgary with 26 communities offering independent living, lodge programs, and enhanced care at subsidized rates.",
+    "steps": "[{\"step\":1,\"action\":\"Apply for housing — call 403-567-5301\",\"details\":\"Contact b"
+  },
+  {
+    "id": 1084,
+    "name": "AARCS Pet Food Bank",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Alberta Animal Rescue Crew Society distributes pet food and supplies to low-income families to help keep pets with their owners. Also operates animal rescue and adoption programs.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for pet support\",\"details\":\"Reach out by visiting h"
+  },
+  {
+    "id": 1085,
+    "name": "Calgary Humane Society - Community Support",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Beyond adoption — offers subsidized veterinary care, pet food assistance, and outreach programs for pet owners facing financial hardship or crisis situations.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for pet support\",\"details\":\"Reach out by visiting h"
+  },
+  {
+    "id": 1086,
+    "name": "Edmonton Humane Society - Community Programs",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Animal welfare organization with community programs including low-cost spay/neuter, pet food bank, and temporary pet fostering for people in crisis (e.g., fleeing domestic violence).",
+    "steps": "[{\"step\":1,\"action\":\"Contact for pet support\",\"details\":\"Reach out by visiting h"
+  },
+  {
+    "id": 1087,
+    "name": "Alberta SPCA - Emergency Pet Services",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Provincial animal welfare organization providing emergency boarding for pets of people in crisis, animal cruelty investigations, and educational programs across Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for pet support\",\"details\":\"Reach out by visiting h"
+  },
+  {
+    "id": 1139,
+    "name": "The Alex Community Health Centre",
+    "cat": "Healthcare Access",
+    "desc": "Calgary's first community health centre (est. 1973). Provides physical and mental health care, dental, pharmacy, lab, social work, and justice navigation — all under one roof for low-income Calgarians",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 403-266-2622\",\"details\":\"Pho"
+  },
+  {
+    "id": 1140,
+    "name": "Radius Community Health & Healing (formerly Boyle McCauley)",
+    "cat": "Healthcare Access",
+    "desc": "Edmonton's only non-profit, community-owned health centre serving the inner city since 1980. Free primary care, dental, foot care, mental health, addiction services, women's clinic, youth clinic, and ",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 780-422-7333\",\"details\":\"Pho"
+  },
+  {
+    "id": 1141,
+    "name": "Alberta Adult Health Benefit (AAHB)",
+    "cat": "Healthcare Access",
+    "desc": "Provincial program covering prescriptions, dental, optical, ambulance, and diabetic supplies for low-income adults not on income support. Income-tested. Apply through Alberta Supports.",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 780-427-6848\",\"details\":\"Pho"
+  },
+  {
+    "id": 1142,
+    "name": "Alberta Child Health Benefit (ACHB)",
+    "cat": "Healthcare Access",
+    "desc": "Provincial program covering dental, optical, prescriptions, and ambulance services for children in low-income families. Apply through Alberta Supports.",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 780-427-6848\",\"details\":\"Pho"
+  },
+  {
+    "id": 1143,
+    "name": "University of Alberta Dental Clinic",
+    "cat": "Healthcare Access",
+    "desc": "Reduced-cost dental services from supervised dental students including cleanings, fillings, extractions, and dentures at significant savings compared to private practice.",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 780-407-5550\",\"details\":\"Pho"
+  },
+  {
+    "id": 1144,
+    "name": "University of Calgary Dental Clinic",
+    "cat": "Healthcare Access",
+    "desc": "Reduced-cost dental care from supervised dental students. Quality treatment at lower costs for cleanings, restorations, and other dental procedures.",
+    "steps": "[{\"step\":1,\"action\":\"Call to book an appointment at 403-210-3810\",\"details\":\"Pho"
+  },
+  {
+    "id": 1145,
+    "name": "Sheldon M. Chumir Health Centre",
+    "cat": "Healthcare Access",
+    "desc": "24/7 urgent care centre in downtown Calgary offering addiction services, sexual health clinics, STI testing, community health programs, and walk-in medical care. No cost through Alberta Health.",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours\",\"details\":\"Visit during ope"
+  },
+  {
+    "id": 1179,
+    "name": "ACT Alberta (Action Coalition on Human Trafficking)",
+    "cat": "Human Trafficking Support",
+    "desc": "Provincial coalition coordinating anti-trafficking efforts. Provides service referrals for survivors, public education, training for professionals, and policy advocacy. Operates a helpline for traffic",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for confidential support\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1180,
+    "name": "CEASE — Sexual Exploitation Survivor Support & Counselling (Edmonton)",
+    "cat": "Human Trafficking Support",
+    "desc": "Works to end sexual exploitation and trafficking in Edmonton through outreach, exit support, trauma counselling, court support, and public awareness campaigns.",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for confidential support\",\"details\":\"Reach out by"
+  },
+  {
+    "id": 1182,
+    "name": "Canadian Human Trafficking Hotline",
+    "cat": "Human Trafficking Support",
+    "desc": "24/7 multilingual national hotline connecting Alberta callers to local services for human trafficking survivors. Operated by the Canadian Centre to End Human Trafficking.",
+    "steps": "[{\"step\":1,\"action\":\"Call the hotline at 1-833-900-1010\",\"details\":\"Available 24"
+  },
+  {
+    "id": 2511,
+    "name": "The Angel Project Canada",
+    "cat": "Healthcare Access",
+    "desc": "To gift funds or medical items to qualified donees. To assist qualified patients and families in the purchase of equipment; such as wheelchairs and medical equipment. For patients in long term care an",
+    "steps": "[{\"step\":1,\"action\":\"Contact The Angel Project Canada or visit theangelproject.c"
+  },
+  {
+    "id": 2513,
+    "name": "Signature Support Services Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Residential Housing for Developmentally Disabled Adults Vocational Training for Developmentally Disabled Adults Day Programs for Developmentally Disabled Adults Personal Support for Developmentally Di",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-532-8430 or visit signaturesupport.ca\",\"details\":\""
+  },
+  {
+    "id": 2518,
+    "name": "The Association of the Devon Christmas Elves",
+    "cat": "Food Banks & Meals",
+    "desc": "Provide food and gift voucers to needy families at christmas time. Provide financial support to local food banks throughout the year",
+    "steps": "[{\"step\":1,\"action\":\"Call 825-967-0025 or visit devonchristmaselves.com\",\"detail"
+  },
+  {
+    "id": 2520,
+    "name": "The Hinton Bridges Society for Mental Wellness",
+    "cat": "Mental Health & Counselling",
+    "desc": "Peer support social arts progranms social recreation programs mental health outreach and referral education community meal program",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-865-4464 or visit bridgeshinton.org\",\"details\":\"BR"
+  },
+  {
+    "id": 2522,
+    "name": "Kids Cancer Care Foundation of Alberta",
+    "cat": "Healthcare Access",
+    "desc": "Kids Cancer Care Foundation supports Alberta children diagnosed with cancer and their families through Camp Kindle (a summer and winter camp program), hospital-based recreation therapy, educational tu",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-216-9210 or visit kidscancercare.ab.ca\",\"details\":"
+  },
+  {
+    "id": 2527,
+    "name": "Vantage Community Services Society",
+    "cat": "Mental Health & Counselling",
+    "desc": "Outpatient clinical treatment services; street ties youth drop in centre and outreach; walk-in counselling; caregiver network foster care program; equinox group home; solstice house group home; focus ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-340-8995 or visit vantagecommunityservices.ca\",\"de"
+  },
+  {
+    "id": 2528,
+    "name": "Resourceful Futures Community Support Ltd",
+    "cat": "Disability & Autism Support",
+    "desc": "Provision of support services for adults with developmental disabilities who are eligible for funding from the Alberta government through their Persons with Developmental Disabilities Program. Service",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-531-8631 or visit resourcefulfutures.org\",\"details"
+  },
+  {
+    "id": 2529,
+    "name": "Ben Calf Robe Society",
+    "cat": "Indigenous Services",
+    "desc": "1. Foster care - home placement of children 2. In home support - support & guidance for children & families 3. Group homes - 24hr/day group care setting for children 4. Youth intervention 5. Early int",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-477-6648 or visit bcrsociety.ab.ca\",\"details\":\"Ind"
+  },
+  {
+    "id": 2530,
+    "name": "Fort Macleod Kids First Family Centre",
+    "cat": "Family & Parenting Support",
+    "desc": "Arts/recreation- subsidies; for low-income families; thrifty-kitchen (shopping/cooking skills); - triple-p-parenting (life-skills-for-struggling-parents); good-food-box (fresh-produce-for-exceptional-",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-787-1071 or visit fmkidsfirst.com\",\"details\":\"Hub "
+  },
+  {
+    "id": 2534,
+    "name": "Southern Alberta Community Living Association",
+    "cat": "Disability & Autism Support",
+    "desc": "We provide support to adults and children with disabilities; through community connectors (roommate companions) renting a home of living in their natural home providing weekend respite; having a host ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-329-1525 or visit sacla.ca\",\"details\":\"Customized "
+  },
+  {
+    "id": 2536,
+    "name": "Cerebral Palsy Association in Alberta",
+    "cat": "Disability & Autism Support",
+    "desc": "Cerebral Palsy Association in Alberta (CPAA) provides services to it's members/clients which include but are not limited to; recreation; leisure and therapeutic programs; support services; and funding",
+    "steps": "[{\"step\":1,\"action\":\"Become a CPAA member by downloading and completing the Memb"
+  },
+  {
+    "id": 2537,
+    "name": "Focus Society for Support Services",
+    "cat": "Disability & Autism Support",
+    "desc": "The charity is to promote choices; integration; education and opportunities within the community for persons with disabilities. The charity provides support to people with development disabilities to ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-853-4121 or visit focussociety.ca\",\"details\":\"Empo"
+  },
+  {
+    "id": 2539,
+    "name": "Canadian Adaptive Snowsports - Edmonton Zone Association",
+    "cat": "Disability & Autism Support",
+    "desc": "To provide instruction to individuals with disabilities to downhill ski and snowboard using various adaptive skiing or snowboarding techniques. 102 Instructors x 40 hours = 4080 Hours. Learn to Ski/ S",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-669-3856 or visit cadsedmonton.ca\",\"details\":\"Incl"
+  },
+  {
+    "id": 2540,
+    "name": "The Christmas Bureau of Edmonton",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Non-denominational and accessible to all edmontonians in need; the christmas bureau of Edmonton raises funds to provide a festive meal to Edmonton families; seniors and individuals. Approximately 45% ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-414-7695 or visit christmasbureau.ca\",\"details\":\"P"
+  },
+  {
+    "id": 2541,
+    "name": "Bridges Family Programs Association of Southeastern Alberta",
+    "cat": "Family & Parenting Support",
+    "desc": "1) Provide information; support & service co-ordination to families 2) Facilitate groups for families; i.e. Parenting; special occasion; support groups 3) Provide family resource network services 4) P",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-526-7473 or visit bridgesfamilyprograms.com\",\"deta"
+  },
+  {
+    "id": 2544,
+    "name": "Association of Communities Against Abuse",
+    "cat": "Domestic Violence Support",
+    "desc": "Counselling and support services for victims of sexual; physical; or emotional abuse. Presentations to school children and parents on topics related to abuse (ie. Bullies; relationships). Workshops an",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-742-3558 or visit acaahelps.ca\",\"details\":\"Dedicat"
+  },
+  {
+    "id": 2545,
+    "name": "Centre for Newcomers Society of Calgary",
+    "cat": "Newcomer & Settlement",
+    "desc": "Centre for Newcomers provides settlement services to new immigrants in Calgary including employment and career planning, job search assistance, skills training, language instruction (LINC), youth prog",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-569-3325 or visit centrefornewcomers.ca\",\"details\""
+  },
+  {
+    "id": 2546,
+    "name": "Strathcona Shelter Society Ltd.",
+    "cat": "Domestic Violence Support",
+    "desc": "1) Safe secure accomodations 2) Counselling services 3) Child support 4) Outreach programs 5) Support groups",
+    "steps": "[{\"step\":1,\"action\":\"Call 24/7 Crisis Line at 780-464-7233\",\"details\":\"Available"
+  },
+  {
+    "id": 2548,
+    "name": "Progressive Alternatives Society of Calgary",
+    "cat": "Disability & Autism Support",
+    "desc": "Progressive alternatives society provides employment counseling; employment support; community support and on-the-job training for adults with developmental disabilities in the Calgary region. They al",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-262-8515 or visit pasc-calgary.org\",\"details\":\"Con"
+  },
+  {
+    "id": 2549,
+    "name": "Spinal Cord Injury Association Alberta",
+    "cat": "Disability & Autism Support",
+    "desc": "Provide rehabilitation support and service coordination; community development; information services; active living; aboriginal services and peer support for persons with spinal cord injury or other p",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-6312 or visit sci-ab.ca\",\"details\":\"Supporting"
+  },
+  {
+    "id": 2551,
+    "name": "Connect Society - Deafness, Education, Advocacy & Family Ser",
+    "cat": "Disability & Autism Support",
+    "desc": "Connect Society provides services for individuals and families affected by hearing loss in Alberta. Programs include early intervention for young children, auditory-verbal therapy, speech-language pat",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-454-9581 or visit connectsociety.org\",\"details\":\"S"
+  },
+  {
+    "id": 2556,
+    "name": "Elder's Caring Shelter Society of Grande Prairie",
+    "cat": "Emergency Shelter",
+    "desc": "Our ongoing program and mandate is to sustain a fully accessible shelter that meets the needs of at risk and/or homeless men and women over the age of 55. We have 16 bedrooms and are liscensed for 18 ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-882-7242 for admission\",\"details\":\"Elder's Caring "
+  },
+  {
+    "id": 2557,
+    "name": "Schizophrenia Society of Alberta",
+    "cat": "Mental Health & Counselling",
+    "desc": "Peer Support Outreach; Community Education Program; Senior Peer Support; Family Support Program; Adult Peer Support; Peer Phone Support; Kentwood Place Supported Living Housing; Iris Court Supported L",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about programs — call 403-986-9440\",\"detai"
+  },
+  {
+    "id": 2566,
+    "name": "Southern Alberta Self-Help Association",
+    "cat": "Mental Health & Counselling",
+    "desc": "Supports for adults with severe &/or persistent mental illness to achieve individual success through a continuum of supportive living options & services.",
+    "steps": "[{\"step\":1,\"action\":\"Get referred through a mental health professional\",\"details"
+  },
+  {
+    "id": 2567,
+    "name": "Airdrie 1st Club",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Airdrie 1st Club provides hampers to qualifying residents during the Christmas season. Hampers include gift cards for purchase of groceries; toys for the children; and gift cards for teens and adults ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-660-1569 or email info@airdrie1st.com\",\"details\":\""
+  },
+  {
+    "id": 2571,
+    "name": "S.A.M. Ministries Inc.",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Conducting of evangelistic meetings and events; provision of food; shelter; and clothing; provision of humanitarian aid; education; care and feeding of children; development of self sufficiency skills",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-408-3268 or visit samministries.org\",\"details\":\"In"
+  },
+  {
+    "id": 2573,
+    "name": "The Chestermere Regional Food Bank Foundation",
+    "cat": "Food Banks & Meals",
+    "desc": "After the bell; Bread & Extras; Good Food Box; Community garden; Food hampers; Meals on Wheels; Snack Attack; Jacket Racket; Backpack program",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-273-0777 for food bank services\",\"details\":\"Cheste"
+  },
+  {
+    "id": 2578,
+    "name": "Mpc Foundation",
+    "cat": "Senior Services",
+    "desc": "MPC Foundation designs and delivers programs addressing social isolation among seniors through physical activities, social gatherings, and learning opportunities to enhance overall health and well-bei",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-480-7373 or visit mpcfdn.ca\",\"details\":\"Award-winn"
+  },
+  {
+    "id": 2582,
+    "name": "Y.E.S.S.: Youth Emergency Shelter Society of Edmonton",
+    "cat": "Emergency Shelter",
+    "desc": "Based in Edmonton; Youth Empowerment & Support Services (YESS) provides immediate and low-barrier 24/7 shelter; temporary housing; and individualized wraparound services to youth ages 15-24. We focus ",
+    "steps": "[{\"step\":1,\"action\":\"Call or walk in — open 24/7\",\"details\":\"Youth Empowerment a"
+  },
+  {
+    "id": 2587,
+    "name": "Discovery House Family Violence Prevention Society",
+    "cat": "Domestic Violence Support",
+    "desc": "Discovery House is a non-profit organization providing a continuum of care to families leaving domestic violence. We provide transitional housing; offering long-term; safe places for families to call ",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis or intake line at 403-670-0467\",\"details\":\""
+  },
+  {
+    "id": 2590,
+    "name": "Calgary Region Foster and Kinship Association",
+    "cat": "Family & Parenting Support",
+    "desc": "Calgary Region Foster and Kinship Association organizes youth development programs for children in foster care and kinship families including swimming, skating, arts, and recreational activities. Prov",
+    "steps": "[{\"step\":1,\"action\":\"Contact the association\",\"details\":\"Call 780-429-9923 or em"
+  },
+  {
+    "id": 2591,
+    "name": "Right At Home Housing Society",
+    "cat": "Affordable Housing",
+    "desc": "Provide long-term; safe; appropriate; decent; non-labeled housing and supportive property management for low-income people in Edmonton. Administration; fundraising and volunteer coordination for exist",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-250-1520 or email info@rightathomehousing.ca\",\"det"
+  },
+  {
+    "id": 2592,
+    "name": "Calgary Catholic Immigration Society",
+    "cat": "Newcomer & Settlement",
+    "desc": "Resettlement of newly arrived canadians and refugees; temporary housing and accommodation; health promotion and protection; family support program; volunteer support; sponsorship and immigration; comm",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-262-2006 or visit main office at 1111-11 Avenue SW"
+  },
+  {
+    "id": 2593,
+    "name": "Calgary DM St. Gabriel Eotc Church",
+    "cat": "Community & Social Connection",
+    "desc": "Provides sunday religious holiday and sabbatical services. Provides and undertake bible study program for families provides counsellings services and spiritual guidance yo the youth provides baptism; ",
+    "steps": "[{\"step\":1,\"action\":\"Contact the organization\",\"details\":\"Reach out by email at "
+  },
+  {
+    "id": 2595,
+    "name": "Transitions Rehabilitation Association of St. Albert and District",
+    "cat": "Family & Parenting Support",
+    "desc": "Early intervention program: support and information for parents/families with children from birth to 3.50 years. Family services program: family support and program information through in home and out",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-458-7371 or visit transitions-ab.org\",\"details\":\"D"
+  },
+  {
+    "id": 2598,
+    "name": "Youth Canada Association (Youcan!)/Association Des Jeunes Canadiens",
+    "cat": "Youth Services",
+    "desc": "YOUCAN Youth Services provides outreach and support for at-risk youth through the Relentless Youth Worker Project, fostering long-term mentoring relationships. Programs include the Alberta Aboriginal ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-444-3348 or visit youcan.ca\",\"details\":\"YOUCAN You"
+  },
+  {
+    "id": 2599,
+    "name": "Kids Kottage Foundation",
+    "cat": "Crisis Services",
+    "desc": "Kids Kottage Foundation operates a crisis nursery supporting caregivers who are isolated and struggling, providing temporary care for children newborn to ten years old. Also operates a 24/7 Parent Hel",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis line at 780-944-2888\",\"details\":\"Available "
+  }
+]

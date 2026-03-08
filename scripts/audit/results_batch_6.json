@@ -1,0 +1,702 @@
+[
+  {
+    "id": 646,
+    "name": "Autism Aspergers Friendship Society of Calgary, The",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 647,
+    "name": "Alberta AdaptAbilities Association — Disability Support & Advocacy (Edmonton)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 648,
+    "name": "The Good Samaritan Society — Senior Home Care & Long-Term Care",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 651,
+    "name": "Skills Society - Supporting the Citizenship of People with Disabilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 652,
+    "name": "Elves Special Needs Society — Programs for Individuals with Severe Disabilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 653,
+    "name": "Voice of Albertans with Disabilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 654,
+    "name": "YWCA Edmonton - Disability Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 655,
+    "name": "Bridge to Care - Disability Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 656,
+    "name": "NorQuest College - Accessibility Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 657,
+    "name": "Lethbridge Family Services - DaCapo Disability Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 658,
+    "name": "Family and Community Support Services of Viking / Beaver - Senior and Disability Support Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 659,
+    "name": "Government of Alberta - Ministry of Assisted Living and Social Services - Disability Services - Information and Referral",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 660,
+    "name": "AHS — Community Geriatric Mental Health (Calgary)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 661,
+    "name": "Seniors Mental Health and Addiction Response Team",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 662,
+    "name": "Rockyview General Hospital - Seniors Health Clinic",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 663,
+    "name": "Specialized Geriatric Services Neuropsychology Clinic",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 664,
+    "name": "AHS — Geriatric Mental Health Day Treatment (Calgary)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 665,
+    "name": "Geriatric Psychiatry Clinic (AHS Edmonton)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 667,
+    "name": "Sage Seniors Association - Life Enrichment",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 668,
+    "name": "Sage Seniors Association - Community Animation Program",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 669,
+    "name": "ASSIST Community Services Centre - Seniors Services",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 670,
+    "name": "Edmonton Seniors Centre - Arts and Leisure Programs",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 671,
+    "name": "Jewish Senior Citizen's Centre - Leisure Activities and Outings",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 672,
+    "name": "Central Lions Seniors Association - Programs and Activities for Seniors",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 673,
+    "name": "AHS — Seniors Mental Health Inpatient (Ponoka)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 675,
+    "name": "AHS — Seniors Mental Health Outreach Nurses (Central Alberta)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 677,
+    "name": "Calgary Alpha House Society - HELP Team",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 678,
+    "name": "CUPS - Addiction and Recovery Supports",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 679,
+    "name": "Calgary Alternative Support Services - Langin Place",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 681,
+    "name": "AHS Safeworks — Supervised Consumption & Connect Program (Calgary)",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 682,
+    "name": "AHS - Streetworks Needle Exchange",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 685,
+    "name": "City of Edmonton - Community Outreach Transit Team",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 686,
+    "name": "sakihta kikinaw — Indigenous Women's Transitional Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 687,
+    "name": "Student Mental Health & Wellness Supports",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 690,
+    "name": "Recovery Acres Society: Supportive Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 691,
+    "name": "Northreach Society - Needle Distribution and Disposal Program",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 692,
+    "name": "Turning Point Society of Central Alberta - NightReach",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 693,
+    "name": "Silver Linings Foundation — Eating Disorder Support & Recovery",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 694,
+    "name": "Calgary Narrative Collective — Counselling & Therapy Services",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 695,
+    "name": "AHS — Adult Eating Disorder Nutrition Counselling (Calgary)",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 696,
+    "name": "AHS — Eating Disorder Program (Edmonton)",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 697,
+    "name": "AHS — Adult Feeding & Swallowing Service (Edmonton)",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 698,
+    "name": "YWCA Edmonton - Individual Counselling",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 700,
+    "name": "Bowline Health — Virtual Addiction Recovery Coaching",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 701,
+    "name": "Rocky Mountain House Health Centre - Addiction Counselling (AHS Central)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 702,
+    "name": "Alberta Gaming, Liquor, and Cannabis - Voluntary Gambling Self-Exclusion Program",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 703,
+    "name": "Thorpe Recovery Centre - Residential Addiction Treatment",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 704,
+    "name": "Gamblers Anonymous Support Groups",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 705,
+    "name": "Alcoholics Anonymous in Alberta",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 706,
+    "name": "Grande Prairie John Howard Society - Drug Treatment Court Services",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 708,
+    "name": "AHS - Calgary Sexual Assault Response Team (CSART)",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 709,
+    "name": "Sexual Violence Survivors Legal Advice Program",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 710,
+    "name": "Sagesse — Domestic Violence Peer Support",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 711,
+    "name": "PCHS Calgary - Counselling and Resource Navigation",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 712,
+    "name": "Sexual Assault Centre of Edmonton - Sexual Assault Group Counselling",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 713,
+    "name": "AHS — Sexual Assault Response Team (Edmonton)",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 714,
+    "name": "YWCA Edmonton - Towards Healing - Group Counselling",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 715,
+    "name": "Cornerstone Counselling - Counselling and Therapy Services",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 716,
+    "name": "YWCA Banff - Sexual Violence Response Program",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 717,
+    "name": "Canadian Mental Health Association - Calgary Region - Peer Support Services",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 718,
+    "name": "PATH - Peer Support After a Substance Loss",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 719,
+    "name": "Alberta Alliance Who Educates and Advocates Responsibly - Addiction Peer Support Group",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 720,
+    "name": "Peer Wellness Services — Substance Use Support",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 721,
+    "name": "Nicotine Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 723,
+    "name": "SMART Recovery Association",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 724,
+    "name": "Adult Children of Alcoholics",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 725,
+    "name": "Families for Addiction Recovery",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 726,
+    "name": "Hoarding Disorder Foundation of Alberta",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 727,
+    "name": "Students' Association of Mount Royal University - Peer Support Centre",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 728,
+    "name": "Kidney Foundation of Canada, the - Kidney Community Programs",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 729,
+    "name": "Canadian Centre for Men and Families of Alberta - Men's Peer Support Program",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 730,
+    "name": "AHS — Assertive Outreach, Addiction & Mental Health (Central Alberta)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 731,
+    "name": "AHS — Young Adult Walk-In Clinic (Edmonton)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 732,
+    "name": "Metis Child and Family Services Society Edmonton",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 733,
+    "name": "City of Edmonton — Extreme Weather Response",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 734,
+    "name": "Stepping Stones Crisis Society - Community Support (Outreach) Program",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 735,
+    "name": "AHS — ER Outreach Team, Mental Health (Calgary)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 736,
+    "name": "REACH Edmonton Council for Safe Communities - 24/7 Edmonton Crisis Diversion Team",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 737,
+    "name": "YOUCAN Youth Services - Relentless Youth Outreach Worker Project",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 738,
+    "name": "Central Alberta Pregnancy Care Centre — The Aerie Maternity Home (Red Deer)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 739,
+    "name": "Golden Circle Senior Resource Centre",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 741,
+    "name": "AHS — Police & Crisis Team (Grande Prairie)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 742,
+    "name": "Nistawoyou Association Friendship Centre - Outreach Team",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 745,
+    "name": "AHS - Addiction and Mental Health Day Hospital",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 746,
+    "name": "Thorpe Recovery Centre - Medically Supported Detox",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 749,
+    "name": "Oxford House Foundation of Canada - Pre-treatment Recovery Housing Program",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 750,
+    "name": "Safe Haven Foundation of Canada - Haven's Way",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 751,
+    "name": "Canadian Centre for Men and Families of Alberta - Interim Housing Program",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 752,
+    "name": "Alberta Seventh Step Society - Community Residential Facility",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 753,
+    "name": "Elizabeth Fry Society of Calgary - Dana's House Transitional Housing Support",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 754,
+    "name": "GEF Seniors Housing - Subsidized Apartment Program",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 755,
+    "name": "Bissell Centre — Integrated Housing, Financial & Community Support",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 756,
+    "name": "Housing - Life Opportunities for Transition",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 757,
+    "name": "Cunningham Place — Youth Transitional Housing (Edmonton)",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 758,
+    "name": "The Salvation Army - Transitional Housing Program",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 759,
+    "name": "Pimatisiwin — Supportive Housing Program",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 761,
+    "name": "YWCA Banff - Emergency Shelter and Transitional Housing",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 762,
+    "name": "Calgary Legal Guidance - Social Benefits Advocacy Program",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 763,
+    "name": "Calgary Legal Guidance - Legal Advice Clinics",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 764,
+    "name": "Legal Aid Alberta - Duty Counsel Services",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  }
+]

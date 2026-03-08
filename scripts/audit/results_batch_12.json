@@ -1,0 +1,702 @@
+[
+  {
+    "id": 3175,
+    "name": "Taproot - People with Diverse Abilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3176,
+    "name": "Unlimited Potential - Group Care",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3177,
+    "name": "Unlimited Potential - Mental Health Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3178,
+    "name": "Unlimited Potential - Foster Care",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3179,
+    "name": "Unlimited Potential - Indigenous Resources",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3180,
+    "name": "Inglewood Opportunity Hub - Youth Culinary Arts Program (YCAP)",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3181,
+    "name": "Inglewood Opportunity Hub - New Horizon Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3183,
+    "name": "E4C - Women's Emergency Accommodation Centre",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 3184,
+    "name": "E4C - Supportive Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3185,
+    "name": "E4C - Hallway Cafe Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3186,
+    "name": "E4C - Early Learning Program",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3187,
+    "name": "E4C - Make Tax Time Pay",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3188,
+    "name": "Elizabeth Fry Society of Calgary - SAGE Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3189,
+    "name": "Elizabeth Fry Society of Calgary - Indigenous Cultural Supports",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3190,
+    "name": "Elizabeth Fry Society of Calgary - Soksipaitapiisin Restorative Justice",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3191,
+    "name": "Elizabeth Fry Society of Calgary - Volunteer Court Program",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3192,
+    "name": "Elizabeth Fry Society of Calgary - Youth and Gang Mentorship",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3193,
+    "name": "CASA Mental Health - Core Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3194,
+    "name": "CASA Mental Health - FASD Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3195,
+    "name": "CASA Mental Health - Trauma Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3196,
+    "name": "CASA Mental Health - Family Therapy Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3197,
+    "name": "CASA Mental Health - Indigenous Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3198,
+    "name": "CASA Mental Health - Children's Day Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3199,
+    "name": "CASA Mental Health - CASA House",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 3200,
+    "name": "CASA Mental Health - Adolescent Day Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3201,
+    "name": "CASA Mental Health - Preschool Day Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3202,
+    "name": "CASA Mental Health - CASA Classrooms",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3203,
+    "name": "Calgary John Howard Society - Reintegration Services",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3204,
+    "name": "Calgary John Howard Society - Adult Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3205,
+    "name": "Calgary John Howard Society - Employment and Education",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3206,
+    "name": "Calgary John Howard Society - FASD Support Program",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3207,
+    "name": "Calgary John Howard Society - Prison Visitation and After-Prison Outreach",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3208,
+    "name": "Calgary John Howard Society - Mentorship for Indigenous Youth",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3209,
+    "name": "Calgary John Howard Society - Indigenous Youth Outreach, Advocacy and Support",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3210,
+    "name": "Calgary John Howard Society - Immigrant and BIPOC Youth Outreach Support",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 3211,
+    "name": "Calgary John Howard Society - Youth Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3212,
+    "name": "Calgary John Howard Society - Youth Reintegration",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3213,
+    "name": "Calgary John Howard Society - Restorative Solutions to Conflict",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3214,
+    "name": "Kindred - Community Connect YYC",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3215,
+    "name": "Kindred - Brief Intervention Caregiver Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3216,
+    "name": "Kindred - Healthy Babies Network",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3217,
+    "name": "Kindred - Parent-Infant Relationship Team",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3218,
+    "name": "Kindred - Prenatal Outreach Support Team (POST)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3219,
+    "name": "Kindred - Louise Dean Centre",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3220,
+    "name": "Kindred - Parent Child Learning Centre",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3221,
+    "name": "Catholic Social Services - Supports for Children & Adults with Disabilities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3222,
+    "name": "Catholic Social Services - Domestic Abuse Shelters & Support",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3223,
+    "name": "Catholic Social Services - Elder/Senior Citizen Abuse Support",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3224,
+    "name": "Catholic Social Services - Senior Connections",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3225,
+    "name": "Catholic Social Services - Family Capacity Building",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3226,
+    "name": "Catholic Social Services - Foster Care Programs",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3227,
+    "name": "Catholic Social Services - Government Referral",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3228,
+    "name": "Catholic Social Services - Immigrant and Refugee Support",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 3229,
+    "name": "Catholic Social Services - Parole Supports",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3230,
+    "name": "Catholic Social Services - Pregnancy Counselling and Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3231,
+    "name": "Catholic Social Services - Family Intervention",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3232,
+    "name": "Catholic Social Services - Family Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3233,
+    "name": "Catholic Social Services - Supportive Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3234,
+    "name": "Catholic Social Services - Welcome Home",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3235,
+    "name": "Catholic Social Services - Morning Star",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3236,
+    "name": "Catholic Social Services - Spiritual Care",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3237,
+    "name": "Catholic Social Services - Mercy Counselling Edmonton",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3238,
+    "name": "Family Services of Central Alberta - Basic English and Play",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3239,
+    "name": "Family Services of Central Alberta - Come Play!",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3240,
+    "name": "Family Services of Central Alberta - Fun With Friends",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3241,
+    "name": "Family Services of Central Alberta - Pop In & Play",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3242,
+    "name": "Family Services of Central Alberta - Building Incredible Babies (BIB)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3243,
+    "name": "Family Services of Central Alberta - Healthy Families",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3244,
+    "name": "Family Services of Central Alberta - Infant Preschool Wellness Program (IPWP)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3245,
+    "name": "Family Services of Central Alberta - Parent and Child Assistance Program (PCAP)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3246,
+    "name": "Family Services of Central Alberta - Active Parenting",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3247,
+    "name": "Family Services of Central Alberta - CONQUER your Anxiety & Worries for Tweens",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3248,
+    "name": "Family Services of Central Alberta - Mindful Connections",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3249,
+    "name": "Family Services of Central Alberta - Mothers Recovery Support Group",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3250,
+    "name": "Family Services of Central Alberta - Prenatal for Teens/Young Women",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3251,
+    "name": "Family Services of Central Alberta - Rainbows SunBeams Group",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3252,
+    "name": "Family Services of Central Alberta - Taming Worry Dragons",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3253,
+    "name": "Family Services of Central Alberta - Adult Day Support Program (ADSP)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3254,
+    "name": "Family Services of Central Alberta - Home Support",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3255,
+    "name": "Family Services of Central Alberta - Opening Minds Through Art (OMA)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3256,
+    "name": "Family Services of Central Alberta - Peer Power",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3257,
+    "name": "Family Services of Central Alberta - Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3258,
+    "name": "Family Services of Central Alberta - Financial Literacy Resources",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3259,
+    "name": "Family Services of Central Alberta - Road Home",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3260,
+    "name": "Trellis Society - Preschool",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3261,
+    "name": "Trellis Society - Kindergarten",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3262,
+    "name": "Trellis Society - Children's Clubs",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3263,
+    "name": "Trellis Society - Day Camps",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3264,
+    "name": "Trellis Society - Youth Programming",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3265,
+    "name": "Trellis Society - Iiyika'kimaat Program",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3266,
+    "name": "Trellis Society - Employment & Education Support",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3267,
+    "name": "Trellis Society - Settlement Services",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 3268,
+    "name": "Trellis Society - Home Fire",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3269,
+    "name": "Trellis Society - Home Stay Program",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3270,
+    "name": "Trellis Society - Parenting Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3271,
+    "name": "Trellis Society - Foster Care",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3272,
+    "name": "Trellis Society - Family Resource Network",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3273,
+    "name": "Trellis Society - Therapy Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3274,
+    "name": "Trellis Society - 1000 Voices Hub",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3275,
+    "name": "Trellis Society - Free Income Tax Clinics",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  }
+]

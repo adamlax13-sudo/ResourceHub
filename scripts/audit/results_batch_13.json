@@ -1,0 +1,340 @@
+[
+  {
+    "id": 3276,
+    "name": "Trellis Society - Community Development",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3277,
+    "name": "Autism Edmonton - Occasio",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3278,
+    "name": "Autism Edmonton - The League",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3279,
+    "name": "Autism Edmonton - Senior Supports",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3280,
+    "name": "Autism Edmonton - Peer Discussion Groups",
+    "current": "Recovery & Peer Support",
+    "proposed": "Disability & Autism Support",
+    "action": "CHANGE",
+    "reason": "Peer groups specifically for autistic adults/families, not addiction recovery peer support"
+  },
+  {
+    "id": 3281,
+    "name": "Autism Edmonton - Community Advocacy Support",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3282,
+    "name": "Autism Edmonton - The Pantry Food Support",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3283,
+    "name": "Autism Edmonton - Support & Resource Navigation",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3284,
+    "name": "Autism Edmonton - Community Connections",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3285,
+    "name": "Autism Edmonton - Autism Housing Network of Alberta (AHNA)",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3286,
+    "name": "Autism Edmonton - E3 Employment Supports",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3287,
+    "name": "Aventa Centre - Pregnancy Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 3288,
+    "name": "Aventa Centre - FASD Transitions Program",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3289,
+    "name": "Aventa Centre - Journeys Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 3290,
+    "name": "Aventa Centre - Family and Friends Program",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3291,
+    "name": "Aventa Centre - Continuing Care / Alumnae Services",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3292,
+    "name": "CNIB - Guide Dogs",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3293,
+    "name": "CNIB - Mobile Hub",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3294,
+    "name": "CNIB - Live (Daily Living Skills)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3295,
+    "name": "CNIB - Tech (Assistive Technology)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3296,
+    "name": "CNIB - Learn (Education & Literacy)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3297,
+    "name": "CNIB - Play (Recreation & Wellness)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3298,
+    "name": "CNIB - Work (Career Development)",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3299,
+    "name": "Rise Calgary - Basic Needs Supports",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3300,
+    "name": "Rise Calgary - Good Food Box",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3301,
+    "name": "Rise Calgary - Taxes & Benefits Support",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3302,
+    "name": "Rise Calgary - Earn & Learn Employment Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3303,
+    "name": "Rise Calgary - Financial Coaching",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3304,
+    "name": "Rise Calgary - Mobility Coaching",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 3305,
+    "name": "Rise Calgary - Insight Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3306,
+    "name": "SCOPE Society - Children & Youth Services (Ages 0-18)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3307,
+    "name": "SCOPE Society - Adult Services (Ages 18+)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3308,
+    "name": "SCOPE Society - Senior Services (Ages 45+)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3309,
+    "name": "SCOPE Society - Community Involvement & Development",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3310,
+    "name": "Aboriginal Friendship Centre of Calgary - Community Outreach & Cultural Reconnection",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3311,
+    "name": "Aboriginal Friendship Centre of Calgary - Housing Services",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3312,
+    "name": "Aboriginal Friendship Centre of Calgary - Community Member Services",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3313,
+    "name": "Aboriginal Friendship Centre of Calgary - Elders Services & Kanakaa'tsinom Drop-in",
+    "current": "Senior Services",
+    "proposed": "Indigenous Services",
+    "action": "CHANGE",
+    "reason": "Culturally-specific Indigenous Elder services with ceremonies and traditional supports"
+  },
+  {
+    "id": 3314,
+    "name": "The Mustard Seed - Foothills Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 3315,
+    "name": "The Mustard Seed - Women's Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 3316,
+    "name": "The Mustard Seed - Community Impact Centre Downtown",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3317,
+    "name": "The Mustard Seed - Community Impact Centre Marlborough Park",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3318,
+    "name": "The Mustard Seed - Wellness Centre",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 3319,
+    "name": "The Mustard Seed - 1010 Centre (Permanent Supportive Housing)",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3320,
+    "name": "Unison Alberta - Kerby Centre Programs & Services",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3321,
+    "name": "Unison Alberta - Kerby Centre Food Services",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3322,
+    "name": "Unison Alberta - Kerby Centre Information & Referral",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3323,
+    "name": "Unison Alberta - Veiner Centre (Medicine Hat)",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  }
+]

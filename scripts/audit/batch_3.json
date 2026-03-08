@@ -1,0 +1,1598 @@
+[
+  {
+    "id": 305,
+    "name": "Clear Hills Youth Treatment Centre — Indigenous Youth Residential Recovery",
+    "cat": "Residential Treatment",
+    "desc": "Clear Hills Youth Treatment Centre (CHYTC) helps young people heal and change their lives. The program gives full support and guidance to those facing challenges and wanting to take control of their future. CHYTC is a caring and encouraging environme",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-771-0112 or complete intake form online at clearhills.ca\",\"details\":\"Clear Hills Youth Tre"
+  },
+  {
+    "id": 307,
+    "name": "Eating Disorder Support Network of Alberta",
+    "cat": "Eating Disorder Services",
+    "desc": "The Eating Disorder Support Network of Alberta (EDSNA) offers professionally-facilitated support groups for individuals over the age of 18 affected by eating disorders and their caregivers. They provide resources and lists of healthcare providers to ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-729-3376 or email info@edsna.ca\",\"details\":\"EDSNA — no one should face an eating disorder "
+  },
+  {
+    "id": 308,
+    "name": "AHS Access Mental Health",
+    "cat": "Mental Health & Counselling",
+    "desc": "AHS Access Mental Health provides support for individuals seeking non-urgent advice, information, and appointments related to mental health and addiction concerns. The service connects individuals with skilled health professionals who can assist in f",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-943-1500 (Calgary) or 780-424-2424 (Edmonton)\",\"details\":\"AHS Access Mental Health — centr"
+  },
+  {
+    "id": 310,
+    "name": "EHN Sandstone — Eating Disorder Treatment Centre (Calgary)",
+    "cat": "Residential Treatment",
+    "desc": "EHN Sandstone Recovery Centre provides dedicated treatment for eating disorders in adolescents and young adults, offering a safe environment for recovery. With a multidisciplinary team, they deliver individualized care plans, including therapy, nutri",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from an Alberta physician or nurse practitioner\",\"details\":\"EHN Sandstone Recover"
+  },
+  {
+    "id": 311,
+    "name": "Alberta Gamblers Anonymous",
+    "cat": "Gambling Support",
+    "desc": "Alberta Gamblers Anonymous is a nonprofit, self-supporting fellowship of individuals recovering from compulsive gambling. They meet regularly to help each other recover from the disease of compulsive gambling, guided by the 12 Steps of Recovery and t",
+    "steps": "[{\"step\": 1, \"action\": \"Call the local telephone hotlines\", \"details\": \"available 24 hours a day, 7 days a week\"}, {\"ste"
+  },
+  {
+    "id": 312,
+    "name": "AHS QuitCore",
+    "cat": "Addiction Treatment",
+    "desc": "The QuitCore program, offered by Alberta Health Services (AHS), is a free group support initiative designed to assist Albertans aged 18 and over in quitting tobacco use. The program comprises six 90-minute sessions, guided by trained facilitators, wh",
+    "steps": "[{\"step\": 1, \"action\": \"Call the AlbertaQuits Helpline\", \"details\": \"Call 1-866-710-7848\"}, {\"step\": 2, \"action\": \"A cou"
+  },
+  {
+    "id": 313,
+    "name": "AHS - Lander Treatment Centre",
+    "cat": "Residential Treatment",
+    "desc": "Lander Treatment Centre is a 48-bed, co-ed residential facility designed for addiction treatment for adults. It offers an intensive residential addiction treatment program for individuals experiencing issues related to alcohol, other drug use, tobacc",
+    "steps": "[{\"step\":1,\"action\":\"Complete an application form\",\"details\":\"AHS — Lander Treatment Centre residential addiction treatm"
+  },
+  {
+    "id": 315,
+    "name": "Bissell Centre FASD Services",
+    "cat": "Disability & Autism Support",
+    "desc": "The Bissell Centre offers the 'Fetal Alcohol Spectrum of Services - Parent-Child Assistance Advocate' program, which provides support for women struggling with addictions who want a healthy pregnancy and child and are at risk of delivering a child wi",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-423-2285 ext. 157 for FASD services\",\"details\":\"Bissell Centre — 10527 96 St NW, Edmonton."
+  },
+  {
+    "id": 319,
+    "name": "Digital Overdose Response System (DORS)",
+    "cat": "Harm Reduction",
+    "desc": "The Digital Overdose Response System (DORS) is an initiative provided by the Government of Alberta's Ministry of Primary and Preventative Health Services. This service offers a mobile application designed to assist individuals in managing and respond",
+    "steps": "[{\"step\": 1, \"action\": \"Download the app from Google Play or the Apple Store on your phone\", \"details\": \"Add only your c"
+  },
+  {
+    "id": 321,
+    "name": "AHS - Virtual Opioid Dependency Program",
+    "cat": "Harm Reduction",
+    "desc": "The Virtual Opioid Dependency Program (VODP) is a service provided by Alberta Health Services (AHS) that offers initiation and maintenance of Opioid Agonist Treatment (OAT) medications to individuals with opioid use disorder. The program aims to help",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-844-383-7688 or visit vodp.ca\",\"details\":\"AHS — Virtual Opioid Dependency Program. Province-"
+  },
+  {
+    "id": 323,
+    "name": "Alpha House Needle Response & Ambassador Teams",
+    "cat": "Harm Reduction",
+    "desc": "Alpha House Society provides safe and caring environments for individuals affected by substance dependencies. Their outreach programs, including the Needle Response Team and Ambassador Teams, aim to support individuals dealing with homelessness and a",
+    "steps": "[{\"step\": 1, \"action\": \"Call 403-234-7388 Ext #2 to inquire about bed space or arrive at 203 15 Ave SE\", \"details\": \"Ind"
+  },
+  {
+    "id": 324,
+    "name": "Harm Reduction at the University of Calgary Recovery Community",
+    "cat": "Harm Reduction",
+    "desc": "The UCalgary Recovery Community (UCRC) offers a range of services, including harm reduction services like naloxone kits and drug test strips, along with peer support meetings, educational workshops, community-building activities, and a dedicated subs",
+    "steps": "[{\"step\": 1, \"action\": \"Drop in or make appointment at UCRC location\", \"details\": \"The service operates on a drop-in bas"
+  },
+  {
+    "id": 326,
+    "name": "Recovery Alberta",
+    "cat": "Addiction Treatment",
+    "desc": "Recovery Alberta is dedicated to providing comprehensive and accessible recovery-oriented mental health and addiction services to all Albertans. They offer resources and support for individuals dealing with mental health issues and substance use conc",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Addiction & Mental Health\", \"details\": \"1-888-594-0211 (Monday to Friday 8:30 a.m. t"
+  },
+  {
+    "id": 327,
+    "name": "Recovery Access Alberta",
+    "cat": "Addiction Treatment",
+    "desc": "Recovery Access Alberta supports Albertans by offering a centralized access point to a province-wide addiction treatment matching tool. It helps individuals find addiction, detoxification, harm reduction, peer support, and supportive recovery housing",
+    "steps": "[{\"step\":1,\"action\":\"Visit recoveryaccessalberta.ca and search for services\",\"details\":\"Centralized access point to prov"
+  },
+  {
+    "id": 328,
+    "name": "Find a Doctor Alberta",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Find a Doctor helps residents connect with primary care clinics, family doctors, and nurse practitioners in their area. Users can search for available healthcare providers by entering their address, postal code, or community. This service is ",
+    "steps": "[{\"step\":1,\"action\":\"Visit albertafindadoctor.ca or call Health Link at 811\",\"details\":\"Province-wide online tool to fin"
+  },
+  {
+    "id": 329,
+    "name": "Service Canada Calgary",
+    "cat": "Basic Needs & Material Aid",
+    "desc": "Service Canada provides Canadians with a single point of access to a wide range of government services and benefits, including employment insurance, pensions, and social insurance. The Service Canada Centre at 5401 Temple Drive NE, Suite 116, Calgary",
+    "steps": "[{\"step\":1,\"action\":\"Visit 5401 Temple Dr NE Suite 116, or call 1-800-622-6232\",\"details\":\"Service Canada Calgary — fede"
+  },
+  {
+    "id": 331,
+    "name": "CMHA BounceBack — Mental Health Self-Help Skills Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "BounceBack is a program offered by the Canadian Mental Health Association that provides support for individuals experiencing mental health challenges. It focuses on helping people manage their mental health through skills development and self-help st",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-877-303-2642 for BounceBack\",\"details\":\"Free, guided self-help program from CMHA for managin"
+  },
+  {
+    "id": 332,
+    "name": "Counselling Alberta — Postgraduate Counsellor Training Program",
+    "cat": "Domestic Violence Support",
+    "desc": "The Postgraduate Counsellor Residency Training Program provides graduates with degrees in psychology, social work or marriage and family therapy a focused, 12-month experience to develop their counselling skills and become confident practitioners, re",
+    "steps": "[{\"step\": 1, \"action\": \"Register for counselling\", \"details\": \"Register online 24 hours a day, register by phone at 833."
+  },
+  {
+    "id": 333,
+    "name": "Alberta.ca Residential Treatment Lookup",
+    "cat": "Residential Treatment",
+    "desc": "The Alberta.ca Residential Treatment Lookup provides a comprehensive list of licensed residential addiction treatment service providers in Alberta. These facilities are required to meet regulatory standards and are licensed under the Mental Health Se",
+    "steps": "[{\"step\":1,\"action\":\"Visit alberta.ca and search for residential addiction treatment service providers\",\"details\":\"Alber"
+  },
+  {
+    "id": 335,
+    "name": "Banff Community Health Centre - Mental Health (AHS Calgary)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services – Calgary Zone offers mental health counselling services at the Banff Community Health Centre. These services are designed for individuals across the lifespan and include assessment, treatment, follow-up, information provision",
+    "steps": "[{\"step\":1,\"action\":\"Call Access Mental Health at 403-943-1500 or toll-free 1-844-943-1500 — no referral needed\",\"detail"
+  },
+  {
+    "id": 336,
+    "name": "Portail de l'Immigrant Association - Counselling Service",
+    "cat": "Mental Health & Counselling",
+    "desc": "Portail De L'Immigrant Association (PIA) offers mental health counseling services, including individual, couple, and family counseling, as well as group activities for mental well-being and support. These services are provided by a registered social ",
+    "steps": "[{\"step\":1,\"action\":\"Contact PIA Calgary or visit pia-calgary.ca\",\"details\":\"Services primarily in French for francophon"
+  },
+  {
+    "id": 337,
+    "name": "carya — Older Adults Counselling (65+)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Carya offers a comprehensive Older Adults Counselling program designed to support individuals aged 65 and above in managing life's challenges. The program provides brief, non-crisis counselling sessions tailored to the unique needs of older adults, a",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 205-5244 or email info@caryacalgary.ca\",\"details\":\"Carya offers a comprehensive Older Ad"
+  },
+  {
+    "id": 338,
+    "name": "Calgary Alternative Support Services - Creative Community Living Activities",
+    "cat": "Disability & Autism Support",
+    "desc": "Calgary Alternative Support Services (CASS) offers the Creative Community Living Activities program designed to support individuals with disabilities or barriers. This program promotes greater overall well-being through housing, employment, life skil",
+    "steps": "[{\"step\":1,\"action\":\"Fill out and submit a referral form\",\"details\":\"Contact CASS at (403) 264-1377. Creative Community "
+  },
+  {
+    "id": 339,
+    "name": "Elements Calgary Mental Health Centre - Support and Recreation Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Elements Calgary Mental Health Centre offers Support & Recreation Services designed to assist adults with mental health challenges. These services include early intervention, coping strategy development, and community living support. Programs include",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-266-8711 for intake information\",\"details\":\"Elements Calgary Mental Health Centre — Care. "
+  },
+  {
+    "id": 340,
+    "name": "Kindred - Rapid Access Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Kindred's Rapid Access Counselling service offers accessible and affordable single-session, goal-based, and solution-focused counselling. Sessions are available both in-person at their Calgary office and virtually (phone or video call). Counselling i",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kindred or book a Rapid Access Counselling session\",\"details\":\"75-minute single-session cou"
+  },
+  {
+    "id": 341,
+    "name": "Calgary Catholic Immigration Society - Centre for Refugee Resilience",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Centre for Refugee Resilience, a program of the Calgary Catholic Immigration Society (CCIS), offers support to immigrants, refugees, and their families who have experienced trauma. Services include culturally appropriate trauma-focused therapy, p",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer by calling 403-290-5466, or receive referral from a supporting agency\",\"details\":\"Calgar"
+  },
+  {
+    "id": 342,
+    "name": "Your Counselling - Group Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Your Counselling Ltd. offers group counselling services for various mental health concerns, emphasizing the importance of the therapeutic relationship to assist clients in achieving their goals. Their therapists utilize client-centered approaches, in",
+    "steps": "[{\"step\":1,\"action\":\"Visit yourcounselling.ca or contact the downtown Calgary office\",\"details\":\"Professional counsellin"
+  },
+  {
+    "id": 343,
+    "name": "AHS — Adult Recovery Support Services (Edmonton)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Recovery Supports Services, Adult program, offered by Alberta Health Services in the Edmonton Zone, provides individual support to adults aged 25 to 65 with recovery goals in education, employment, fitness, and/or re",
+    "steps": "[{\"step\":1,\"action\":\"Call Access 24/7 at 780-424-2424 for intake and referral\",\"details\":\"AHS Edmonton Zone — Recovery S"
+  },
+  {
+    "id": 344,
+    "name": "Action for Healthy Communities — Free Mental Health & Newcomer Counselling (Edmonton)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Action for Healthy Communities (AHC) is a non-profit organization in Edmonton that provides free and confidential mental health support services. They offer in-person therapy, video/phone therapy, well-being coaching, and physical activities such as ",
+    "steps": "[{\"step\":1,\"action\":\"Contact Action for Healthy Communities (AHC) or visit a4hc.ca\",\"details\":\"Community-based agency se"
+  },
+  {
+    "id": 346,
+    "name": "Edmonton Newcomer Centre",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Edmonton Newcomer Centre provides therapeutic and counselling services for newcomers, assisting them in navigating and settling into Canadian life. The organization also offers employment, community, and language programs to support immigrants in",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Edmonton Newcomer Centre or go to newcomercentre.com\",\"details\":\"The place for newcomers "
+  },
+  {
+    "id": 348,
+    "name": "Provincial Family Violence Treatment Program - Edmonton (AHS)",
+    "cat": "Domestic Violence Support",
+    "desc": "The Provincial Family Violence Treatment Program is part of Alberta Health Services' efforts to address family violence, promote healthy relationships, and enhance community safety. It offers treatment programs for individuals affected by family viol",
+    "steps": "[{\"step\": 1, \"action\": \"Obtain a signed PMHDP Referral Form from the Crown Prosecutor at your court hearing\", \"details\":"
+  },
+  {
+    "id": 349,
+    "name": "Edmonton General Continuing Care Centre - Psychosocial Oncology (AHS)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Psychosocial Oncology program at the Edmonton General Continuing Care Centre offers support to cancer patients and their families, assisting them in coping with the emotional, psychological, social, and spiritual challenges that often arise durin",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer by calling 780-643-4303 or receive referral from doctor/nurse\",\"details\":\"AHS — Edmonton"
+  },
+  {
+    "id": 351,
+    "name": "Fyrefly Institute for Gender and Sexual Diversity",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Fyrefly Institute for Gender and Sexual Diversity is a non-profit organization that provides programs and services to support the 2SLGBTQ+ community and its allies. It offers various initiatives including education programs, research, policy deve",
+    "steps": "[{\"step\":1,\"action\":\"Contact the institute at 780-492-4268\",\"details\":\"Fyrefly Institute for Gender and Sexual Diversity"
+  },
+  {
+    "id": 352,
+    "name": "Edmonton Epilepsy Association",
+    "cat": "Disability & Autism Support",
+    "desc": "The Edmonton Epilepsy Association provides support, education, and advocacy for individuals living with epilepsy and their families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Edmonton Epilepsy Association or visit edmontonepilepsy.org\",\"details\":\"Serving approxi"
+  },
+  {
+    "id": 353,
+    "name": "Northern Alberta Institute of Technology — Student Mental Health Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Northern Alberta Institute of Technology (NAIT) offers mental health counseling services to its students. These services are available at no cost to current students and include MyWellness, which provides access to mental health and wellness info",
+    "steps": "[{\"step\": 1, \"action\": \"Students are automatically enrolled and assessed fees via myNAIT portal\", \"details\": \"Health fee"
+  },
+  {
+    "id": 354,
+    "name": "The Family Centre of Northern Alberta — Counselling & Therapy Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Family Centre provides a safe space for individuals of all ages and backgrounds to receive counselling and therapy services. Their experienced mental health therapists help clients navigate various issues, improve mental health and wellbeing, and",
+    "steps": "[{\"step\":1,\"action\":\"Contact The Family Centre or visit familycentre.org\",\"details\":\"Serves 20,000+ people per year in E"
+  },
+  {
+    "id": 356,
+    "name": "Medicine Hat College - Mental Health and Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Mental Health and Counselling services at Medicine Hat College offer individual mental health counselling. These services are designed to provide confidential support to students facing mental health challenges.",
+    "steps": "[{\"step\": 1, \"action\": \"Register through the ClockWork Online Student Services web portal by completing the online intak"
+  },
+  {
+    "id": 358,
+    "name": "AHS — Drop-In Addiction & Mental Health Counselling (Wainwright)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health Drop-in Counselling service, provided by Alberta Health Services' Central Zone, offers support for individuals dealing with addiction and/or mental health concerns. This service allows individuals to attend a single co",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during walk-in hours (Monday and Thursday 1:00-3:00 PM)\",\"details\":\"AHS Central Zone — Addi"
+  },
+  {
+    "id": 359,
+    "name": "Sacred Heart Community Health Centre - Addiction and Mental Health",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Sacred Heart Community Health Centre offers a range of healthcare services, including Addiction and Mental Health support for both adults and youth. This facility provides comprehensive care aimed at addressing various mental health and addiction",
+    "steps": "[{\"step\":1,\"action\":\"Call Centralized Intake at 1-888-594-0211 for mental health services\",\"details\":\"Sacred Heart Commu"
+  },
+  {
+    "id": 360,
+    "name": "AHS — Recreational Therapy, Addiction & Mental Health (Lethbridge)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Recreational Therapy Services, Adult program, provided by Alberta Health Services in the South Zone, offers support to adults experiencing addiction and mental health concerns. The service focuses on integrating leis",
+    "steps": "[{\"step\":1,\"action\":\"Call Access AAMH Central Intake at 1-888-594-0211 (toll-free)\",\"details\":\"AHS South Zone — Recreati"
+  },
+  {
+    "id": 361,
+    "name": "Canadian Mental Health Association - Alberta South Region - Crisis Intervention Team",
+    "cat": "Crisis Services",
+    "desc": "The Canadian Mental Health Association - Alberta South Region (CMHA-ASR) offers a mobile support service providing crisis intervention and stabilization, including assessment, intervention, referrals, and links to community agencies for ongoing suppo",
+    "steps": "[{\"step\": 1, \"action\": \"Self-refer or get referred\", \"details\": \"Individuals within Lethbridge may refer themselves or b"
+  },
+  {
+    "id": 363,
+    "name": "AHS — Adult Community Mental Health Services (Lethbridge)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services (AHS) - South Zone offers Community Mental Health Services for adults at the Lethbridge Train Station. These services provide outpatient assessment, treatment, and follow-up for adults experiencing addiction and/or mental heal",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer by calling 403-381-5260 or toll-free 1-888-594-0211\",\"details\":\"AHS South Zone — Communi"
+  },
+  {
+    "id": 364,
+    "name": "Lethbridge Family Services - Counselling, Outreach, and Education Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Lethbridge Family Services - Counselling, Outreach & Education offers a range of mental health and wellness services, including individual, couples, and family counselling, group counselling, educational presentations, training, workshops, personal g",
+    "steps": "[{\"step\":1,\"action\":\"Contact Lethbridge Family Services or visit lfsfamily.ca\",\"details\":\"360+ employees serving 9,000+ "
+  },
+  {
+    "id": 365,
+    "name": "AHS — Provincial Mobile Addiction Outreach (Lethbridge)",
+    "cat": "Harm Reduction",
+    "desc": "The Addiction and Mental Health - Provincial Mobile Addiction Outreach program is offered by Alberta Health Services - Provincial Health Services. This initiative aims to break barriers for substance use recovery by providing outreach services to ind",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or receive professional referral\",\"details\":\"AHS South Zone — Provincial Mobile Addictio"
+  },
+  {
+    "id": 366,
+    "name": "AHS — Post-Secondary Addiction Services (Lethbridge)",
+    "cat": "Addiction Treatment",
+    "desc": "Provides outpatient assessment, treatment, and follow-up for adults experiencing addiction and/or mental health concerns.",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Addiction and Mental Health (AAMH)\", \"details\": \"Call 1-888-594-0211 to initiate an "
+  },
+  {
+    "id": 367,
+    "name": "AHS — Post-Secondary Mental Health Services (Lethbridge)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Post Secondary Institute Mental Health Services is a program offered by Alberta Health Services (AHS) in Lethbridge, Alberta, designed to provide outpatient assessment, treatment, and follow-up for post-secondary stu",
+    "steps": "[{\"step\":1,\"action\":\"Contact the service at 403-381-5260\",\"details\":\"AHS South Zone — Post Secondary Institute Mental He"
+  },
+  {
+    "id": 368,
+    "name": "Indigenous Comprehensive Support Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Comprehensive client-centered services and referrals for Indigenous People on a status blind basis addressing physical and mental health, HIV/AIDS, HCV, justice, aging, domestic and gender violence, homelessness, economics, addictions and other conce",
+    "steps": "[{\"step\": 1, \"action\": \"For Housing Programs: Apply through Coordinated Entry as part of the Red Deer Coordinated Access"
+  },
+  {
+    "id": 369,
+    "name": "Vantage Community Services — Focused Counselling (Central Alberta)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Focused Counselling is a mental health counselling service offered by Vantage Community Services, focusing on various mental health issues for individuals, couples, and families. The service aims to provide support to those residing in Central Albert",
+    "steps": "[{\"step\":1,\"action\":\"Call Vantage Community Services at 403-340-8995\",\"details\":\"Focused Counselling — counselling servi"
+  },
+  {
+    "id": 373,
+    "name": "AHS - Psychosocial Rehabilitation (Virtual Connections)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Psychosocial Rehabilitation - Virtual Connections program offers group-based psychosocial education in a virtual environment, focusing on helping clients manage symptoms and navigate daily life. It includes courses and sessions on managing anxiet",
+    "steps": "[{\"step\":1,\"action\":\"Must already be connected with a community service provider (AHS physician, psychiatrist, or clinic"
+  },
+  {
+    "id": 374,
+    "name": "BGC Wolf Creek — Youth & Family Programs (Central Alberta)",
+    "cat": "Youth Services",
+    "desc": "The BGC Wolf Creek Ponoka Youth Centre offers family programs for Blackfalds, Lacombe, Ponoka, and Rimbey. The centre provides education and life skill programming through positive mentoring in a safe and fun environment, empowering youth and familie",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 783-3112 or email admin@bgcwolfcreek.com\",\"details\":\"BGC Wolf Creek serves Blackfalds, L"
+  },
+  {
+    "id": 375,
+    "name": "Medicine Hat Family Service - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Medicine Hat Family Service offers EMDR (Eye Movement Desensitization and Reprocessing) and ART (Accelerated Resolution Therapy) as therapeutic approaches for trauma processing. EMDR is described as a powerful therapeutic approach that uses guided ey",
+    "steps": "[{\"step\":1,\"action\":\"Contact Medicine Hat Family Service to schedule an appointment\",\"details\":\"Affordable counselling f"
+  },
+  {
+    "id": 376,
+    "name": "AHS — Access Addiction & Mental Health (Medicine Hat)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services - South Zone - Access Addiction and Mental Health serves as an access point for non-urgent addiction and mental health information and services. Individuals seeking assistance will undergo a screening and intake process, which",
+    "steps": "[{\"step\":1,\"action\":\"Call toll-free 1-888-594-0211 (option 3 for South Zone)\",\"details\":\"AHS South Zone — Access Addicti"
+  },
+  {
+    "id": 377,
+    "name": "AHS — Psychiatric Stabilization & Transition Services (Medicine Hat)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Addiction and Mental Health - Psychiatric Stabilization and Transition Services is an outpatient program offered by Alberta Health Services' South Zone, located at the Medicine Hat Regional Hospital. This program provides intense short-term outpa",
+    "steps": "[{\"step\":1,\"action\":\"Professional referral required — typically arranged during discharge planning\",\"details\":\"AHS South"
+  },
+  {
+    "id": 378,
+    "name": "Northwestern Polytechnic - Mental Health Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Northwestern Polytechnic offers free, confidential, and professional mental health services to students in need of support, including e-counseling and short-term personal counseling. The services are designed to provide a supportive environment for s",
+    "steps": "[{\"step\":1,\"action\":\"Complete online booking form or call 780-539-2069\",\"details\":\"Northwestern Polytechnic — Mental Hea"
+  },
+  {
+    "id": 379,
+    "name": "Catholic Family Services Society of Grande Prairie - Professional Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Catholic Family Services Society of Grande Prairie offers professional, non-denominational counselling services to individuals, couples, families, children, and youth. Established in 1991, the organization is committed to enhancing the quality of lif",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-532-9381 or visit the Garrett Family Center at 10105 - 102 Street, Grande Prairie\",\"detail"
+  },
+  {
+    "id": 380,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Mobile Addictions Outreach",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Mobile Addictions Outreach (MAO) program, offered by the Canadian Mental Health Association (CMHA) – Alberta Northwest Region, provides street-level, front-line services to individuals in Grande Prairie and surrounding areas who are experiencing ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-933-2224 or email info@nwcmha.ca\",\"details\":\"Mobile Addictions Outreach (MAO) provides str"
+  },
+  {
+    "id": 381,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Hub Resource Centre",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Canadian Mental Health Association (CMHA) - Alberta Northwest Region offers mental health counseling services through its Hub Resource Centre. They provide various mental health programs and services, including the Recovery College and Mobile Add",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-814-2349 or email info@nwcmha.ca\",\"details\":\"CMHA Alberta Northwest Region Hub Resource Ce"
+  },
+  {
+    "id": 382,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Recovery College",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Canadian Mental Health Association (CMHA) - Alberta Northwest Region offers a variety of mental health services, including the Recovery College, in Grande Prairie. The Recovery College provides educational programs designed to support individuals",
+    "steps": "[{\"step\":1,\"action\":\"Visit the Recovery College website or call 780-402-4532 to register\",\"details\":\"CMHA Alberta Northw"
+  },
+  {
+    "id": 384,
+    "name": "AHS — Child & Youth Psychiatry (Grande Prairie)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services (AHS) – North Zone offers Child and Youth Psychiatry services, providing assessments, treatment, medication education, and follow-up care for children and youth under 18 years old. Services include mental health therapy, addic",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from a physician or nurse practitioner with an Alberta Prac ID\",\"details\":\"AHS No"
+  },
+  {
+    "id": 385,
+    "name": "Provincial Family Violence Treatment Program - Grande Prairie (AHS North)",
+    "cat": "Domestic Violence Support",
+    "desc": "The Provincial Family Violence Treatment Program is offered at The Community Village, operated by The John Howard Society of Grande Prairie. This program provides mental health counseling services to individuals affected by family violence.",
+    "steps": "[{\"step\": 1, \"action\": \"Referral\", \"details\": \"Referrals for mandated clients accepted from Probation and Children's Ser"
+  },
+  {
+    "id": 386,
+    "name": "Grande Prairie Friendship Centre - Pikiskwetan Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Pikiskwetan Program is a mental health initiative offered by the Grande Prairie Friendship Centre, providing free virtual and in-person support to adults and youth aged 16 and older who are managing low moods, anxiety, stress, or other life chall",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Grande Prairie Friendship Centre\",\"details\":\"The centre was founded in 1965 to serve In"
+  },
+  {
+    "id": 387,
+    "name": "AHS — Mental Health Services (Fort McMurray)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Wood Buffalo Addiction and Mental Health Services, operated by Alberta Health Services - North Zone, offers comprehensive mental health counseling services to individuals of all ages in Fort McMurray, Alberta. Their primary focus is on short-term rec",
+    "steps": "[{\"step\": 1, \"action\": \"Walk-In Services\", \"details\": \"No appointment or referral is needed for walk-in counselling\"}, {"
+  },
+  {
+    "id": 388,
+    "name": "AHS — Walk-In Counselling Services (Fort McMurray)",
+    "cat": "Mental Health & Counselling",
+    "desc": "Alberta Health Services - North Zone offers Walk-In Counselling Services for individuals experiencing a range of emotional or mental health issues. These services provide single-session counselling, screening, and referrals on a walk-in basis. Each s",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to 339 Powder Drive — no appointment or referral needed\",\"details\":\"AHS North Zone — Walk-I"
+  },
+  {
+    "id": 389,
+    "name": "Canadian Mental Health Association - Alberta Northeast Region",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Canadian Mental Health Association (CMHA) - Alberta Northeast Region is a registered not-for-profit organization dedicated to promoting mental wellness in the community through support and educational programs. They offer various services includi",
+    "steps": "[{\"step\":1,\"action\":\"Contact CMHA Wood Buffalo Region or visit woodbuffalo.cmha.ca\",\"details\":\"Mental health programs an"
+  },
+  {
+    "id": 397,
+    "name": "AHS — Adult Addiction & Mental Health Community Services (Edmonton)",
+    "cat": "Addiction Treatment",
+    "desc": "The Alberta Health Services - Edmonton Zone - Addiction and Mental Health - Adult Community Services provides clinic-based assessment and treatment for adults experiencing mental health concerns and/or addictive behaviors affecting their personal hea",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access 24/7 intake line\", \"details\": \"Clients can call the Access 24/7 intake line to initi"
+  },
+  {
+    "id": 398,
+    "name": "iRecover Treatment Centres",
+    "cat": "Addiction Treatment",
+    "desc": "iRecover Treatment Centres offers residential treatment programs for individuals with process or substance addictions. The Tees location provides both four-week and eight-week residential programs, including medically supervised detox, cognitive beha",
+    "steps": "[{\"step\": 1, \"action\": \"Arrival and bag inspection\", \"details\": \"Participants will have their bags inspected for safety "
+  },
+  {
+    "id": 399,
+    "name": "Northern Addictions Centre - Residential Treatment (Grande Prairie)",
+    "cat": "Residential Treatment",
+    "desc": "The Addiction Services - Adult Residential program is offered by Alberta Health Services - North Zone at the Northern Addictions Centre in Grande Prairie, Alberta. This residential intensive treatment program is designed for adults (18+) dealing with",
+    "steps": "[{\"step\": 1, \"action\": \"Call Access Addiction and Mental Health (AAMH) at 1-888-594-0211 to initiate an intake for servi"
+  },
+  {
+    "id": 401,
+    "name": "The Addiction Centre Calgary - Adult Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Addiction Centre - Adult Program, provided by Alberta Health Services - Calgary Zone, offers outpatient treatment for adults dealing with both psychiatric and addictive disorders. This program focuses on recovery, stabilization, and detoxificatio",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer by calling Access Mental Health at 403-943-1500\",\"details\":\"The Addiction Centre Calgary"
+  },
+  {
+    "id": 402,
+    "name": "Acute Care Addiction Recovery Program (ACARP)",
+    "cat": "Addiction Treatment",
+    "desc": "The Acute Care Addiction Recovery Program (ACARP) aims to improve health outcomes and access to care for patients with substance use disorders. The program offers specialty consult services to emergency department patients and hospital inpatients, de",
+    "steps": "[{\"step\": 1, \"action\": \"Be admitted as an inpatient at the Royal Alexandra Hospital or present to the emergency departme"
+  },
+  {
+    "id": 403,
+    "name": "Youth Services Centre - Recovery & Detox (AHS Calgary)",
+    "cat": "Detox & Withdrawal",
+    "desc": "The Addiction Services - Recovery, Stabilization and Detox Program is a live-in treatment program offered by Alberta Health Services (AHS) at the Youth Services Centre in Calgary. This program is designed for youth aged 12 to 18 who are experiencing ",
+    "steps": "[{\"step\":1,\"action\":\"Professional referral required — contact 403-297-4664\",\"details\":\"AHS Calgary — Youth Services Cent"
+  },
+  {
+    "id": 404,
+    "name": "Fresh Start Recovery Centre (AHS Calgary)",
+    "cat": "Residential Treatment",
+    "desc": "Fresh Start Recovery Centre offers a 15-week, co-ed residential program for adults aged 18 and older dealing with issues related to alcohol, drugs, or gambling. The program employs the 12-Step abstinence model of recovery, supported within a bio-psyc",
+    "steps": "[{\"step\": 1, \"action\": \"Contact front desk\", \"details\": \"Call 403-387-6266. All intake assessments are conducted in pers"
+  },
+  {
+    "id": 408,
+    "name": "Lethbridge Youth Addiction Treatment Centre",
+    "cat": "Addiction Treatment",
+    "desc": "The Lethbridge Youth Treatment Centre, operated by Alberta Health Services (AHS) in the South Zone, is a live-in treatment program designed for youth aged 12 to 19 whose lives have been negatively impacted by substance use or gambling. This provincia",
+    "steps": "[{\"step\": 1, \"action\": \"Contact an AHS Addictions Counsellor to start the assessment process\", \"details\": \"Call the 24-h"
+  },
+  {
+    "id": 409,
+    "name": "AHS — Opioid Dependency Program (Lethbridge)",
+    "cat": "Addiction Treatment",
+    "desc": "The Addiction and Mental Health - Opioid Dependency Program in Lethbridge, Alberta, offers comprehensive support for individuals dealing with opioid use disorders. This program provides initiation and maintenance of Opioid Agonist Treatment (OAT) med",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-388-6227 to initiate the referral process\",\"details\":\"AHS South Zone — Opioid Dependency P"
+  },
+  {
+    "id": 410,
+    "name": "Streets Alive Family Support Association - Genesis Women's Life Recovery Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Genesis Women's Life Recovery Program, operated by Streets Alive Family Support Association, is a faith-based, multi-phase addiction recovery program for women in Lethbridge, Alberta. The program is designed to assist vulnerable women in their jo",
+    "steps": "[{\"step\":1,\"action\":\"Contact Streets Alive at 403-635-0336\",\"details\":\"Streets Alive — Genesis Women's Life Recovery Pro"
+  },
+  {
+    "id": 411,
+    "name": "Streets Alive Family Support Association - Exodus Men's Life Recovery Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Exodus Men's Life Recovery Program is a faith-based, abstinence-oriented recovery initiative designed to assist men in overcoming addiction and rebuilding their lives through a structured, supportive environment. The program emphasizes group ther",
+    "steps": "[{\"step\":1,\"action\":\"Contact Streets Alive at 403-635-0969\",\"details\":\"Streets Alive Family Support Association — Exodus"
+  },
+  {
+    "id": 412,
+    "name": "Southern Alcare Manor - Long-Term Residential (AHS)",
+    "cat": "Residential Treatment",
+    "desc": "Southern Alcare Manor offers a 16-week, three-stage residential treatment program for adults dealing with substance addictions. The program includes various services such as AA/12-step programs, individual and group counseling, interactive workshops,",
+    "steps": "[{\"step\": 1, \"action\": \"Complete 5-10 days in a detox program\", \"details\": \"Detox must be completed before admission\"}, "
+  },
+  {
+    "id": 413,
+    "name": "Southern Alcare Manor - Transitional (AHS)",
+    "cat": "Addiction Treatment",
+    "desc": "Southern Alcare Manor offers transitional services for adults in recovery from addiction. The program is designed to support individuals as they navigate their recovery journey, providing a safe and structured environment.",
+    "steps": "[{\"step\": 1, \"action\": \"Complete a referral form\", \"details\": \"Visit the website to complete the referral form\"}, {\"step"
+  },
+  {
+    "id": 415,
+    "name": "AHS - Enhanced Services for Women (Red Deer)",
+    "cat": "Addiction Treatment",
+    "desc": "The Enhanced Services for Women (ESW) program is designed to assist women facing substance use and/or mental health concerns during pregnancy or after childbirth. It offers tailored addiction services, including assessment, individual counseling, gro",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-340-5466 for intake\",\"details\":\"Contact the Red Deer clinic at 4733 49 Street. Open Monday"
+  },
+  {
+    "id": 416,
+    "name": "AHS — Adult Addiction Counselling (Red Deer)",
+    "cat": "Addiction Treatment",
+    "desc": "The Adult Addiction Counselling service is provided by Alberta Health Services at the Red Deer 49 Street - Addiction and Mental Health Services facility. This program offers addiction counselling and conducts related screenings and assessments for in",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"Call the central intake line at 1-888-594-0211 or have a healthcar"
+  },
+  {
+    "id": 420,
+    "name": "AHS - Concurrent Disorders Enhanced Service (Ponoka)",
+    "cat": "Addiction Treatment",
+    "desc": "The Concurrent Disorders Enhanced Service (CDES) is a specialized inpatient program that provides assessment and treatment for adults aged 18 to 64 who are experiencing both severe mental illness and severe addiction issues. This 22-day voluntary pro",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a professional referral from a healthcare provider\",\"details\":\"AHS — Concurrent Disorders En"
+  },
+  {
+    "id": 421,
+    "name": "AHS - Recovery Centre (Medically Supported Detox, Medicine Hat)",
+    "cat": "Detox & Withdrawal",
+    "desc": "The Medicine Hat Recovery Centre offers medically supported detoxification services for adults seeking to withdraw from alcohol and other substances in a safe, controlled environment. The centre operates 24/7 and provides two primary programs: the De",
+    "steps": "[{\"step\": 1, \"action\": \"Make a confidential telephone call\", \"details\": \"Available 24 hours a day\"}, {\"step\": 2, \"action"
+  },
+  {
+    "id": 422,
+    "name": "Bridges Family Programs - First Steps",
+    "cat": "Addiction Treatment",
+    "desc": "The 'First Steps' program is designed for individuals who are pregnant or have a baby under 12 months old, have used alcohol and/or other substances during pregnancy, lack connections to other community services, and wish to make changes in their liv",
+    "steps": "[{\"step\":1,\"action\":\"Contact Bridges Family Programs in Medicine Hat\",\"details\":\"Family Support Services Hub for Medicin"
+  },
+  {
+    "id": 423,
+    "name": "Pathways to Recovery",
+    "cat": "Addiction Treatment",
+    "desc": "Pathways to Recovery is a community support meeting organized by Our Collective Journey, focusing on recovery pathways for individuals impacted by addiction. The program is held bi-weekly on Thursdays from 6:30 to 7:30 PM at the Medicine Hat Public L",
+    "steps": "[{\"step\": 1, \"action\": \"Attend the bi-weekly meetings\", \"details\": \"Simply attend the meetings on Thursdays from 6:30-7:"
+  },
+  {
+    "id": 424,
+    "name": "Our Collective Journey - Recovery Coach Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Recovery Coach Program is offered by Our Collective Journey, an organization dedicated to supporting mental health and promoting well-being. This program provides coaching support for individuals in recovery, helping them navigate their journey t",
+    "steps": "[{\"step\":1,\"action\":\"Contact OCJ at (403) 866-8118 or email info@ourcollectivejourney.ca\",\"details\":\"Our Collective Jour"
+  },
+  {
+    "id": 425,
+    "name": "Rising Above — Faith-Based Residential Addiction Recovery (Grande Prairie)",
+    "cat": "Addiction Treatment",
+    "desc": "Rising Above Ministry offers a faith-based 6-month residential treatment program for adults struggling with addictions, homelessness, and other destructive cycles. The program includes housing, life-skills classes, inner healing sessions, employment ",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 533-3025 or visit 11007 106 St, Grande Prairie\",\"details\":\"Rising Above is a registered "
+  },
+  {
+    "id": 426,
+    "name": "Family Education Society — Family Support & Addiction Services (Grande Prairie)",
+    "cat": "Addiction Treatment",
+    "desc": "The Grande Prairie Family Education Society (GPFES) is a registered charity dedicated to strengthening families and communities in the Grande Prairie area. They offer a variety of free programs and services aimed at promoting family well-being, educa",
+    "steps": "[{\"step\": 1, \"action\": \"Complete referral form\", \"details\": \"Anyone can make a referral for themselves, a family member,"
+  },
+  {
+    "id": 428,
+    "name": "Wood Buffalo Wellness Society - Sakihitowin Recovery Home Program",
+    "cat": "Addiction Treatment",
+    "desc": "The Sakihitowin Recovery Home Program is a residential recovery program that offers support and treatment for individuals seeking to overcome addiction. It is provided by the Wood Buffalo Wellness Society, which is dedicated to promoting the health o",
+    "steps": "[{\"step\":1,\"action\":\"Access the program through a NNADAP referral worker\",\"details\":\"Call (780) 713-9794 or email markam"
+  },
+  {
+    "id": 430,
+    "name": "Mainsprings Pregnancy and Family Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Mainsprings Pregnancy and Family Support is a non-profit organization dedicated to assisting individuals facing pregnancy and family-related challenges. They offer free and confidential services, including emotional and practical support, education, ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-269-3110 to discuss your needs\",\"details\":\"Mainsprings (Calgary Pregnancy Care Centre) — p"
+  },
+  {
+    "id": 431,
+    "name": "Distress Line (CMHA) Edmonton Region",
+    "cat": "Crisis Lines",
+    "desc": "The Distress Line is a 24/7 crisis intervention service provided by the Canadian Mental Health Association (CMHA) Edmonton Region. It offers free, confidential support to individuals experiencing distress or crisis, as well as to those supporting som",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-482-HELP (4357) — available 24 hours\",\"details\":\"CMHA Edmonton Region Distress Line. Immed"
+  },
+  {
+    "id": 432,
+    "name": "Live Crisis Chat (CMHA) Edmonton Region",
+    "cat": "Crisis Services",
+    "desc": "The Live Crisis Chat service offered by the Canadian Mental Health Association (CMHA) Edmonton Region provides confidential, non-judgmental, and short-term crisis intervention, emotional support, and resources via live chat. It connects individuals i",
+    "steps": "[{\"step\":1,\"action\":\"Visit the CMHA Edmonton Region website\",\"details\":\"CMHA Edmonton — Live Crisis Chat service. Also a"
+  },
+  {
+    "id": 438,
+    "name": "AHS - Mobile Response Team",
+    "cat": "Crisis Services",
+    "desc": "The Mobile Response Team (MRT) is a mental health crisis intervention service provided by Alberta Health Services in Calgary. It offers urgent mental health support and consultation during crisis situations, including crisis intervention, stabilizati",
+    "steps": "[{\"step\":1,\"action\":\"Call Distress Centre Calgary at 403-266-4357 and request Mental Health Crisis Triage\",\"details\":\"AH"
+  },
+  {
+    "id": 439,
+    "name": "Distress and Suicide Prevention Line of Southwestern Alberta",
+    "cat": "Crisis Lines",
+    "desc": "The Distress and Suicide Prevention Line of Southwestern Alberta is a 24-hour crisis intervention service operated by the Canadian Mental Health Association (CMHA) - Alberta South Region. It offers immediate support, intervention, and referrals for i",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-327-7905 or toll-free 1-888-787-2880\",\"details\":\"The Distress Line of Southwestern Alberta"
+  },
+  {
+    "id": 441,
+    "name": "Capella Centre (formerly St Paul Crisis Centre Association)",
+    "cat": "Crisis Services",
+    "desc": "Capella Centre, formerly known as St. Paul Crisis Centre Association, is a registered charity and not-for-profit organization dedicated to empowering individuals and families to break the cycle of domestic violence through safety, knowledge, and resp",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24-hour crisis line at 1-800-263-3045\",\"details\":\"Capella Centre is a family violence prev"
+  },
+  {
+    "id": 442,
+    "name": "Wellspring — Women's Crisis Shelter & Support (Whitecourt)",
+    "cat": "Crisis Services",
+    "desc": "Wellspring Family Resource and Crisis Centre, also known as Whitecourt Shelter, is a registered charity dedicated to providing support services to women and youth in crisis. Their mission includes offering safe, short-term accommodations for women in",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24-hour Crisis Line at 780-778-6209 or toll-free 1-800-467-4049\",\"details\":\"Wellspring Fam"
+  },
+  {
+    "id": 443,
+    "name": "True North Society — Domestic Violence Shelter & Crisis Support",
+    "cat": "Crisis Services",
+    "desc": "True North Society, formerly known as the Wheatland Crisis Society, is a non-profit organization based in Strathmore, Alberta, dedicated to supporting individuals impacted by domestic violence. They provide a range of services including a 24/7 emerge",
+    "steps": "[{\"step\": 1, \"action\": \"Call 24-hour Crisis, Information and Support Line\", \"details\": \"Call 403-934-6634 to speak with "
+  },
+  {
+    "id": 444,
+    "name": "Wood's Homes — Children's Mental Health Treatment & Crisis Support",
+    "cat": "Youth Services",
+    "desc": "Wood's Homes is a nationally recognized and accredited children's mental health center offering treatment and support to children, youth, and families in Calgary, Lethbridge, Strathmore, and Fort McMurray. They provide 24/7 crisis counselling via tel",
+    "steps": "[{\"step\": 1, \"action\": \"View self-referral programs available on their website\", \"details\": null}, {\"step\": 2, \"action\":"
+  },
+  {
+    "id": 445,
+    "name": "YWCA Lethbridge and District",
+    "cat": "Crisis Services",
+    "desc": "YWCA Lethbridge and District provides an emergency shelter and a 24-hour crisis line for women involved in abusive intimate partner relationships. The shelter offers a safe place for up to 21 days, with access to counseling, support staff, and educat",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24-hour crisis line\",\"details\":\"Local: 403-320-1881. Toll-free: 1-866-296-0447. If in imme"
+  },
+  {
+    "id": 446,
+    "name": "HomeFront - Red Deer and Area Domestic Violence Intervention and Resource Team",
+    "cat": "Crisis Services",
+    "desc": "HomeFront's Red Deer and Area Domestic Violence Intervention and Resource Team offers comprehensive support for individuals and families experiencing domestic violence. Their services include assessment, advocacy, monitoring, skills development, and ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-614-9386 or email for program details\",\"details\":\"HomeFront — Red Deer and Area Domestic V"
+  },
+  {
+    "id": 447,
+    "name": "Social Diversion Team - Safe Harbour Society",
+    "cat": "Crisis Services",
+    "desc": "The Social Diversion Team is a crisis intervention service provided by Safe Harbour Society in Red Deer, Alberta. This team operates collaboratively with the City and the RCMP to respond to non-emergency calls, assisting individuals facing mental hea",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-406-2200 (7am-7pm, 7 days a week)\",\"details\":\"Safe Harbour Society in Red Deer. Accredited"
+  },
+  {
+    "id": 448,
+    "name": "Family Violence Helpline - Central Alberta Women's Emergency Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "The Family Violence Helpline is a 24-hour crisis intervention service provided by the Central Alberta Women's Emergency Shelter (CAWES) in Red Deer, Alberta. This service offers immediate support and information to individuals experiencing family vio",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-346-5643 or text the helpline\",\"details\":\"Central Alberta Women's Emergency Shelter (CAWES"
+  },
+  {
+    "id": 449,
+    "name": "24-Hour Sexual Violence Support Line - Sendero Centre",
+    "cat": "Crisis Services",
+    "desc": "The 24-Hour Sexual Violence Support Line is provided by Sendero Centre, a registered not-for-profit organization dedicated to ending the culture of sexual violence in Central Alberta. They offer support for individuals affected by sexual violence thr",
+    "steps": "[{\"step\":1,\"action\":\"Call or text 1-866-956-1099 (24 hours)\",\"details\":\"Sendero Centre — 24-Hour Sexual Violence Support"
+  },
+  {
+    "id": 450,
+    "name": "AHS — Child, Youth & Family Mental Health Therapy (Red Deer)",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Child, Youth, and Family Mental Health Therapy services provided by Alberta Health Services (AHS) in the Central Zone offer short-term, goal-focused therapy for children and youth experiencing mental health and/or addiction concerns. Services inc",
+    "steps": "[{\"step\":1,\"action\":\"Call ACCESS AAMH at 1-888-594-0211 and select Central Zone\",\"details\":\"AHS Central Zone — Child, Yo"
+  },
+  {
+    "id": 452,
+    "name": "AHS - Police and Crisis Team (Adult, Medicine Hat)",
+    "cat": "Crisis Services",
+    "desc": "The Addiction and Mental Health - Police and Crisis Team (PACT) is a collaborative initiative between Alberta Health Services (AHS) and local police services, designed to assist individuals experiencing mental health, addiction, or psycho-social cris",
+    "steps": "[{\"step\":1,\"action\":\"Contact PACT directly at 403-502-8617 for immediate assistance\",\"details\":\"AHS — Police and Crisis "
+  },
+  {
+    "id": 453,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre",
+    "cat": "Crisis Services",
+    "desc": "Pace Community Support, Sexual Assault, and Trauma Centre is a registered charity and not-for-profit organization dedicated to providing a confident, caring approach to helping people in crisis. For over 35 years, Pace has offered a variety of servic",
+    "steps": "[{\"step\":1,\"action\":\"Call the Pace office at 780-539-6692\",\"details\":\"Schedule an intake appointment or access crisis in"
+  },
+  {
+    "id": 454,
+    "name": "AHS - Crisis Response Team (Grande Prairie)",
+    "cat": "Crisis Services",
+    "desc": "The Crisis Response Team (CRT) at Grande Prairie Regional Hospital is a multidisciplinary team comprising Registered Nurses and Mental Health Therapists. They collaborate with on-call psychiatrists to support individuals presenting to the Emergency D",
+    "steps": "[{\"step\": 1, \"action\": \"Patients accessing this service are first seen by the triage team in the Emergency Department, t"
+  },
+  {
+    "id": 455,
+    "name": "Sunrise House - Youth Emergency Shelter",
+    "cat": "Youth Services",
+    "desc": "The Grande Prairie Youth Emergency Shelter Society, also known as Sunrise House, provides safe, temporary emergency shelter for distressed youth aged 12 to 17. The shelter offers an environment that encourages healthy decision-making and strengthens ",
+    "steps": "[{\"step\":1,\"action\":\"Call, text, or visit anytime\",\"details\":\"Sunrise House in Grande Prairie is available 24/7 for imme"
+  },
+  {
+    "id": 456,
+    "name": "Waypoints Community Services",
+    "cat": "Crisis Services",
+    "desc": "Waypoints Community Services is a registered not-for-profit organization dedicated to supporting, assisting, and advocating for individuals affected by domestic violence, sexual assault, and abuse in the Wood Buffalo Region. They offer a variety of s",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the appropriate crisis line or referral source\", \"details\": \"Family Violence Crisis Line"
+  },
+  {
+    "id": 457,
+    "name": "Child and Adolescent Mental Health Inpatient Services",
+    "cat": "Youth Services",
+    "desc": "The Child and Adolescent Mental Health Inpatient Services at South Health Campus in Calgary, Alberta, provide inpatient mental health assessment and treatment for adolescents aged 13 to 17 who are experiencing serious emotional, behavioral, or psychi",
+    "steps": "[{\"step\":1,\"action\":\"Referral through AHS — call 403-956-1500\",\"details\":\"Located at South Health Campus in Calgary. Pro"
+  },
+  {
+    "id": 458,
+    "name": "Medical Clinic for Vulnerable Youth — Health, Housing & Employment Support",
+    "cat": "Youth Services",
+    "desc": "The Inglewood Opportunity Hub offers confidential medical attention to vulnerable young people, including care for general health concerns, reproductive health, and mental health and substance abuse support. This one-stop hub provides a range of serv",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-774-1674 or visit the Inglewood Opportunity Hub\",\"details\":\"One-stop-shop for vulnerable y"
+  },
+  {
+    "id": 459,
+    "name": "Emergency Services - Child and Adolescent Mental Health",
+    "cat": "Youth Services",
+    "desc": "The Emergency Services - Child and Adolescent Mental Health program at Rockyview General Hospital offers assessment and consultation for children and adolescents with urgent or emergent mental health needs. Services include evaluations for mental hea",
+    "steps": "[{\"step\":1,\"action\":\"Go to Rockyview General Hospital emergency or call 403-943-3000\",\"details\":\"Emergency assessment an"
+  },
+  {
+    "id": 460,
+    "name": "AHS - Youth Substance Use & Mental Health Services (Community Outpatient Clinic)",
+    "cat": "Youth Services",
+    "desc": "The Youth Substance Use & Mental Health Services - Community Outpatient Clinic provides comprehensive services for youth aged 12 to 17 and their families who are experiencing concurrent mental health and substance use disorders. Services include scre",
+    "steps": "[{\"step\":1,\"action\":\"Youth/families self-refer by calling 403-297-4664 during business hours\",\"details\":\"AHS — Youth Sub"
+  },
+  {
+    "id": 461,
+    "name": "AHS - Child and Adolescent Psychiatry Service",
+    "cat": "Youth Services",
+    "desc": "This service provides psychiatric consultation, assessment, and treatment to children and youth aged 6 to 18 with current mental health concerns. Services include diagnosis, medication management, and treatment recommendations. After referral, a virt",
+    "steps": "[{\"step\":1,\"action\":\"Referral from Pediatrician or Primary Care Physician through Access Mental Health (403-943-1500)\",\""
+  },
+  {
+    "id": 462,
+    "name": "Child and Adolescent Addiction Mental Health and Psychiatry Program Community Clinics",
+    "cat": "Youth Services",
+    "desc": "The Child and Adolescent Addiction Mental Health and Psychiatry Program Community Clinics in Calgary offer psychosocial assessment and treatment services to children and youth aged 5 to 18 experiencing moderate to severe mental health issues. Therapy",
+    "steps": "[{\"step\":1,\"action\":\"Call Access Mental Health at 403-943-1500 (press ext. 1)\",\"details\":\"CAAMHPP Community Clinics — Ch"
+  },
+  {
+    "id": 463,
+    "name": "Exceptional Needs Program Service - Child and Adolescent Mental Health",
+    "cat": "Youth Services",
+    "desc": "The Exceptional Needs Program Service - Child and Adolescent Mental Health, provided by Alberta Health Services - Calgary Zone, offers residential support for adolescents aged 12-17 years, with a primary focus on family therapy. Clients are referred ",
+    "steps": "[{\"step\": 1, \"action\": \"Cannot self-refer directly to this program\", \"details\": null}, {\"step\": 2, \"action\": \"Must be re"
+  },
+  {
+    "id": 464,
+    "name": "AHS - Edmonton Youth Stabilization Program",
+    "cat": "Youth Services",
+    "desc": "The Edmonton Youth Stabilization Program is a 10-day voluntary psychosocial stabilization and detoxification program for youth aged 12 to 18 who are dealing with substance use issues and/or mental health challenges. This group treatment model focuses",
+    "steps": "[{\"step\":1,\"action\":\"Obtain a referral from any AHS Outpatient Addiction Counsellor\",\"details\":\"AHS — Edmonton Youth Sta"
+  },
+  {
+    "id": 465,
+    "name": "AHS - Child and Adolescent Mental Health Walk-In Service",
+    "cat": "Youth Services",
+    "desc": "This service offers a 50-minute, solution-focused therapy session on a first-come, first-served basis, focusing on exploring specific issues and potential solutions. Parent or caregiver attendance is preferred to support the child or youth. Families ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in Monday-Friday 12:30-4:00 PM — no referral required\",\"details\":\"AHS — Child and Adolescent M"
+  },
+  {
+    "id": 466,
+    "name": "iHuman Youth Society - LiNKS Mental Health Supports",
+    "cat": "Youth Services",
+    "desc": "iHuman Youth Society's LiNKS Mental Health Supports program offers comprehensive services to at-risk youth aged 12 to 24 in Edmonton, Alberta. The program provides a variety of support services designed to address the immediate psychological and phys",
+    "steps": "[{\"step\":1,\"action\":\"Walk in or contact iHuman Youth Society in Edmonton\",\"details\":\"Non-profit supporting marginalized "
+  },
+  {
+    "id": 467,
+    "name": "AHS - Addiction and Mental Health Community Services (Child and Adolescent)",
+    "cat": "Youth Services",
+    "desc": "The Addiction and Mental Health - Community Services, Child, and Adolescent program, operated by Alberta Health Services in the Edmonton Zone, offers a comprehensive range of publicly funded mental health services for children and youth aged 5 to 17,",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or have a healthcare provider submit a referral\",\"details\":\"AHS — Addiction and Mental H"
+  },
+  {
+    "id": 468,
+    "name": "AHS - Mobile Addiction Services (Adolescent)",
+    "cat": "Youth Services",
+    "desc": "Provides intake, assessment, referral, counseling, and prevention services for youth aged 12-18 with addiction problems at designated community sites. Services include mobile support to youth and families, as well as consultation and training for sta",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-342-4416 to inquire and discuss your needs\",\"details\":\"AHS — Mobile Addiction Services (Ad"
+  },
+  {
+    "id": 469,
+    "name": "AHS - Addiction and Mental Health Intake Services (Child and Adolescent)",
+    "cat": "Youth Services",
+    "desc": "The Addiction and Mental Health - Intake Services, Child and Adolescent program provides a centralized intake service for child and adolescent community mental health clinics across the Edmonton Zone. This service includes screening and triaging of r",
+    "steps": "[{\"step\":1,\"action\":\"Call intake directly at 825-402-6799 — no professional referral required\",\"details\":\"AHS — Addictio"
+  },
+  {
+    "id": 470,
+    "name": "AHS - Edmonton Youth Recovery Program",
+    "cat": "Youth Services",
+    "desc": "The Edmonton Youth Recovery Program is a 12-week voluntary inpatient treatment program for youth aged 12 to 18 who have experienced significant impairment due to substance use. This program employs a group treatment model with an experiential learnin",
+    "steps": "[{\"step\":1,\"action\":\"Referral from any AHS Addictions Counsellor or Mental Health Therapist\",\"details\":\"AHS — Edmonton Y"
+  },
+  {
+    "id": 471,
+    "name": "Addiction and Mental Health - Child and Adolescent - Outpatient Psychiatry Clinic",
+    "cat": "Youth Services",
+    "desc": "The Addiction and Mental Health - Child and Adolescent - Outpatient Psychiatry Clinic provides psychiatric services to children and youth aged 4 to 17 who are experiencing moderate to severe mental health issues. This clinic supports families who do ",
+    "steps": "[{\"step\":1,\"action\":\"Get a physician referral — call 780-407-2114\",\"details\":\"Outpatient Psychiatry Clinic at the Stolle"
+  },
+  {
+    "id": 472,
+    "name": "AHS — Children, Youth & Family Outpatient Groups (Red Deer)",
+    "cat": "Youth Services",
+    "desc": "The Addiction and Mental Health Children, Youth and Family Outpatient Groups are provided by Alberta Health Services (AHS) in the Central Zone. These services offer a variety of support groups tailored for children and families dealing with addiction",
+    "steps": "[{\"step\":1,\"action\":\"Call Access Addiction and Mental Health (AAMH) at 1-888-594-0211\",\"details\":\"AHS Central Zone — Chi"
+  },
+  {
+    "id": 473,
+    "name": "Sheldon Kennedy Centre - Drop-in Counselling",
+    "cat": "Youth Services",
+    "desc": "The Child Youth and Family Addiction and Mental Health Drop-in Counseling service is offered by Alberta Health Services - Central Zone at the Sheldon Kennedy Centre of Excellence - Red Deer Polytechnic. This service provides children and youth aged 6",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during drop-in hours — no appointment needed\",\"details\":\"Sheldon Kennedy Centre — Drop-in C"
+  },
+  {
+    "id": 474,
+    "name": "AHS — Children's Behavioural Health Services (Medicine Hat)",
+    "cat": "Youth Services",
+    "desc": "The Children's Allied Health - Behavioural Services, formerly known as CHADS, is a family-based, early intervention program offered by Alberta Health Services in the South Zone. This program is designed to provide behavioral strategies to children an",
+    "steps": "[{\"step\":1,\"action\":\"Families may self-refer by calling 403-502-8257\",\"details\":\"AHS South Zone — Children's Allied Heal"
+  },
+  {
+    "id": 475,
+    "name": "AHS — Palliser Adolescent Services (Medicine Hat)",
+    "cat": "Youth Services",
+    "desc": "Alberta Health Services' Palliser Adolescent Services offers specialized mental health support for youth in grades 7 to 12. The program provides addiction and mental health services tailored to adolescents, ensuring they receive the necessary support",
+    "steps": "[{\"step\":1,\"action\":\"Referral through designated school in consultation with parent/guardian\",\"details\":\"AHS South Zone "
+  },
+  {
+    "id": 476,
+    "name": "AHS — Child, Youth & Family Mental Health Services (Medicine Hat)",
+    "cat": "Youth Services",
+    "desc": "Alberta Health Services (AHS) – South Zone offers Addiction and Mental Health Community Mental Health Services for children, youth, and families at the Medicine Hat Provincial Building. These services provide outpatient assessment, treatment, and fol",
+    "steps": "[{\"step\":1,\"action\":\"Contact intake directly at 403-529-3582 — no professional referral required\",\"details\":\"AHS South Z"
+  },
+  {
+    "id": 477,
+    "name": "Medicine Hat Family Service - Youth Support Group",
+    "cat": "Youth Services",
+    "desc": "The 'Youth Support Group' at Medicine Hat Family Service is designed to provide a supportive environment for young individuals to connect, share experiences, and develop social skills. This program focuses on various issues and concerns that youth fa",
+    "steps": "[{\"step\":1,\"action\":\"Contact Medicine Hat Family Service to register for youth groups\",\"details\":\"Group programs in a su"
+  },
+  {
+    "id": 478,
+    "name": "AHS — Provincial Mobile Addiction Outreach (Medicine Hat)",
+    "cat": "Harm Reduction",
+    "desc": "The Provincial Mobile Addiction Outreach Initiative (PMAOI) provides integrated mobile and outreach services to support street-involved individuals, both youth and adults, affected by harmful substance use. The program aims to reach those who often f",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or have someone refer you\",\"details\":\"Addiction Outreach Initiative accepts referrals fr"
+  },
+  {
+    "id": 479,
+    "name": "Niitoiyis Family Support Society - Men's Healing Circle",
+    "cat": "Indigenous Services",
+    "desc": "The Men's Healing Circle is a program offered by the Niitoiyis Family Support Society that provides sharing circle sessions for men to share, heal, and learn through ancestral cultural values, teachings, and sacred traditions. Participants have acces",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 531-1880 ext. 100\",\"details\":\"The Men's Healing Circle is part of the Journey to Men's M"
+  },
+  {
+    "id": 480,
+    "name": "Sunrise Healing Lodge Society - Family Counselling",
+    "cat": "Indigenous Services",
+    "desc": "Sunrise Healing Lodge Society offers culturally sensitive family counselling services to families affected by substance use and addiction. Their programs include one-on-one counselling, sharing circles, and alcohol/drug intervention and prevention.",
+    "steps": "[{\"step\": 1, \"action\": \"Call Sunrise Healing Lodge Society at their Calgary office to inquire about family counselling s"
+  },
+  {
+    "id": 481,
+    "name": "BIPOC Healing and Wellness Centre",
+    "cat": "Mental Health & Counselling",
+    "desc": "Inclusive, accessible and culturally-informed counselling and healing services that are tailored to your unique lived experiences. Services include Mental Health Counselling, Trauma Therapy, Grief Therapy, Somatic Therapy, EMDR Therapy, Group Therapy",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment online at bipochealingandwellnesscentre.janeapp.com\",\"details\":\"Can also call 5"
+  },
+  {
+    "id": 482,
+    "name": "AHS - Indigenous Hospital Support Services",
+    "cat": "Indigenous Services",
+    "desc": "The Indigenous Hospital Support Services in Edmonton, Alberta, provide cultural support to First Nations (Status and Non-Status), Métis, and Inuit individuals and their families during hospital stays. This includes assistance in feeling comfortable w",
+    "steps": "[{\"step\":1,\"action\":\"Contact the service at 780-735-5963 or ask at the hospital\",\"details\":\"AHS — Indigenous Hospital Su"
+  },
+  {
+    "id": 484,
+    "name": "Taproot — Spirit of Our Youth: Indigenous Youth & Family Services",
+    "cat": "Indigenous Services",
+    "desc": "The Spirit of Our Youth Program focuses on supporting Indigenous youth through various services, including those related to acquired brain injury, caring families, diverse abilities, family resilience, and more. It aims to provide high-quality, perso",
+    "steps": "[{\"step\": 1, \"action\": \"Get referral from Alberta Children and Family Services\", \"details\": \"Most programs are accessed "
+  },
+  {
+    "id": 485,
+    "name": "Aboriginal Counseling Services Association - Holding Our Anger Bundle",
+    "cat": "Indigenous Services",
+    "desc": "The 'Holding Our Anger Bundle' is a 12-week, closed-group program offered by the Aboriginal Counseling Services Association of Alberta (ACSA) in Edmonton, Alberta. This trauma-informed program is designed specifically for Indigenous women aged 18 and",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-242-4357 or visit aboriginalcounseling.com\",\"details\":\"Aboriginal Counseling Services of A"
+  },
+  {
+    "id": 486,
+    "name": "AHS - Indigenous Wellness Clinic",
+    "cat": "Indigenous Services",
+    "desc": "The Indigenous Wellness Clinic in Edmonton, Alberta, offers culturally informed and safe primary care services to Indigenous patients of all ages. Their multidisciplinary team provides services such as family medicine, chronic disease management, rep",
+    "steps": "[{\"step\":1,\"action\":\"Self-refer or get a healthcare professional referral\",\"details\":\"Call 780-735-4512 or toll-free 1-8"
+  },
+  {
+    "id": 487,
+    "name": "BIPOC Healing and Wellness Centre - Indigenous Women's Program",
+    "cat": "Indigenous Services",
+    "desc": "The BIPOC Healing and Wellness Centre provides anti-racist, decolonizing, intersectional-feminist, and culturally informed healing for racialized communities through mental health and wellness services for grief, mental health, and racial trauma. The",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment online at bipochealingandwellnesscentre.janeapp.com\",\"details\":\"Can also call 5"
+  },
+  {
+    "id": 488,
+    "name": "First Nations Health Consortium",
+    "cat": "Indigenous Services",
+    "desc": "The First Nations Health Consortium (FNHC) is dedicated to enhancing access to health, social, and educational services for First Nations and Inuit children and families across Alberta. Established in February 2017, FNHC collaborates with four First ",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-844-558-8748 or visit abfnhc.com\",\"details\":\"Supports First Nations and Inuit children and f"
+  },
+  {
+    "id": 489,
+    "name": "AHS — Indigenous Mental Health Program (Calgary)",
+    "cat": "Indigenous Services",
+    "desc": "The Indigenous Mental Health Program, offered by Alberta Health Services in the Calgary Zone, provides culturally appropriate mental health care and support for Indigenous clients. This program collaborates with nurses, physicians, and other service ",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 955-6645 for intake\",\"details\":\"The Indigenous Mental Health Program in the Calgary Zone"
+  },
+  {
+    "id": 490,
+    "name": "Alberta Indigenous Virtual Care Clinic - Virtual Care Services",
+    "cat": "Indigenous Services",
+    "desc": "The Alberta Indigenous Virtual Care Clinic (AIVCC) is a registered not-for-profit organization dedicated to providing accessible, culturally safe, and medically appropriate care to self-identifying Indigenous individuals and their families across Alb",
+    "steps": "[{\"step\": 1, \"action\": \"Request an appointment\", \"details\": \"Use the form or call\\u2014our team confirms time and detail"
+  },
+  {
+    "id": 491,
+    "name": "AHS — Indigenous Wellness Core (Buffalo Lake)",
+    "cat": "Indigenous Services",
+    "desc": "The Indigenous Wellness Core, provided by Alberta Health Services - North Zone, partners with Indigenous peoples, communities, and key stakeholders to offer accessible, culturally appropriate health services for First Nations, Métis, and Inuit people",
+    "steps": "[{\"step\": 1, \"action\": \"Self-refer by calling the service directly using the contact information\", \"details\": \"Services "
+  },
+  {
+    "id": 492,
+    "name": "Canadian Mental Health Association - Alberta Division and Centre for Suicide Prevention - Indigenous Suicide Prevention Resources and Workshops",
+    "cat": "Crisis Services",
+    "desc": "Canadian Mental Health Association, Alberta Division and Centre for Suicide Prevention (CMHA AB + CSP) work to further community mental health and suicide prevention across the province. Together with CMHA Regions and our partners, we're building an ",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 245-3900 or email csp@suicideinfo.ca\",\"details\":\"CMHA Alberta Division and Centre for Su"
+  },
+  {
+    "id": 493,
+    "name": "Government of Canada - Indigenous Services Canada - Hope for Wellness Help Line",
+    "cat": "Indigenous Services",
+    "desc": "The Hope for Wellness Help Line is a confidential, 24/7 service offering immediate mental health counseling and crisis intervention to all Indigenous peoples across Canada. Experienced and culturally competent counselors are available by telephone an",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-855-242-3310 or use online chat at hopeforwellness.ca\",\"details\":\"The Hope for Wellness Help"
+  },
+  {
+    "id": 494,
+    "name": "YW Crisis Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "YW Crisis Shelter provides a short-stay refuge for women with their children fleeing domestic abuse and violence. The shelter offers a safe environment and support services to help women transition away from abusive situations.",
+    "steps": "[{\"step\":1,\"action\":\"Call YW's 24/7 Crisis Line at 403-266-0707\",\"details\":\"YW Crisis Shelter — short-stay crisis shelte"
+  },
+  {
+    "id": 495,
+    "name": "YW Calgary - Domestic Violence Support Outreach Program",
+    "cat": "Domestic Violence Support",
+    "desc": "YW Calgary offers the Domestic Violence Support Outreach Program, which provides support and outreach services for women and their children who are leaving or experiencing abuse. The program aims to assist individuals in navigating their circumstance",
+    "steps": "[{\"step\": 1, \"action\": \"Call YW Calgary's Domestic Violence Support Outreach Program at their main office\", \"details\": \""
+  },
+  {
+    "id": 496,
+    "name": "Heart Home Network - Second Stage Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "The Second Stage Shelter in Calgary, Alberta, provided by the Heart Home Network, offers accommodations and support for mothers with children who have experienced family violence. This program assists individuals in beginning or resuming independent ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-860-9412 for referral information\",\"details\":\"Heart Home Network — second stage shelter in"
+  },
+  {
+    "id": 497,
+    "name": "Calgary Counselling - Domestic Abuse Programs",
+    "cat": "Domestic Violence Support",
+    "desc": "Provides individual and group counselling for individuals who have experienced abuse in intimate relationships, as well as those who have been abusive. Separate groups are available for men and women. Topics covered include the impact of abuse, gende",
+    "steps": "[{\"step\": 1, \"action\": \"Register online 24 hours a day\", \"details\": null}, {\"step\": 2, \"action\": \"Register by phone at 8"
+  },
+  {
+    "id": 498,
+    "name": "Victim Supports Outreach Program",
+    "cat": "Domestic Violence Support",
+    "desc": "The Victim Supports Outreach Program provides outreach support services for immigrant children, youth, and families experiencing family violence. Services include customized individual, couple, and family counseling, culturally sensitive first-langua",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-263-4414 to schedule an appointment\",\"details\":\"CIWA — Victim Supports Outreach Program. A"
+  },
+  {
+    "id": 501,
+    "name": "WINGS of Providence Society — Second-Stage Shelter for Women Fleeing Violence",
+    "cat": "Domestic Violence Support",
+    "desc": "WINGS is a second-stage shelter providing safe, stable, and supportive medium-term housing (6-24 months) and wrap-around supports for women and their children fleeing family violence. The Family Wellness & Empowerment Program offers trauma-informed h",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-426-4985 to set up an intake interview\",\"details\":\"WINGS of Providence Society — housing s"
+  },
+  {
+    "id": 503,
+    "name": "enCompass Community Safety Agency - Nalah Centre",
+    "cat": "Domestic Violence Support",
+    "desc": "enCompass Community Safety Agency's Nalah Centre provides support and advocacy for victims of intimate partner violence involved in criminal docket court. Services include information on the court process, updates on court proceedings, assistance wit",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-540-7880 or receive referral from Edmonton Police Service\",\"details\":\"enCompass Community "
+  },
+  {
+    "id": 504,
+    "name": "enCompass Community Safety Agency - Domestic Violence Complainant Program",
+    "cat": "Domestic Violence Support",
+    "desc": "The Domestic Violence Complainant Assistance Program (DVCAP) provides support to victims of family violence who are required to testify in Domestic Violence Court or Queen's Bench criminal courts in Edmonton. Services include court updates, communica",
+    "steps": "[{\"step\":1,\"action\":\"Contact at least one month prior to trial, or as soon as possible\",\"details\":\"Call (780) 422-0721 o"
+  },
+  {
+    "id": 505,
+    "name": "Rowan House Society - Domestic Violence and Abuse Emergency Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "Rowan House Society provides a 30-day emergency shelter for women with or without children who have escaped violent and abusive situations. The organization is dedicated to crisis intervention, long-term support, and preventative education to help br",
+    "steps": "[{\"step\": 1, \"action\": \"Call or Text\", \"details\": \"Call or text 403-652-3311 to reach Rowan House's 24-Hour Support Line"
+  },
+  {
+    "id": 506,
+    "name": "TODAY Family Violence Help Centre - Family Violence Training and Education",
+    "cat": "Domestic Violence Support",
+    "desc": "The TODAY Family Violence Help Centre offers training on the prevention of family violence to the general public, as well as workshops on family violence for service providers. This organization is dedicated to providing comprehensive services for in",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 455-6880 or email monique.methot@thetodaycentre.ca\",\"details\":\"The TODAY Family Violence"
+  },
+  {
+    "id": 507,
+    "name": "Elk Point Healthcare Centre — Domestic Abuse Response Team (DART)",
+    "cat": "Domestic Violence Support",
+    "desc": "The Addiction and Mental Health - Domestic Abuse Response Team (DART) at the Elk Point Healthcare Centre offers specialized support to individuals experiencing domestic violence. This service provides emotional support, safety planning, and referrals",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-877-303-2642 to disclose concerns of domestic violence\",\"details\":\"AHS — Domestic Abuse Resp"
+  },
+  {
+    "id": 508,
+    "name": "Harbour House — Women's Emergency Shelter (Lethbridge)",
+    "cat": "Domestic Violence Support",
+    "desc": "Harbour House, operated by YWCA Lethbridge & District, is a 24-bed emergency shelter for women and children fleeing domestic violence. Accommodations are provided for up to 21 days, with 24-hour access to counseling and support services. The shelter ",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24-hour crisis line at 1-866-296-0447 or 403-320-1881\",\"details\":\"Harbour House — emergenc"
+  },
+  {
+    "id": 509,
+    "name": "Taber Safe Haven Women's Shelter Society",
+    "cat": "Domestic Violence Support",
+    "desc": "The Taber Safe Haven Women's Shelter Society is a registered not-for-profit organization dedicated to addressing the community's need for comprehensive family violence services. Their mission is to stop and prevent all forms of violence and enhance t",
+    "steps": "[{\"step\":1,\"action\":\"Call for 24/7 emotional support\",\"details\":\"Taber Safe Haven provides around-the-clock access to em"
+  },
+  {
+    "id": 511,
+    "name": "Women's Shelter and Support - Lethbridge",
+    "cat": "Domestic Violence Support",
+    "desc": "The YWCA Lethbridge and District offers comprehensive support services for women in Lethbridge, Alberta. Their programs aim to empower women, support equality, and promote overall wellness, providing safe, confidential accommodations and outreach sup",
+    "steps": "[{\"step\": 1, \"action\": \"For Emergency Shelter: Contact the crisis line at 403-320-1881 any time, day or night, for immed"
+  },
+  {
+    "id": 512,
+    "name": "Hope Transitional Housing",
+    "cat": "Domestic Violence Support",
+    "desc": "Hope Transitional Housing offers medium-term housing for individuals transitioning from emergency shelters, with stays typically lasting between six and 18 months. Residents live in private units within a shared environment that fosters safety, belon",
+    "steps": "[{\"step\": 1, \"action\": \"Visit the YWCA website to download the referral package\", \"details\": null}, {\"step\": 2, \"action\""
+  },
+  {
+    "id": 513,
+    "name": "Central Alberta Outreach Society - Domestic Violence Support",
+    "cat": "Domestic Violence Support",
+    "desc": "The Central Alberta Outreach Society, also known as The Outreach Centre, provides essential support to individuals affected by domestic violence. Their services include crisis support and counselling, aimed at assisting those dealing with domestic ab",
+    "steps": "[{\"step\": 1, \"action\": \"Call to access domestic violence support\", \"details\": \"Phone first, Monday \\u2013 Friday from 9a"
+  },
+  {
+    "id": 514,
+    "name": "Central Alberta Outreach Society - Julietta's Place",
+    "cat": "Domestic Violence Support",
+    "desc": "Julietta's Place is a second-stage women's shelter operated by The Outreach Centre, designed to support women and children fleeing domestic violence. The facility offers an 18-month housing program with 10 affordable, secure units where families part",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the organization\", \"details\": \"via phone or in person at the contact numbers above\"}, {\""
+  },
+  {
+    "id": 515,
+    "name": "Medicine Hat Women's Shelter Society - Outreach Services",
+    "cat": "Domestic Violence Support",
+    "desc": "Outreach Services offer one-on-one support, educational groups, and advocacy for those impacted by family violence. Services are available at the community outreach office, the emergency shelter, or with outreach staff at the Medicine Hat Police Stat",
+    "steps": "[{\"step\":1,\"action\":\"Contact the 24-hour helpline at 403-529-1091\",\"details\":\"Medicine Hat Women's Shelter Society — Out"
+  },
+  {
+    "id": 516,
+    "name": "Grande Prairie John Howard Society - Domestic Violence Treatment Services",
+    "cat": "Domestic Violence Support",
+    "desc": "The John Howard Society of Grande Prairie offers Domestic Violence Treatment Services through their Renaissance and Nexus programs, designed for individuals who have used abuse in intimate relationships. These programs aim to help participants take r",
+    "steps": "[{\"step\":1,\"action\":\"Contact Grande Prairie John Howard Society at 780-532-0373\",\"details\":\"Domestic Violence Treatment "
+  },
+  {
+    "id": 517,
+    "name": "Odyssey House — Women's Shelter & Crisis Housing",
+    "cat": "Crisis Services",
+    "desc": "Odyssey House is a registered charity and not-for-profit organization dedicated to providing safe, secure, and supportive accommodation for women and their children who are victims of domestic violence, in crisis, or in need of housing alternatives. ",
+    "steps": "[{\"step\":1,\"action\":\"Call or text the 24-hour crisis line at 780-532-2672\",\"details\":\"Odyssey House is a registered char"
+  },
+  {
+    "id": 518,
+    "name": "Crossroads Resource Centre and Women's Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "Crossroads Resource Centre and Women's Shelter is a non-profit organization located in Fairview, Alberta, dedicated to providing emergency accommodation and support services for women, children, and pets in crisis situations. They offer safe shelter ",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 835-5550\",\"details\":\"Located on Treaty 8 Territory. Crossroads aims to eliminate oppress"
+  },
+  {
+    "id": 520,
+    "name": "Family Access Services — Safe Visitation & Family Violence Support (Wood Buffalo)",
+    "cat": "Domestic Violence Support",
+    "desc": "The HUB Family Resource Centre is dedicated to encouraging the best possible development of healthy children, families, and communities by providing programming and services to families residing in the Regional Municipality of Wood Buffalo. They offe",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Systems Navigator to find out more about how the service can help\", \"details\": \"Not sure"
+  },
+  {
+    "id": 521,
+    "name": "Calgary Women's Emergency Shelter",
+    "cat": "Domestic Violence Support",
+    "desc": "Provides emergency shelter and support services for women and children fleeing domestic violence. The Calgary Immigrant Women's Association (CIWA) offers a range of programs to support immigrant and refugee women, including emergency housing through ",
+    "steps": "[{\"step\":1,\"action\":\"Call the 24-hour crisis line at (403) 234-7233\",\"details\":\"Calgary Women's Emergency Shelter provid"
+  },
+  {
+    "id": 522,
+    "name": "Maskan Family Association - Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Maskan Family Association provides emergency shelter services for individuals and families in need. As a registered charity, it aims to create an enabling environment to combat obstacles to prosperity and harmony, particularly focusing on women, ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-971-2774 to speak with a representative\",\"details\":\"Maskan Family Association — Emergency "
+  },
+  {
+    "id": 523,
+    "name": "YW Calgary Transitional Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "YW Calgary's Transitional Housing program offers safe and affordable housing for women in crisis or transition. The program supports women in overcoming trauma, focusing on healing, developing economic stability, and securing permanent housing. While",
+    "steps": "[{\"step\":1,\"action\":\"Call YW's 24/7 Crisis Line at 403-266-0707\",\"details\":\"YW Transitional Housing — safe and affordabl"
+  },
+  {
+    "id": 528,
+    "name": "Bent Arrow Traditional Healing Society - Nikihk Housing First",
+    "cat": "Emergency Shelter",
+    "desc": "Nikihk Housing First is a program offered by the Bent Arrow Traditional Healing Society in partnership with Homeward Trust Edmonton. It provides long-term support for Indigenous individuals and families experiencing homelessness in Edmonton, assistin",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 481-3451 or email reception@bentarrow.ca\",\"details\":\"Nikihk Housing First, in partnershi"
+  },
+  {
+    "id": 529,
+    "name": "Community of Hope Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Community of Hope Emergency Shelter provides safety and support to up to 96 women and gender-diverse individuals on a first-come, first-served basis. Services include day programs, life-skills workshops, recovery support, and housing advocacy. Th",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to the shelter\",\"details\":\"Located at 504 Belvedere Way (Station Pointe), Edmonton. No appo"
+  },
+  {
+    "id": 532,
+    "name": "Nexus Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "Provided by Youth Empowerment and Support Services (YESS), Nexus offers emergency shelter and support services for youth aged 15 to 24, including access to basic needs, case management, and life skills development. This facility provides immediate an",
+    "steps": "[{\"step\":1,\"action\":\"Call or walk in — open 24/7\",\"details\":\"YESS Youth Support Centre in Edmonton provides immediate, l"
+  },
+  {
+    "id": 533,
+    "name": "Hope Mission - Emergency Shelter and Support Services",
+    "cat": "Emergency Shelter",
+    "desc": "Offered by Hope Mission Edmonton, this service provides emergency shelter and support for individuals experiencing homelessness, including access to basic needs, case management, and spiritual care.",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-819-0015 before coming to ensure a staff member can meet you\",\"details\":\"Hope Mission — fo"
+  },
+  {
+    "id": 534,
+    "name": "Extreme Weather Temporary Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Extreme Weather Temporary Emergency Shelter, operated by Al Rashid Mosque, provides up to 50 temporary overnight spaces to expand shelter capacity during City of Edmonton extreme weather activations. This service ensures the safety of individuals",
+    "steps": "[{\"step\":1,\"action\":\"Access shelter during extreme weather\",\"details\":\"Al Rashid Mosque in Edmonton operates temporary e"
+  },
+  {
+    "id": 535,
+    "name": "Community Impact Centres — Drop-In Meals, Clothing & Homelessness Support",
+    "cat": "Emergency Shelter",
+    "desc": "The Community Impact Centre at Strathcona Baptist Church, operated by The Mustard Seed, provides a safe and inclusive space for individuals experiencing homelessness and poverty. It offers essential services such as drop-in support, community meals, ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-919-1735 or visit during operating hours\",\"details\":\"Community Impact Centres operated by "
+  },
+  {
+    "id": 536,
+    "name": "University of Alberta - Residence Safe House Program",
+    "cat": "Campus & Student Services",
+    "desc": "The Residence Safe House Program, offered by the University of Alberta, provides temporary emergency accommodation to registered students facing immediate personal safety risks, intolerable living conditions, or financial hardship. This program aims ",
+    "steps": "[{\"step\": 1, \"action\": \"During daytime business hours, make referral to Dean of Students Office\", \"details\": \"Contact st"
+  },
+  {
+    "id": 539,
+    "name": "WIN House - Women in Need III",
+    "cat": "Domestic Violence Support",
+    "desc": "Women In Need III provides emergency shelter and support services for women and children escaping domestic violence. It is part of the Edmonton Women's Shelter Limited (WIN House) and focuses on assisting women who are newcomers to Canada. The shelte",
+    "steps": "[{\"step\":1,\"action\":\"Call 24/7 Helpline at 780-479-0058\",\"details\":\"WIN House III — specialized shelter for women who ar"
+  },
+  {
+    "id": 540,
+    "name": "Jessica Martel Memorial Foundation — Domestic Violence Shelter & Support",
+    "cat": "Domestic Violence Support",
+    "desc": "The Jessica Martel Memorial Foundation (JMMF) is a non-profit organization based in Morinville, Alberta, dedicated to supporting individuals and families affected by domestic violence. Established in 2012, JMMF operates Jessie's House, a 35-bed emerg",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Crisis Line/Shelter intake at 1-866-939-2850\", \"details\": \"available 24/7\"}, {\"step\": 2"
+  },
+  {
+    "id": 541,
+    "name": "HousingConnect",
+    "cat": "Emergency Shelter",
+    "desc": "HousingConnect is a service provided by the Lethbridge and Regional Community Housing Corporation, aimed at supporting individuals at risk of homelessness or eviction. The program focuses on identifying and reducing barriers to housing stability whil",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 329-0556 or email info@lethbridgehousing.ca\",\"details\":\"HousingConnect is provided by th"
+  },
+  {
+    "id": 542,
+    "name": "Safe Harbour Society - Coordinated Entry Housing Program",
+    "cat": "Emergency Shelter",
+    "desc": "The Safe Harbour Society's Coordinated Entry Housing Program in Red Deer, Alberta, is designed to assist individuals experiencing homelessness by providing access to housing and support services. This program aims to meet the needs of the most vulner",
+    "steps": "[{\"step\":1,\"action\":\"Contact Safe Harbour Society at 403-347-0181\",\"details\":\"Safe Harbour Society — Coordinated Entry H"
+  },
+  {
+    "id": 543,
+    "name": "Central Alberta Outreach Society - Red Deer Housing Team",
+    "cat": "Emergency Shelter",
+    "desc": "The Central Alberta Outreach Society - Red Deer Housing Team is a non-profit organization dedicated to assisting individuals and families experiencing chronic and episodic homelessness. They employ the Coordinated Access Process (CAP) to match client",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-347-2480 to connect with an Outreach Worker\",\"details\":\"Red Deer Housing Team using Housin"
+  },
+  {
+    "id": 545,
+    "name": "Youth HQ - 49th Street Youth Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The 49th Street Youth Shelter, operated by Youth HQ, is a 12-bed facility located in Red Deer, Alberta. It provides a safe and supportive environment for youth aged 12 to 17 who are experiencing crises that prevent them from having a safe place to st",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis line at 403-341-3190 or walk in\",\"details\":\"Available 24 hours a day, 7 days a week"
+  },
+  {
+    "id": 547,
+    "name": "Wapiti House Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "Wapiti House Emergency Shelter, operated by the Wapiti Community Support Association, offers essential shelter and support services to individuals experiencing homelessness in Grande Prairie, Alberta. The shelter provides a 24-hour cot program for ad",
+    "steps": "[{\"step\":1,\"action\":\"Walk in for emergency shelter\",\"details\":\"Wapiti House in Grande Prairie offers 55 emergency shelte"
+  },
+  {
+    "id": 548,
+    "name": "Sunrise House - the Loft Program",
+    "cat": "Emergency Shelter",
+    "desc": "The Loft Program, offered by Sunrise House in Grande Prairie, Alberta, provides transitional housing for youth aged 15 to 24. This program aims to prepare participants for independent living through life skills training in areas such as budgeting, co",
+    "steps": "[{\"step\": 1, \"action\": \"Warm Welcome\", \"details\": \"Upon arrival, you'll be greeted by our intake team, who will ask a fe"
+  },
+  {
+    "id": 549,
+    "name": "Centerpoint Facilitation - Rural Housing Outreach",
+    "cat": "Emergency Shelter",
+    "desc": "Centerpoint Facilitation's Rural Housing Outreach program offers support for individuals or families experiencing homelessness or those at imminent risk of homelessness. Services include information and connections to resources, as well as support fo",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Coordinated Access Intake Line\", \"details\": \"780-518-4833 - this is the main access poi"
+  },
+  {
+    "id": 551,
+    "name": "Centre of Hope — Homelessness & Housing Support (Fort McMurray)",
+    "cat": "Emergency Shelter",
+    "desc": "The Centre of Hope Non Profit Society of Fort McMurray is a registered not-for-profit organization dedicated to supporting individuals experiencing homelessness. They assist clients in navigating the housing system and obtaining shelter through priva",
+    "steps": "[{\"step\": 1, \"action\": \"Intake at Daytime Shelter\", \"details\": \"During intake, everyone feels welcomed and supported\"}, "
+  },
+  {
+    "id": 552,
+    "name": "City of Calgary - Calgary Community Food Map",
+    "cat": "Food Banks & Meals",
+    "desc": "The 'City of Calgary - Calgary Community Food Map' is a service provided by the City of Calgary to offer residents a comprehensive list of free and low-cost food, meal, and grocery options in Calgary. This resource helps individuals and families find",
+    "steps": "[{\"step\":1,\"action\":\"Visit calgary.ca and search for 'Community Food Map'\",\"details\":\"Interactive map and list of free a"
+  },
+  {
+    "id": 553,
+    "name": "Dashmesh Culture Centre - Meals and Food Hampers",
+    "cat": "Food Banks & Meals",
+    "desc": "The Dashmesh Culture Centre (DCC) provides essential food hampers containing breakfast items, canned goods, dinner foods, kids' snacks, and hygiene products to community members in need. Additionally, the No Hungry Tummy initiative offers fresh hot m",
+    "steps": "[{\"step\":1,\"action\":\"Contact Dashmesh Culture Centre at 403-590-0970\",\"details\":\"Dashmesh Culture Centre — free meals an"
+  },
+  {
+    "id": 554,
+    "name": "Calgary Meals on Wheels - Low Cost Home Meal Delivery Services",
+    "cat": "Food Banks & Meals",
+    "desc": "Calgary Meals on Wheels is a registered charity and not-for-profit organization dedicated to preparing and delivering nutritious, quality, and affordable meals to individuals in Calgary, regardless of age or circumstance.",
+    "steps": "[{\"step\":1,\"action\":\"Email signup@mealsonwheels.com or visit the website\",\"details\":\"Calgary Meals on Wheels — low cost "
+  },
+  {
+    "id": 556,
+    "name": "Candora Society of Edmonton — Community Food & Family Programs",
+    "cat": "Food Banks & Meals",
+    "desc": "The Candora Society of Edmonton is a community-based organization dedicated to promoting a safe, healthy environment and positive growth for women, children, and families in Edmonton. They offer a variety of programs and services, including food secu",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-474-5011 or email reception@candorasociety.com\",\"details\":\"CANDORA has served the Beverly,"
+  },
+  {
+    "id": 557,
+    "name": "Edmonton's Food Bank - Warehouse and Gleaning Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton's Food Bank operates a Warehouse and Gleaning Program at 11434 120 Street, Edmonton, AB. This facility serves as a central hub for collecting, storing, repackaging, sorting, and distributing food to over 300 agencies, churches, and food depo",
+    "steps": "[{\"step\": 1, \"action\": \"Fill out online hamper order form or call\", \"details\": \"In need of food support? Fill out our on"
+  },
+  {
+    "id": 558,
+    "name": "Edmonton's Food Bank - Hamper and Food Service Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton's Food Bank operates a Hamper and Food Service Program at their Annex Building, providing emergency food hampers to individuals and families in need. These hampers contain perishable and non-perishable food items designed to last between 2 t",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-425-4190 ext. 228 or visit edmontonsfoodbank.com/need-help\",\"details\":\"Edmonton's Food Ban"
+  },
+  {
+    "id": 559,
+    "name": "Edmonton Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton Meals on Wheels is a non-profit organization dedicated to providing nutritious, homemade meals to individuals facing barriers to preparing their own food. They offer homecooked, healthy meals delivered straight to clients' doors Monday to Fr",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-429-2020 or inquire through emow.ca\",\"details\":\"Edmonton Meals on Wheels — nutritious meal"
+  },
+  {
+    "id": 560,
+    "name": "Mustard Seed - Edmonton - Drop-In Food Pantry",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mustard Seed - Edmonton Drop-In Food Pantry provides non-perishable food items on a first-come, first-served basis to individuals in need. This service is part of The Mustard Seed, a Christian non-profit organization dedicated to alleviating pove",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-833-448-4673 or walk in\",\"details\":\"The Mustard Seed has been a safe, supportive haven for 4"
+  },
+  {
+    "id": 561,
+    "name": "Okotoks Meals on Wheels Society - Meal Delivery",
+    "cat": "Food Banks & Meals",
+    "desc": "The Okotoks Meals on Wheels Society is a registered not-for-profit organization dedicated to delivering hot, nutritious meals to individuals who are unable to prepare or procure food themselves, including seniors and those with disabilities, illness,",
+    "steps": "[{\"step\":1,\"action\":\"Contact Okotoks Meals on Wheels at 403-938-6404\",\"details\":\"Okotoks Meals on Wheels Society — meal "
+  },
+  {
+    "id": 562,
+    "name": "University of Alberta Students' Union - Campus Food Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "The University of Alberta Students' Union - Campus Food Bank is a registered charity dedicated to combating food insecurity among University of Alberta students, staff, alumni (up to five years post-graduation), and their families. It offers various ",
+    "steps": "[{\"step\":1,\"action\":\"Visit Campus Food Bank in SUB 1-81 or call 780-492-8677\",\"details\":\"Located on first floor of SUB b"
+  },
+  {
+    "id": 563,
+    "name": "Interfaith Food Bank Society of Lethbridge - Emergency Food Services",
+    "cat": "Food Banks & Meals",
+    "desc": "The Interfaith Food Bank Society of Lethbridge provides emergency food services to individuals and families in need. They offer food hampers, food supplements, and other emergency food resources, including monthly food hampers and daily food suppleme",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours at 403-320-8779\",\"details\":\"Interfaith Food Bank Society of Lethbrid"
+  },
+  {
+    "id": 564,
+    "name": "Lethbridge Soup Kitchen",
+    "cat": "Food Banks & Meals",
+    "desc": "The Lethbridge Soup Kitchen is a registered charity and not-for-profit organization dedicated to providing hot, nutritious meals to unhoused individuals. They offer free drop-in hot meals, ensuring that those in need have access to essential nourishm",
+    "steps": "[{\"step\":1,\"action\":\"Walk in for a meal\",\"details\":\"No appointment or registration needed. The Lethbridge Soup Kitchen p"
+  },
+  {
+    "id": 565,
+    "name": "Lethbridge Senior Citizens Organization - Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "The Lethbridge Senior Citizens Organization (LSCO) offers a Meals on Wheels program that provides nutritious, affordable, hot meals delivered to your door five days a week. This service is available to individuals aged 60 and over, or those under 60 ",
+    "steps": "[{\"step\":1,\"action\":\"Confirm eligibility\",\"details\":\"Must be 60+ years of age, or under 60 receiving AISH/Income Support"
+  },
+  {
+    "id": 566,
+    "name": "MyCityCare - Basic Needs Program",
+    "cat": "Food Banks & Meals",
+    "desc": "The MyCityCare - Basic Needs Program offers essential support to individuals and families in need, including free clothing, emergency food supplies, seasonal food hampers, and lunch programs. Additionally, the program assists with school supplies and",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 942-1378 or email lethbridge@mycitycare.ca\",\"details\":\"MyCityCare in Lethbridge provides"
+  },
+  {
+    "id": 567,
+    "name": "Red Deer Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "Red Deer Meals on Wheels is a non-profit organization dedicated to delivering hot, nutritious noonday meals to individuals in Red Deer who are unable to prepare or obtain meals for themselves. This service aims to help clients maintain their independ",
+    "steps": "[{\"step\": 1, \"action\": \"Call Red Deer Meals on Wheels at their office to inquire about meal delivery services and discus"
+  },
+  {
+    "id": 568,
+    "name": "Mustard Seed - Red Deer - Community Impact Centre",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mustard Seed - Red Deer - Community Impact Centre is a registered not-for-profit organization dedicated to ensuring that individuals experiencing poverty and homelessness have their basic needs met. It provides a drop-in location for individuals ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours - no application needed\",\"details\":\"Call (587) 457-5473 or email inf"
+  },
+  {
+    "id": 569,
+    "name": "Red Deer Christmas Bureau Society",
+    "cat": "Food Banks & Meals",
+    "desc": "The Red Deer Christmas Bureau Society is a non-profit organization dedicated to assisting children and families in need during the Christmas season. Their mission is to ensure every child receives a toy on Christmas morning and that all those in need",
+    "steps": "[{\"step\": 1, \"action\": \"Come in person to be interviewed with all required documentation\", \"details\": \"NO CHILDREN ARE A"
+  },
+  {
+    "id": 570,
+    "name": "Root Cellar Food and Wellness Hub - Emergency Food Pantry",
+    "cat": "Food Banks & Meals",
+    "desc": "The Root Cellar Food and Wellness Hub, also known as the Medicine Hat and District Food Bank Association, is a registered not-for-profit organization dedicated to providing accessible food support to individuals and families in need. They offer servi",
+    "steps": "[{\"step\": 1, \"action\": \"Call 403-528-4313 Ext 1 or email intake@mhfoodbank.com to make an appointment\", \"details\": \"Leav"
+  },
+  {
+    "id": 571,
+    "name": "Furry Friends Food Foundation",
+    "cat": "Food Banks & Meals",
+    "desc": "The Furry Friends Food Foundation is a registered not-for-profit organization dedicated to providing support with pet food and supplies to those in need. They operate a pet food bank and accept donations to help pet owners facing financial difficulti",
+    "steps": "[{\"step\":1,\"action\":\"Contact Furry Friends Food Foundation\",\"details\":\"Call (403) 504-9587 or email furryfriendsfoodfoun"
+  },
+  {
+    "id": 572,
+    "name": "Community Food Connections Association - Good Food Club",
+    "cat": "Food Banks & Meals",
+    "desc": "The Community Food Connections Association (CFCA) operates the Good Food Club, a program that offers fresh fruits and vegetables at wholesale prices through bulk buying. This initiative aims to provide affordable access to healthy food options for re",
+    "steps": "[{\"step\": 1, \"action\": \"Register as a member\", \"details\": \"Registration is required to access the service - contact to r"
+  },
+  {
+    "id": 573,
+    "name": "Family and Community Support Services of the County of Grande Prairie - Food Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "The Family and Community Support Services (FCSS) of the County of Grande Prairie offers a Food Bank at the Wellington Resource Centre. This service provides weekly food assistance and Christmas hampers to support residents in developing their interes",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 567-2843 or email fcss@countygp.ab.ca\",\"details\":\"FCSS of the County of Grande Prairie o"
+  },
+  {
+    "id": 574,
+    "name": "Grande Prairie Friendship Centre - Community Kitchen",
+    "cat": "Food Banks & Meals",
+    "desc": "The Community Kitchen at the Grande Prairie Friendship Centre offers free meals to the community, including breakfasts, lunches, and suppers, along with outreach supports. This service aims to provide nourishment and support to all community members ",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Friendship Centre\",\"details\":\"Founded in 1965 to serve Indigenous people in Grande Prai"
+  },
+  {
+    "id": 575,
+    "name": "Northreach Society - Helping Hands",
+    "cat": "Food Banks & Meals",
+    "desc": "Northreach Society's Helping Hands program offers a food security initiative in the city and county of Grande Prairie. This program provides families and individuals with access to a pantry where they can select groceries, emphasizing fresh and froze",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-538-3388 or visit northreach.ca to apply\",\"details\":\"Northreach Society Helping Hands — co"
+  },
+  {
+    "id": 578,
+    "name": "AHS — Opioid Dependency Program (Edmonton)",
+    "cat": "Addiction Treatment",
+    "desc": "The Opioid Dependency Program (ODP) provides initiation and maintenance of Opioid Agonist Treatment (OAT) medications, such as methadone and Suboxone®, to individuals with opioid use disorder. Services include ongoing support and monitoring, health, ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in or call 780-342-7810\",\"details\":\"Edmonton 106th Street Clinic at 10225 106 Street. No appoi"
+  },
+  {
+    "id": 579,
+    "name": "Lakeview Recovery Community — Men's Residential Addiction Treatment",
+    "cat": "Addiction Treatment",
+    "desc": "Lakeview Manor provides a residential treatment program for adult men living with addiction, focusing on mental and physical well-being, lifestyle change, and development within a therapeutic community.",
+    "steps": "[{\"step\":1,\"action\":\"Visit lsaf.ca or call 844-633-1001 to submit an application\",\"details\":\"Lac Ste. Anne Foundation — "
+  },
+  {
+    "id": 580,
+    "name": "Centre for Sexuality - Sexual Health, Gender and Sexual Diversity Counselling Support",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The Centre for Sexuality provides short-term counselling to support decisions related to sexuality, reproductive health, relationships, and gender and sexual diversity. Their services include support for gender identity and sexual orientation, coming",
+    "steps": "[{\"step\": 1, \"action\": \"Complete counselling intake form\", \"details\": \"To book a free supportive counselling session, co"
+  },
+  {
+    "id": 581,
+    "name": "Centre for Sexuality - Sexual Health Programs for Parents and LGBTQ+",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The Centre for Sexuality offers a range of programs and services to support healthy sexuality across the lifespan, including sexual health programs for parents and the LGBTQ+ community. They provide resources, workshops, and information nights for pa",
+    "steps": "[{\"step\":1,\"action\":\"Contact Centre for Sexuality\",\"details\":\"A community-based organization delivering sexual health ed"
+  },
+  {
+    "id": 582,
+    "name": "Trellis Aura — 2SLGBTQ+ Youth Housing First Program",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "Aura is a housing first program by Trellis for 2SLGBTQIA+, gender nonbinary, and gender nonconforming youth aged 14 to 24 who are at risk of or currently experiencing homelessness. The program provides support, resources, and services to help partici",
+    "steps": "[{\"step\":1,\"action\":\"Contact Trellis about Aura\",\"details\":\"Aura is a housing-first program for youth ages 14–24 who are"
+  },
+  {
+    "id": 584,
+    "name": "PFLAG Red Deer",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The PFLAG Red Deer Chapter provides peer support, education, and advocacy for 2SLGBTQ+ individuals and their families.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-597-8496 or email for information\",\"details\":\"PFLAG Canada — family for all. Peer-to-peer "
+  },
+  {
+    "id": 587,
+    "name": "YW Calgary - Family Resource Network",
+    "cat": "Mental Health & Counselling",
+    "desc": "YW Calgary's Family Resource Network offers a range of free programs designed to support families with children up to 18 years old. These programs aim to strengthen family relationships, teach coping skills, and promote child and youth development th",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-262-0497 or email familynetwork@ywcalgary.ca\",\"details\":\"Free virtual workshops for parent"
+  },
+  {
+    "id": 588,
+    "name": "Calgary Family Therapy Centre - Calgary Family Therapy Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Calgary Family Therapy Centre provides family therapy services for families with children or adolescents experiencing emotional or behavioral problems. Services include methods to manage these issues, a primary therapist for clarifying problems, ",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 802-1680 or email cftc@familytherapy.org\",\"details\":\"The Calgary Family Therapy Centre p"
+  },
+  {
+    "id": 589,
+    "name": "YW Calgary - Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "YW Calgary offers comprehensive counselling services for individuals and families, including individual adult counselling, child counselling for children aged 4 to 17, child and family counselling, group counselling, and mindfulness and healthy relat",
+    "steps": "[{\"step\":1,\"action\":\"Call YW Calgary Crisis Line at 403-266-0707 or contact for counselling\",\"details\":\"24-hour crisis l"
+  },
+  {
+    "id": 590,
+    "name": "AMARIS Adoption and Family Support Services - Adoption Counselling and Consulting",
+    "cat": "Mental Health & Counselling",
+    "desc": "AMARIS Adoption and Family Support Services provides counselling for unplanned pregnancies and support in creating adoption plans. They offer training for international adoptions, assistance to birth families in making adoption plans, and counselling",
+    "steps": "[{\"step\":1,\"action\":\"Contact AMARIS Adoption or visit amarisadoption.com\",\"details\":\"Alberta-based adoption agency focus"
+  },
+  {
+    "id": 591,
+    "name": "Family and Community Support Services of High River - Foothills Community Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Foothills Community Counselling program, offered by the Family and Community Support Services (FCSS) of High River, provides affordable and professional counselling services to residents in the Foothills area. These services are available to indi",
+    "steps": "[{\"step\":1,\"action\":\"Contact to begin intake\",\"details\":\"Call 403-603-3549 (leave voicemail) or email fcc@highriver.ca. "
+  },
+  {
+    "id": 592,
+    "name": "Calgary Immigrant Women's Association - Family Conflict Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Calgary Immigrant Women's Association (CIWA) offers a Family Conflict Program designed to provide professional, culturally sensitive counseling for immigrant women and their families facing challenges such as relationship issues, abuse, violence,",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-263-4414 or email welcome@ciwa.org to book an appointment\",\"details\":\"50+ programs support"
+  },
+  {
+    "id": 593,
+    "name": "Radiance Family Society - Centre Safe Housing",
+    "cat": "Transitional Housing",
+    "desc": "The Centre Safe Housing program offers a one-year residential facility for women and children who have experienced family violence and abuse. Services include individual, child, and youth counseling, facilitated group meetings, and 24 suites availabl",
+    "steps": "[{\"step\":1,\"action\":\"Contact shared intake at intake@calgarysecondstage.com\",\"details\":\"Centre Safe Housing is a one-yea"
+  },
+  {
+    "id": 594,
+    "name": "McMan Youth, Family and Community Services Association of Edmonton and North Region - Family Intervention Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "McMan Youth, Family and Community Services Association of Edmonton and North Region offers a range of family counseling services, including in-home mediation, counseling, and support services. They provide support to families and youth within their c",
+    "steps": "[{\"step\":1,\"action\":\"Contact McMan Edmonton and North\",\"details\":\"Email mcman@mcman.ca or visit 11016 127 Street NW, Edm"
+  },
+  {
+    "id": 595,
+    "name": "Native Counselling Services of Alberta - Family Reconciliation",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Family Reconciliation Program, offered by Native Counselling Services of Alberta (NCSA), utilizes traditional Indigenous circle processes to facilitate discussions among family members, caseworkers, and professionals regarding the safety and well",
+    "steps": "[{\"step\":1,\"action\":\"Contact Native Counselling Services of Alberta or visit ncsa.ca\",\"details\":\"Over 50 years of social"
+  },
+  {
+    "id": 596,
+    "name": "Family and Community Support Services of Barons-Eureka-Warner - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services of Barons-Eureka-Warner offers free individual, couples, family, and group goal-directed counselling sessions. These services are available online, by phone, and in person.",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment online or call\",\"details\":\"Visit fcss.ca to book online, or contact FCSS main o"
+  },
+  {
+    "id": 597,
+    "name": "Catholic Social Services - Counselling - Individual and Family Therapy Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "Catholic Social Services offers therapeutic counselling services to individuals, couples, and families in Lloydminster, Alberta. These services are available in-person, by phone, or through video conferencing, catering to clients' preferences and nee",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services or visit cssalberta.ca\",\"details\":\"Provides counselling, domestic "
+  },
+  {
+    "id": 598,
+    "name": "Family and Community Support Services of Cold Lake and District - Counselling Service",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services of Cold Lake and District (FCSS) is a municipal government organization dedicated to providing locally driven preventative social initiatives aimed at improving the quality of life for individuals and families in",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-594-4495 or email fcss@coldlake.com\",\"details\":\"FCSS of Cold Lake and District provides lo"
+  },
+  {
+    "id": 599,
+    "name": "Family and Community Support Services of Fort Saskatchewan - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services (FCSS) of Fort Saskatchewan is a municipal government organization dedicated to designing, delivering, and supporting prevention and intervention-focused social programs that foster the well-being of children, ad",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-992-6267 or email fcssinfo@fortsask.ca\",\"details\":\"FCSS Fort Saskatchewan provides prevent"
+  },
+  {
+    "id": 600,
+    "name": "Abide Adoption and Family Services - Adoption and Pregnancy Options Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Abide Adoption and Family Services provides adoption-related services for local/domestic, international, step-parent, and private direct adoptions, including pregnancy options counselling and post-adoption support, from a pro-choice perspective. They",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-596-5380 or reach out online\",\"details\":\"Abide (formerly A Small Miracle Adoption) is a li"
+  }
+]

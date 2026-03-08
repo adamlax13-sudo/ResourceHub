@@ -1,0 +1,702 @@
+[
+  {
+    "id": 3175,
+    "name": "Taproot - People with Diverse Abilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Support services helping people with diverse abilities thrive in their communities. Provides residential supports, day programs, community inclusion activities, and life skills development.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Taproot at 780-439-5087 or info@taproot.ca\",\"details\":\"Taproot — People with Diverse Abilit"
+  },
+  {
+    "id": 3176,
+    "name": "Unlimited Potential - Group Care",
+    "cat": "Youth Services",
+    "desc": "Individualized residential care programs for children and youth in intensive, intermediate, and supported independent group care settings. Provides structured living environments with therapeutic support and individualized programming.",
+    "steps": "[{\"step\":1,\"action\":\"Referral from Alberta Children's Services\",\"details\":\"Unlimited Potential — Group Care program. Ref"
+  },
+  {
+    "id": 3177,
+    "name": "Unlimited Potential - Mental Health Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Support for adults with mental health diagnoses through group care environments and employment skills development. Provides structured support, community integration, and skill-building for individuals managing mental health challenges.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Unlimited Potential at 780-440-0708 or receive referral from Children's Services\",\"details\""
+  },
+  {
+    "id": 3178,
+    "name": "Unlimited Potential - Foster Care",
+    "cat": "Family & Parenting Support",
+    "desc": "Foster care recruitment, training, and support program. Connects children and youth in need of care with trained foster families and provides ongoing support to both foster parents and children.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Unlimited Potential at 780-440-0708\",\"details\":\"Unlimited Potential — Foster Care program i"
+  },
+  {
+    "id": 3179,
+    "name": "Unlimited Potential - Indigenous Resources",
+    "cat": "Indigenous Services",
+    "desc": "Culturally-specific resources and services for Indigenous children, youth, and families. Provides culturally safe programming, Elder connections, and support grounded in Indigenous perspectives.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Unlimited Potential at 780-440-0708\",\"details\":\"Unlimited Potential — Indigenous Resources "
+  },
+  {
+    "id": 3180,
+    "name": "Inglewood Opportunity Hub - Youth Culinary Arts Program (YCAP)",
+    "cat": "Employment Services",
+    "desc": "9-12 week culinary training program for youth providing hands-on instruction from Red Seal chefs for employment in the restaurant and food industry. Includes food safety certification and job placement support.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Inglewood Opportunity Hub at 403-774-1674\",\"details\":\"Youth Culinary Arts Program (YCAP) — "
+  },
+  {
+    "id": 3181,
+    "name": "Inglewood Opportunity Hub - New Horizon Housing",
+    "cat": "Transitional Housing",
+    "desc": "Stable, affordable housing program for young adults aged 18-29 at risk of homelessness. Established in 2010, provides individualized transition support and case management to help youth achieve housing stability and independence.",
+    "steps": "[{\"step\":1,\"action\":\"Contact SORCe Calgary at 316 7 Avenue SE, Unit #2, or call 403-860-6521\",\"details\":\"Inglewood Oppor"
+  },
+  {
+    "id": 3183,
+    "name": "E4C - Women's Emergency Accommodation Centre",
+    "cat": "Emergency Shelter",
+    "desc": "The Women's Emergency Accommodation Centre (WEAC), operated by E4C, is a secure, supervised emergency shelter offering a refuge from life on the street for women experiencing homelessness. WEAC provides free semi-private rooms, meals, and clothing in",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-423-5302 to register starting at 7 AM daily\",\"details\":\"E4C — Women's Emergency Accommodat"
+  },
+  {
+    "id": 3184,
+    "name": "E4C - Supportive Housing",
+    "cat": "Transitional Housing",
+    "desc": "E4C provides supportive housing in communities such as McCauley where on-site assistance helps people stay housed. The program helps both individuals and families find safe, affordable places to live with ongoing support to maintain housing stability",
+    "steps": "[{\"step\":1,\"action\":\"Contact E4C at 780-424-7543 or info@e4calberta.org\",\"details\":\"E4C Supportive Housing — stable hous"
+  },
+  {
+    "id": 3185,
+    "name": "E4C - Hallway Cafe Program",
+    "cat": "Employment Services",
+    "desc": "The Hallway Cafe Program is a social enterprise cafe that works with at-risk youth ages 16-24 to help them achieve educational and employment success. It offers three streams: outreach (one-to-one support, advocacy, connections to services), employme",
+    "steps": "[{\"step\":1,\"action\":\"Contact E4C at 780-424-7543 to apply for the Hallway Cafe Program\",\"details\":\"E4C — Hallway Cafe Pr"
+  },
+  {
+    "id": 3186,
+    "name": "E4C - Early Learning Program",
+    "cat": "Youth Services",
+    "desc": "E4C's Early Learning program focuses on children from 2.5 to 5 years of age, providing educational programming designed to reach and inspire kids in their formative years. The program helps children living in poverty access early childhood education ",
+    "steps": "[{\"step\":1,\"action\":\"Contact E4C at 780-424-7543 to inquire about locations\",\"details\":\"E4C — Early Learning Program for"
+  },
+  {
+    "id": 3187,
+    "name": "E4C - Make Tax Time Pay",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "E4C's Make Tax Time Pay (MTTP) program provides free tax clinics to help low-income individuals file their taxes and access benefits they are entitled to. The program also offers Financial Empowerment resources including the Financial Connect workboo",
+    "steps": "[{\"step\":1,\"action\":\"Visit the E4C MTTP webpage for clinic locations and schedules\",\"details\":\"E4C — Make Tax Time Pay p"
+  },
+  {
+    "id": 3188,
+    "name": "Elizabeth Fry Society of Calgary - SAGE Program",
+    "cat": "Employment Services",
+    "desc": "SAGE (Support, Advocacy, Growth, Empowerment) is an emotional wellness and employment readiness program. It provides intensified case management support to address core issues related to criminalization, focusing on employment readiness, housing assi",
+    "steps": "[{\"step\":1,\"action\":\"Contact Elizabeth Fry at 403-294-0737 or reception@elizabethfrycalgary.ca\",\"details\":\"Elizabeth Fry"
+  },
+  {
+    "id": 3189,
+    "name": "Elizabeth Fry Society of Calgary - Indigenous Cultural Supports",
+    "cat": "Indigenous Services",
+    "desc": "Indigenous Cultural Supports engage relatives with access to cultural ceremonies, activities, land-based teachings, and language classes focused on individual healing. The program supports the mental health and cultural connection of Indigenous peopl",
+    "steps": "[{\"step\":1,\"action\":\"Contact Elizabeth Fry at 403-294-0737 or reception@elizabethfrycalgary.ca\",\"details\":\"Elizabeth Fry"
+  },
+  {
+    "id": 3190,
+    "name": "Elizabeth Fry Society of Calgary - Soksipaitapiisin Restorative Justice",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Soksipaitapiisin is a restorative justice and case management program providing intensified support to address core issues related to criminalization. The program focuses on reducing overrepresentation of Indigenous women, men, and youth in the crimi",
+    "steps": "[{\"step\":1,\"action\":\"Contact Elizabeth Fry at 403-294-0737 or reception@elizabethfrycalgary.ca\",\"details\":\"Elizabeth Fry"
+  },
+  {
+    "id": 3191,
+    "name": "Elizabeth Fry Society of Calgary - Volunteer Court Program",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "The Volunteer Court Program engages daily with individuals involved in the legal system. Trained volunteers assist with navigation of the court system and provide legal information on court matters, helping people understand their options and rights.",
+    "steps": "[{\"step\":1,\"action\":\"Attend Calgary courts where EFry volunteers are present\",\"details\":\"Elizabeth Fry Society of Calgar"
+  },
+  {
+    "id": 3192,
+    "name": "Elizabeth Fry Society of Calgary - Youth and Gang Mentorship",
+    "cat": "Youth Services",
+    "desc": "The Youth and Gang Mentorship Program provides individualized support from trained and dedicated youth mentors who assist youth experiencing trauma, addiction, mental health challenges, and/or homelessness. The program offers guidance and connection ",
+    "steps": "[{\"step\":1,\"action\":\"Contact Elizabeth Fry at 403-294-0737 or reception@elizabethfrycalgary.ca\",\"details\":\"Elizabeth Fry"
+  },
+  {
+    "id": 3193,
+    "name": "CASA Mental Health - Core Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "Core is the first stop for most families who come to CASA Mental Health. The program serves children ages 3 to 17 and provides general mental health treatment. From Core, the therapist is able to step families up or down into more appropriate levels ",
+    "steps": "[{\"step\":1,\"action\":\"Contact CASA at info@casaservices.org (response within 2 business days)\",\"details\":\"CASA Mental Hea"
+  },
+  {
+    "id": 3194,
+    "name": "CASA Mental Health - FASD Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "CASA's Fetal Alcohol Spectrum Disorder (FASD) program provides information and education to families with children who have a possible or confirmed diagnosis of prenatal alcohol or drug exposure, or fetal alcohol spectrum disorder. The program offers",
+    "steps": "[{\"step\":1,\"action\":\"Contact CASA at info@casaservices.org or 780-400-2271\",\"details\":\"CASA Mental Health — FASD Program"
+  },
+  {
+    "id": 3195,
+    "name": "CASA Mental Health - Trauma Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Trauma Program nurtures connection and safety in the caregiver-child relationship after experiencing trauma. Available in both Edmonton and Calgary, this evidence-based and trauma-informed program helps families heal from traumatic experiences. F",
+    "steps": "[{\"step\":1,\"action\":\"Contact CASA at info@casaservices.org or 780-400-2271\",\"details\":\"CASA Mental Health — Trauma Progr"
+  },
+  {
+    "id": 3196,
+    "name": "CASA Mental Health - Family Therapy Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family Therapy helps families understand each other's needs and find better ways to work together. The program is part of CASA's specialty services focusing on family dynamics and parenting. Free of charge to families.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-400-2271 or email info@casaservices.org\",\"details\":\"CASA Mental Health — child and adolesc"
+  },
+  {
+    "id": 3197,
+    "name": "CASA Mental Health - Indigenous Services",
+    "cat": "Indigenous Services",
+    "desc": "This program provides various streams of service to support the mental health of Indigenous children, youth, and families. All services are based in Indigenous cultures, worldviews, and spiritualities, offering culturally grounded mental health suppo",
+    "steps": "[{\"step\":1,\"action\":\"Contact CASA at info@casaservices.org or 780-400-2271\",\"details\":\"CASA Mental Health — Indigenous S"
+  },
+  {
+    "id": 3198,
+    "name": "CASA Mental Health - Children's Day Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Children's Day Program aims to improve the social and learning skills of children with serious mental health and/or addiction challenges. Children attend the program daily during the school year in a controlled school environment. Free of charge.",
+    "steps": "[{\"step\":1,\"action\":\"Referral through CASA's Core Program or healthcare provider\",\"details\":\"CASA Mental Health — Childr"
+  },
+  {
+    "id": 3199,
+    "name": "CASA Mental Health - CASA House",
+    "cat": "Residential Treatment",
+    "desc": "CASA House is a live-in program for teens who need support with significant mental health and/or addiction challenges. Teens stay at CASA House for an average of four months, receiving intensive treatment in a supportive residential environment. Serv",
+    "steps": "[{\"step\":1,\"action\":\"Referral through healthcare provider or CASA's Core Program at 780-400-2271\",\"details\":\"CASA Mental"
+  },
+  {
+    "id": 3200,
+    "name": "CASA Mental Health - Adolescent Day Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Adolescent Day Program aims to improve the social and learning skills of youth with serious mental health and/or addiction challenges. Youth attend the program daily during the school year in a therapeutic school environment. Free of charge.",
+    "steps": "[{\"step\":1,\"action\":\"Referral through CASA's Core Program or healthcare provider\",\"details\":\"CASA Mental Health — Adoles"
+  },
+  {
+    "id": 3201,
+    "name": "CASA Mental Health - Preschool Day Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Preschool Day Program provides specialized early childhood mental health care in a small classroom setting. Children attend the program two full days a week during the school year, receiving age-appropriate therapeutic support. Free of charge.",
+    "steps": "[{\"step\":1,\"action\":\"Referral through healthcare provider or CASA intake at 780-400-2271\",\"details\":\"CASA Mental Health "
+  },
+  {
+    "id": 3202,
+    "name": "CASA Mental Health - CASA Classrooms",
+    "cat": "Mental Health & Counselling",
+    "desc": "CASA Mental Health Classrooms bring mental health services closer to where kids live and learn by bridging their mental health and school needs. The program operates Alberta-wide, providing specialized classroom environments for students with mental ",
+    "steps": "[{\"step\":1,\"action\":\"Referral through school, healthcare provider, or CASA intake at 780-400-2271\",\"details\":\"CASA Menta"
+  },
+  {
+    "id": 3203,
+    "name": "Calgary John Howard Society - Reintegration Services",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Reintegration Services support adults transitioning from incarceration back into the community. The program provides case management, advocacy, and connections to community resources to help individuals successfully reintegrate and reduce recidivism.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Reintegratio"
+  },
+  {
+    "id": 3204,
+    "name": "Calgary John Howard Society - Adult Housing",
+    "cat": "Transitional Housing",
+    "desc": "CJHS Housing program supports adults involved in the criminal justice system to find and maintain stable housing. The program addresses one of the key barriers to successful community reintegration.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Adult Housin"
+  },
+  {
+    "id": 3205,
+    "name": "Calgary John Howard Society - Employment and Education",
+    "cat": "Employment Services",
+    "desc": "CJHS Employment and Education program helps adults involved in the criminal justice system develop job skills, find employment, and access educational opportunities to support their reintegration into the community.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Employment a"
+  },
+  {
+    "id": 3206,
+    "name": "Calgary John Howard Society - FASD Support Program",
+    "cat": "Disability & Autism Support",
+    "desc": "CJHS FASD Support Program provides specialized support for adults with Fetal Alcohol Spectrum Disorder who are involved in the criminal justice system. The program offers tailored case management and advocacy recognizing the unique challenges of FASD",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — FASD Support"
+  },
+  {
+    "id": 3207,
+    "name": "Calgary John Howard Society - Prison Visitation and After-Prison Outreach",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "The Prison Visitation and After-Prison Outreach program provides support to individuals while incarcerated and continues outreach after release. The program helps maintain community connections during incarceration and supports the transition back in",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Prison Visit"
+  },
+  {
+    "id": 3208,
+    "name": "Calgary John Howard Society - Mentorship for Indigenous Youth",
+    "cat": "Indigenous Services",
+    "desc": "Mentorship for Indigenous Youth provides culturally appropriate mentoring support for Indigenous young people, connecting them with positive role models and community resources. Part of CJHS's Culturally Diverse Programs.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-266-4566 or email info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Mentorship for In"
+  },
+  {
+    "id": 3209,
+    "name": "Calgary John Howard Society - Indigenous Youth Outreach, Advocacy and Support",
+    "cat": "Indigenous Services",
+    "desc": "This program provides outreach, advocacy, and support specifically for Indigenous youth. It addresses the unique challenges faced by Indigenous young people through culturally responsive services and connections to community resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Indigenous Y"
+  },
+  {
+    "id": 3210,
+    "name": "Calgary John Howard Society - Immigrant and BIPOC Youth Outreach Support",
+    "cat": "Newcomer & Settlement",
+    "desc": "This program provides outreach support specifically for immigrant and BIPOC youth, helping them navigate challenges and connect with appropriate community resources and services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Immigrant an"
+  },
+  {
+    "id": 3211,
+    "name": "Calgary John Howard Society - Youth Housing",
+    "cat": "Transitional Housing",
+    "desc": "CJHS Youth Housing supports young people involved in or at risk of involvement with the justice system to find and maintain stable housing, addressing a critical barrier to stability and success.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Youth Housin"
+  },
+  {
+    "id": 3212,
+    "name": "Calgary John Howard Society - Youth Reintegration",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "The Youth Reintegration program supports young people transitioning out of the justice system back into the community, providing case management and connections to education, employment, and community resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Youth Reinte"
+  },
+  {
+    "id": 3213,
+    "name": "Calgary John Howard Society - Restorative Solutions to Conflict",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Restorative Solutions to Conflict offers restorative justice approaches to conflict resolution, providing alternatives to traditional justice system processes. The program facilitates dialogue and resolution between parties affected by conflict or ha",
+    "steps": "[{\"step\":1,\"action\":\"Contact CJHS at 403-266-4566 or info@cjhs.ca\",\"details\":\"Calgary John Howard Society — Restorative "
+  },
+  {
+    "id": 3214,
+    "name": "Kindred - Community Connect YYC",
+    "cat": "Mental Health & Counselling",
+    "desc": "Community Connect YYC is a direct, online booking tool available 24/7 that connects Calgary's communities with affordable and barrier-free access to in-person, phone, or video counselling sessions. The platform removes traditional barriers to accessi",
+    "steps": "[{\"step\":1,\"action\":\"Visit Community Connect YYC online booking portal\",\"details\":\"Kindred — Community Connect YYC couns"
+  },
+  {
+    "id": 3215,
+    "name": "Kindred - Brief Intervention Caregiver Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Specialized support for foster, kinship, and adoptive caregivers to help them provide responsive and trauma-informed care to children within Children's Services. The program equips caregivers with strategies and knowledge to better support children w",
+    "steps": "[{\"step\":1,\"action\":\"Ask your Children's Services case team for a referral\",\"details\":\"Kindred BICS program — accessed o"
+  },
+  {
+    "id": 3216,
+    "name": "Kindred - Healthy Babies Network",
+    "cat": "Family & Parenting Support",
+    "desc": "Network agencies supported by dieticians provide responsive support to marginalized families, connecting parents to network members for information on raising healthy babies and providing needed provisions. The program bridges gaps in support for vul",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kindred at 403-233-2360\",\"details\":\"Kindred — Healthy Babies Network in Calgary.\"},{\"step\":"
+  },
+  {
+    "id": 3217,
+    "name": "Kindred - Parent-Infant Relationship Team",
+    "cat": "Family & Parenting Support",
+    "desc": "The Parent-Infant Relationship Team (PIRT) supports parents and carers experiencing difficulties in early relationships with their infants aged 0-3 years. The program focuses on strengthening the bond between parent and child during the critical earl",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kindred at 403-233-2360\",\"details\":\"Parent-Infant Relationship Team (PIRT) — support for pa"
+  },
+  {
+    "id": 3218,
+    "name": "Kindred - Prenatal Outreach Support Team (POST)",
+    "cat": "Family & Parenting Support",
+    "desc": "POST is a collaborative program involving Kindred, CUPS, and the Calgary Police Service dedicated to early intervention, prevention, and empowering people experiencing vulnerabilities who are pregnant. The program provides wraparound support during a",
+    "steps": "[{\"step\":1,\"action\":\"Referral from CUPS, Calgary Police Service, healthcare provider, or self-referral\",\"details\":\"Kindr"
+  },
+  {
+    "id": 3219,
+    "name": "Kindred - Louise Dean Centre",
+    "cat": "Youth Services",
+    "desc": "Kindred, the Calgary Board of Education, and Alberta Health Services welcome pregnant and parenting students to Louise Dean Centre, a supportive learning environment grounded in kindness and respect at Jack James High School. Students can continue th",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kindred at 403-233-2360 or the Calgary Board of Education\",\"details\":\"Kindred — Louise Dean"
+  },
+  {
+    "id": 3220,
+    "name": "Kindred - Parent Child Learning Centre",
+    "cat": "Family & Parenting Support",
+    "desc": "Situated onsite as part of the Louise Dean Centre at Jack James High School, the Parent Child Learning Centre provides quality childcare and parenting support to young parents attending LDC and community parents with children 0-5 years old.",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 233-2360 for intake\",\"details\":\"The Parent Child Learning Centre is situated onsite at t"
+  },
+  {
+    "id": 3221,
+    "name": "Catholic Social Services - Supports for Children & Adults with Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Catholic Social Services provides support for children and adults with disabilities across Alberta communities, offering individualized services to help people live with dignity and participate fully in their communities.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services at 780-432-1137\",\"details\":\"Catholic Social Services — Supports fo"
+  },
+  {
+    "id": 3222,
+    "name": "Catholic Social Services - Domestic Abuse Shelters & Support",
+    "cat": "Domestic Violence Support",
+    "desc": "Catholic Social Services operates domestic abuse shelters and provides support services for individuals and families affected by domestic violence across Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS emergency shelter line or call 780-432-1137\",\"details\":\"Catholic Social Services — Dome"
+  },
+  {
+    "id": 3223,
+    "name": "Catholic Social Services - Elder/Senior Citizen Abuse Support",
+    "cat": "Senior Services",
+    "desc": "Support services for seniors experiencing elder abuse, providing resources, advocacy, and intervention to protect vulnerable older adults across Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS at 780-432-1137 or reach out to the elder abuse support line\",\"details\":\"Catholic Socia"
+  },
+  {
+    "id": 3224,
+    "name": "Catholic Social Services - Senior Connections",
+    "cat": "Senior Services",
+    "desc": "Senior Connections provides social engagement and community connection opportunities for seniors, helping combat isolation and promote well-being in older adults.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services at 780-432-1137\",\"details\":\"Catholic Social Services — Senior Conn"
+  },
+  {
+    "id": 3225,
+    "name": "Catholic Social Services - Family Capacity Building",
+    "cat": "Family & Parenting Support",
+    "desc": "Family Capacity Building strengthens families by building skills and providing support to help parents and caregivers create healthy, stable home environments for their children.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services at 780-432-1137\",\"details\":\"Catholic Social Services — Family Capa"
+  },
+  {
+    "id": 3226,
+    "name": "Catholic Social Services - Foster Care Programs",
+    "cat": "Family & Parenting Support",
+    "desc": "Catholic Social Services recruits, trains, and supports foster families across Alberta to provide safe, nurturing homes for children who cannot remain with their birth families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS Foster Care at 780-432-1137\",\"details\":\"Catholic Social Services — Foster Care Programs"
+  },
+  {
+    "id": 3227,
+    "name": "Catholic Social Services - Government Referral",
+    "cat": "Community & Social Connection",
+    "desc": "Government Referral services connect individuals and families to appropriate government programs and resources, helping navigate the social services system.",
+    "steps": "[{\"step\":1,\"action\":\"Receive a referral from a government agency (Children's Services, Income Support, etc.)\",\"details\":"
+  },
+  {
+    "id": 3228,
+    "name": "Catholic Social Services - Immigrant and Refugee Support",
+    "cat": "Newcomer & Settlement",
+    "desc": "Catholic Social Services provides settlement and integration support for immigrants and refugees arriving in Alberta, including language assistance, orientation, and community connections.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS Immigration and Refugee Services at 780-432-1137\",\"details\":\"Catholic Social Services —"
+  },
+  {
+    "id": 3229,
+    "name": "Catholic Social Services - Parole Supports",
+    "cat": "Criminal Justice Reintegration",
+    "desc": "Parole support services help individuals transitioning from incarceration back into the community, providing case management, advocacy, and connections to resources.",
+    "steps": "[{\"step\":1,\"action\":\"Receive referral from Correctional Service of Canada or parole officer\",\"details\":\"Catholic Social "
+  },
+  {
+    "id": 3230,
+    "name": "Catholic Social Services - Pregnancy Counselling and Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Pregnancy counselling and support services provide guidance, resources, and practical assistance to individuals facing unplanned or difficult pregnancies.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS Pregnancy Counselling at 780-432-1137\",\"details\":\"Catholic Social Services — Pregnancy "
+  },
+  {
+    "id": 3231,
+    "name": "Catholic Social Services - Family Intervention",
+    "cat": "Family & Parenting Support",
+    "desc": "Family Intervention provides crisis intervention and support services for families experiencing significant challenges, helping stabilize family situations and prevent children from entering care.",
+    "steps": "[{\"step\":1,\"action\":\"Referral from Children's Services or self-referral by calling CSS at 780-432-1137\",\"details\":\"Catho"
+  },
+  {
+    "id": 3232,
+    "name": "Catholic Social Services - Family Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Family Support services provide ongoing assistance and resources to families to strengthen their capacity, improve family functioning, and promote healthy child development.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services at 780-432-1137 or self-refer\",\"details\":\"Catholic Social Services"
+  },
+  {
+    "id": 3233,
+    "name": "Catholic Social Services - Supportive Housing",
+    "cat": "Transitional Housing",
+    "desc": "Catholic Social Services provides supportive housing programs for individuals and families who need stable housing with on-site support services to maintain their tenancy.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS Housing Services at 780-432-1137\",\"details\":\"Catholic Social Services — Supportive Hous"
+  },
+  {
+    "id": 3234,
+    "name": "Catholic Social Services - Welcome Home",
+    "cat": "Transitional Housing",
+    "desc": "Welcome Home provides housing support and transition assistance for individuals moving into stable housing, helping them establish and maintain independent living.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS at 780-432-1137 or receive referral through Homeward Trust Edmonton\",\"details\":\"Catholi"
+  },
+  {
+    "id": 3235,
+    "name": "Catholic Social Services - Morning Star",
+    "cat": "Recovery & Peer Support",
+    "desc": "Morning Star provides community-based programming and support services through Catholic Social Services, serving individuals and families across Alberta.",
+    "steps": "[{\"step\":1,\"action\":\"Call Catholic Social Services at 780-432-1137\",\"details\":\"Morning Star program — recovery support, "
+  },
+  {
+    "id": 3236,
+    "name": "Catholic Social Services - Spiritual Care",
+    "cat": "Community & Social Connection",
+    "desc": "Spiritual Care services offer spiritual support, pastoral counselling, and faith-based guidance to individuals seeking spiritual connection and healing.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services at 780-432-1137\",\"details\":\"Catholic Social Services — Spiritual C"
+  },
+  {
+    "id": 3237,
+    "name": "Catholic Social Services - Mercy Counselling Edmonton",
+    "cat": "Mental Health & Counselling",
+    "desc": "Mercy Counselling provides professional counselling services in Edmonton, offering individual, couples, and family therapy for a range of mental health and relationship concerns.",
+    "steps": "[{\"step\":1,\"action\":\"Contact CSS Mercy Counselling at 780-432-1137\",\"details\":\"Catholic Social Services — Mercy Counsell"
+  },
+  {
+    "id": 3238,
+    "name": "Family Services of Central Alberta - Basic English and Play",
+    "cat": "Family & Parenting Support",
+    "desc": "Basic English and Play combines English language learning with play-based activities for newcomer families, helping parents improve their English while children engage in age-appropriate play.",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 343-6400 for schedule and registration\",\"details\":\"Family Services of Central Alberta (F"
+  },
+  {
+    "id": 3239,
+    "name": "Family Services of Central Alberta - Come Play!",
+    "cat": "Family & Parenting Support",
+    "desc": "Come Play! is a drop-in play program offering families opportunities for socialization and play-based learning in a supportive environment.",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during scheduled hours with your child and a guardian — no registration required\",\"details\""
+  },
+  {
+    "id": 3240,
+    "name": "Family Services of Central Alberta - Fun With Friends",
+    "cat": "Family & Parenting Support",
+    "desc": "Fun With Friends provides structured social activities for young children, promoting socialization, early learning, and family connection.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-309-5653 for current schedule\",\"details\":\"Family Services of Central Alberta — Fun With Fr"
+  },
+  {
+    "id": 3241,
+    "name": "Family Services of Central Alberta - Pop In & Play",
+    "cat": "Family & Parenting Support",
+    "desc": "Pop In & Play is a casual drop-in program where families can engage in play activities together, supporting early childhood development and parent-child bonding.",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during scheduled times - no registration required\",\"details\":\"Family Services of Central Al"
+  },
+  {
+    "id": 3242,
+    "name": "Family Services of Central Alberta - Building Incredible Babies (BIB)",
+    "cat": "Family & Parenting Support",
+    "desc": "Building Incredible Babies (BIB) is a home visitation program supporting new parents during the critical early months of their baby's life, providing guidance on infant care, development, and parent-child attachment.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Janelle at 403-309-8201 or jtoovey@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3243,
+    "name": "Family Services of Central Alberta - Healthy Families",
+    "cat": "Family & Parenting Support",
+    "desc": "Healthy Families is a voluntary home visitation program for families with newborns, providing long-term support to promote positive parenting, child health, and family stability.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Janelle at 403-309-8201 or jtoovey@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3244,
+    "name": "Family Services of Central Alberta - Infant Preschool Wellness Program (IPWP)",
+    "cat": "Family & Parenting Support",
+    "desc": "The Infant Preschool Wellness Program provides home-based support to families with young children, focusing on child development, parenting skills, and connecting families to community resources.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Janelle at 403-309-8201 or jtoovey@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3245,
+    "name": "Family Services of Central Alberta - Parent and Child Assistance Program (PCAP)",
+    "cat": "Family & Parenting Support",
+    "desc": "PCAP is a home visitation program for mothers who used alcohol or drugs during pregnancy, providing intensive support for up to three years to help mothers achieve healthy lifestyles and connect with community services.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Judy Scott at 403-309-8222 or jscott@fsca.ca\",\"details\":\"Family Services of Central Alberta"
+  },
+  {
+    "id": 3246,
+    "name": "Family Services of Central Alberta - Active Parenting",
+    "cat": "Family & Parenting Support",
+    "desc": "Active Parenting workshops help parents develop effective parenting skills through evidence-based curriculum covering communication, discipline, and building positive parent-child relationships.",
+    "steps": "[{\"step\":1,\"action\":\"Register online through the FSCA events page\",\"details\":\"Family Services of Central Alberta — Activ"
+  },
+  {
+    "id": 3247,
+    "name": "Family Services of Central Alberta - CONQUER your Anxiety & Worries for Tweens",
+    "cat": "Mental Health & Counselling",
+    "desc": "CONQUER your Anxiety & Worries is a group program helping tweens learn strategies to manage anxiety and worry, building resilience and coping skills.",
+    "steps": "[{\"step\":1,\"action\":\"Register through Eventbrite via the FSCA website\",\"details\":\"Family Services of Central Alberta — C"
+  },
+  {
+    "id": 3248,
+    "name": "Family Services of Central Alberta - Mindful Connections",
+    "cat": "Mental Health & Counselling",
+    "desc": "Mindful Connections is a maternal mental health program supporting mothers experiencing perinatal mood disorders, anxiety, and adjustment challenges during pregnancy and postpartum.",
+    "steps": "[{\"step\":1,\"action\":\"Register through Eventbrite via the FSCA website\",\"details\":\"Family Services of Central Alberta — M"
+  },
+  {
+    "id": 3249,
+    "name": "Family Services of Central Alberta - Mothers Recovery Support Group",
+    "cat": "Recovery & Peer Support",
+    "desc": "The Mothers Recovery Support Group provides peer support for mothers in recovery from substance use, offering a safe space to share experiences and build community connections.",
+    "steps": "[{\"step\":1,\"action\":\"Drop in during scheduled hours - no registration required\",\"details\":\"Family Services of Central Al"
+  },
+  {
+    "id": 3250,
+    "name": "Family Services of Central Alberta - Prenatal for Teens/Young Women",
+    "cat": "Family & Parenting Support",
+    "desc": "Prenatal programming specifically designed for teenagers and young women, providing education, support, and resources during pregnancy.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Janelle at 403-309-8201 or jtoovey@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3251,
+    "name": "Family Services of Central Alberta - Rainbows SunBeams Group",
+    "cat": "Mental Health & Counselling",
+    "desc": "Rainbows SunBeams is a grief support group for young children experiencing loss through death, divorce, or other painful family transitions, providing age-appropriate support and processing.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Janelle at 403-309-8201 or jtoovey@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3252,
+    "name": "Family Services of Central Alberta - Taming Worry Dragons",
+    "cat": "Mental Health & Counselling",
+    "desc": "Taming Worry Dragons is a group program for children experiencing anxiety, teaching coping strategies and relaxation techniques through age-appropriate activities.",
+    "steps": "[{\"step\":1,\"action\":\"Register through Eventbrite via the FSCA website or contact Judy Scott at jscott@fsca.ca\",\"details\""
+  },
+  {
+    "id": 3253,
+    "name": "Family Services of Central Alberta - Adult Day Support Program (ADSP)",
+    "cat": "Senior Services",
+    "desc": "The Adult Day Support Program provides structured daytime programming for seniors requiring supervised care, offering socialization, activities, meals, and respite for caregivers.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Brandi at 403-309-5834 or bheinamaki@fsca.ca\",\"details\":\"Family Services of Central Alberta"
+  },
+  {
+    "id": 3254,
+    "name": "Family Services of Central Alberta - Home Support",
+    "cat": "Senior Services",
+    "desc": "Home Support provides in-home assistance for seniors to help them maintain independence and continue living safely in their own homes.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Arlene at 403-309-5826 or Emily at 403-309-8220\",\"details\":\"Family Services of Central Albe"
+  },
+  {
+    "id": 3255,
+    "name": "Family Services of Central Alberta - Opening Minds Through Art (OMA)",
+    "cat": "Senior Services",
+    "desc": "Opening Minds Through Art (OMA) is an intergenerational art program pairing seniors living with dementia with student volunteers, using creative expression to build connections and stimulate engagement.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Arlene at 403-309-5826 or amendoza@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3256,
+    "name": "Family Services of Central Alberta - Peer Power",
+    "cat": "Senior Services",
+    "desc": "Peer Power is a seniors' peer-to-peer support program connecting older adults for mutual support, combating social isolation, and promoting wellness through community connection.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Arlene at 403-309-5826 or amendoza@fsca.ca\",\"details\":\"Family Services of Central Alberta —"
+  },
+  {
+    "id": 3257,
+    "name": "Family Services of Central Alberta - Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Professional counselling services for individuals, couples, and families addressing mental health, relationship, and life transition challenges. Workshops and the Beginnings Marriage Preparation program are also available.",
+    "steps": "[{\"step\":1,\"action\":\"Contact FSCA at 403-343-6400 or toll-free 1-866-414-3722\",\"details\":\"Family Services of Central Alb"
+  },
+  {
+    "id": 3258,
+    "name": "Family Services of Central Alberta - Financial Literacy Resources",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Financial literacy resources and education to help individuals and families improve their financial knowledge and make informed financial decisions.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the FSCA website financial literacy page\",\"details\":\"Family Services of Central Alberta — Fin"
+  },
+  {
+    "id": 3259,
+    "name": "Family Services of Central Alberta - Road Home",
+    "cat": "Affordable Housing",
+    "desc": "Road Home is a housing support program helping individuals and families access and maintain stable housing in the Central Alberta region.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the FSCA website to download the Road Home toolkit\",\"details\":\"Family Services of Central Alb"
+  },
+  {
+    "id": 3260,
+    "name": "Trellis Society - Preschool",
+    "cat": "Youth Services",
+    "desc": "Trellis Society's preschool program provides early childhood education in a supportive community-based environment.",
+    "steps": "[{\"step\":1,\"action\":\"Register through the Trellis online portal\",\"details\":\"Trellis Society — Preschool programs at mult"
+  },
+  {
+    "id": 3261,
+    "name": "Trellis Society - Kindergarten",
+    "cat": "Youth Services",
+    "desc": "Trellis Society offers kindergarten programming designed to prepare children for school success in a nurturing environment.",
+    "steps": "[{\"step\":1,\"action\":\"Join the Renfrew Kinder-Care Waitlist through the Trellis online portal\",\"details\":\"Trellis Society"
+  },
+  {
+    "id": 3262,
+    "name": "Trellis Society - Children's Clubs",
+    "cat": "Youth Services",
+    "desc": "After-school clubs at 5 locations across Calgary (Pineridge, Penbrooke, Bowness, Forest Lawn, Renfrew) providing children with safe, supervised programming including recreation, homework help, and social skill development.",
+    "steps": "[{\"step\":1,\"action\":\"Register through the Trellis online portal\",\"details\":\"Trellis Society — Children's Clubs after-sch"
+  },
+  {
+    "id": 3263,
+    "name": "Trellis Society - Day Camps",
+    "cat": "Youth Services",
+    "desc": "Seasonal day camp programming providing children and youth with recreational activities, learning experiences, and social engagement during school breaks.",
+    "steps": "[{\"step\":1,\"action\":\"Register through the Trellis online portal when registration opens (typically April)\",\"details\":\"Tr"
+  },
+  {
+    "id": 3264,
+    "name": "Trellis Society - Youth Programming",
+    "cat": "Youth Services",
+    "desc": "Group-based activities and support for youth, providing safe spaces for socialization, skill development, and community connection.",
+    "steps": "[{\"step\":1,\"action\":\"Complete the Trellis Intake Package (fillable PDF on website)\",\"details\":\"Trellis Society — Youth P"
+  },
+  {
+    "id": 3265,
+    "name": "Trellis Society - Iiyika'kimaat Program",
+    "cat": "Indigenous Services",
+    "desc": "Iiyika'kimaat is an Indigenous-focused youth program providing culturally grounded services, mentorship, and support for Indigenous youth in Calgary.",
+    "steps": "[{\"step\":1,\"action\":\"Contact iiyikakimaat@growwithtrellis.ca or follow @iiyikakimaatyouthgroup on Instagram\",\"details\":\""
+  },
+  {
+    "id": 3266,
+    "name": "Trellis Society - Employment & Education Support",
+    "cat": "Employment Services",
+    "desc": "Career and education assistance for youth, including job readiness training, employment placement, and educational support to help young people achieve their goals.",
+    "steps": "[{\"step\":1,\"action\":\"Contact employmentservices@growwithtrellis.ca or call 403-219-3477\",\"details\":\"Trellis Society — Em"
+  },
+  {
+    "id": 3267,
+    "name": "Trellis Society - Settlement Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "Settlement support for newcomer youth, helping immigrant and refugee young people integrate into their new community through orientation, language support, and social connections.",
+    "steps": "[{\"step\":1,\"action\":\"Submit a referral through the online form at the Genesis Centre\",\"details\":\"Trellis Society — Settl"
+  },
+  {
+    "id": 3268,
+    "name": "Trellis Society - Home Fire",
+    "cat": "Indigenous Services",
+    "desc": "Home Fire is an Indigenous youth housing initiative providing culturally appropriate housing support and wraparound services for Indigenous young people.",
+    "steps": "[{\"step\":1,\"action\":\"Get assessed through SORCe to determine eligibility\",\"details\":\"Trellis Society — Home Fire program"
+  },
+  {
+    "id": 3269,
+    "name": "Trellis Society - Home Stay Program",
+    "cat": "Affordable Housing",
+    "desc": "Home Stay helps families facing eviction due to overdue rental or utility bills, living in unsafe or overcrowded housing, or who have recently become homeless. Provides financial assistance and support to maintain housing stability.",
+    "steps": "[{\"step\":1,\"action\":\"Call Trellis at 403-219-3477 ext 1\",\"details\":\"Trellis Society — Home Stay Program in Calgary. Hous"
+  },
+  {
+    "id": 3270,
+    "name": "Trellis Society - Parenting Support",
+    "cat": "Family & Parenting Support",
+    "desc": "Parenting education and family resources to strengthen parenting skills and support healthy family functioning.",
+    "steps": "[{\"step\":1,\"action\":\"Contact your nearest hub: SW Calgary (403-689-1403) or Strathmore (403-983-0076)\",\"details\":\"Trelli"
+  },
+  {
+    "id": 3271,
+    "name": "Trellis Society - Foster Care",
+    "cat": "Family & Parenting Support",
+    "desc": "Trellis recruits, trains, and supports foster families to provide healthy, safe environments for children to grow and develop when they cannot remain with their birth families.",
+    "steps": "[{\"step\":1,\"action\":\"Contact a Trellis recruiter at 403-219-3477\",\"details\":\"Trellis Society — Foster Care program. Comp"
+  },
+  {
+    "id": 3272,
+    "name": "Trellis Society - Family Resource Network",
+    "cat": "Family & Parenting Support",
+    "desc": "Community resource connections for families, providing information, referrals, and support to help families access the services they need.",
+    "steps": "[{\"step\":1,\"action\":\"Visit or contact your nearest hub: SW Calgary (403-689-1403) or Strathmore (403-983-0076)\",\"details"
+  },
+  {
+    "id": 3273,
+    "name": "Trellis Society - Therapy Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Therapy at Trellis offers counselling for everyone in the community over 4 years of age in individual, romantic partner, and family sessions. Affordable and sliding-scale fees available.",
+    "steps": "[{\"step\":1,\"action\":\"Complete the Therapy Referral Form online on the Trellis website\",\"details\":\"Trellis Society — Ther"
+  },
+  {
+    "id": 3274,
+    "name": "Trellis Society - 1000 Voices Hub",
+    "cat": "Community & Social Connection",
+    "desc": "1000 Voices is a community hub in NE Calgary providing programming, resources, and gathering space for community members.",
+    "steps": "[{\"step\":1,\"action\":\"Visit the 1000 Voices Hub at Genesis Centre, 7556 Falconridge Blvd NE, Calgary\",\"details\":\"Trellis "
+  },
+  {
+    "id": 3275,
+    "name": "Trellis Society - Free Income Tax Clinics",
+    "cat": "Financial Counselling & Debt Help",
+    "desc": "Free income tax preparation clinics helping low-income community members file their taxes and access eligible benefits and credits.",
+    "steps": "[{\"step\":1,\"action\":\"Contact Trellis at 403-910-5952 or taxclinics@growwithtrellis.ca\",\"details\":\"Trellis Society — Free"
+  }
+]

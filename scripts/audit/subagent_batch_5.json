@@ -1,0 +1,702 @@
+[
+  {
+    "id": 529,
+    "name": "Community of Hope Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Community of Hope Emergency Shelter provides safety and support to up to 96 women and gender-diverse individuals on a first-come, first-served basis. Services include day programs, life-skills workshops, recovery support, and housing advocacy. Th",
+    "steps": "[{\"step\":1,\"action\":\"Walk in to the shelter\",\"details\":\"Located at 504 Belvedere Way (Station Pointe), Edmonton. No appo"
+  },
+  {
+    "id": 532,
+    "name": "Nexus Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "Provided by Youth Empowerment and Support Services (YESS), Nexus offers emergency shelter and support services for youth aged 15 to 24, including access to basic needs, case management, and life skills development. This facility provides immediate an",
+    "steps": "[{\"step\":1,\"action\":\"Call or walk in — open 24/7\",\"details\":\"YESS Youth Support Centre in Edmonton provides immediate, l"
+  },
+  {
+    "id": 533,
+    "name": "Hope Mission - Emergency Shelter and Support Services",
+    "cat": "Emergency Shelter",
+    "desc": "Offered by Hope Mission Edmonton, this service provides emergency shelter and support for individuals experiencing homelessness, including access to basic needs, case management, and spiritual care.",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-819-0015 before coming to ensure a staff member can meet you\",\"details\":\"Hope Mission — fo"
+  },
+  {
+    "id": 534,
+    "name": "Extreme Weather Temporary Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The Extreme Weather Temporary Emergency Shelter, operated by Al Rashid Mosque, provides up to 50 temporary overnight spaces to expand shelter capacity during City of Edmonton extreme weather activations. This service ensures the safety of individuals",
+    "steps": "[{\"step\":1,\"action\":\"Access shelter during extreme weather\",\"details\":\"Al Rashid Mosque in Edmonton operates temporary e"
+  },
+  {
+    "id": 535,
+    "name": "Community Impact Centres — Drop-In Meals, Clothing & Homelessness Support",
+    "cat": "Emergency Shelter",
+    "desc": "The Community Impact Centre at Strathcona Baptist Church, operated by The Mustard Seed, provides a safe and inclusive space for individuals experiencing homelessness and poverty. It offers essential services such as drop-in support, community meals, ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-919-1735 or visit during operating hours\",\"details\":\"Community Impact Centres operated by "
+  },
+  {
+    "id": 536,
+    "name": "University of Alberta - Residence Safe House Program",
+    "cat": "Campus & Student Services",
+    "desc": "The Residence Safe House Program, offered by the University of Alberta, provides temporary emergency accommodation to registered students facing immediate personal safety risks, intolerable living conditions, or financial hardship. This program aims ",
+    "steps": "[{\"step\": 1, \"action\": \"During daytime business hours, make referral to Dean of Students Office\", \"details\": \"Contact st"
+  },
+  {
+    "id": 539,
+    "name": "WIN House - Women in Need III",
+    "cat": "Domestic Violence Support",
+    "desc": "Women In Need III provides emergency shelter and support services for women and children escaping domestic violence. It is part of the Edmonton Women's Shelter Limited (WIN House) and focuses on assisting women who are newcomers to Canada. The shelte",
+    "steps": "[{\"step\":1,\"action\":\"Call 24/7 Helpline at 780-479-0058\",\"details\":\"WIN House III — specialized shelter for women who ar"
+  },
+  {
+    "id": 540,
+    "name": "Jessica Martel Memorial Foundation — Domestic Violence Shelter & Support",
+    "cat": "Domestic Violence Support",
+    "desc": "The Jessica Martel Memorial Foundation (JMMF) is a non-profit organization based in Morinville, Alberta, dedicated to supporting individuals and families affected by domestic violence. Established in 2012, JMMF operates Jessie's House, a 35-bed emerg",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Crisis Line/Shelter intake at 1-866-939-2850\", \"details\": \"available 24/7\"}, {\"step\": 2"
+  },
+  {
+    "id": 541,
+    "name": "HousingConnect",
+    "cat": "Emergency Shelter",
+    "desc": "HousingConnect is a service provided by the Lethbridge and Regional Community Housing Corporation, aimed at supporting individuals at risk of homelessness or eviction. The program focuses on identifying and reducing barriers to housing stability whil",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 329-0556 or email info@lethbridgehousing.ca\",\"details\":\"HousingConnect is provided by th"
+  },
+  {
+    "id": 542,
+    "name": "Safe Harbour Society - Coordinated Entry Housing Program",
+    "cat": "Emergency Shelter",
+    "desc": "The Safe Harbour Society's Coordinated Entry Housing Program in Red Deer, Alberta, is designed to assist individuals experiencing homelessness by providing access to housing and support services. This program aims to meet the needs of the most vulner",
+    "steps": "[{\"step\":1,\"action\":\"Contact Safe Harbour Society at 403-347-0181\",\"details\":\"Safe Harbour Society — Coordinated Entry H"
+  },
+  {
+    "id": 543,
+    "name": "Central Alberta Outreach Society - Red Deer Housing Team",
+    "cat": "Emergency Shelter",
+    "desc": "The Central Alberta Outreach Society - Red Deer Housing Team is a non-profit organization dedicated to assisting individuals and families experiencing chronic and episodic homelessness. They employ the Coordinated Access Process (CAP) to match client",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-347-2480 to connect with an Outreach Worker\",\"details\":\"Red Deer Housing Team using Housin"
+  },
+  {
+    "id": 545,
+    "name": "Youth HQ - 49th Street Youth Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "The 49th Street Youth Shelter, operated by Youth HQ, is a 12-bed facility located in Red Deer, Alberta. It provides a safe and supportive environment for youth aged 12 to 17 who are experiencing crises that prevent them from having a safe place to st",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis line at 403-341-3190 or walk in\",\"details\":\"Available 24 hours a day, 7 days a week"
+  },
+  {
+    "id": 547,
+    "name": "Wapiti House Emergency Shelter",
+    "cat": "Emergency Shelter",
+    "desc": "Wapiti House Emergency Shelter, operated by the Wapiti Community Support Association, offers essential shelter and support services to individuals experiencing homelessness in Grande Prairie, Alberta. The shelter provides a 24-hour cot program for ad",
+    "steps": "[{\"step\":1,\"action\":\"Walk in for emergency shelter\",\"details\":\"Wapiti House in Grande Prairie offers 55 emergency shelte"
+  },
+  {
+    "id": 548,
+    "name": "Sunrise House - the Loft Program",
+    "cat": "Emergency Shelter",
+    "desc": "The Loft Program, offered by Sunrise House in Grande Prairie, Alberta, provides transitional housing for youth aged 15 to 24. This program aims to prepare participants for independent living through life skills training in areas such as budgeting, co",
+    "steps": "[{\"step\": 1, \"action\": \"Warm Welcome\", \"details\": \"Upon arrival, you'll be greeted by our intake team, who will ask a fe"
+  },
+  {
+    "id": 549,
+    "name": "Centerpoint Facilitation - Rural Housing Outreach",
+    "cat": "Emergency Shelter",
+    "desc": "Centerpoint Facilitation's Rural Housing Outreach program offers support for individuals or families experiencing homelessness or those at imminent risk of homelessness. Services include information and connections to resources, as well as support fo",
+    "steps": "[{\"step\": 1, \"action\": \"Call the Coordinated Access Intake Line\", \"details\": \"780-518-4833 - this is the main access poi"
+  },
+  {
+    "id": 551,
+    "name": "Centre of Hope — Homelessness & Housing Support (Fort McMurray)",
+    "cat": "Emergency Shelter",
+    "desc": "The Centre of Hope Non Profit Society of Fort McMurray is a registered not-for-profit organization dedicated to supporting individuals experiencing homelessness. They assist clients in navigating the housing system and obtaining shelter through priva",
+    "steps": "[{\"step\": 1, \"action\": \"Intake at Daytime Shelter\", \"details\": \"During intake, everyone feels welcomed and supported\"}, "
+  },
+  {
+    "id": 552,
+    "name": "City of Calgary - Calgary Community Food Map",
+    "cat": "Food Banks & Meals",
+    "desc": "The 'City of Calgary - Calgary Community Food Map' is a service provided by the City of Calgary to offer residents a comprehensive list of free and low-cost food, meal, and grocery options in Calgary. This resource helps individuals and families find",
+    "steps": "[{\"step\":1,\"action\":\"Visit calgary.ca and search for 'Community Food Map'\",\"details\":\"Interactive map and list of free a"
+  },
+  {
+    "id": 553,
+    "name": "Dashmesh Culture Centre - Meals and Food Hampers",
+    "cat": "Food Banks & Meals",
+    "desc": "The Dashmesh Culture Centre (DCC) provides essential food hampers containing breakfast items, canned goods, dinner foods, kids' snacks, and hygiene products to community members in need. Additionally, the No Hungry Tummy initiative offers fresh hot m",
+    "steps": "[{\"step\":1,\"action\":\"Contact Dashmesh Culture Centre at 403-590-0970\",\"details\":\"Dashmesh Culture Centre — free meals an"
+  },
+  {
+    "id": 554,
+    "name": "Calgary Meals on Wheels - Low Cost Home Meal Delivery Services",
+    "cat": "Food Banks & Meals",
+    "desc": "Calgary Meals on Wheels is a registered charity and not-for-profit organization dedicated to preparing and delivering nutritious, quality, and affordable meals to individuals in Calgary, regardless of age or circumstance.",
+    "steps": "[{\"step\":1,\"action\":\"Email signup@mealsonwheels.com or visit the website\",\"details\":\"Calgary Meals on Wheels — low cost "
+  },
+  {
+    "id": 556,
+    "name": "Candora Society of Edmonton — Community Food & Family Programs",
+    "cat": "Food Banks & Meals",
+    "desc": "The Candora Society of Edmonton is a community-based organization dedicated to promoting a safe, healthy environment and positive growth for women, children, and families in Edmonton. They offer a variety of programs and services, including food secu",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-474-5011 or email reception@candorasociety.com\",\"details\":\"CANDORA has served the Beverly,"
+  },
+  {
+    "id": 557,
+    "name": "Edmonton's Food Bank - Warehouse and Gleaning Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton's Food Bank operates a Warehouse and Gleaning Program at 11434 120 Street, Edmonton, AB. This facility serves as a central hub for collecting, storing, repackaging, sorting, and distributing food to over 300 agencies, churches, and food depo",
+    "steps": "[{\"step\": 1, \"action\": \"Fill out online hamper order form or call\", \"details\": \"In need of food support? Fill out our on"
+  },
+  {
+    "id": 558,
+    "name": "Edmonton's Food Bank - Hamper and Food Service Program",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton's Food Bank operates a Hamper and Food Service Program at their Annex Building, providing emergency food hampers to individuals and families in need. These hampers contain perishable and non-perishable food items designed to last between 2 t",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-425-4190 ext. 228 or visit edmontonsfoodbank.com/need-help\",\"details\":\"Edmonton's Food Ban"
+  },
+  {
+    "id": 559,
+    "name": "Edmonton Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "Edmonton Meals on Wheels is a non-profit organization dedicated to providing nutritious, homemade meals to individuals facing barriers to preparing their own food. They offer homecooked, healthy meals delivered straight to clients' doors Monday to Fr",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-429-2020 or inquire through emow.ca\",\"details\":\"Edmonton Meals on Wheels — nutritious meal"
+  },
+  {
+    "id": 560,
+    "name": "Mustard Seed - Edmonton - Drop-In Food Pantry",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mustard Seed - Edmonton Drop-In Food Pantry provides non-perishable food items on a first-come, first-served basis to individuals in need. This service is part of The Mustard Seed, a Christian non-profit organization dedicated to alleviating pove",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-833-448-4673 or walk in\",\"details\":\"The Mustard Seed has been a safe, supportive haven for 4"
+  },
+  {
+    "id": 561,
+    "name": "Okotoks Meals on Wheels Society - Meal Delivery",
+    "cat": "Food Banks & Meals",
+    "desc": "The Okotoks Meals on Wheels Society is a registered not-for-profit organization dedicated to delivering hot, nutritious meals to individuals who are unable to prepare or procure food themselves, including seniors and those with disabilities, illness,",
+    "steps": "[{\"step\":1,\"action\":\"Contact Okotoks Meals on Wheels at 403-938-6404\",\"details\":\"Okotoks Meals on Wheels Society — meal "
+  },
+  {
+    "id": 562,
+    "name": "University of Alberta Students' Union - Campus Food Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "The University of Alberta Students' Union - Campus Food Bank is a registered charity dedicated to combating food insecurity among University of Alberta students, staff, alumni (up to five years post-graduation), and their families. It offers various ",
+    "steps": "[{\"step\":1,\"action\":\"Visit Campus Food Bank in SUB 1-81 or call 780-492-8677\",\"details\":\"Located on first floor of SUB b"
+  },
+  {
+    "id": 563,
+    "name": "Interfaith Food Bank Society of Lethbridge - Emergency Food Services",
+    "cat": "Food Banks & Meals",
+    "desc": "The Interfaith Food Bank Society of Lethbridge provides emergency food services to individuals and families in need. They offer food hampers, food supplements, and other emergency food resources, including monthly food hampers and daily food suppleme",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours at 403-320-8779\",\"details\":\"Interfaith Food Bank Society of Lethbrid"
+  },
+  {
+    "id": 564,
+    "name": "Lethbridge Soup Kitchen",
+    "cat": "Food Banks & Meals",
+    "desc": "The Lethbridge Soup Kitchen is a registered charity and not-for-profit organization dedicated to providing hot, nutritious meals to unhoused individuals. They offer free drop-in hot meals, ensuring that those in need have access to essential nourishm",
+    "steps": "[{\"step\":1,\"action\":\"Walk in for a meal\",\"details\":\"No appointment or registration needed. The Lethbridge Soup Kitchen p"
+  },
+  {
+    "id": 565,
+    "name": "Lethbridge Senior Citizens Organization - Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "The Lethbridge Senior Citizens Organization (LSCO) offers a Meals on Wheels program that provides nutritious, affordable, hot meals delivered to your door five days a week. This service is available to individuals aged 60 and over, or those under 60 ",
+    "steps": "[{\"step\":1,\"action\":\"Confirm eligibility\",\"details\":\"Must be 60+ years of age, or under 60 receiving AISH/Income Support"
+  },
+  {
+    "id": 566,
+    "name": "MyCityCare - Basic Needs Program",
+    "cat": "Food Banks & Meals",
+    "desc": "The MyCityCare - Basic Needs Program offers essential support to individuals and families in need, including free clothing, emergency food supplies, seasonal food hampers, and lunch programs. Additionally, the program assists with school supplies and",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 942-1378 or email lethbridge@mycitycare.ca\",\"details\":\"MyCityCare in Lethbridge provides"
+  },
+  {
+    "id": 567,
+    "name": "Red Deer Meals on Wheels",
+    "cat": "Food Banks & Meals",
+    "desc": "Red Deer Meals on Wheels is a non-profit organization dedicated to delivering hot, nutritious noonday meals to individuals in Red Deer who are unable to prepare or obtain meals for themselves. This service aims to help clients maintain their independ",
+    "steps": "[{\"step\": 1, \"action\": \"Call Red Deer Meals on Wheels at their office to inquire about meal delivery services and discus"
+  },
+  {
+    "id": 568,
+    "name": "Mustard Seed - Red Deer - Community Impact Centre",
+    "cat": "Food Banks & Meals",
+    "desc": "The Mustard Seed - Red Deer - Community Impact Centre is a registered not-for-profit organization dedicated to ensuring that individuals experiencing poverty and homelessness have their basic needs met. It provides a drop-in location for individuals ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in during operating hours - no application needed\",\"details\":\"Call (587) 457-5473 or email inf"
+  },
+  {
+    "id": 569,
+    "name": "Red Deer Christmas Bureau Society",
+    "cat": "Food Banks & Meals",
+    "desc": "The Red Deer Christmas Bureau Society is a non-profit organization dedicated to assisting children and families in need during the Christmas season. Their mission is to ensure every child receives a toy on Christmas morning and that all those in need",
+    "steps": "[{\"step\": 1, \"action\": \"Come in person to be interviewed with all required documentation\", \"details\": \"NO CHILDREN ARE A"
+  },
+  {
+    "id": 570,
+    "name": "Root Cellar Food and Wellness Hub - Emergency Food Pantry",
+    "cat": "Food Banks & Meals",
+    "desc": "The Root Cellar Food and Wellness Hub, also known as the Medicine Hat and District Food Bank Association, is a registered not-for-profit organization dedicated to providing accessible food support to individuals and families in need. They offer servi",
+    "steps": "[{\"step\": 1, \"action\": \"Call 403-528-4313 Ext 1 or email intake@mhfoodbank.com to make an appointment\", \"details\": \"Leav"
+  },
+  {
+    "id": 571,
+    "name": "Furry Friends Food Foundation",
+    "cat": "Food Banks & Meals",
+    "desc": "The Furry Friends Food Foundation is a registered not-for-profit organization dedicated to providing support with pet food and supplies to those in need. They operate a pet food bank and accept donations to help pet owners facing financial difficulti",
+    "steps": "[{\"step\":1,\"action\":\"Contact Furry Friends Food Foundation\",\"details\":\"Call (403) 504-9587 or email furryfriendsfoodfoun"
+  },
+  {
+    "id": 572,
+    "name": "Community Food Connections Association - Good Food Club",
+    "cat": "Food Banks & Meals",
+    "desc": "The Community Food Connections Association (CFCA) operates the Good Food Club, a program that offers fresh fruits and vegetables at wholesale prices through bulk buying. This initiative aims to provide affordable access to healthy food options for re",
+    "steps": "[{\"step\": 1, \"action\": \"Register as a member\", \"details\": \"Registration is required to access the service - contact to r"
+  },
+  {
+    "id": 573,
+    "name": "Family and Community Support Services of the County of Grande Prairie - Food Bank",
+    "cat": "Food Banks & Meals",
+    "desc": "The Family and Community Support Services (FCSS) of the County of Grande Prairie offers a Food Bank at the Wellington Resource Centre. This service provides weekly food assistance and Christmas hampers to support residents in developing their interes",
+    "steps": "[{\"step\":1,\"action\":\"Call (780) 567-2843 or email fcss@countygp.ab.ca\",\"details\":\"FCSS of the County of Grande Prairie o"
+  },
+  {
+    "id": 574,
+    "name": "Grande Prairie Friendship Centre - Community Kitchen",
+    "cat": "Food Banks & Meals",
+    "desc": "The Community Kitchen at the Grande Prairie Friendship Centre offers free meals to the community, including breakfasts, lunches, and suppers, along with outreach supports. This service aims to provide nourishment and support to all community members ",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Friendship Centre\",\"details\":\"Founded in 1965 to serve Indigenous people in Grande Prai"
+  },
+  {
+    "id": 575,
+    "name": "Northreach Society - Helping Hands",
+    "cat": "Food Banks & Meals",
+    "desc": "Northreach Society's Helping Hands program offers a food security initiative in the city and county of Grande Prairie. This program provides families and individuals with access to a pantry where they can select groceries, emphasizing fresh and froze",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-538-3388 or visit northreach.ca to apply\",\"details\":\"Northreach Society Helping Hands — co"
+  },
+  {
+    "id": 578,
+    "name": "AHS — Opioid Dependency Program (Edmonton)",
+    "cat": "Addiction Treatment",
+    "desc": "The Opioid Dependency Program (ODP) provides initiation and maintenance of Opioid Agonist Treatment (OAT) medications, such as methadone and Suboxone®, to individuals with opioid use disorder. Services include ongoing support and monitoring, health, ",
+    "steps": "[{\"step\":1,\"action\":\"Walk in or call 780-342-7810\",\"details\":\"Edmonton 106th Street Clinic at 10225 106 Street. No appoi"
+  },
+  {
+    "id": 579,
+    "name": "Lakeview Recovery Community — Men's Residential Addiction Treatment",
+    "cat": "Addiction Treatment",
+    "desc": "Lakeview Manor provides a residential treatment program for adult men living with addiction, focusing on mental and physical well-being, lifestyle change, and development within a therapeutic community.",
+    "steps": "[{\"step\":1,\"action\":\"Visit lsaf.ca or call 844-633-1001 to submit an application\",\"details\":\"Lac Ste. Anne Foundation — "
+  },
+  {
+    "id": 580,
+    "name": "Centre for Sexuality - Sexual Health, Gender and Sexual Diversity Counselling Support",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The Centre for Sexuality provides short-term counselling to support decisions related to sexuality, reproductive health, relationships, and gender and sexual diversity. Their services include support for gender identity and sexual orientation, coming",
+    "steps": "[{\"step\": 1, \"action\": \"Complete counselling intake form\", \"details\": \"To book a free supportive counselling session, co"
+  },
+  {
+    "id": 581,
+    "name": "Centre for Sexuality - Sexual Health Programs for Parents and LGBTQ+",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The Centre for Sexuality offers a range of programs and services to support healthy sexuality across the lifespan, including sexual health programs for parents and the LGBTQ+ community. They provide resources, workshops, and information nights for pa",
+    "steps": "[{\"step\":1,\"action\":\"Contact Centre for Sexuality\",\"details\":\"A community-based organization delivering sexual health ed"
+  },
+  {
+    "id": 582,
+    "name": "Trellis Aura — 2SLGBTQ+ Youth Housing First Program",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "Aura is a housing first program by Trellis for 2SLGBTQIA+, gender nonbinary, and gender nonconforming youth aged 14 to 24 who are at risk of or currently experiencing homelessness. The program provides support, resources, and services to help partici",
+    "steps": "[{\"step\":1,\"action\":\"Contact Trellis about Aura\",\"details\":\"Aura is a housing-first program for youth ages 14–24 who are"
+  },
+  {
+    "id": 584,
+    "name": "PFLAG Red Deer",
+    "cat": "LGBTQ2S+ Services",
+    "desc": "The PFLAG Red Deer Chapter provides peer support, education, and advocacy for 2SLGBTQ+ individuals and their families.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-597-8496 or email for information\",\"details\":\"PFLAG Canada — family for all. Peer-to-peer "
+  },
+  {
+    "id": 587,
+    "name": "YW Calgary - Family Resource Network",
+    "cat": "Mental Health & Counselling",
+    "desc": "YW Calgary's Family Resource Network offers a range of free programs designed to support families with children up to 18 years old. These programs aim to strengthen family relationships, teach coping skills, and promote child and youth development th",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-262-0497 or email familynetwork@ywcalgary.ca\",\"details\":\"Free virtual workshops for parent"
+  },
+  {
+    "id": 588,
+    "name": "Calgary Family Therapy Centre - Calgary Family Therapy Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Calgary Family Therapy Centre provides family therapy services for families with children or adolescents experiencing emotional or behavioral problems. Services include methods to manage these issues, a primary therapist for clarifying problems, ",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 802-1680 or email cftc@familytherapy.org\",\"details\":\"The Calgary Family Therapy Centre p"
+  },
+  {
+    "id": 589,
+    "name": "YW Calgary - Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "YW Calgary offers comprehensive counselling services for individuals and families, including individual adult counselling, child counselling for children aged 4 to 17, child and family counselling, group counselling, and mindfulness and healthy relat",
+    "steps": "[{\"step\":1,\"action\":\"Call YW Calgary Crisis Line at 403-266-0707 or contact for counselling\",\"details\":\"24-hour crisis l"
+  },
+  {
+    "id": 590,
+    "name": "AMARIS Adoption and Family Support Services - Adoption Counselling and Consulting",
+    "cat": "Mental Health & Counselling",
+    "desc": "AMARIS Adoption and Family Support Services provides counselling for unplanned pregnancies and support in creating adoption plans. They offer training for international adoptions, assistance to birth families in making adoption plans, and counselling",
+    "steps": "[{\"step\":1,\"action\":\"Contact AMARIS Adoption or visit amarisadoption.com\",\"details\":\"Alberta-based adoption agency focus"
+  },
+  {
+    "id": 591,
+    "name": "Family and Community Support Services of High River - Foothills Community Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Foothills Community Counselling program, offered by the Family and Community Support Services (FCSS) of High River, provides affordable and professional counselling services to residents in the Foothills area. These services are available to indi",
+    "steps": "[{\"step\":1,\"action\":\"Contact to begin intake\",\"details\":\"Call 403-603-3549 (leave voicemail) or email fcc@highriver.ca. "
+  },
+  {
+    "id": 592,
+    "name": "Calgary Immigrant Women's Association - Family Conflict Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Calgary Immigrant Women's Association (CIWA) offers a Family Conflict Program designed to provide professional, culturally sensitive counseling for immigrant women and their families facing challenges such as relationship issues, abuse, violence,",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-263-4414 or email welcome@ciwa.org to book an appointment\",\"details\":\"50+ programs support"
+  },
+  {
+    "id": 593,
+    "name": "Radiance Family Society - Centre Safe Housing",
+    "cat": "Transitional Housing",
+    "desc": "The Centre Safe Housing program offers a one-year residential facility for women and children who have experienced family violence and abuse. Services include individual, child, and youth counseling, facilitated group meetings, and 24 suites availabl",
+    "steps": "[{\"step\":1,\"action\":\"Contact shared intake at intake@calgarysecondstage.com\",\"details\":\"Centre Safe Housing is a one-yea"
+  },
+  {
+    "id": 594,
+    "name": "McMan Youth, Family and Community Services Association of Edmonton and North Region - Family Intervention Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "McMan Youth, Family and Community Services Association of Edmonton and North Region offers a range of family counseling services, including in-home mediation, counseling, and support services. They provide support to families and youth within their c",
+    "steps": "[{\"step\":1,\"action\":\"Contact McMan Edmonton and North\",\"details\":\"Email mcman@mcman.ca or visit 11016 127 Street NW, Edm"
+  },
+  {
+    "id": 595,
+    "name": "Native Counselling Services of Alberta - Family Reconciliation",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Family Reconciliation Program, offered by Native Counselling Services of Alberta (NCSA), utilizes traditional Indigenous circle processes to facilitate discussions among family members, caseworkers, and professionals regarding the safety and well",
+    "steps": "[{\"step\":1,\"action\":\"Contact Native Counselling Services of Alberta or visit ncsa.ca\",\"details\":\"Over 50 years of social"
+  },
+  {
+    "id": 596,
+    "name": "Family and Community Support Services of Barons-Eureka-Warner - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services of Barons-Eureka-Warner offers free individual, couples, family, and group goal-directed counselling sessions. These services are available online, by phone, and in person.",
+    "steps": "[{\"step\":1,\"action\":\"Book an appointment online or call\",\"details\":\"Visit fcss.ca to book online, or contact FCSS main o"
+  },
+  {
+    "id": 597,
+    "name": "Catholic Social Services - Counselling - Individual and Family Therapy Program",
+    "cat": "Mental Health & Counselling",
+    "desc": "Catholic Social Services offers therapeutic counselling services to individuals, couples, and families in Lloydminster, Alberta. These services are available in-person, by phone, or through video conferencing, catering to clients' preferences and nee",
+    "steps": "[{\"step\":1,\"action\":\"Contact Catholic Social Services or visit cssalberta.ca\",\"details\":\"Provides counselling, domestic "
+  },
+  {
+    "id": 598,
+    "name": "Family and Community Support Services of Cold Lake and District - Counselling Service",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services of Cold Lake and District (FCSS) is a municipal government organization dedicated to providing locally driven preventative social initiatives aimed at improving the quality of life for individuals and families in",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-594-4495 or email fcss@coldlake.com\",\"details\":\"FCSS of Cold Lake and District provides lo"
+  },
+  {
+    "id": 599,
+    "name": "Family and Community Support Services of Fort Saskatchewan - Counselling Services",
+    "cat": "Mental Health & Counselling",
+    "desc": "Family and Community Support Services (FCSS) of Fort Saskatchewan is a municipal government organization dedicated to designing, delivering, and supporting prevention and intervention-focused social programs that foster the well-being of children, ad",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-992-6267 or email fcssinfo@fortsask.ca\",\"details\":\"FCSS Fort Saskatchewan provides prevent"
+  },
+  {
+    "id": 600,
+    "name": "Abide Adoption and Family Services - Adoption and Pregnancy Options Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "Abide Adoption and Family Services provides adoption-related services for local/domestic, international, step-parent, and private direct adoptions, including pregnancy options counselling and post-adoption support, from a pro-choice perspective. They",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-596-5380 or reach out online\",\"details\":\"Abide (formerly A Small Miracle Adoption) is a li"
+  },
+  {
+    "id": 601,
+    "name": "Family and Community Support Services of Canmore - Counselling",
+    "cat": "Mental Health & Counselling",
+    "desc": "The Family and Community Support Services (FCSS) of Canmore offers short-term, solution-focused counselling for individuals. This service is available to adults and is provided by social workers. Counselling sessions are by appointment, and there is ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-678-7131 to book an appointment\",\"details\":\"Family and Community Support Services of Canmo"
+  },
+  {
+    "id": 602,
+    "name": "Bob Glasgow Grief Support Centre",
+    "cat": "Grief & Bereavement",
+    "desc": "The Bob Glasgow Grief Support Centre offers grief counseling services for adults in the Calgary Zone who have experienced the death of a family member or significant other. The program provides both individual and group counseling in a supportive env",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-955-8011 to book an appointment\",\"details\":\"Bob Glasgow Grief Support Centre — bereavement"
+  },
+  {
+    "id": 603,
+    "name": "Hospice Calgary - Children's Grief Centre",
+    "cat": "Grief & Bereavement",
+    "desc": "The Children's Grief Centre, part of Hospice Calgary, offers support to families with children aged 19 and under who are coping with the loss of someone close to them. They provide individual and family counseling, support groups, and various program",
+    "steps": "[{\"step\": 1, \"action\": \"Contact through one of the options below the centre of care you are interested in\", \"details\": \""
+  },
+  {
+    "id": 604,
+    "name": "Calgary Homicide Support Society - Homicide Support Group",
+    "cat": "Grief & Bereavement",
+    "desc": "The Calgary Homicide Support Society offers a peer support group for individuals aged 18 and older who have lost a loved one to homicide. This group provides a safe and compassionate environment for sharing experiences and receiving support from othe",
+    "steps": "[{\"step\":1,\"action\":\"Contact Calgary Homicide Support Society\",\"details\":\"Email Emily Rau at e.dawne7@gmail.com for inqu"
+  },
+  {
+    "id": 605,
+    "name": "Strong Daughters YYC - Bereavement Support Meetings",
+    "cat": "Grief & Bereavement",
+    "desc": "Strong Daughters YYC is a peer support group in Calgary, Alberta, dedicated to young adult women aged 18 to 35 who are grieving the loss of a parent. The group offers a safe and confidential space for members to connect, share experiences, and suppor",
+    "steps": "[{\"step\":1,\"action\":\"Email yycdaughters@gmail.com to RSVP for meetings\",\"details\":\"YYC Strong Daughters — peer support g"
+  },
+  {
+    "id": 606,
+    "name": "Pilgrims Hospice Society - Drop-In Grief Support Groups",
+    "cat": "Grief & Bereavement",
+    "desc": "Provides a compassionate space for adults to connect and share their grief journeys. The drop-in support groups are designed for individuals who are navigating the challenges of loss and bereavement.",
+    "steps": "[{\"step\": 1, \"action\": \"Attend a Mandatory Information Session\", \"details\": \"Everyone interested in grief support at Pil"
+  },
+  {
+    "id": 607,
+    "name": "Healing Hearts — Peer Grief Support for Substance/Overdose Loss (Edmonton)",
+    "cat": "Grief & Bereavement",
+    "desc": "Healing Hearts - Edmonton is a peer-led support group for individuals who have lost a loved one to substance-related harms. Facilitated by individuals with lived experience, the group offers a confidential and supportive environment for those grievin",
+    "steps": "[{\"step\":1,\"action\":\"Find a group near you\",\"details\":\"Visit healingheartscanada.org/find-a-group. Healing Hearts provid"
+  },
+  {
+    "id": 608,
+    "name": "Momentum Counselling Society - Counselling and Support Groups",
+    "cat": "Mental Health & Counselling",
+    "desc": "Momentum Counselling Society is a non-profit organization based in Edmonton, Alberta, dedicated to providing accessible mental health support and solution-focused therapy to individuals who might otherwise face barriers such as long wait times or fin",
+    "steps": "[{\"step\": 1, \"action\": \"Submit application by deadline\", \"details\": \"For January Start: Application deadline: May 1st; F"
+  },
+  {
+    "id": 609,
+    "name": "Solace Grief Support Society",
+    "cat": "Grief & Bereavement",
+    "desc": "Solace Grief Support Society is a registered charity and not-for-profit organization dedicated to providing free, compassionate, and professional grief support and counseling services to individuals experiencing grief due to the death of a loved one.",
+    "steps": "[{\"step\": 1, \"action\": \"Book your free appointment\", \"details\": \"Choose in-person, Zoom or phone\"}, {\"step\": 2, \"action\""
+  },
+  {
+    "id": 610,
+    "name": "Alberta Northwest Palliative Care Society",
+    "cat": "Grief & Bereavement",
+    "desc": "The Alberta Northwest Palliative Care Society is a registered charity dedicated to providing compassionate end-of-life care in Northwest Alberta. They support individuals and families affected by progressive life-limiting illnesses through high-quali",
+    "steps": "[{\"step\":1,\"action\":\"Contact the society\",\"details\":\"Reach out via email at admin@gpcare.ca for information about pallia"
+  },
+  {
+    "id": 611,
+    "name": "Red Deer Hospice Society - Good Grief Group - Bereavement Support",
+    "cat": "Grief & Bereavement",
+    "desc": "The Red Deer Hospice Society offers the 'Good Grief Support Group,' an eight-week program designed to assist individuals navigating the complexities of grief. This group provides a supportive environment where participants can share their experiences",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Bereavement Support Team at 403-309-4344 or bsupport1@reddeerhospice.com\",\"details\":\"Re"
+  },
+  {
+    "id": 612,
+    "name": "St. Albert Bereavement Fellowship - Support Group Meetings",
+    "cat": "Grief & Bereavement",
+    "desc": "The St. Albert Bereavement Fellowship offers support for individuals grieving the loss of a loved one. Their services include a year-round program providing information on coping, communication skills, and self-care to enhance mental and physical wel",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-851-6562 or email contact@stalbertbereavement.ca\",\"details\":\"St. Albert Bereavement Fellow"
+  },
+  {
+    "id": 613,
+    "name": "Manpower Alberta - Training for Work",
+    "cat": "Employment Services",
+    "desc": "Manpower Alberta offers the 'Training for Work' program, a no-cost, government-funded initiative designed for Employment Insurance (EI)-eligible residents of Calgary and Edmonton who are actively seeking employment opportunities.",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-577-5327 or visit manpowerab.com\",\"details\":\"70+ years experience as Alberta's leading sta"
+  },
+  {
+    "id": 614,
+    "name": "The Immigrant Education Society - Clerical Computer Skills Training Program",
+    "cat": "Employment Services",
+    "desc": "The Immigrant Education Society offers a Clerical Computer Skills Training Program at their Whitehorn campus. This program provides 15 weeks of training in office administration and business communications, covering topics such as computer terminolog",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-235-3666 or visit immigrant-education.ca\",\"details\":\"The Immigrant Education Society — Cle"
+  },
+  {
+    "id": 615,
+    "name": "The Immigrant Education Society - Employment Skills Training",
+    "cat": "Employment Services",
+    "desc": "The Immigrant Education Society (TIES) offers the Employment Skills Training (EST) program to assist unemployed and underemployed immigrants in acquiring the necessary skills to secure employment in Canada. This program is designed for individuals wh",
+    "steps": "[{\"step\": 1, \"action\": \"Call the school directly or chat online at www.immigrant-education.ca\", \"details\": null}, {\"step"
+  },
+  {
+    "id": 616,
+    "name": "Momentum Community Economic Development Society - Trades Training Program",
+    "cat": "Employment Services",
+    "desc": "The Trades Training Program offered by the Momentum Community Economic Development Society is designed to equip participants with the employability and technical skills required to pursue a career in the trades. The program includes upgrading in Engl",
+    "steps": "[{\"step\":1,\"action\":\"Explore available trades programs\",\"details\":\"Visit momentum.org/trades to browse current offerings"
+  },
+  {
+    "id": 617,
+    "name": "Columbia College - Employment Training Programs",
+    "cat": "Employment Services",
+    "desc": "Columbia College offers Employment Training Programs designed to prepare students for entry-level positions across various sectors. These programs include Child Care Assistant and Accounting Assistant courses, available in 32-week and 48-week formats",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-235-9300 or visit columbia.ca to talk to an advisor\",\"details\":\"Columbia College Calgary —"
+  },
+  {
+    "id": 618,
+    "name": "Calgary Immigrant Women's Association - Career Services for Foreign Trained Professionals",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Career Services for Foreign Trained Professionals program, offered by the Calgary Immigrant Women's Association (CIWA), is designed to support immigrant women in Calgary by enhancing their skills and providing the experience necessary to enter th",
+    "steps": "[{\"step\": 1, \"action\": \"Contact CIWA Career Services\", \"details\": \"Call 403-263-4414 or visit the office at 138 4 Avenue"
+  },
+  {
+    "id": 619,
+    "name": "City of Calgary - Youth Employment Centre",
+    "cat": "Employment Services",
+    "desc": "The City of Calgary - Youth Employment Centre provides career and employment services to youth ages 15 to 24. It aims to support young individuals in their job search and career development through various programs and resources tailored to their nee",
+    "steps": "[{\"step\":1,\"action\":\"Attend during drop-in hours to register — call 403-268-2490\",\"details\":\"City of Calgary Youth Emplo"
+  },
+  {
+    "id": 621,
+    "name": "EmployAbilities - Restart Your Career Skills Training Program",
+    "cat": "Employment Services",
+    "desc": "EmployAbilities offers the 'Restart Your Career Skills Training Program,' a comprehensive 24-week course designed to equip individuals with the skills necessary for entry-level positions in computerized environments. The program includes professional",
+    "steps": "[{\"step\": 1, \"action\": \"Contact EmployAbilities at their Edmonton office located at 10909 Jasper Avenue NW to inquire ab"
+  },
+  {
+    "id": 624,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Entrepreneurial Program",
+    "cat": "Employment Services",
+    "desc": "The Rupertsland Institute - Métis Centre of Excellence offers the Métis Entrepreneurial Program designed to support Métis individuals in starting or growing their businesses. The program provides resources and guidance to help participants develop vi",
+    "steps": "[{\"step\": 1, \"action\": \"Ensure you are a member of the Otipemisiwak M\\u00e9tis Student and Alumni Association (OMSA)\", \""
+  },
+  {
+    "id": 625,
+    "name": "Rupertsland Institute - Métis Centre of Excellence - Métis Training to Employment",
+    "cat": "Employment Services",
+    "desc": "Rupertsland Institute's Métis Training to Employment program offers services to assist Métis individuals in preparing for, finding, and maintaining employment. These services are provided through their office locations, mobile employment units, and v",
+    "steps": "[{\"step\": 1, \"action\": \"Ensure you are a member of the Otipemisiwak M\\u00e9tis Student and Alumni Association (OMSA)\", \""
+  },
+  {
+    "id": 626,
+    "name": "Training and Employment Services Directory",
+    "cat": "Employment Services",
+    "desc": "The Training and Employment Services Directory is a resource provided by the Government of Alberta's Ministry of Assisted Living and Social Services. It offers a comprehensive list of agencies across Alberta that provide training programs and employm",
+    "steps": "[{\"step\": 1, \"action\": \"Search free programs and services in your area to support your job search, build skills, get tra"
+  },
+  {
+    "id": 627,
+    "name": "MCG Careers — Free Employment Services",
+    "cat": "Employment Services",
+    "desc": "MCG Careers offers free career and employment services, including workshops, resume assistance, job postings, career counseling, and computer tutorials. They provide employment programs and workshops aimed at helping clients obtain full-time employme",
+    "steps": "[{\"step\":1,\"action\":\"Contact your local MCG Careers office\",\"details\":\"MCG has been providing career and employment serv"
+  },
+  {
+    "id": 628,
+    "name": "Saamis Employment and Training Association",
+    "cat": "Employment Services",
+    "desc": "Saamis Employment and Training Association (SETA) is a non-profit organization dedicated to providing career counseling and job search preparation supports to Indigenous communities in Medicine Hat, Lethbridge, and surrounding areas. They offer skill",
+    "steps": "[{\"step\":1,\"action\":\"Contact SETA for employment support\",\"details\":\"Saamis Employment & Training Association (SETA) is "
+  },
+  {
+    "id": 629,
+    "name": "YMCA of Southeastern Alberta — Employment & Skills Training Programs",
+    "cat": "Employment Services",
+    "desc": "The YMCA of Southeastern Alberta is a registered charity dedicated to strengthening communities by connecting individuals and families to programs that cultivate relationships, increase skills and knowledge, and promote wellness. They offer a range o",
+    "steps": "[{\"step\": 1, \"action\": \"Confirm you are 15 years or older and reside in Medicine Hat or Brooks, Alberta\", \"details\": \"Ve"
+  },
+  {
+    "id": 630,
+    "name": "Immigrant Services Calgary",
+    "cat": "Newcomer & Settlement",
+    "desc": "Immigrant Services Calgary (ISC) provides holistic support and case management services for newcomers to Canada, offering personalized plans and referrals to appropriate services. They assist newcomers in starting a new life in Canada through practic",
+    "steps": "[{\"step\":1,\"action\":\"Contact ISC at 403-265-1120 or visit immigrantservicescalgary.ca\",\"details\":\"Immigrant Services Cal"
+  },
+  {
+    "id": 631,
+    "name": "Calgary Immigrant Support Society — Settlement Resources & Donation Connections",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Immigrant Support Society, formerly known as the Syrian Refugee Support Group (SRSG), is a registered not-for-profit organization dedicated to supporting refugees, low-income immigrants, and newcomers in Calgary. They assist by connecting",
+    "steps": "[{\"step\": 1, \"action\": \"Contact Calgary Immigrant Support Society to discuss your needs\", \"details\": \"Reach out to the o"
+  },
+  {
+    "id": 632,
+    "name": "Calgary Board of Education — International Student Settlement & Support",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Board of Education (CBE) provides support and resources for international students, including orientation, counseling, and cultural activities. Their mission is to create an environment where each student can become an engaged learner, pr",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-817-4000 (general) or 403-817-7789 (admissions) or visit cbe.ab.ca\",\"details\":\"Calgary Boa"
+  },
+  {
+    "id": 633,
+    "name": "Edmonton Immigrant Services Association - Children and Youth Settlement Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Edmonton Immigrant Services Association (EISA) offers Children and Youth Settlement Services to support newcomer children and youth in their integration into the Alberta school system. These services include academic support, mentorship, leadersh",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-474-8445 or visit eisa-edmonton.org\",\"details\":\"Edmonton Immigrant Services Association. O"
+  },
+  {
+    "id": 634,
+    "name": "Edmonton Immigrant Services Association - New Neighbours",
+    "cat": "Newcomer & Settlement",
+    "desc": "The New Neighbours Program supports all newcomers to Edmonton, including Temporary Foreign Workers, International Students, Refugee Claimants, Protected Persons, Visitors, Permanent Residents, and Naturalized Citizens. Services include matching newco",
+    "steps": "[{\"step\": 1, \"action\": \"Book an appointment using one of three methods: call 780-474-8445 and book with Gemalil or Glori"
+  },
+  {
+    "id": 635,
+    "name": "Mustard Seed Edmonton — Health, Wellness & Employment Support",
+    "cat": "Emergency Shelter",
+    "desc": "The Mustard Seed's Health and Wellness Program in Edmonton offers a range of services to individuals experiencing homelessness and poverty. These services include occupational therapy, mental health counseling, advocacy, employment support, identific",
+    "steps": "[{\"step\":1,\"action\":\"Call 825-222-4816 or visit theseed.ca\",\"details\":\"The Mustard Seed Edmonton — health and wellness p"
+  },
+  {
+    "id": 636,
+    "name": "Edmonton Immigrant Services Association - Library Settlement Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "EISA provides settlement services to newcomers in partner library branches, assisting with needs assessment, information on settlement and immigration, access to programs and services, and supportive counseling.",
+    "steps": "[{\"step\": 1, \"action\": \"Contact EISA directly via phone or email to arrange services\", \"details\": null}, {\"step\": 2, \"ac"
+  },
+  {
+    "id": 637,
+    "name": "Care for Newcomers Society — Immigrant & Refugee Settlement (Central Alberta)",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Care for Newcomers Society, also known as the CARE Committee, is a registered charity dedicated to supporting immigrants and refugees in Central Alberta. Their mission is to help newcomers fully participate in Canadian life by providing coordinat",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-346-8818 or visit the website for program information\",\"details\":\"Care for Newcomers Socie"
+  },
+  {
+    "id": 638,
+    "name": "Community Legal Clinic",
+    "cat": "Legal Aid",
+    "desc": "The Community Legal Clinic is a registered charity dedicated to providing pro bono legal assistance and advice to individuals with low income or those facing barriers to accessing justice due to language, literacy skills, or mental and physical disab",
+    "steps": "[{\"step\": 1, \"action\": \"Contact the clinic\", \"details\": \"Contact the clinic by phone, in-person, or by filling out the o"
+  },
+  {
+    "id": 639,
+    "name": "Calgary Immigrant Women's Association - Intake, Settlement, and Referral Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Calgary Immigrant Women's Association (CIWA) offers Intake, Settlement, and Referral Services to support immigrant and refugee women in Calgary. These services include brief counseling, healthcare support, emergency housing assistance, social ser",
+    "steps": "[{\"step\":1,\"action\":\"Book an intake appointment\",\"details\":\"Call 403-263-4414 or email welcome@ciwa.org to schedule. Off"
+  },
+  {
+    "id": 640,
+    "name": "Centre d'Accueil pour Nouveaux Arrivants Francophones de Calgary",
+    "cat": "Newcomer & Settlement",
+    "desc": "The Centre d'Accueil pour Nouveaux Arrivants Francophones de Calgary (CANAF) is a non-profit organization dedicated to assisting Francophone newcomers in settling and integrating into Canadian society. Their services are tailored for individuals who ",
+    "steps": "[{\"step\": 1, \"action\": \"Initial Contact\", \"details\": \"If you are already a CANAF client, you can either contact your cou"
+  },
+  {
+    "id": 641,
+    "name": "Calgary Personal and Community Support Association - Disability Inclusion",
+    "cat": "Disability & Autism Support",
+    "desc": "The Calgary Personal and Community Support Association (CPCSA) is a registered not-for-profit organization dedicated to promoting the participation of adults with developmental disabilities in the community. They provide support for individuals with ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-630-1831 to register\",\"details\":\"Calgary Personal and Community Support Association — Disa"
+  },
+  {
+    "id": 642,
+    "name": "Resicare Society — Residential & Community Support for Developmental Disabilities",
+    "cat": "Disability & Autism Support",
+    "desc": "Resicare Society of Calgary is a registered not-for-profit organization dedicated to providing individualized community-based residential, day, and outreach support services to individuals with developmental disabilities. They offer programs aimed at",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for a conversation\",\"details\":\"Contact Resicare via their website or by phone to discuss "
+  },
+  {
+    "id": 644,
+    "name": "Centre for Autism Services Alberta",
+    "cat": "Disability & Autism Support",
+    "desc": "The Centre for Autism Services Alberta (CFASA) is a non-profit organization dedicated to providing comprehensive and innovative services to individuals with autism and their families. Their mission is to empower children, teens, and adults with autis",
+    "steps": "[{\"step\":1,\"action\":\"Call toll-free 1-844-488-6600 or local 825-210-9284\",\"details\":\"Centre for Autism Services Alberta "
+  },
+  {
+    "id": 645,
+    "name": "Calgary Progressive Lifestyles Foundation — Adult Disability Support & Independent Living",
+    "cat": "Disability & Autism Support",
+    "desc": "Calgary Progressive Lifestyles Foundation (CPLF) is a non-profit organization dedicated to empowering adults with disabilities to achieve independence, fulfillment, and autonomy through customized support services. Established in 1989, CPLF offers a ",
+    "steps": "[{\"step\": 1, \"action\": \"Applying for government funding programs (like PDD or AISH) first\", \"details\": null}, {\"step\": 2"
+  }
+]

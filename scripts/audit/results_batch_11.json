@@ -1,0 +1,705 @@
+[
+  {
+    "id": 2958,
+    "name": "High Prairie and District Food Bank Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2963,
+    "name": "Dashmesh Culture Centre",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2967,
+    "name": "West Zion Mennonite Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2970,
+    "name": "Edmonton Down Syndrome Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2976,
+    "name": "Westwinds Communities",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2977,
+    "name": "Sanatan Hindu Cultural Society",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2979,
+    "name": "Al Fajr Islamic Centre Edmonton",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2980,
+    "name": "Foothills Mennonite Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2981,
+    "name": "Robertson-Wesley United Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2988,
+    "name": "International Swaminarayan Satsang Organization of Edmonton",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2995,
+    "name": "Excel Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3001,
+    "name": "Lethbridge Pregnancy Care Centre",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3002,
+    "name": "The Sandwich Foundation of Canada",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3005,
+    "name": "The Calgary Chinese Elderly Citizens' Association",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3010,
+    "name": "Abiding Life Ministries Canada",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3014,
+    "name": "All Saints Traditional Anglican Church Renfrew",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3016,
+    "name": "City View Christian Centre",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3024,
+    "name": "The Champion's Centre Incorporated",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3025,
+    "name": "Foundation for Oromian Culture, Education and Art Services (Focas)",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 3026,
+    "name": "Dormition of the Most Holy Mother of God Ukrainian Catholic",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3030,
+    "name": "The St Albert Library Board",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3031,
+    "name": "Glenora Child Care Society",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3038,
+    "name": "Peoples Pentecostal Church Edmonton",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3039,
+    "name": "Camrose & District Home Support Service Society",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3040,
+    "name": "Wainwright Public Library",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3046,
+    "name": "Seniors Life Centre",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3052,
+    "name": "Ronald McDonald House Charities Alberta Society",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 3053,
+    "name": "Lord of Life Lutheran Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3057,
+    "name": "Fifth Avenue Memorial United Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3058,
+    "name": "Red Deer Action Group Society",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 3065,
+    "name": "North East Calgary Adopt A Family Society",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3067,
+    "name": "Autism Calgary Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3068,
+    "name": "Pal Calgary",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3069,
+    "name": "The Refuge Mission Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and shelter services"
+  },
+  {
+    "id": 3071,
+    "name": "Little Bits Therapeutic Riding Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3072,
+    "name": "The Olive Tree Community Centre Inc.",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3073,
+    "name": "Safe Haven Foundation of Canada",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3075,
+    "name": "Gurmat Sikh Society of Alberta Canada",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3082,
+    "name": "Peace Area Riding for the Disabled Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3084,
+    "name": "Masjid Al-Fatima Tuz Zahra(Sa) and Shah Sufi Congregation Centre",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 3086,
+    "name": "Opening Gaits Therapeutic Riding Society of Calgary",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3092,
+    "name": "The Simon Poultney Foundation",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3097,
+    "name": "House of Refuge Mission",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides food, clothing, and basic necessities"
+  },
+  {
+    "id": 3111,
+    "name": "Aboriginal Futures - Post Secondary Summer Employment Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3112,
+    "name": "Aboriginal Futures - Wage Subsidy Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3113,
+    "name": "Aboriginal Futures - Trade Winds to Success",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3114,
+    "name": "Aboriginal Futures - Aksistowapi'siaks Workplace Wellness Circle",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3115,
+    "name": "Aboriginal Futures - Job Club Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3116,
+    "name": "Aboriginal Futures - SCcyber E-Learning Community",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3118,
+    "name": "Making Changes Association - Women in Technology",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3119,
+    "name": "Making Changes Association - My Best Friend's Closet",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3120,
+    "name": "Making Changes Association - Working Women's Group",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3121,
+    "name": "Making Changes Association - Basic Digital Skills for Women",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3122,
+    "name": "Making Changes Association - GREAT Program",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3123,
+    "name": "Making Changes Association - Dress for Success Calgary",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 3126,
+    "name": "Children's Cottage Society - Crisis Nursery",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3127,
+    "name": "Children's Cottage Society - Nurturing Newborns",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3128,
+    "name": "Children's Cottage Society - Home Links",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3129,
+    "name": "Children's Cottage Society - Home Visitation",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3130,
+    "name": "Children's Cottage Society - Hope's Cradle",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3131,
+    "name": "Children's Cottage Society - Family Mental Health & Wellness",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3132,
+    "name": "Children's Cottage Society - Family Resource Network",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3133,
+    "name": "Community Kitchen Program of Calgary - Calgary's Cooking",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3134,
+    "name": "Community Kitchen Program of Calgary - Good Food Box",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3137,
+    "name": "Community Kitchen Program of Calgary - Spinz-A-Round",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 3138,
+    "name": "CCASA - Support & Information Line",
+    "current": "Sexual Assault Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "CHANGE",
+    "reason": "Sexual Assault Support merged into Trauma & PTSD"
+  },
+  {
+    "id": 3139,
+    "name": "CCASA - Counselling Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3140,
+    "name": "CCASA - Police and Court Support",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3142,
+    "name": "Calgary Dream Centre - Men's Recovery Program",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 3143,
+    "name": "Calgary Dream Centre - Housing Solutions",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3144,
+    "name": "Calgary Dream Centre - Alumni Program",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3145,
+    "name": "Inn from the Cold - Family Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 3146,
+    "name": "Inn from the Cold - Prevention & Diversion",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3147,
+    "name": "Inn from the Cold - Supportive Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3148,
+    "name": "Inn from the Cold - Indigenous Programs",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3149,
+    "name": "Kainai Transition Centre Society - Job Ready",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3150,
+    "name": "Kainai Transition Centre Society - Community Corrections",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 3151,
+    "name": "Kainai Transition Centre Society - Transition Support",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3152,
+    "name": "Silver Linings Foundation - Recovery Navigation",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3153,
+    "name": "Silver Linings Foundation - Groups & Workshops",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3154,
+    "name": "Silver Linings Foundation - Peer Support Program",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3155,
+    "name": "Silver Linings Foundation - Live-In Treatment",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3156,
+    "name": "Momentum - Start a Business",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3157,
+    "name": "Momentum - Manage Your Money",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3158,
+    "name": "Momentum - Train For a Good Job",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3159,
+    "name": "Fresh Start Recovery Centre - Outreach Services",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 3160,
+    "name": "Fresh Start Recovery Centre - Friends and Family: Coming Together",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3161,
+    "name": "Fresh Start Recovery Centre - Housing",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3163,
+    "name": "Hope Mission - After-School Programs",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3164,
+    "name": "Hope Mission - Camp Hope",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3165,
+    "name": "Hope Mission - Health Services",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 3166,
+    "name": "Hope Mission - Housing Programs",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 3167,
+    "name": "Carya - Family Functioning Programs",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3168,
+    "name": "Carya - Mental Health and Well-Being",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3169,
+    "name": "Carya - Financial Wellness",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 3170,
+    "name": "YouCan Youth Services - Verto Project",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3171,
+    "name": "YouCan Youth Services - Road To Work Program",
+    "current": "Employment Services",
+    "proposed": "Employment Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 3172,
+    "name": "Taproot - Family and Community Supports",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 3173,
+    "name": "Taproot - Specialized Mental Health & Trauma Support",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 3174,
+    "name": "Taproot - Acquired Brain Injury Program",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  }
+]

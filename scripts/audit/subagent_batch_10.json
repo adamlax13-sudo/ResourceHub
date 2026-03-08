@@ -1,0 +1,702 @@
+[
+  {
+    "id": 2604,
+    "name": "Closer to Home Community Services Society",
+    "cat": "Family & Parenting Support",
+    "desc": "Provision of programs and services for vulnerable children and families that includes five group homes; foster care; in-home family support; Indigenous services; early intervention services and a family resource centre.; new homelessness services pro",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-543-0550 or visit closertohome.com\",\"details\":\"Building resilient families and communities"
+  },
+  {
+    "id": 2611,
+    "name": "Garneau United Assisted Living Place",
+    "cat": "Senior Services",
+    "desc": "We provide assisted living housing to frail seniors. Services also include preparing and serving meals; housekeeping; nursing; personal care and pastoral care.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-430-5800 for information or to arrange a visit\",\"details\":\"The Ashbourne — assisted living"
+  },
+  {
+    "id": 2612,
+    "name": "Edmonton Violence Prevention Centre",
+    "cat": "Domestic Violence Support",
+    "desc": "The Edmonton violence prevention centre provides services in the area of men's treatment for domestic violence; support for their partners and research and education in the area of family violence.",
+    "steps": "[{\"step\":1,\"action\":\"Reach out for confidential support\",\"details\":\"Reach out by call 780-439-4635, or email info@edmont"
+  },
+  {
+    "id": 2616,
+    "name": "Accessible Housing Society",
+    "cat": "Affordable Housing",
+    "desc": "Inclusio - 45 suite fully accessible supportive living facility. Bridge to home - personal supports for people with limited mobility who are exiting homelessness. Residential accessible design (rad) - service which provides accessibility assessments ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-282-1872 or visit accessiblehousing.ca\",\"details\":\"Opening doors for people with limited m"
+  },
+  {
+    "id": 2620,
+    "name": "Saamis Immigration Services Association",
+    "cat": "Newcomer & Settlement",
+    "desc": "Saamis Immigration Services Association assists newcomers in Medicine Hat with settlement services including needs assessment, orientation to community resources, language assessment and referral, employment support, translation and interpretation, f",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-504-1188 or visit saamisimmigration.ca\",\"details\":\"'A Helping Hand Today... Independence T"
+  },
+  {
+    "id": 2632,
+    "name": "Ability Resource Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Ability Resource Association provides supports to people with developmental disabilities to facilitate individual growth; access opportunities; and promote inclusion in the community. The association also provides employment training and supports to ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-329-3911 or visit abilityresource.ca\",\"details\":\"Community support services for individual"
+  },
+  {
+    "id": 2634,
+    "name": "Edmonton Centre for Race and Culture.",
+    "cat": "Youth Services",
+    "desc": "Education & research: anti-racism action program (arap) project; unmasking micro-inequities; bridging the inter-cultural gap prevention & intervention: youth leadership Indigenous solidarity program; challenging through conversations",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about youth programs\",\"details\":\"Reach out by email chay@naarr.org, or visit http:"
+  },
+  {
+    "id": 2635,
+    "name": "Parkland Turning Points Society",
+    "cat": "Domestic Violence Support",
+    "desc": "Separate group counselling for adult male & female clients who are impacted by family violence. Individual; couples and family counselling.",
+    "steps": "[{\"step\":1,\"action\":\"Contact for a confidential consultation at 780-963-8774\",\"details\":\"Call or email parklandtps@gmail"
+  },
+  {
+    "id": 2638,
+    "name": "Campus Food Bank Society",
+    "cat": "Food Banks & Meals",
+    "desc": "Provide food hampers containing non-perishable and perishable food items and toiletries to clients who are members of the university of Alberta community. Hampers are modeled after the Canada food guide; and clients are eligible for a hamper every tw",
+    "steps": "[{\"step\":1,\"action\":\"Contact the Campus Food Bank at (780) 492-8677 or info@campusfoodbank.com\",\"details\":\"Located at SU"
+  },
+  {
+    "id": 2641,
+    "name": "Prairie Winds Clubhouse Society",
+    "cat": "Mental Health & Counselling",
+    "desc": "Computer literacy; cooking and nutrition; ; budgeting; maintenance and cleaning; personal relationship social recreation and housing services; transitional employment and supported employment services",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about services\",\"details\":\"Reach out by call 403-625-4975, or email club1@teluspla"
+  },
+  {
+    "id": 2644,
+    "name": "Arch Enterprises & Training Association of Edmonton",
+    "cat": "Disability & Autism Support",
+    "desc": "Provide vocational rehabilitation program for adults with development disabilities providing the following: employment preparation & placement support to increase skills & ability to maintain employment. Community access to aid the process of integra",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-438-4347 or visit arch-enterprises.com\",\"details\":\"Social enterprise in Edmonton providing"
+  },
+  {
+    "id": 2654,
+    "name": "Care Human Services Ltd.",
+    "cat": "Disability & Autism Support",
+    "desc": "1) 24 hour community based residential care for adults and children with developmental disabilities and behavioural concerns. 2) 24 hour facility based designated supportive living for seniors",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-539-0433 or visit carehelps.ca\",\"details\":\"Founded in 1969. People Empowering People — Ind"
+  },
+  {
+    "id": 2656,
+    "name": "Calvary Community Church of Edmonton",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship service. Provide ministry programs to men; women; young adults; youth and children weekly. Provide pastoral care and prayer. Offer a program for food bank and clothing provisions to the local community. Provide support for christian be",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-462-8444 or email carecloset@calvarycommunity.ca\",\"details\":\"Calvary Community Church in E"
+  },
+  {
+    "id": 2659,
+    "name": "Red Deer First Church of the Nazarene",
+    "cat": "Community & Social Connection",
+    "desc": "We provide weekly worship services in order to promote community; teach biblical truths; and offer a safe worship space for children; teens; adults and seniors. We also host alanon family group & other community programs.; we began offering free meal",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-347-1191 or visit firstnazarene.ca\",\"details\":\"Located at 2 McVicar Street, Red Deer. Serv"
+  },
+  {
+    "id": 2662,
+    "name": "Highbanks Independent Living for Parenting Youth Society",
+    "cat": "Transitional Housing",
+    "desc": "Provide individual family unit accommodations and integrates support for Parenting youth.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-521-0082 or visit highbankssociety.ca\",\"details\":\"Supports mothers aged 16-24 emerging fro"
+  },
+  {
+    "id": 2677,
+    "name": "Foothills Academy Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Designated special education private school (dseps) for students with diagnosed learning disabilities. In addition; the society supports the greater community through psychological services; remedial literacy and numeracy interventions; professional ",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 403-270-9400\",\"details\":\"Reach out by phone at 403-270-9400 to learn abo"
+  },
+  {
+    "id": 2679,
+    "name": "Westside King's Church Society",
+    "cat": "Community & Social Connection",
+    "desc": "The church services; home study groups; youth groups; children's ministries; poverty relief and other evangelical church activities; n/a",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-777-0800 or visit wkc.org\",\"details\":\"Sunday services at 9:00 AM and 11:00 AM. Weekly comm"
+  },
+  {
+    "id": 2682,
+    "name": "Special Olympics Alberta Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Special Olympics Alberta provides year-round sports training and athletic competition in over 21 programs for children, youth, and adults with intellectual disabilities. Programs develop physical fitness, social skills, and self-confidence. Operates ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-415-8352 or visit specialolympics.ab.ca\",\"details\":\"Year-round sports training and competi"
+  },
+  {
+    "id": 2685,
+    "name": "Centra Cam Vocational Training Association",
+    "cat": "Employment Services",
+    "desc": "Centra cam vocational training association offers employment programs (employment training and support) for challenged persons who face employment barriers in camrose and area. Centra cam's mission is to successfully integrate challenged adults into ",
+    "steps": "[{\"step\":1,\"action\":\"Contact for employment support\",\"details\":\"Reach out by email at execir@centracam.ca to learn about"
+  },
+  {
+    "id": 2686,
+    "name": "Crowsnest Community Support Society",
+    "cat": "Disability & Autism Support",
+    "desc": "Provides support to adults with developmental disabilities. The society provide residential; vocational; supported independent living and respite programs.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-563-5265 or visit crowsnestcommunitysupportsociety.ca\",\"details\":\"Not-for-profit organizat"
+  },
+  {
+    "id": 2687,
+    "name": "Student Association of Lethbridge Community College",
+    "cat": "Food Banks & Meals",
+    "desc": "Scholarships; group and club activities; food bank; holiday hamper program; raising funds for various causes; bottle and can pool; liaison between college and students; grab and go campus pantry",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-320-3373 or email lpsa@lethpolytech.ca\",\"details\":\"Lethbridge Polytechnic Students' Associ"
+  },
+  {
+    "id": 2699,
+    "name": "The Impact Society for Children & Families in Turmoil",
+    "cat": "Youth Services",
+    "desc": "Build confidence; character and integrity in students and equip them to make better; more responsible choices. Provide teachers and instructors a foundation of understanding of strength-based; experimental character development to be applied in the c",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-280-1856 or visit impactsociety.com\",\"details\":\"Building more resilient youth through evid"
+  },
+  {
+    "id": 2701,
+    "name": "The Society for Selections: A Career Support Service",
+    "cat": "Employment Services",
+    "desc": "The society for selections is dedicated to supporting individuals with disabilities in the community through employment and volunteer opportunities. Their vision is to see people with disabilities (diagnosed or self disclosed); and with other barrier",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-461-5270 or visit selectionscareer.com\",\"details\":\"Empowering employment programs for indi"
+  },
+  {
+    "id": 2702,
+    "name": "Emma Maternity House Society",
+    "cat": "Transitional Housing",
+    "desc": "Programed housing for pregnant and/or young parents at risk of homelessness. Emma house assists young parents in learning critical early parenthood skills and developing financial literacy. Part of the skills development involves aiding parents to de",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-293-2582 or email info@emmahouse.ca\",\"details\":\"Emma Maternity House in Calgary provides p"
+  },
+  {
+    "id": 2703,
+    "name": "Hillhurst-Sunnyside Community Association",
+    "cat": "Community & Social Connection",
+    "desc": "Information centre; Youth and Adult sport and recreation; senior and community outreach programs; Daycare and Out of School programs; Community gardens; Food programs; Flea/Farmers/Antique markets; Community planning and Hall/Gym rentals.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-283-0554 or visit hsca.ca\",\"details\":\"Hillhurst-Sunnyside Community Association in Calgary"
+  },
+  {
+    "id": 2707,
+    "name": "Getting Ready for Inclusion Today (The Grit Program) Society of Edmonton",
+    "cat": "Disability & Autism Support",
+    "desc": "GRIT provides a family-centered; inclusive early childhood program for preschool children with disabilities and their families. GRIT also directly supports early childhood educators in the community (day care; preschool and kindergarten) to enhance t",
+    "steps": "[{\"step\":1,\"action\":\"Contact Kids Included (formerly GRIT)\",\"details\":\"Call (780) 454-9910 or email info@kidsincluded.ca"
+  },
+  {
+    "id": 2711,
+    "name": "Red Deer Church of Christ",
+    "cat": "Community & Social Connection",
+    "desc": "Zambia Orphange; Food Hampers; Mission; Benevolence; Potter Hand's; Central Alberta Pregnancy; Community Outreach; Children's and Youith Ministries;",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-347-3986 or visit reddeerchurchofchrist.com\",\"details\":\"Small, friendly congregation. Sund"
+  },
+  {
+    "id": 2713,
+    "name": "The Alliance Church",
+    "cat": "Community & Social Connection",
+    "desc": "We conduct regular worship services we provide educational programs for all ages we provide social councelling we provide social assistance to persons in need we provide financial assistance to our college and other colleges we provide financial assi",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-532-8836 or visit gpalliance.ca\",\"details\":\"Grande Prairie Alliance Church at 15502 102 St"
+  },
+  {
+    "id": 2714,
+    "name": "Grace United Church",
+    "cat": "Community & Social Connection",
+    "desc": "Proclaim the Gospel of Jesus Christ; Provide ongoing times and a place of worship; Teach Christian Education; Benevolent aide to people in distress and the homeless.; No new programs",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-875-8959 or visit graceunitedchurch.ca\",\"details\":\"Inclusive United Church in Lloydminster"
+  },
+  {
+    "id": 2715,
+    "name": "Youths Can Fish 2 Society",
+    "cat": "Youth Services",
+    "desc": "Sponsored week of summer camp for Albertan youth living in poverty.",
+    "steps": "[{\"step\":1,\"action\":\"Contact the organization at 403-719-0723 to register\",\"details\":\"Youths Can Fish 2 Society — outdoo"
+  },
+  {
+    "id": 2717,
+    "name": "St Matthews Evangelical Lutheran Church",
+    "cat": "Community & Social Connection",
+    "desc": "We offer weekly Sunday Worship Services (in person and on-line); Weekly - Bible Study; Confirmation Classes and Sunday School. We have Coffee with Matt which offers Community Outreach. We collect food and give it to the local Food Bank. We also colle",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-962-3766 or email office@sprucegrovelutheran.ca\",\"details\":\"St Matthews Evangelical Luther"
+  },
+  {
+    "id": 2721,
+    "name": "Bonnyville Community Church",
+    "cat": "Food Banks & Meals",
+    "desc": "Weekly worship services; weekly prayer meetings; weekly bible studies; sunday school for children; youth night activities; pastoral care; food bank & clothing giveaway; feast of nations fundraiser; disbursements to other charitable care and/or gospel",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-573-3733 or visit loveservegive.ca\",\"details\":\"Bonnyville Community Church offers weekly w"
+  },
+  {
+    "id": 2723,
+    "name": "Fort Saskatchewan Pentecostal Assembly",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship service & bible study. Once a month a social evening to connect with members and friends. Several times throughout the year the church outreach program included volunteering at the local food bank. We are looking at ways in which we ca",
+    "steps": "[{\"step\":1,\"action\":\"Call or text 780-982-4991 or visit fortpentecostal.ca\",\"details\":\"Hope Chapel at 13 Langley Drive, "
+  },
+  {
+    "id": 2724,
+    "name": "Pacekids Society for Children With Special Needs",
+    "cat": "Disability & Autism Support",
+    "desc": "Pacekids provides preschool and kindergarten programs for children aged 2.8 years to 6 years that can be accessed through Program Unit Funding (PUF) with Alberta Education. We offer a Multi-Disciplinary program & a Speech-Language Enhancement (SLE) p",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 403-234-7876\",\"details\":\"Reach out by phone at 403-234-7876 to learn abo"
+  },
+  {
+    "id": 2729,
+    "name": "Silver Springs Community Association",
+    "cat": "Community & Social Connection",
+    "desc": "Providing affordable programs as follows: Swim lessons; public swimming; preschool; youth dances; red cross babysitting/home alone courses; children's dance classes; community soccer; softball; watercolour painting classes; aerobics; outdoor rink (fr",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-288-2616 or email administration@silverspringscommunity.ca\",\"details\":\"Silver Springs Comm"
+  },
+  {
+    "id": 2731,
+    "name": "Hope City Church (Edmonton)",
+    "cat": "Community & Social Connection",
+    "desc": "Hope City Church Edmonton operates a weekly clothing bank for low-income families, provides crisis food assistance and financial support for families in need, runs summer day camps for children with sponsorship for low-income families, and sponsors r",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-462-1515 or visit hopecity.ca\",\"details\":\"Hope City Church in Edmonton offering worship se"
+  },
+  {
+    "id": 2733,
+    "name": "Children's Ability Fund",
+    "cat": "Disability & Autism Support",
+    "desc": "Provide funding to purchase specialized equipment to enhance the independence of children and young adults with a disability",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-454-9191 or visit childrensabilityfund.ca\",\"details\":\"'Reach for the stars, you have the a"
+  },
+  {
+    "id": 2736,
+    "name": "The Strongest Oak Foundation",
+    "cat": "Youth Services",
+    "desc": "A) to provide mentoring programs; educational training; and related support services to underprivileged youth & women in Canada and developing nations; b) to provide scholarships; bursaries; awards; and other forms of financial assistance to underpri",
+    "steps": "[{\"step\":1,\"action\":\"Apply for the program — call 403-585-5795\",\"details\":\"Contact by phone at 403-585-5795 to learn abo"
+  },
+  {
+    "id": 2745,
+    "name": "Womanspace Resource Centre Society",
+    "cat": "Employment Services",
+    "desc": "A part-time employee coordinated our free; year-round Community Volunteer Income Tax Program (CVITP ? Canada Revenue Agency program) tax clinic. Several CVITP registered volunteers assisted with this. We also purchased replacement identification docu",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-329-8338 or visit womanspace.ca\",\"details\":\"Community-based organization in Lethbridge off"
+  },
+  {
+    "id": 2747,
+    "name": "Peace River Community Soup Kitchen Committee",
+    "cat": "Food Banks & Meals",
+    "desc": "The committee continues to serve meals to the needy 3x week. We have not paid employees; all work is done by volunteers from the community. Meeting the needs of the low income in our area. We receive funding from private business; local governments; ",
+    "steps": "[{\"step\":1,\"action\":\"Show up during meal times - no registration needed\",\"details\":\"The Peace River Community Soup Kitch"
+  },
+  {
+    "id": 2749,
+    "name": "The Evangelical Covenant Church of Calgary",
+    "cat": "Community & Social Connection",
+    "desc": "Commons church provides multiple sunday services to the community along with a live online option. We facilitate groups that meet across the city for spiritual support and courses for theological development that run out of our kensington facility. W",
+    "steps": "[{\"step\":1,\"action\":\"Call 877-360-0365 or visit commons.church\",\"details\":\"Commons Church at 2404 Kensington Rd NW, Calg"
+  },
+  {
+    "id": 2750,
+    "name": "Behaviour Therapy and Learning Centre Ltd.",
+    "cat": "Disability & Autism Support",
+    "desc": "Early Childhood Services providing exceptional education for preschool and kindergarten students with autism and other developmental disabilities.; No new programs during the year",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-217-5876 or visit btlc.ca\",\"details\":\"Registered charity providing PUF (Program Unit Funde"
+  },
+  {
+    "id": 2756,
+    "name": "Leduc Hub Association",
+    "cat": "Emergency Shelter",
+    "desc": "Overnight winter shelter for the homeless as well as food & clothing. Providing urgent financial supports to low income families. Referrals to other social supports as needed. Provide food for those unable to access the food bank. Overnight hotel roo",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-739-5482 or visit leduchub.ca\",\"details\":\"A Helping Hand For A Hoping Heart. Safe place fo"
+  },
+  {
+    "id": 2759,
+    "name": "Mount View Special Riding Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Provide horsback riding lessons for adults and children with various disabilities.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-556-4110 or email info@mountviewriding.com\",\"details\":\"Mount View Special Riding Associati"
+  },
+  {
+    "id": 2762,
+    "name": "Men's Educational Support Association",
+    "cat": "Family & Parenting Support",
+    "desc": "Parent and child access centre raising awareness about domestic violence issues support for parents who experience divorce and separation issues",
+    "steps": "[{\"step\":1,\"action\":\"Call (403) 228-6366 or email info@mesacanada.com\",\"details\":\"Men's Educational Support Association "
+  },
+  {
+    "id": 2764,
+    "name": "Third Academy International Ltd.",
+    "cat": "Disability & Autism Support",
+    "desc": "We provide educational programs for children with learning disabilities. We create a well balanced individualized integrated and intensive program for each student designed to prepare them for re-entry into their community school as quickly as possib",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-288-5335 or email info@thirdacademy.ca\",\"details\":\"Third Academy International in Calgary "
+  },
+  {
+    "id": 2771,
+    "name": "Edmonton Emergency Response and Newcomers Services",
+    "cat": "Newcomer & Settlement",
+    "desc": "Our goal is to offer compressive help by providing essential needs to those who have suffered in many ways. By inciting the generosity and support of the community; we will be able to offer assistance to those in need with household necessities; clot",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-700-8218 or visit eerns.ca\",\"details\":\"Supporting newcomers, refugees, homeless, and disas"
+  },
+  {
+    "id": 2775,
+    "name": "Spirit West United Church",
+    "cat": "Community & Social Connection",
+    "desc": "Church services in person; streamed and online; sunday school; pastoral care; outreach (providing help and contributions to soup kitchens and homeless shelters); education and faith formation.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-481-1406 or email spiritw@telus.net\",\"details\":\"Spirit West United Church in Edmonton prov"
+  },
+  {
+    "id": 2779,
+    "name": "Canadian Zalmi Society",
+    "cat": "Newcomer & Settlement",
+    "desc": "Canadian Zalmi Society runs community programs in Calgary including food distribution for families facing food insecurity, digital literacy workshops with access to refurbished computers, youth mentorship and leadership programs, sports activities, s",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-401-8056 or register on canadianzalmi.ca\",\"details\":\"Canadian Zalmi Society — newcomer set"
+  },
+  {
+    "id": 2792,
+    "name": "Emmanuel Seniors Living Society",
+    "cat": "Senior Services",
+    "desc": "Provide housing for seniors; including low-income individuals; and those with disabilities. The organization provides housekeeping; personal care and recreational programs.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-478-2051 or visit emmanuelhome.ca\",\"details\":\"Emmanuel Seniors Living Society — 195 suites"
+  },
+  {
+    "id": 2793,
+    "name": "Inclusion Lethbridge Association",
+    "cat": "Disability & Autism Support",
+    "desc": "Provide support to individuals with developmental disabilities and to their families",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-327-2911 or visit lacl.ca\",\"details\":\"Advocacy, crisis support, and planning tools for peo"
+  },
+  {
+    "id": 2795,
+    "name": "Thrive Outreach Foundation",
+    "cat": "Food Banks & Meals",
+    "desc": "We provide food; clothing; and other basic necessities of life to the homeless and individuals or families who are poor; of low income or in need. We host an Easter Event; Thanksgiving Dinner and Christmas Dinner in low income communities on an annua",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-983-1409\",\"details\":\"Thrive Outreach Foundation in Edmonton provides food, clothing, and b"
+  },
+  {
+    "id": 2799,
+    "name": "O B A D the Organization for Bipolar Affective Disorders Society",
+    "cat": "Mental Health & Counselling",
+    "desc": "Organization for bipolar affective disorders (obad) is a non-profit society who is a mental health organization helping those with mood disorders-on going programs include five support meetings a week by peer facilitators and mental health presentati",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about programs — call 403-999-5812\",\"details\":\"Reach out by phone at 403-999-5812 "
+  },
+  {
+    "id": 2803,
+    "name": "Leduc Regional Housing Foundation",
+    "cat": "Affordable Housing",
+    "desc": "To provide high quality housing and services to seniors; individuals and families of modest means in the communities with leduc county and the city of leduc.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-986-2814 or email info@leducregionalhousing.ca\",\"details\":\"Leduc Regional Housing Foundati"
+  },
+  {
+    "id": 2804,
+    "name": "Bar Harbour Camp Society",
+    "cat": "Youth Services",
+    "desc": "Aquality summer youth experience @ a minimal cost so summer camp is accessible to everyone; including low income families; thro the campership fund program set up via charitable donations.; drilling a new water well for potable water cabin maintenanc",
+    "steps": "[{\"step\":1,\"action\":\"Visit barharbourcamp.com to view programs\",\"details\":\"Bar Harbour Camp Society — summer camp progra"
+  },
+  {
+    "id": 2808,
+    "name": "Mountain View Emergency Shelter Society",
+    "cat": "Domestic Violence Support",
+    "desc": "The Mountain View Emergency Shelter Society is offering outreach services to all people affected by domestic violence with 2 Outreach Coordinators. The demand for service has increased substantially since COVID resulting in the hiring of a second coo",
+    "steps": "[{\"step\":1,\"action\":\"Call the crisis or intake line at 403-586-4765\",\"details\":\"Trained staff are available to talk thro"
+  },
+  {
+    "id": 2811,
+    "name": "Varsity Acres Presbyterian Church",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship services (in person and streamed to youtube); collected donations for the food bank; provided space for gamblers anonymous; english as a second language; sunday school programs; youth groups; refugee support; wedding; funerals; stephen",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-288-0544 or visit vapc.ca\",\"details\":\"Welcoming and friendly church family in Varsity, Cal"
+  },
+  {
+    "id": 2817,
+    "name": "Grace Presbyterian Church of Calgary Alberta",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship services - online and in person; weekly and monthly ministries for women; men; youth; parents; children and seniors. Christian education; pastoral care; support of street ministries and neighbourhood programs such as Connaught School l",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-244-5861 or visit gracecalgary.org\",\"details\":\"Historic church in Calgary with the message"
+  },
+  {
+    "id": 2818,
+    "name": "The Lethbridge Soup Kitchen Association 2013",
+    "cat": "Food Banks & Meals",
+    "desc": "Daily feeding to the poor and homeless",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-320-8688 or visit lethbridgesoupkitchen.ca\",\"details\":\"Community soup kitchen serving thre"
+  },
+  {
+    "id": 2819,
+    "name": "Living Springs Christian Fellowship of Airdrie",
+    "cat": "Community & Social Connection",
+    "desc": "We hold weekly in-person and online worship services and provide ministries for women; men; youth; seniors; and children. We support our parent organization and their missionaries as well as send volunteers on short-term missions; mission projects an",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-948-7724 or visit livingspringsairdrie.com\",\"details\":\"Two in-person gatherings Sundays at"
+  },
+  {
+    "id": 2823,
+    "name": "Sexsmith and Area Food Bank Society",
+    "cat": "Food Banks & Meals",
+    "desc": "We provide food relief/security to those in our area that are in need. We provide food hampers to those who request them. Some clients need support for a short period of time while others are longer term. Hampers or available on a weekly basis at our",
+    "steps": "[{\"step\":1,\"action\":\"Call to make an appointment: Sexsmith 780-568-4345 or 780-296-0939, Clairmont 780-567-2843\",\"detail"
+  },
+  {
+    "id": 2824,
+    "name": "Carstairs Bancroft United Church",
+    "cat": "Community & Social Connection",
+    "desc": "Carstairs Bancroft United Church provides food and supplies for needy families, collects clothing and hygiene items for shelters, hosts community suppers and movie nights, and partners with Carstairs Family Community Support Services to provide meeti",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-337-3131\",\"details\":\"Carstairs Bancroft United Church serves the Carstairs community with "
+  },
+  {
+    "id": 2828,
+    "name": "Profound Walk With God Ministry (Pentecostal Calgary)",
+    "cat": "Community & Social Connection",
+    "desc": "1) Prayer Meeting 2) Family Spiritual Growth 3) Seminar for Couples 4) Koinonia Fellowship 5)Community Volunteers Income Tax Program (CVITP) for taxpayers with low incomes.; Community seminars and special events on Youth; Women and Newcomers' Social ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-710-7129 or visit pwgm.ca\",\"details\":\"Ministry focused on transforming lives through teach"
+  },
+  {
+    "id": 2830,
+    "name": "Living Springs Bible Camp Association",
+    "cat": "Youth Services",
+    "desc": "The charity is a summer camp for children; seniors; and families. The purpose is to bring them to a saving knowledge of Christ. The charity also runs leadership training programs for youth. The camp also rents out the facility when not in use.",
+    "steps": "[{\"step\":1,\"action\":\"Register for programs — call 780-781-2636\",\"details\":\"Contact by phone at 780-781-2636 to learn abo"
+  },
+  {
+    "id": 2834,
+    "name": "Alberta Lawyers'assistance Society (The Assist Program)",
+    "cat": "Mental Health & Counselling",
+    "desc": "1. Professional counselling services through contracted third party providers to lawyers; articling students; families for personal problems. 2. Peer support program for the legal profession through matching volunteers with peers who have requested h",
+    "steps": "[{\"step\":1,\"action\":\"Contact to learn about programs — call 1-877-498-6898\",\"details\":\"Reach out by phone at 1-877-498-6"
+  },
+  {
+    "id": 2836,
+    "name": "Drive Happiness Seniors Association",
+    "cat": "Senior Services",
+    "desc": "Assist seniors in Edmonton to remain in their own homes by providing door-to-doortransportation to seniors who are unable to access other means of transportation to medical appointments; shopping; etc. Covid-delivery program where drivers deliver foo",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-5438 or visit drivehappiness.ca\",\"details\":\"Volunteer-based affordable transportation "
+  },
+  {
+    "id": 2843,
+    "name": "Alberta Northern Lights Wheelchair Basketball Society",
+    "cat": "Disability & Autism Support",
+    "desc": "The society provides wheelchair basketball programming and highlights school program to nothern and central Alberta. Hi-lights is an education and awareness program that provides inclusive sporting experiences for youth of all abilities. There is als",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-492-4310 or email anlwheelchairbasketball@gmail.com\",\"details\":\"Alberta Northern Lights Wh"
+  },
+  {
+    "id": 2848,
+    "name": "Canadian Reformed Church Coaldale",
+    "cat": "Community & Social Connection",
+    "desc": "Preach the gospel; instruct the youth through catechism classes and youth groups; help the poor and needy; collect and distribute funding to support needy churches; mission work; relief organizations and the instruction of students to become minister",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-345-3055\",\"details\":\"Canadian Reformed Church in Coaldale provides worship services, catec"
+  },
+  {
+    "id": 2851,
+    "name": "Bethel Pentecostal Church",
+    "cat": "Community & Social Connection",
+    "desc": "Prayer Ministry; Kids Summer Camp; Shepherds Care Long Term Care Ministry; Bethel Kids Children's Program; Youth Group; Casserole Ministry; Bible Studies; Single & Parenting event; Family Night; Seniors Ministries; Womens Ministry; Mens Ministry",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-674-3529 or visit barrheadbethel.ca\",\"details\":\"Sunday service at 10:30 AM — worship follo"
+  },
+  {
+    "id": 2862,
+    "name": "Stop Abuse in Families (Saif) Society",
+    "cat": "Domestic Violence Support",
+    "desc": "Individual and Group programs; Public Education including schools. Prevention of family violence; including seniors (elder abuse program); youth; children and group programs.; Suicide prevention program via contract counsellors",
+    "steps": "[{\"step\":1,\"action\":\"Contact for a confidential consultation at 780-460-2195\",\"details\":\"Call or email info@saifsociety."
+  },
+  {
+    "id": 2863,
+    "name": "West Sturgeon People Aging in Place Foundation",
+    "cat": "Senior Services",
+    "desc": "We provide affordable housing for seniors (and occassionally for those that are not seniors but who have a disability) with the objective of aging in place.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-418-3015 or email annette@westcountryhearth.ca\",\"details\":\"West Sturgeon People Aging in P"
+  },
+  {
+    "id": 2864,
+    "name": "Inter-Denominational Christiancomm Centre Church of Camrose",
+    "cat": "Community & Social Connection",
+    "desc": "Annual Christmas programs;games; crafts; and religious education and training. Food bank distribution; Retreats and summer camps. Women's group speakers or craft night. weddings and baby showers. Home group bible studies weekly for religious study. V",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-672-7000 or visit camrosecommunitychurch.ca\",\"details\":\"Sunday School at 10:00 AM, main se"
+  },
+  {
+    "id": 2865,
+    "name": "Mill Woods Moravian Church",
+    "cat": "Community & Social Connection",
+    "desc": "We're a small congregation that seeks to welcome and support god's children when and how we can; whether IT be supporting our camping ministry at camp van es; wings (our local women's shelter) or supporting our community at millwoods community church",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-463-7427 or visit mcchurch.ca\",\"details\":\"Millwoods Community Church (Moravian tradition)."
+  },
+  {
+    "id": 2866,
+    "name": "Stettler & District Handibus Society",
+    "cat": "Transportation Assistance",
+    "desc": "The handibus is the only wheelchair accessible transportation for all seniors & handicapped persons of all ages in the town and county. The handivan is mainly used to take people who have medical apointments in the city and on occasion they have the ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-742-5858 to book accessible transportation\",\"details\":\"Stettler & District Handibus Societ"
+  },
+  {
+    "id": 2867,
+    "name": "Al Azhar Shrine Hospital Patient Transportation Fund",
+    "cat": "Healthcare Access",
+    "desc": "Transportation of patients and one parent to shriners hospitals for children for treatment. Meals and housing is also provided during their stay for treatment at no cost to the patient or family",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-239-0030 or visit abshriners.com\",\"details\":\"Al Azhar Shriners in Calgary — part of Shrine"
+  },
+  {
+    "id": 2868,
+    "name": "Leduc Community Living Association",
+    "cat": "Disability & Autism Support",
+    "desc": "We provide referral; information; support services on disability related issues. We promote community awareness of disability related issues and promote volunteerism for persons with disabilities. We assist with crisis prevention; management; assista",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-986-4193 or visit lcla.ca\",\"details\":\"Helping persons with developmental disabilities reac"
+  },
+  {
+    "id": 2869,
+    "name": "Okotoks Pastoral Charge",
+    "cat": "Food Banks & Meals",
+    "desc": "Church services and all related religious and charitable activities for youth and adults. - jacket racket - winter apparel collected and given to those in need - school lunch program - provide healthy lunches for students in need in local schools - b",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-938-4357 or email okunited@telus.net\",\"details\":\"Okotoks United Church. For urgent pastora"
+  },
+  {
+    "id": 2872,
+    "name": "The Marian Centre",
+    "cat": "Food Banks & Meals",
+    "desc": "Provide meals for homeless men/women 12:30-1:15 p.m. Daily (except wednesday and sunday) food is offered at the door as needed emergency clothing/household goods are provided as needed volunteer program for those interested in helping with work in th",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-424-3544 or visit mariancentreedmonton.ca\",\"details\":\"Community centre in Edmonton providi"
+  },
+  {
+    "id": 2878,
+    "name": "Al-Ansaar Islamic Foundation",
+    "cat": "Community & Social Connection",
+    "desc": "We have mainly following ongoing programs:- (1) We have established and are maintaining a religious school of instructions and worship (Al-Ansaar Islamic Center) by renting a place at 3670-63rd Avenue NE; Calgary; AB T3J 0S4 (Unit 120). All expenses ",
+    "steps": "[{\"step\":1,\"action\":\"Call 1-855-633-6222 or visit ansaar.net\",\"details\":\"Islamic charity focused on knowledge and schola"
+  },
+  {
+    "id": 2880,
+    "name": "The Shaama Centre for Seniors and Women",
+    "cat": "Senior Services",
+    "desc": "- outreach services to seniors and women in need specially those who are isolated at home or hospital - programs to enhance physical and mental wellbeing of seniors and women - helping seniors and women to navigate the government and legal systems - ",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-465-2992 or visit shaama.ca\",\"details\":\"Dynamic community hub for seniors, women, and thei"
+  },
+  {
+    "id": 2882,
+    "name": "Momentum Community Economic Development Society",
+    "cat": "Employment Services",
+    "desc": "The Society's programs include: Business development and community initiatives programs; Skills training programs; Financial Literacy programs and business services. All the programs are geared toward the low income earners which include the unemploy",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-272-9323 or visit momentum.org\",\"details\":\"Community economic development in Calgary. 'We "
+  },
+  {
+    "id": 2884,
+    "name": "Lamont County Housing Foundation",
+    "cat": "Senior Services",
+    "desc": "The charity continues to provide supportive housing to seniors and the diabled (i.e. Accomodation; meals; recreation and socialization; housekeeping and maintneance)",
+    "steps": "[{\"step\":1,\"action\":\"Complete an application form with medical portion completed by your doctor\",\"details\":\"Lamont Count"
+  },
+  {
+    "id": 2885,
+    "name": "Bright Lights for Africa Foundation",
+    "cat": "Newcomer & Settlement",
+    "desc": "Provides financial assistance and culturally sensitive food hampers to low-income families in Canada. Also supports low-income immigrant mothers who recently had a baby with essential supplies including diapers, wipes, and baby care items through the",
+    "steps": "[{\"step\":1,\"action\":\"Contact Bright Lights for Africa at 403-402-9916 or 587-432-7557\",\"details\":\"Bright Lights for Afri"
+  },
+  {
+    "id": 2886,
+    "name": "Morinville Pastoral Charge",
+    "cat": "Community & Social Connection",
+    "desc": "Worship services are held weekly on Sundays; and our Minister provides a paper or email copy to our congregation members who are unable to attend in person. Our minister offers pastoral care. We donated to our local food bank; and collect other gifts",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-939-5888 or email anne.telford@muc-ab.org\",\"details\":\"Morinville United Church holds weekl"
+  },
+  {
+    "id": 2890,
+    "name": "The Young Men's Christian Association of Edmonton",
+    "cat": "Community & Social Connection",
+    "desc": "We are a charity dedicated to strengthening the foundation of communities. We do this by nurturing the potential of children; teens and young adults; promoting healthy living; and fostering social responsibility. Our focus on inclusiveness and access",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-674-2895 or visit northernalberta.ymca.ca\",\"details\":\"YMCA of Northern Alberta — programs "
+  },
+  {
+    "id": 2891,
+    "name": "Cameroonian-Canadian Foundation/Fondation Camerounaise-Canadienne",
+    "cat": "Newcomer & Settlement",
+    "desc": "-The Foundation was able to apply to the Federal Government and secure funds for the Black Canadian Centre of Excellence for Advanced Learning; Development; Entrepreneurship and Innovation. -The project has started in 2022; and its goal is to establi",
+    "steps": "[{\"step\":1,\"action\":\"Contact for settlement support — call 587-966-0812\",\"details\":\"Reach out by phone at 587-966-0812 t"
+  },
+  {
+    "id": 2896,
+    "name": "St. Albert Community Village and Food Bank Society",
+    "cat": "Food Banks & Meals",
+    "desc": "Collecting and sorting donated food over 6; 200 food hampers that were distributed in 2023. The community village continues to offer strong prevention programs that help our clients to gain valueable life skills that will help them reach their highes",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-459-0599 or email safb@telus.net\",\"details\":\"St. Albert Community Village and Food Bank So"
+  },
+  {
+    "id": 2900,
+    "name": "Terra Centre for Teen Parents",
+    "cat": "Family & Parenting Support",
+    "desc": "Terra centre provides programs + support services for pregnant + parenting teens. Programs include outreach parenting support for young moms + dads in their homes + community; housing support services; in school support + early learning + child care ",
+    "steps": "[{\"step\":1,\"action\":\"Contact for support — call 780-428-3772\",\"details\":\"Reach out by phone at 780-428-3772 to learn abo"
+  },
+  {
+    "id": 2910,
+    "name": "King of Kings Lutheran Church (Spruce View District)",
+    "cat": "Community & Social Connection",
+    "desc": "Weekly worship and Sunday School ministry for men; women and children as well as Pastoral care; confirmation instructions; vacation bible school; Stephen Ministry; Men`s Network Breakfast. We support Lutheran Church Canada and other Charities. We ass",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-728-3382 or visit kingofkingslutheran.ca\",\"details\":\"Sunday worship at 10:00 AM with Sunda"
+  },
+  {
+    "id": 2918,
+    "name": "The Redeemers Food Bank Ltd.",
+    "cat": "Food Banks & Meals",
+    "desc": "Food Pantry; Food Bank; Food Drive; Outreach to First Nations Community",
+    "steps": "[{\"step\":1,\"action\":\"Call 825-343-9020 or visit redeemersfoodbank.ca\",\"details\":\"Community food bank providing food supp"
+  },
+  {
+    "id": 2922,
+    "name": "Potter's Hands Ministries Society",
+    "cat": "Food Banks & Meals",
+    "desc": "Soup kitchen - meals & bagged lunches social outreach religious fellowship support group",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-487-3888 for meal times\",\"details\":\"Potter's Hands Ministries Society provides free meals "
+  },
+  {
+    "id": 2925,
+    "name": "St. Matthias Anglican Church",
+    "cat": "Food Banks & Meals",
+    "desc": "Religious services are provided to the West Edmonton Community and support to the Inner-City. St. Matthias continues to provide Food Bank distribution services to families in West Edmonton.",
+    "steps": "[{\"step\":1,\"action\":\"Call 780-487-0324 or visit stmatthiasedmonton.ca\",\"details\":\"Anglican church at 6210 - 188 St NW, E"
+  },
+  {
+    "id": 2929,
+    "name": "Advent Lutheran Church",
+    "cat": "Community & Social Connection",
+    "desc": "HOLD WEEKLY Hybrid SERVICES (in person and via Zoom); AND PROVIDE MINISTRIES FOR CHILDREN & YOUTH; PROVIDE PASTORAL CARE; RUN ADULT BIBLE STUDIES; DONATE MONEY TO ELCIC & CLWR DISASTER RELIEF PROGRAMS. HOSPITAL AND NURSING HOME VISITATION. \"MEALS ON ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-239-6966 or email info@adventlutheran.ca\",\"details\":\"Advent Lutheran Church at 11 Scenic A"
+  },
+  {
+    "id": 2932,
+    "name": "Crosspointe Fellowship (Calgary)",
+    "cat": "Community & Social Connection",
+    "desc": "One of our main objective as a church is to conduct religious services that advance teachings of christianity. We have mid week services as well as friday night prayer. We have a children's ministry for children aged 2-12 and youth ministry for youth",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-778-0977 or visit cpfchurch.com\",\"details\":\"Contemporary multicultural church at 1240 36 A"
+  },
+  {
+    "id": 2942,
+    "name": "The Calgary Between Friends Club-Fun and Fellowship for Disabled Youth",
+    "cat": "Disability & Autism Support",
+    "desc": "Between Friends provides quality social; recreation and development opportunities so that people with disabilities can connect; grow and belong. Between Friends offers a variety of programs to children; youth and adults that reduces the barriers of i",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-269-9133 or visit betweenfriends.ab.ca\",\"details\":\"Social and recreational programs for in"
+  },
+  {
+    "id": 2945,
+    "name": "Helping Hands Society of Cochrane & Area",
+    "cat": "Community & Social Connection",
+    "desc": "Helping Hands Society of Cochrane provides volunteer-based support for vulnerable residents including transportation assistance, home maintenance help, visiting and companionship for isolated individuals, and connections to community resources. Serve",
+    "steps": "[{\"step\":1,\"action\":\"Call 587-580-9448 or visit helpinghandscochrane.ca\",\"details\":\"Strengthening Community, Reducing Vu"
+  },
+  {
+    "id": 2949,
+    "name": "Shalem Society for Senior Citizens Care",
+    "cat": "Senior Services",
+    "desc": "Providing affordable housing to seniors including subsidized and licensed supportive living options. The charity provides senior care; health and wellness programs that address conditions relating to aging.",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-240-2800 ext. 2 or visit shalem.ca\",\"details\":\"Senior citizens care in Calgary. Studio sui"
+  },
+  {
+    "id": 2951,
+    "name": "Bow Valley Connections Centre",
+    "cat": "Disability & Autism Support",
+    "desc": "Bow Valley Connections Centre (BVCC) offers social opportunities; including weekly drop-in evenings; art programs; vocational programs and monthly special outings for adolescents and adults with developmental disabilities. Researching and advocating ",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-678-2808 or visit bowvalleyconnectionscentre.com\",\"details\":\"Non-profit creating social co"
+  },
+  {
+    "id": 2952,
+    "name": "Rocky View Regional Handibus Society",
+    "cat": "Transportation Assistance",
+    "desc": "Provide wheelchair-accessible shared-ride community transportation; enabling access to community supports and services for : 1) seniors; 2) persons with disabilities and 3) low-income rural residents. Approximately; 15;500 trips provided annually for",
+    "steps": "[{\"step\":1,\"action\":\"Call 403-948-2887 or visit rockyviewbus.ca\",\"details\":\"Accessible transportation in Rocky View Coun"
+  },
+  {
+    "id": 2954,
+    "name": "Willow Creek Foundation",
+    "cat": "Senior Services",
+    "desc": "The Willow Creek Foundation provides affordable housing; services and care for seniors.; none",
+    "steps": "[{\"step\":1,\"action\":\"Complete the fillable application form available on the website\",\"details\":\"Willow Creek Foundation"
+  }
+]

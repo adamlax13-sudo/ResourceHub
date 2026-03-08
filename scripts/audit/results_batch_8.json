@@ -1,0 +1,705 @@
+[
+  {
+    "id": 907,
+    "name": "The Mustard Seed - Medicine Hat - Homelessness Support",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 908,
+    "name": "FCJ Christian Life Centre — Counselling & Trauma Support",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 909,
+    "name": "Calgary Legal Guidance — Free Legal Aid for Low-Income Calgarians",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 910,
+    "name": "FearIsNotLove — Abuse Counselling & Family Support",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 911,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre - Caribou Child and Youth Centre",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 912,
+    "name": "Pace Community Support, Sexual Assault, and Trauma Centre - Sexual Violence Treatment Program",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 915,
+    "name": "Sagesse — Growth Circle: Domestic Abuse Recovery Group Program",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 916,
+    "name": "Sagesse — Step Forward: Domestic Abuse Peer Mentor Support",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 917,
+    "name": "Sagesse — Stand By: Support for Those Helping Domestic Abuse Survivors",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 918,
+    "name": "Peer N Peer Substance Use Program",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 919,
+    "name": "AHS - STI Clinic Edmonton",
+    "current": "Sexual Health Services",
+    "proposed": "Sexual Health Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 920,
+    "name": "Boyle Street Community Services — Peer Support & Drop-In Services",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 921,
+    "name": "OSI-CAN Alberta - Peer Support Group",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 922,
+    "name": "Alberta Addiction Support Groups & Peer Programs",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 924,
+    "name": "Mobile Outreach Addictions Team",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 926,
+    "name": "Bissell Centre - Outreach Housing Team",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 927,
+    "name": "Al Rashid Mosque - Extreme Weather Response",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 929,
+    "name": "AHS — Community Mental Health Services (Medicine Hat)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 930,
+    "name": "McMan South — Youth & Family Services (Southeast Alberta)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 931,
+    "name": "City of Grande Prairie — Community Diversion Program",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 933,
+    "name": "Jim Mason Therapy — Addiction & Relationship Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 934,
+    "name": "Covenant Health - Psychiatric Acute Inpatient Care Units",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 935,
+    "name": "Hope in Strathcona - Sober Living",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 936,
+    "name": "Iskwew Healing Lodge - Poundmaker's Lodge Treatment Centres",
+    "current": "Indigenous Services",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Iskwew Healing Lodge is residential addiction treatment"
+  },
+  {
+    "id": 939,
+    "name": "Inglewood Opportunity Hub — Youth Services Centre",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 940,
+    "name": "Citizen and New Arrival Information Centre",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 941,
+    "name": "Nisa Foundation - Transitional House",
+    "current": "Transitional Housing",
+    "proposed": "Transitional Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 943,
+    "name": "Diversecities Community Service Association - Law and Advocacy Program",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 944,
+    "name": "Law Society of Alberta - Services for Community Members",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 945,
+    "name": "Edmonton Community Legal Centre",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 946,
+    "name": "Student Legal Services of Edmonton - Civil Law Project",
+    "current": "Legal Aid",
+    "proposed": "Legal Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 947,
+    "name": "Canadian Mental Health Association - Edmonton Region - Mental Health First Aid",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 948,
+    "name": "Alberta Health Services - Central Zone - Social Work",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 949,
+    "name": "PFLAG Grande Prairie - North Peace, AB",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 950,
+    "name": "Calgary Drop-In Centre - Withdrawal Management",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 951,
+    "name": "Calgary Drop-In Centre - Emergency Shelter",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 952,
+    "name": "Health Upwardly Mobile - Outpatient addiction treatment and mental health services",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 953,
+    "name": "StreetLight - Youth Unlimited Calgary",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 957,
+    "name": "Fort Road Victory Church - Free Meals Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 958,
+    "name": "Building Hope Compassionate Association — Meals, Food Hampers & Clothing Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Provides meals, food AND clothing bank - mixed basic needs"
+  },
+  {
+    "id": 959,
+    "name": "Boyle Street Community Services - Meals Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 960,
+    "name": "Bissell Centre - Meals and Basic Services",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 961,
+    "name": "e4c (Edmonton City Centre Church) - Meals Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 962,
+    "name": "Jasper Place Wellness Centre - Drop-in Meals",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 963,
+    "name": "George Spady Centre - Detox with Meals",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 964,
+    "name": "Robertson-Wesley United Church - Community Dinner",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 965,
+    "name": "Veterans Affairs Canada - Calgary Office",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 966,
+    "name": "Veterans Affairs Canada - Edmonton Office",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 967,
+    "name": "The Alex Rapid Access Addiction Medicine (RAAM) Clinic",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 968,
+    "name": "City of Calgary Recreation - Drop-In Programs",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 969,
+    "name": "Trico Centre — Community Recreation & Fitness Centre",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 970,
+    "name": "City of Edmonton - Drop-In Recreation & Leisure Access Program",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 971,
+    "name": "Canadian Native Friendship Centre — Indigenous Cultural & Community Programs",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 972,
+    "name": "In Her Circle - Women's Friendship Club",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 973,
+    "name": "Carya - Social Connections Programs",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 974,
+    "name": "Volunteer Alberta - Volunteer Connector",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 975,
+    "name": "CORE Society - Calgary Outdoor Recreation Enthusiasts",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 976,
+    "name": "Between Friends - Inclusive Recreation",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 977,
+    "name": "Paralympic Sports Association",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 978,
+    "name": "Wheelchair Sports Alberta",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 979,
+    "name": "Rocky Mountain Adaptive",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 980,
+    "name": "Calgary Adapted Hub",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 981,
+    "name": "Grow Calgary - Community Farm",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 982,
+    "name": "City of Edmonton - Community Gardens",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 983,
+    "name": "Alberta Men's Shed Association",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 984,
+    "name": "Protospace — Calgary Community Workshop & Makerspace",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 985,
+    "name": "YMCA Calgary",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 986,
+    "name": "YMCA of Northern Alberta",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 987,
+    "name": "OSISS — Veterans Stress Injury Peer Support",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 988,
+    "name": "Homes for Heroes Foundation — Veteran Transitional Housing",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 989,
+    "name": "VETS Canada — Emergency Veteran Outreach & Crisis Assistance",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 990,
+    "name": "Wounded Warriors Canada - Can Praxis",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 992,
+    "name": "Carewest Colonel Belcher — Veterans Long-Term Care & Rehabilitation",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 993,
+    "name": "Royal Canadian Legion - AB/NWT Command",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 994,
+    "name": "Edmonton Military Family Resource Centre",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 995,
+    "name": "4 Wing Cold Lake Military Family Resource Centre",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 996,
+    "name": "CFB Suffield Military Family Resource Centre",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 997,
+    "name": "Wainwright Military Family Resource Centre",
+    "current": "Veterans Services",
+    "proposed": "Veterans Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 998,
+    "name": "AHS Addiction Helpline (Gambling Support)",
+    "current": "Gambling Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "General addiction helpline, not gambling-specific"
+  },
+  {
+    "id": 999,
+    "name": "AGLC GameSense Program",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1000,
+    "name": "AGLC Voluntary Self-Exclusion Program",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1002,
+    "name": "Calgary Counselling Centre - Problem Gambling",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1003,
+    "name": "AHS Problem Gambling Treatment - Edmonton",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1004,
+    "name": "AHS Problem Gambling Treatment - Calgary",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1006,
+    "name": "AHS Edmonton Eating Disorder Program",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1007,
+    "name": "AHS Calgary Eating Disorder Program",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1008,
+    "name": "Alberta Children's Hospital - Eating Disorder Program",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1009,
+    "name": "Stollery Children's Hospital - Eating Disorder Program",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1010,
+    "name": "Body Brave (Virtual) — Eating Disorder Treatment & Support",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1011,
+    "name": "Sheena's Place — Eating Disorder Support Groups (Virtual)",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1012,
+    "name": "Parent Link Centres",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1013,
+    "name": "City of Calgary — Family & Community Support Services (FCSS)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1015,
+    "name": "Boys & Girls Clubs of Calgary",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1016,
+    "name": "Boys & Girls Clubs Big Brothers Big Sisters of Edmonton",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1017,
+    "name": "Big Brothers Big Sisters of Calgary",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1018,
+    "name": "Catholic Family Service of Calgary",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1019,
+    "name": "Jewish Family Service Calgary",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1020,
+    "name": "McMan — In-Home Family Support & Youth Transition Services",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1021,
+    "name": "Hull Services - Family Support",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1022,
+    "name": "Calgary Counselling Centre - Family Programs",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  }
+]

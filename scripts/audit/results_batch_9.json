@@ -1,0 +1,706 @@
+[
+  {
+    "id": 1023,
+    "name": "Money Mentors — Non-Profit Credit Counselling & Debt Help",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 1024,
+    "name": "Credit Counselling Society - Alberta",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 1025,
+    "name": "Momentum — Financial Empowerment Services (Calgary)",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 1026,
+    "name": "Bissell Centre - Financial Programs",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 1027,
+    "name": "Free Tax Clinics (CVITP)",
+    "current": "Financial Counselling & Debt Help",
+    "proposed": "Financial Counselling & Debt Help",
+    "action": "KEEP"
+  },
+  {
+    "id": 1029,
+    "name": "Calgary Low-Income Transit Pass",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1030,
+    "name": "Edmonton Ride Transit Program",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1031,
+    "name": "DATS (Disabled Adult Transit Service)",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1032,
+    "name": "Calgary Transit Access",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1033,
+    "name": "DriveHappiness — Volunteer Transportation for Seniors",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1034,
+    "name": "Alberta Community Transit Fund",
+    "current": "Transportation Assistance",
+    "proposed": "Transportation Assistance",
+    "action": "KEEP"
+  },
+  {
+    "id": 1035,
+    "name": "Centre for Sexuality — Sexual Health Education & Youth Programs",
+    "current": "Sexual Health Services",
+    "proposed": "Sexual Health Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1036,
+    "name": "Options Sexual Health",
+    "current": "Sexual Health Services",
+    "proposed": "Sexual Health Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1037,
+    "name": "AHS STI Clinic - Calgary (Sheldon Chumir)",
+    "current": "Sexual Health Services",
+    "proposed": "Sexual Health Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 1039,
+    "name": "Central Alberta Sexual Assault Support Centre",
+    "current": "Trauma & PTSD Support",
+    "proposed": "Trauma & PTSD Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1041,
+    "name": "Healthy Parents, Healthy Children (AHS)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1042,
+    "name": "Alberta Prenatal Benefit",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1045,
+    "name": "AHS Postpartum Mental Health Screening",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1046,
+    "name": "John Howard Society of Alberta — Criminal Justice Reintegration & Reentry",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 1048,
+    "name": "John Howard Society of Red Deer — Reintegration & Crime Prevention",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 1049,
+    "name": "Elizabeth Fry Society of Edmonton — Women's Justice Support & Reintegration",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 1051,
+    "name": "Native Counselling Services of Alberta (NCSA)",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 1052,
+    "name": "St. Leonard's Society (Calgary) — Halfway House & Community Reintegration",
+    "current": "Criminal Justice Reintegration",
+    "proposed": "Criminal Justice Reintegration",
+    "action": "KEEP"
+  },
+  {
+    "id": 1053,
+    "name": "Alberta FASD Service Networks",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1055,
+    "name": "South Alberta FASD Network",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1056,
+    "name": "Central Alberta FASD Network",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1057,
+    "name": "South East Alberta FASD Network (SEAFAN)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1058,
+    "name": "Northeast FASD Network (NEAFAN)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1059,
+    "name": "Willow Winds — FASD Support Network",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1060,
+    "name": "Edmonton Fetal Alcohol Network Society (EFAN)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1062,
+    "name": "Alberta Brain Injury Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1064,
+    "name": "Brain Care Centre — Brain Injury Community Support (Edmonton)",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1065,
+    "name": "Glenrose Rehabilitation Hospital - ABI Program",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1066,
+    "name": "Foothills Medical Centre - Brain Injury Rehabilitation",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1067,
+    "name": "Calgary Chronic Pain Centre",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1068,
+    "name": "Edmonton Multidisciplinary Pain Centre",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1070,
+    "name": "AHS Alberta Pain Strategy — Community Chronic Pain Programs",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1071,
+    "name": "Office of the Child and Youth Advocate (OCYA)",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Child welfare redistributed to Family & Parenting"
+  },
+  {
+    "id": 1072,
+    "name": "Advancing Futures Bursary — Post-Secondary Funding for Youth from Care",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Child welfare redistributed to Family & Parenting"
+  },
+  {
+    "id": 1073,
+    "name": "Youth Aging Out of Care - Transition to Adulthood",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "Youth aging out of care = youth services"
+  },
+  {
+    "id": 1076,
+    "name": "Kinship Care Alberta — Support for Relatives Raising Children",
+    "current": "Child Welfare & Aging Out of Care",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Kinship/foster care = family support"
+  },
+  {
+    "id": 1077,
+    "name": "Capital Region Housing — Subsidized & Affordable Housing (Edmonton)",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1078,
+    "name": "Calgary Housing Company — Subsidized & Affordable Housing",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1079,
+    "name": "Habitat for Humanity Southern Alberta",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1080,
+    "name": "Habitat for Humanity Edmonton",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1081,
+    "name": "Alberta Rent Supplement Program",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1082,
+    "name": "HomeSpace Society — Affordable Rental Housing (Calgary)",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1083,
+    "name": "Silvera for Seniors",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 1084,
+    "name": "AARCS Pet Food Bank",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 1085,
+    "name": "Calgary Humane Society - Community Support",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 1086,
+    "name": "Edmonton Humane Society - Community Programs",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 1087,
+    "name": "Alberta SPCA - Emergency Pet Services",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 1139,
+    "name": "The Alex Community Health Centre",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1140,
+    "name": "Radius Community Health & Healing (formerly Boyle McCauley)",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1141,
+    "name": "Alberta Adult Health Benefit (AAHB)",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1142,
+    "name": "Alberta Child Health Benefit (ACHB)",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1143,
+    "name": "University of Alberta Dental Clinic",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1144,
+    "name": "University of Calgary Dental Clinic",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1145,
+    "name": "Sheldon M. Chumir Health Centre",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 1179,
+    "name": "ACT Alberta (Action Coalition on Human Trafficking)",
+    "current": "Human Trafficking Support",
+    "proposed": "Human Trafficking Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1180,
+    "name": "CEASE — Sexual Exploitation Survivor Support & Counselling (Edmonton)",
+    "current": "Human Trafficking Support",
+    "proposed": "Human Trafficking Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 1182,
+    "name": "Canadian Human Trafficking Hotline",
+    "current": "Human Trafficking Support",
+    "proposed": "Human Trafficking Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2511,
+    "name": "The Angel Project Canada",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 2513,
+    "name": "Signature Support Services Society",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2518,
+    "name": "The Association of the Devon Christmas Elves",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2520,
+    "name": "The Hinton Bridges Society for Mental Wellness",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2522,
+    "name": "Kids Cancer Care Foundation of Alberta",
+    "current": "Healthcare Access",
+    "proposed": "Healthcare Access",
+    "action": "KEEP"
+  },
+  {
+    "id": 2527,
+    "name": "Vantage Community Services Society",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2528,
+    "name": "Resourceful Futures Community Support Ltd",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2529,
+    "name": "Ben Calf Robe Society",
+    "current": "Indigenous Services",
+    "proposed": "Indigenous Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2530,
+    "name": "Fort Macleod Kids First Family Centre",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2534,
+    "name": "Southern Alberta Community Living Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2536,
+    "name": "Cerebral Palsy Association in Alberta",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2537,
+    "name": "Focus Society for Support Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2539,
+    "name": "Canadian Adaptive Snowsports - Edmonton Zone Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2540,
+    "name": "The Christmas Bureau of Edmonton",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 2541,
+    "name": "Bridges Family Programs Association of Southeastern Alberta",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2544,
+    "name": "Association of Communities Against Abuse",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2545,
+    "name": "Centre for Newcomers Society of Calgary",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2546,
+    "name": "Strathcona Shelter Society Ltd.",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2548,
+    "name": "Progressive Alternatives Society of Calgary",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2549,
+    "name": "Spinal Cord Injury Association Alberta",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2551,
+    "name": "Connect Society - Deafness, Education, Advocacy & Family Ser",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2556,
+    "name": "Elder's Caring Shelter Society of Grande Prairie",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 2557,
+    "name": "Schizophrenia Society of Alberta",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2566,
+    "name": "Southern Alberta Self-Help Association",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 2567,
+    "name": "Airdrie 1st Club",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 2571,
+    "name": "S.A.M. Ministries Inc.",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 2573,
+    "name": "The Chestermere Regional Food Bank Foundation",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 2578,
+    "name": "Mpc Foundation",
+    "current": "Senior Services",
+    "proposed": "Senior Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2582,
+    "name": "Y.E.S.S.: Youth Emergency Shelter Society of Edmonton",
+    "current": "Emergency Shelter",
+    "proposed": "Emergency Shelter",
+    "action": "KEEP"
+  },
+  {
+    "id": 2587,
+    "name": "Discovery House Family Violence Prevention Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2590,
+    "name": "Calgary Region Foster and Kinship Association",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2591,
+    "name": "Right At Home Housing Society",
+    "current": "Affordable Housing",
+    "proposed": "Affordable Housing",
+    "action": "KEEP"
+  },
+  {
+    "id": 2592,
+    "name": "Calgary Catholic Immigration Society",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 2593,
+    "name": "Calgary DM St. Gabriel Eotc Church",
+    "current": "Community & Social Connection",
+    "proposed": "Community & Social Connection",
+    "action": "KEEP"
+  },
+  {
+    "id": 2595,
+    "name": "Transitions Rehabilitation Association of St. Albert and District",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 2598,
+    "name": "Youth Canada Association (Youcan!)/Association Des Jeunes Canadiens",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2599,
+    "name": "Kids Kottage Foundation",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 2603,
+    "name": "Developmental Disabilities Resource Centre of Calgary",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  }
+]

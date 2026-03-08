@@ -1,0 +1,708 @@
+[
+  {
+    "id": 256,
+    "name": "Fair Entry Calgary",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 257,
+    "name": "Income Support Alberta",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 258,
+    "name": "Alberta Supports Contact Centre",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 259,
+    "name": "Jewish Family Services Calgary — Community Social Services & Support",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 261,
+    "name": "Rise Calgary Forest Lawn",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 262,
+    "name": "Rise Project — Youth Leadership & Mentorship",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 263,
+    "name": "The Salvation Army - East Calgary (Forest Lawn)",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 264,
+    "name": "WINS Community Hubs — Women & Family Resource Centres",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 265,
+    "name": "West Dover Patch — Basic Needs & Financial Support Hub",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 266,
+    "name": "Soap and Suds (Free Showers)",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 267,
+    "name": "Hope Mission Church — Community Meals, Clothing & Youth Programs",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 268,
+    "name": "Rise Calgary (SE Community Resource Centre) — Clothing, Food & Employment Support",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 269,
+    "name": "Rise Calgary Clothing Room",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 270,
+    "name": "WINS Hubs \"House to Home\"",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 274,
+    "name": "AHS Adult Detox (17+)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 275,
+    "name": "George Spady Society — Medically Supported Detox (Edmonton)",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 276,
+    "name": "Poundmakers Lodge Detox St. Albert",
+    "current": "Indigenous Services",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Poundmakers Detox is a detox program"
+  },
+  {
+    "id": 277,
+    "name": "Addiction Services - Prevention (Red Deer)",
+    "current": "Addiction Treatment",
+    "proposed": "Harm Reduction",
+    "action": "CHANGE",
+    "reason": "Prevention/harm reduction focus, not treatment"
+  },
+  {
+    "id": 278,
+    "name": "Safe Harbour Medically Supported Detox Red Deer",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 280,
+    "name": "M.I.T.A.A. Detox Centre — Indigenous Day Treatment for Substance Use",
+    "current": "Indigenous Services",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "MITAA is a day treatment detox centre"
+  },
+  {
+    "id": 281,
+    "name": "Pastew Place Detox Centre",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 282,
+    "name": "Foothills Centre - Fort Macleod Detox",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 283,
+    "name": "AHS - Lethbridge Recovery Centre Detox",
+    "current": "Detox & Withdrawal",
+    "proposed": "Detox & Withdrawal",
+    "action": "KEEP"
+  },
+  {
+    "id": 288,
+    "name": "Teen Challenge Alberta — Adult Men's Addiction Recovery Residence",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 289,
+    "name": "Adeara Recovery Centre",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 290,
+    "name": "Simon House Recovery Centre",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 291,
+    "name": "Grace House Drumheller — Men's Residential Addiction Recovery",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 293,
+    "name": "Enviros - Shunda Creek Recovery Centre",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 295,
+    "name": "Opportunity Home Treatment & Recovery Centre",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 297,
+    "name": "Hull Services BTG — Youth Mental Health & Housing Support (Ages 16-24)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 299,
+    "name": "Kickstand Youth Services",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 305,
+    "name": "Clear Hills Youth Treatment Centre — Indigenous Youth Residential Recovery",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 307,
+    "name": "Eating Disorder Support Network of Alberta",
+    "current": "Eating Disorder Services",
+    "proposed": "Eating Disorder Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 308,
+    "name": "AHS Access Mental Health",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 310,
+    "name": "EHN Sandstone — Eating Disorder Treatment Centre (Calgary)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 311,
+    "name": "Alberta Gamblers Anonymous",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 312,
+    "name": "AHS QuitCore",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 313,
+    "name": "AHS - Lander Treatment Centre",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 315,
+    "name": "Bissell Centre FASD Services",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 319,
+    "name": "Digital Overdose Response System (DORS)",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 321,
+    "name": "AHS - Virtual Opioid Dependency Program",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 323,
+    "name": "Alpha House Needle Response & Ambassador Teams",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 324,
+    "name": "Harm Reduction at the University of Calgary Recovery Community",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 326,
+    "name": "Recovery Alberta",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 327,
+    "name": "Recovery Access Alberta",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 328,
+    "name": "Find a Doctor Alberta",
+    "current": "Mental Health & Counselling",
+    "proposed": "Healthcare Access",
+    "action": "CHANGE",
+    "reason": "Primary care/doctor finding service, not mental health"
+  },
+  {
+    "id": 329,
+    "name": "Service Canada Calgary",
+    "current": "Basic Needs & Material Aid",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "KEEP"
+  },
+  {
+    "id": 331,
+    "name": "CMHA BounceBack — Mental Health Self-Help Skills Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 332,
+    "name": "Counselling Alberta — Postgraduate Counsellor Training Program",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 333,
+    "name": "Alberta.ca Residential Treatment Lookup",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 335,
+    "name": "Banff Community Health Centre - Mental Health (AHS Calgary)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 336,
+    "name": "Portail de l'Immigrant Association - Counselling Service",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 337,
+    "name": "carya — Older Adults Counselling (65+)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 338,
+    "name": "Calgary Alternative Support Services - Creative Community Living Activities",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 339,
+    "name": "Elements Calgary Mental Health Centre - Support and Recreation Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 340,
+    "name": "Kindred - Rapid Access Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 341,
+    "name": "Calgary Catholic Immigration Society - Centre for Refugee Resilience",
+    "current": "Newcomer & Settlement",
+    "proposed": "Newcomer & Settlement",
+    "action": "KEEP"
+  },
+  {
+    "id": 342,
+    "name": "Your Counselling - Group Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 343,
+    "name": "AHS — Adult Recovery Support Services (Edmonton)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 344,
+    "name": "Action for Healthy Communities — Free Mental Health & Newcomer Counselling (Edmonton)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 346,
+    "name": "Edmonton Newcomer Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Newcomer & Settlement",
+    "action": "CHANGE",
+    "reason": "Edmonton Newcomer Centre primarily serves newcomers with settlement"
+  },
+  {
+    "id": 348,
+    "name": "Provincial Family Violence Treatment Program - Edmonton (AHS)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 349,
+    "name": "Edmonton General Continuing Care Centre - Psychosocial Oncology (AHS)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 351,
+    "name": "Fyrefly Institute for Gender and Sexual Diversity",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 352,
+    "name": "Edmonton Epilepsy Association",
+    "current": "Disability & Autism Support",
+    "proposed": "Disability & Autism Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 353,
+    "name": "Northern Alberta Institute of Technology — Student Mental Health Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 354,
+    "name": "The Family Centre of Northern Alberta — Counselling & Therapy Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 356,
+    "name": "Medicine Hat College - Mental Health and Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 358,
+    "name": "AHS — Drop-In Addiction & Mental Health Counselling (Wainwright)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 359,
+    "name": "Sacred Heart Community Health Centre - Addiction and Mental Health",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 360,
+    "name": "AHS — Recreational Therapy, Addiction & Mental Health (Lethbridge)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 361,
+    "name": "Canadian Mental Health Association - Alberta South Region - Crisis Intervention Team",
+    "current": "Crisis Services",
+    "proposed": "Crisis Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 363,
+    "name": "AHS — Adult Community Mental Health Services (Lethbridge)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 364,
+    "name": "Lethbridge Family Services - Counselling, Outreach, and Education Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 365,
+    "name": "AHS — Provincial Mobile Addiction Outreach (Lethbridge)",
+    "current": "Harm Reduction",
+    "proposed": "Harm Reduction",
+    "action": "KEEP"
+  },
+  {
+    "id": 366,
+    "name": "AHS — Post-Secondary Addiction Services (Lethbridge)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 367,
+    "name": "AHS — Post-Secondary Mental Health Services (Lethbridge)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 368,
+    "name": "Indigenous Comprehensive Support Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 369,
+    "name": "Vantage Community Services — Focused Counselling (Central Alberta)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 373,
+    "name": "AHS - Psychosocial Rehabilitation (Virtual Connections)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 374,
+    "name": "BGC Wolf Creek — Youth & Family Programs (Central Alberta)",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 375,
+    "name": "Medicine Hat Family Service - Counselling Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 376,
+    "name": "AHS — Access Addiction & Mental Health (Medicine Hat)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 377,
+    "name": "AHS — Psychiatric Stabilization & Transition Services (Medicine Hat)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 378,
+    "name": "Northwestern Polytechnic - Mental Health Services",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 379,
+    "name": "Catholic Family Services Society of Grande Prairie - Professional Counselling",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 380,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Mobile Addictions Outreach",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 381,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Hub Resource Centre",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 382,
+    "name": "Canadian Mental Health Association - Alberta Northwest Region - Recovery College",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 384,
+    "name": "AHS — Child & Youth Psychiatry (Grande Prairie)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 385,
+    "name": "Provincial Family Violence Treatment Program - Grande Prairie (AHS North)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 386,
+    "name": "Grande Prairie Friendship Centre - Pikiskwetan Program",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 387,
+    "name": "AHS — Mental Health Services (Fort McMurray)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 388,
+    "name": "AHS — Walk-In Counselling Services (Fort McMurray)",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 389,
+    "name": "Canadian Mental Health Association - Alberta Northeast Region",
+    "current": "Mental Health & Counselling",
+    "proposed": "Mental Health & Counselling",
+    "action": "KEEP"
+  },
+  {
+    "id": 397,
+    "name": "AHS — Adult Addiction & Mental Health Community Services (Edmonton)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 398,
+    "name": "iRecover Treatment Centres",
+    "current": "Addiction Treatment",
+    "proposed": "Residential Treatment",
+    "action": "CHANGE",
+    "reason": "Residential/live-in treatment program"
+  },
+  {
+    "id": 399,
+    "name": "Northern Addictions Centre - Residential Treatment (Grande Prairie)",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 401,
+    "name": "The Addiction Centre Calgary - Adult Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 402,
+    "name": "Acute Care Addiction Recovery Program (ACARP)",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  }
+]

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v92'; // Bumped: crisis results sorted by user location, non-crisis lines recategorized
+const CACHE_VERSION = 'v93'; // Bumped: category audit — 72 services recategorized, 40→36 canonical categories
 
 import { SEARCH_CONFIG } from './config';
 import type {

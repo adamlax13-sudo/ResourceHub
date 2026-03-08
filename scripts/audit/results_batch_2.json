@@ -1,0 +1,715 @@
+[
+  {
+    "id": 136,
+    "name": "AHS - Medicine Hat Opioid Dependency Program",
+    "current": "Addiction Treatment",
+    "proposed": "Addiction Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 137,
+    "name": "Medicine Hat Women's Shelter Society 24-Hour Help Line",
+    "current": "Domestic Violence Support",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "24-Hour Help Line is phone-based crisis support"
+  },
+  {
+    "id": 139,
+    "name": "Northern Addictions Centre - Medically Supported Detox (Grande Prairie)",
+    "current": "Residential Treatment",
+    "proposed": "Detox & Withdrawal",
+    "action": "CHANGE",
+    "reason": "Explicitly medical detox program"
+  },
+  {
+    "id": 140,
+    "name": "Peace River Regional Womens Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 141,
+    "name": "Grande Cache Transition House",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 142,
+    "name": "Northern Haven Support Society",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 145,
+    "name": "Red Deer Recovery Community by EHN Canada",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 146,
+    "name": "Red Deer Dream Centre — Faith-Based Men's Addiction Recovery",
+    "current": "Residential Treatment",
+    "proposed": "Residential Treatment",
+    "action": "KEEP"
+  },
+  {
+    "id": 149,
+    "name": "Protection of Children Abusing Drugs (PChAD) Program",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 151,
+    "name": "UCalgary Recovery Community (UCRC)",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 152,
+    "name": "Alcoholics Anonymous Calgary",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 154,
+    "name": "Narcotics Anonymous Calgary",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 155,
+    "name": "Narcotics Anonymous Edmonton",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 157,
+    "name": "SMART Recovery Alberta",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 158,
+    "name": "Crystal Meth Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 159,
+    "name": "Cocaine Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 160,
+    "name": "Al-Anon Family Groups Edmonton (24/7)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 161,
+    "name": "Gamblers Anonymous Edmonton",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 162,
+    "name": "Problem Gambling Resources Network",
+    "current": "Gambling Support",
+    "proposed": "Gambling Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 163,
+    "name": "Sex Addicts Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 164,
+    "name": "Overeaters Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Overeaters Anonymous addresses compulsive overeating"
+  },
+  {
+    "id": 165,
+    "name": "Food Addicts in Recovery",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Food addiction/disordered eating support"
+  },
+  {
+    "id": 166,
+    "name": "Anorexics and Bulimics Anonymous",
+    "current": "Recovery & Peer Support",
+    "proposed": "Eating Disorder Services",
+    "action": "CHANGE",
+    "reason": "Anorexia and bulimia recovery group"
+  },
+  {
+    "id": 167,
+    "name": "Clean Scene — Therapeutic Mentorship for Youth (Ages 14-29)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "Youth-specific mentoring program ages 14-29"
+  },
+  {
+    "id": 168,
+    "name": "Alano Club 12-Step Meetings",
+    "current": "Recovery & Peer Support",
+    "proposed": "Recovery & Peer Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 169,
+    "name": "Parents Empowering Parents (PEP)",
+    "current": "Recovery & Peer Support",
+    "proposed": "Family & Parenting Support",
+    "action": "CHANGE",
+    "reason": "Supports families of those with substance use"
+  },
+  {
+    "id": 170,
+    "name": "University of Calgary Wellness Services",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 171,
+    "name": "UCalgary Writing Symbols Lodge",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 172,
+    "name": "UCalgary Harm Reduction Support",
+    "current": "Harm Reduction",
+    "proposed": "Campus & Student Services",
+    "action": "CHANGE",
+    "reason": "University-specific harm reduction service"
+  },
+  {
+    "id": 173,
+    "name": "UCalgary Crisis (24/7)",
+    "current": "Crisis Services",
+    "proposed": "Crisis Lines",
+    "action": "CHANGE",
+    "reason": "UCalgary Crisis is a phone/text crisis line"
+  },
+  {
+    "id": 174,
+    "name": "University of Alberta Counselling",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 175,
+    "name": "U of A Psychiatry",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 176,
+    "name": "U of A First Peoples House",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 177,
+    "name": "U of A the Landing",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 178,
+    "name": "U of A Empower Me",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 179,
+    "name": "Mount Royal University Wellness",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 180,
+    "name": "Mount Royal University Iniskim Centre",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 181,
+    "name": "MacEwan University Wellness & Psychological Services",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 182,
+    "name": "NAIT Student Counselling",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 183,
+    "name": "SAIT Student Development & Counselling",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 184,
+    "name": "Lethbridge College Counselling",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 186,
+    "name": "Red Deer Polytechnic Counselling",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 187,
+    "name": "NorQuest College Student Wellness",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 188,
+    "name": "Bow Valley College Learner Success",
+    "current": "Campus & Student Services",
+    "proposed": "Campus & Student Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 189,
+    "name": "Campus Food Banks",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 190,
+    "name": "Camp fYrefly",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 191,
+    "name": "Calgary Outlink",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 192,
+    "name": "Skipping Stone — Trans & Gender-Diverse Youth Support (Calgary)",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 195,
+    "name": "Rainbow Alliance for Youth Edmonton",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 196,
+    "name": "CHEW Project OUTpost",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 197,
+    "name": "The Alex Youth Health Centre Calgary",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "Youth Services",
+    "action": "CHANGE",
+    "reason": "General youth health centre, not LGBTQ-specific"
+  },
+  {
+    "id": 198,
+    "name": "Youth Health Bus Calgary",
+    "current": "Youth Services",
+    "proposed": "Youth Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 199,
+    "name": "HOME — Two-Spirit & LGBTQ2S+ Indigenous Youth Safe Space (Red Deer)",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 200,
+    "name": "altView Foundation — Rural LGBTQ2S+ Mental Health & Support",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 201,
+    "name": "Alberta Gay Straight Alliance (GSA) Network",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 202,
+    "name": "ShiftGrit LGBTQ+ Counselling",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 203,
+    "name": "PFLAG St. Albert",
+    "current": "LGBTQ2S+ Services",
+    "proposed": "LGBTQ2S+ Services",
+    "action": "KEEP"
+  },
+  {
+    "id": 207,
+    "name": "WIN House Edmonton (3 locations)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 208,
+    "name": "Lurana Shelter Edmonton",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 209,
+    "name": "WEAC Edmonton — Women's Emergency Accommodation for Domestic Violence",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 210,
+    "name": "A Safe Place Sherwood Park",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 211,
+    "name": "SAGE Seniors Safe House Edmonton",
+    "current": "Senior Services",
+    "proposed": "Domestic Violence Support",
+    "action": "CHANGE",
+    "reason": "Senior abuse protection shelter"
+  },
+  {
+    "id": 212,
+    "name": "Central Alberta Womens Emergency Shelter (CAWES)",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 213,
+    "name": "Bow Valley Womens Emergency Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 214,
+    "name": "Strathmore Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 216,
+    "name": "Mountain Rose Womens Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 217,
+    "name": "Ermineskin Womens Shelter Maskwacis",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 218,
+    "name": "Eagles Nest Stoney Family Shelter",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 219,
+    "name": "Escaping Abuse Benefit",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 220,
+    "name": "Ruth House Society — African Community Violence Support & Transitional Housing",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 221,
+    "name": "Alberta SPCA Pet Safekeeping",
+    "current": "Domestic Violence Support",
+    "proposed": "Domestic Violence Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 222,
+    "name": "Calgary Pregnancy Care Centre",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 223,
+    "name": "Best Beginning Program",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 224,
+    "name": "Calgary Food Bank (Baby Items)",
+    "current": "Food Banks & Meals",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Diapers, wipes, formula are material goods"
+  },
+  {
+    "id": 225,
+    "name": "Made by Momma — Prepared Meals & Family Support (Calgary)",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 226,
+    "name": "Rise Calgary Healthy Babies",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 227,
+    "name": "Salvation Army (Infant Essentials)",
+    "current": "Family & Parenting Support",
+    "proposed": "Basic Needs & Material Aid",
+    "action": "CHANGE",
+    "reason": "Material goods distribution for infants"
+  },
+  {
+    "id": 229,
+    "name": "Childrens Cottage Society - Brendas House",
+    "current": "Family & Parenting Support",
+    "proposed": "Family & Parenting Support",
+    "action": "KEEP"
+  },
+  {
+    "id": 230,
+    "name": "Calgary Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 231,
+    "name": "The Alex Community Food Centre",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 232,
+    "name": "Centre for the City Well Café",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 233,
+    "name": "Muslim Families Network (Halal)",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 234,
+    "name": "The Salvation Army - Calgary Community Services",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 236,
+    "name": "Kerby Centre Thrive (50+)",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 239,
+    "name": "Robert McClure United Church",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 240,
+    "name": "Fish Creek United Church",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 241,
+    "name": "Eastside Victory Outreach",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 242,
+    "name": "Ogden Victory Outreach",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 243,
+    "name": "St. Marys Feed the Hungry",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 244,
+    "name": "Abundant Life Church — Bread Basket Free Food Program",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 245,
+    "name": "Food Not Bombs Community Fridge",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 246,
+    "name": "Gurdwara Siri Guru Singh Sabha Mill Woods",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 247,
+    "name": "West End Outreach Centre",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 248,
+    "name": "Food Banks Alberta",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 250,
+    "name": "Alberta Health Services Food Map",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 251,
+    "name": "Strathcona Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 252,
+    "name": "Red Deer Food Bank Society",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 253,
+    "name": "Lethbridge Salvation Army Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 254,
+    "name": "Grande Prairie Salvation Army Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  },
+  {
+    "id": 255,
+    "name": "Airdrie Food Bank",
+    "current": "Food Banks & Meals",
+    "proposed": "Food Banks & Meals",
+    "action": "KEEP"
+  }
+]
