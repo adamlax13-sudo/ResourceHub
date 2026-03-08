@@ -590,7 +590,11 @@ export function boostByIntent(
     // Substance abuse / addiction treatment boosting
     const isAddictionQuery = hasIntent(analysis, 'substance_abuse', intent) ||
       /\b(addiction|addictions|substance abuse|drug treatment|alcohol treatment|residential treatment|recovery program|rehab)\b/i.test(queryLower);
+    const isResidentialQuery = /\b(residential|live-?in|inpatient)\b/i.test(queryLower);
     if (isAddictionQuery && !isFamilyAddictionQuery) {
+      const isResidentialService = /\b(residential|live-?in|inpatient|recovery house|sober living|halfway house|oxford house)\b/i.test(textLower) &&
+          /\b(addiction|recovery|treatment|substance|alcohol|drug)\b/i.test(textLower);
+      const isOutpatientService = /\b(outpatient|walk-?in|rapid access|RAAM|day treatment|day program|counsell?ing clinic|community clinic)\b/i.test(textLower);
       // Strong boost for addiction-specific services
       if (/\b(addiction|addictions|substance|detox|rehab|recovery house|sober living|treatment centre|treatment center)\b/i.test(textLower) &&
           /\b(treatment|program|recovery|residential|counsell?ing|support)\b/i.test(textLower)) {
@@ -598,10 +602,22 @@ export function boostByIntent(
         searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.addictionService} for addiction service`);
       }
       // Extra boost for residential treatment specifically
-      if (/\b(residential|live-?in|inpatient|recovery house|sober living|halfway house|oxford house)\b/i.test(textLower) &&
-          /\b(addiction|recovery|treatment|substance|alcohol|drug)\b/i.test(textLower)) {
+      if (isResidentialService) {
         addFactor('substanceAbuse.residentialTreatment', cfg.substanceAbuse.residentialTreatment, `Residential addiction treatment`);
         searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.residentialTreatment} for residential treatment`);
+      }
+      // Penalize non-residential services when query specifically asks for residential
+      if (isResidentialQuery && !isResidentialService) {
+        // Check category too — services in "Residential Treatment" category should not be penalized
+        const isResidentialCategory = /residential/i.test(svc.category);
+        if (!isResidentialCategory) {
+          // Stronger penalty for clearly outpatient services
+          const penalty = isOutpatientService
+            ? cfg.substanceAbuse.nonResidentialPenalty
+            : Math.round(cfg.substanceAbuse.nonResidentialPenalty * 0.6);
+          addFactor('substanceAbuse.nonResidentialPenalty', penalty, `Non-residential service for residential query`);
+          searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${penalty} non-residential for residential query`);
+        }
       }
       // Boost harm reduction
       if (/\b(harm reduction|needle|syringe|naloxone|safe consumption|supervised|opioid agonist|methadone|suboxone)\b/i.test(textLower)) {

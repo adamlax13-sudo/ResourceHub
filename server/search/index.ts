@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v96'; // Bumped: location hard filter — exclude services from other cities
+const CACHE_VERSION = 'v97'; // Bumped: penalize non-residential services for residential queries
 
 import { SEARCH_CONFIG } from './config';
 import type {

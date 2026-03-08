@@ -285,6 +285,7 @@ export const SCORING_CONFIG = {
     residentialTreatment: 200,   // Residential/live-in addiction programs
     harmReduction: 80,           // Harm reduction services
     unrelatedPenalty: -150,      // Unrelated categories (disability, food, senior, legal, etc.)
+    nonResidentialPenalty: -200,  // Non-residential services when query asks for residential
   },
 
   // Domestic violence boosts
