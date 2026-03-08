@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v91'; // Bumped: crisis queries now return ALL crisis lines from DB, not just search matches
+const CACHE_VERSION = 'v92'; // Bumped: crisis results sorted by user location, non-crisis lines recategorized
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -135,7 +135,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     const isEmergency = input.emergency === true;
     if (analysis.isCrisis || isEmergency) {
       const dbCrisisLines = await storage.getCrisisLines();
-      services = buildCrisisResults(dbCrisisLines);
+      services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -189,7 +189,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // For crisis queries, replace results entirely with all crisis lines from DB
     if (analysis.isCrisis || input.emergency) {
       const dbCrisisLines = await storage.getCrisisLines();
-      services = buildCrisisResults(dbCrisisLines);
+      services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -230,7 +230,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // For crisis queries, replace results entirely with all crisis lines from DB
   if (analysis.isCrisis || input.emergency) {
     const dbCrisisLines = await storage.getCrisisLines();
-    result.services = buildCrisisResults(dbCrisisLines);
+    result.services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
     console.log(`[SearchOrchestrator] Crisis query - replaced with all crisis lines from DB`);
   }
 

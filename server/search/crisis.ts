@@ -196,19 +196,22 @@ export function boostCrisisServices(services: LiteService[]): LiteService[] {
 /**
  * Build crisis-only results from DB Crisis Lines.
  * For crisis queries, we don't rely on search relevance — we show ALL crisis hotlines.
- * Returns: pinned 988 + all Crisis Lines from the database.
+ * Returns: pinned 988 + all Crisis Lines from the database, sorted by location relevance.
+ *
+ * Sort order: local city match → province-wide → Canada-wide → other cities.
  */
-export function buildCrisisResults(dbCrisisLines: Service[]): LiteService[] {
+export function buildCrisisResults(dbCrisisLines: Service[], userLocation: string | null): LiteService[] {
   const config = SEARCH_CONFIG.crisis;
   const results: LiteService[] = [];
 
   // Pin 988 first
   results.push({ ...config.pinnedServiceLite } as LiteService);
 
-  // Add all DB crisis lines (skip 988 since it's already pinned)
+  // Convert DB services to LiteService (skip 988 since it's already pinned)
+  const lines: LiteService[] = [];
   for (const s of dbCrisisLines) {
     if (s.serviceId.includes('988') || s.name?.toLowerCase().includes('988')) continue;
-    results.push({
+    lines.push({
       id: s.serviceId,
       name: s.name || '',
       category: s.category || '',
@@ -220,6 +223,24 @@ export function buildCrisisResults(dbCrisisLines: Service[]): LiteService[] {
     });
   }
 
-  console.log(`[CrisisResults] Built crisis results: ${results.length} services (988 + ${results.length - 1} crisis lines)`);
+  // Sort by location relevance
+  const loc = (userLocation || '').toLowerCase();
+  lines.sort((a, b) => locationRank(a.location, loc) - locationRank(b.location, loc));
+
+  results.push(...lines);
+  console.log(`[CrisisResults] Built crisis results: ${results.length} services (988 + ${lines.length} crisis lines, location: ${userLocation || 'none'})`);
   return results;
+}
+
+/** Rank a service location relative to the user's selected city. Lower = better. */
+function locationRank(serviceLocation: string, userCity: string): number {
+  const loc = serviceLocation.toLowerCase();
+  // City match (e.g., "Calgary" in "Calgary" or in service name/location)
+  if (userCity && loc.includes(userCity)) return 0;
+  // Province-wide
+  if (loc.includes('alberta') && !loc.includes('edmonton') && !loc.includes('calgary') && !loc.includes('lethbridge') && !loc.includes('red deer')) return 1;
+  // Canada-wide
+  if (loc.includes('canada')) return 2;
+  // Other specific city
+  return 3;
 }
