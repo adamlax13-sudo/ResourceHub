@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v88'; // Bumped: OR-based SQL search + keyword extraction for SQL queries
+const CACHE_VERSION = 'v89'; // Bumped: crisis queries now filter to crisis-only services
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -22,7 +22,7 @@ import { analyzeQuery, buildCacheKey } from './analyzer';
 import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
-import { pinCrisisService, boostCrisisServices, getCrisisServiceFull, isCrisisServiceId } from './crisis';
+import { pinCrisisService, boostCrisisServices, filterToCrisisOnly, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
 import {
   isFamilyAddictionQuery,
@@ -135,7 +135,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     const isEmergency = input.emergency === true;
     if (analysis.isCrisis || isEmergency) {
       pinCrisisService(services);
-      if (isEmergency) boostCrisisServices(services);
+      filterToCrisisOnly(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -189,7 +189,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Apply pinning even for cached results
     if (analysis.isCrisis || input.emergency) {
       pinCrisisService(services);
-      if (input.emergency) boostCrisisServices(services);
+      filterToCrisisOnly(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -227,15 +227,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     'Search operation'
   );
 
-  // Apply crisis pinning if needed (single place!)
+  // Apply crisis pinning and filtering — crisis queries show ONLY crisis resources
   if (analysis.isCrisis || input.emergency) {
     pinCrisisService(result.services);
-    if (input.emergency) {
-      boostCrisisServices(result.services);
-      console.log(`[SearchOrchestrator] Emergency mode - 988 pinned, crisis services boosted to top`);
-    } else {
-      console.log(`[SearchOrchestrator] Crisis query - 988 pinned to top`);
-    }
+    filterToCrisisOnly(result.services);
+    console.log(`[SearchOrchestrator] Crisis query - filtered to crisis services only`);
   }
 
   // Apply PCHAD pinning for parent/child addiction queries

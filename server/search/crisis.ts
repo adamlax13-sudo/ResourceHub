@@ -105,6 +105,51 @@ function getCrisisCategoryRank(category: string): number {
 }
 
 /**
+ * Filter results to ONLY crisis services.
+ * For crisis queries, users in distress should see ONLY crisis resources —
+ * not random counselling services or community programs.
+ *
+ * Keeps: 988 pinned service + Crisis Lines + Crisis Services.
+ * Removes: everything else.
+ * Orders: Crisis Lines first, then Crisis Services (preserving relevance within groups).
+ *
+ * Modifies the array in place.
+ */
+export function filterToCrisisOnly(services: LiteService[]): LiteService[] {
+  if (services.length <= 1) return services;
+
+  // Separate the pinned 988 service (index 0) from the rest
+  const pinned = services[0];
+  const isPinned988 = pinned.id?.includes('988');
+  const rest = isPinned988 ? services.slice(1) : services;
+
+  // Keep only Crisis Lines and Crisis Services (not DV/shelter — those are for different intents)
+  const crisisGroups: LiteService[][] = CRISIS_CATEGORY_PRIORITY.map(() => []);
+
+  for (const svc of rest) {
+    const rank = getCrisisCategoryRank(svc.category || '');
+    if (rank >= 0) {
+      crisisGroups[rank].push(svc);
+    }
+    // Non-crisis services are dropped entirely
+  }
+
+  // Reassemble: pinned 988 → Crisis Lines → Crisis Services → DV → Shelter
+  services.length = 0;
+  if (isPinned988) services.push(pinned);
+  for (const group of crisisGroups) {
+    services.push(...group);
+  }
+
+  const droppedCount = rest.length - (services.length - (isPinned988 ? 1 : 0));
+  if (droppedCount > 0) {
+    console.log(`[CrisisFilter] Filtered to crisis-only: kept ${services.length} services, dropped ${droppedCount} non-crisis`);
+  }
+
+  return services;
+}
+
+/**
  * Reorder search results so crisis-category services appear first.
  * Services are grouped: Crisis Lines → Crisis Services → Domestic Violence → Emergency Shelter → rest.
  * Within each group the original relevance order is preserved.

@@ -110,7 +110,14 @@ export const SEARCH_CONFIG = {
       'rather be dead',
       'better off dead',
       'kms',           // "kill myself" abbreviation
+      'kys',           // "kill yourself" — toxic gaming culture / self-directed
       'end it all',
+      'hurt myself',   // general self-harm
+      'harm myself',   // general self-harm
+      'cut myself',    // general self-harm (without specifying body part)
+      'exit bag',      // specific suicide method reference
+      'drink bleach',  // method reference (sometimes hyperbolic, but err on safety)
+      'catch the bus', // suicide community euphemism
       // Gen Z / internet culture euphemisms
       'sewerslide',    // TikTok censorship evasion for "suicide"
       'sewer slide',
@@ -119,6 +126,7 @@ export const SEARCH_CONFIG = {
       'forever sleep', // euphemism for death/suicide
       'eternal sleep',
       'permadeath',    // gaming term used as suicide euphemism
+      'rage quit life', // gaming metaphor for suicide
     ],
     // Implicit crisis patterns — subtle expressions of suicidal ideation
     // These use regex to catch variations in phrasing
@@ -186,20 +194,34 @@ export const SEARCH_CONFIG = {
       /\b(slit|cut|cutting)\s+(my\s+)?(wrists?|veins?|throat)\b/i,
       /\b(hang|hanging)\s+(myself|me)\b/i,
       /\b(pull the trigger|shoot myself|gun to my head)\b/i,
-      /\b(take|swallow|down)\s+(all|a bunch of|too many)\s+(pills?|medication|meds)\b/i,
+      /\b(take|swallow|down)\s+(all|a bunch of|too many)\s+(my\s+)?(pills?|medication|meds)\b/i,
       /\b(step in front of|throw myself|jump in front)\b/i,
+      /\bod\s+(on|with)\s+(pills?|medication|meds|drugs)\b/i,  // "od on pills"
+      /\b(drown|drowning)\s+(myself|me)\b/i,
 
       // --- Farewell / goodbye expressions ---
       /\b(this is|it'?s)\s+(my\s+)?(goodbye|farewell|the end|my last)\b/i,
       /\b(won'?t|will not)\s+(be here|be around|see)\s+(much longer|tomorrow|anymore)\b/i,
       /\b(no|not)\s+(reason|point)\s+(to|for)\s+(live|living|go on|continue|stay)\b/i,
       /\b(rather|want to)\s+(die|be dead|not exist|disappear forever)\b/i,
+      /\bpeace\s+out\s+(forever|for good|permanently)\b/i,
+
+      // --- Pain cessation / desperation ---
+      /\b(just\s+)?(want|need)\s+(the\s+)?pain\s+to\s+(stop|end|go away)\b/i,
+      /\bmake\s+(the\s+)?pain\s+(stop|end|go away)\b/i,
+      /\b(taking|take)\s+the\s+easy\s+way\s+out\b/i,
 
       // --- Cry for help ---
       /\b(i'?m|i am)\s+(going to|gonna)\s+(do it|end it|kill myself|hurt myself)\b/i,
       /\bhelp\s+me\s+(die|end it|kill myself)\b/i,
       /\b(can'?t|cannot|cant)\s+(live|survive)\s+(like this|this way|without)\b/i,
       /\b(life|living)\s+(isn'?t|is not|not)\s+worth\s+(it|living|the pain)\b/i,
+
+      // --- Censored / obfuscated spellings ---
+      // Covers s*icide, su*cide, sui*ide, s**cide, etc. (non-letter char replaces letter)
+      /\bs[^a-z\s]i?cide\b/i,
+      /\bsu[^a-z\s]c?ide\b/i,
+      /\bsui[^a-z\s]ide\b/i,
     ],
     pinnedServiceId: CRISIS_PINNED_SERVICE_ID,
     pinnedServiceLite: CRISIS_PINNED_SERVICE_LITE,
