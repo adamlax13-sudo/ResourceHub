@@ -105,13 +105,12 @@ function getCrisisCategoryRank(category: string): number {
 }
 
 /**
- * Filter results to ONLY crisis services.
- * For crisis queries, users in distress should see ONLY crisis resources —
- * not random counselling services or community programs.
+ * Filter results to ONLY crisis hotlines.
+ * For crisis queries, users in distress need phone/text/chat numbers to call NOW —
+ * not crisis nurseries, weather response teams, or DV intervention services.
  *
- * Keeps: 988 pinned service + Crisis Lines + Crisis Services.
- * Removes: everything else.
- * Orders: Crisis Lines first, then Crisis Services (preserving relevance within groups).
+ * Keeps: 988 pinned service + "Crisis Lines" category ONLY.
+ * Removes: everything else (including "Crisis Services" — too broad, includes nurseries etc.).
  *
  * Modifies the array in place.
  */
@@ -123,27 +122,23 @@ export function filterToCrisisOnly(services: LiteService[]): LiteService[] {
   const isPinned988 = pinned.id?.includes('988');
   const rest = isPinned988 ? services.slice(1) : services;
 
-  // Keep only Crisis Lines and Crisis Services (not DV/shelter — those are for different intents)
-  const crisisGroups: LiteService[][] = CRISIS_CATEGORY_PRIORITY.map(() => []);
-
+  // ONLY keep "Crisis Lines" — these are all phone/text/chat hotlines
+  const crisisLines: LiteService[] = [];
   for (const svc of rest) {
-    const rank = getCrisisCategoryRank(svc.category || '');
-    if (rank >= 0) {
-      crisisGroups[rank].push(svc);
+    const cat = (svc.category || '').toLowerCase();
+    if (cat.includes('crisis lines')) {
+      crisisLines.push(svc);
     }
-    // Non-crisis services are dropped entirely
   }
 
-  // Reassemble: pinned 988 → Crisis Lines → Crisis Services → DV → Shelter
+  // Reassemble: pinned 988 → Crisis Lines only
   services.length = 0;
   if (isPinned988) services.push(pinned);
-  for (const group of crisisGroups) {
-    services.push(...group);
-  }
+  services.push(...crisisLines);
 
-  const droppedCount = rest.length - (services.length - (isPinned988 ? 1 : 0));
+  const droppedCount = rest.length - crisisLines.length;
   if (droppedCount > 0) {
-    console.log(`[CrisisFilter] Filtered to crisis-only: kept ${services.length} services, dropped ${droppedCount} non-crisis`);
+    console.log(`[CrisisFilter] Filtered to crisis lines only: kept ${services.length}, dropped ${droppedCount} non-hotline services`);
   }
 
   return services;

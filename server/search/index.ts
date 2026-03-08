@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v89'; // Bumped: crisis queries now filter to crisis-only services
+const CACHE_VERSION = 'v90'; // Bumped: crisis filter now only keeps Crisis Lines (hotlines), not all Crisis Services
 
 import { SEARCH_CONFIG } from './config';
 import type {
