@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import time
+from urllib.parse import quote
 from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, Optional, Set
@@ -203,7 +204,7 @@ def phase_geocode_services(session, log, dry_run: bool = False):
             continue
 
         try:
-            url = f"{MAPBOX_BASE}/{requests.utils.quote(query_text)}.json"
+            url = f"{MAPBOX_BASE}/{quote(query_text)}.json"
             resp = requests.get(url, params={
                 "access_token": token,
                 "country": "ca",

@@ -4,7 +4,7 @@
 
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
-import { api } from "@shared/routes";
+import { api, serviceSummarySchema } from "@shared/routes";
 import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
 import { createErrorResponse } from "../helpers/errors";
@@ -37,7 +37,7 @@ export function registerSearchRoutes(app: Express): void {
         query: input.query,
         location: input.location,
         page: input.page ?? 1,
-        pageSize: input.pageSize ?? 50,
+        pageSize: input.pageSize ?? 30,
         debug: input.debug,
         emergency: input.emergency,
         filters: hasFilters ? activeFilters : undefined,
@@ -47,7 +47,9 @@ export function registerSearchRoutes(app: Express): void {
         sortByDistance: input.sortByDistance,
       });
 
-      res.json(result);
+      // Strip internal fields (rrfScore, matchType, filter flags) from response
+      const strippedServices = result.services.map((s) => serviceSummarySchema.parse(s));
+      res.json({ ...result, services: strippedServices });
     } catch (err) {
       console.error("Search error:", err);
       // Don't expose internal error details to clients in production

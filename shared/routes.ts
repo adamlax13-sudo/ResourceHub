@@ -19,6 +19,9 @@ export const serviceSummarySchema = z.object({
   phone: z.string().optional(),
   // 24/7 availability flag
   is24_7: z.boolean().optional(),
+  // Coordinates for map view (null if service has no physical location)
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
   // Distance from user's location in km (null if no coords on service or no user location)
   distanceKm: z.number().nullable().optional(),
   // Debug mode only - shows scoring breakdown

@@ -353,6 +353,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
           is12Step: sr.is12Step ?? null,
           serviceFormat: sr.serviceFormat ?? null,
           languagesSupported: (sr.languagesSupported as string[] | null) ?? null,
+          rrfScore: sr.relevanceScore ?? 0,
         };
       });
 

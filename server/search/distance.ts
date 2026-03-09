@@ -37,7 +37,6 @@ export function formatDistance(km: number): string {
 export interface ServiceWithCoords {
   latitude?: number | null;
   longitude?: number | null;
-  [key: string]: unknown;
 }
 
 /**
@@ -61,7 +60,7 @@ export function attachDistances<T extends ServiceWithCoords>(
 /**
  * Sort by distance ascending. Services without distance go to the end.
  */
-export function sortByDistance<T extends { distanceKm: number | null }>(
+export function sortByDistance<T extends { distanceKm?: number | null }>(
   services: T[],
 ): T[] {
   return [...services].sort((a, b) => {
@@ -75,7 +74,7 @@ export function sortByDistance<T extends { distanceKm: number | null }>(
 /**
  * Filter out services beyond maxKm. Keeps services without coords (online/phone).
  */
-export function filterByMaxDistance<T extends { distanceKm: number | null }>(
+export function filterByMaxDistance<T extends { distanceKm?: number | null }>(
   services: T[],
   maxKm: number,
 ): T[] {
