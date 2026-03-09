@@ -34,8 +34,15 @@ const VALID_INTENTS: QueryIntent[] = [
 const SYSTEM_PROMPT = `Classify the user's search query for an Alberta social services directory.
 Return the top 1-3 matching intents with confidence (0.0-1.0).
 
+SAFETY-CRITICAL: "crisis" intent takes absolute priority. Classify as crisis if the query expresses
+ANY of: suicidal ideation (direct or indirect), desire to not exist, self-harm intent, feelings of
+being a burden, giving up on life, hopelessness about continuing, farewell/goodbye messages,
+method references, or internet euphemisms for suicide (e.g. "unalive", "sewer slide", "off myself",
+"catch the bus", "final yeet"). When in doubt between crisis and another intent, ALWAYS include
+crisis. False positives are safe; false negatives can be fatal.
+
 Available intents:
-- crisis: suicidal ideation, self-harm, immediate danger
+- crisis: suicidal ideation, self-harm, desire to die or not exist, giving up on life, feeling like a burden, hopelessness, farewell messages — ANY expression of wanting to end one's life, however subtle or indirect
 - domestic_violence: abuse, DV shelters, fleeing partner
 - food_insecurity: food banks, free meals, hunger
 - housing_urgent: emergency shelter, homelessness
@@ -71,8 +78,10 @@ Respond with ONLY a JSON array like: [{"intent":"substance_abuse","confidence":0
  * otherwise returns the original unchanged.
  */
 export async function enhanceIntentWithLLM(analysis: QueryAnalysis): Promise<QueryAnalysis> {
-  // Skip for crisis (safety-critical, regex is well-tested) and alias (exact match)
-  if (analysis.intent === 'crisis' || analysis.intent === 'alias') {
+  // Skip for alias (exact match, no ambiguity)
+  // NOTE: We intentionally DO NOT skip crisis — LLM acts as a safety net for regex misses.
+  // If regex already detected crisis, isCrisis is true and LLM can only confirm it (never downgrade).
+  if (analysis.intent === 'alias') {
     return analysis;
   }
 
@@ -133,12 +142,38 @@ export async function enhanceIntentWithLLM(analysis: QueryAnalysis): Promise<Que
 /**
  * Apply LLM intents to analysis if they're higher confidence than regex.
  * Returns a new object — never mutates the input.
+ *
+ * SAFETY: Crisis is "sticky" — once detected by regex OR LLM, it can never be downgraded.
+ * LLM crisis detection uses a lower confidence bar (0.5) because false positives are safe.
  */
 function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): QueryAnalysis {
   const llmPrimary = llmIntents[0];
   const regexConfidence = analysis.intents.primary.confidence;
 
-  // Only override if LLM is meaningfully more confident
+  // SAFETY: If regex already detected crisis, never let LLM downgrade it
+  if (analysis.isCrisis) {
+    return analysis;
+  }
+
+  // SAFETY: If LLM detects crisis with any meaningful confidence, escalate immediately.
+  // Lower bar than normal intents — false positives (showing 988) are safe, false negatives can be fatal.
+  const llmCrisis = llmIntents.find(i => i.intent === 'crisis');
+  if (llmCrisis && llmCrisis.confidence >= 0.5) {
+    console.log(`[LLMIntent] CRISIS ESCALATION: LLM detected crisis(${llmCrisis.confidence}) — upgrading from ${analysis.intent}(${regexConfidence})`);
+    return {
+      ...analysis,
+      intent: 'crisis' as QueryIntent,
+      isCrisis: true,
+      intents: {
+        ...analysis.intents,
+        primary: { intent: 'crisis' as QueryIntent, confidence: llmCrisis.confidence },
+        // Keep original intent as secondary for context
+        secondary: analysis.intents.primary,
+      },
+    };
+  }
+
+  // Normal override: LLM must be meaningfully more confident than regex
   if (llmPrimary.confidence > regexConfidence + 0.1) {
     return {
       ...analysis,

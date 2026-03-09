@@ -181,6 +181,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Analyze the query (regex-based, then enhance with LLM)
   let analysis = analyzeQuery(input.query, input.location, aliasMap);
   analysis = await enhanceIntentWithLLM(analysis);
+
+  // SAFETY: If LLM escalated to crisis, ensure isCrisis flag is synced
+  // (applyLLMIntents sets it, but this is a belt-and-suspenders guard)
+  if (analysis.intent === 'crisis' && !analysis.isCrisis) {
+    analysis = { ...analysis, isCrisis: true };
+    console.log(`[SearchOrchestrator] SAFETY: Synced isCrisis=true after LLM crisis escalation`);
+  }
+
   const intentLog = analysis.intents.secondary
     ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
     : `${analysis.intent}(${analysis.intents.primary.confidence})`;
