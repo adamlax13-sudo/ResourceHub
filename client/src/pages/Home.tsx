@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, MessageSquare, SlidersHorizontal, X, Heart, Share2 } from "lucide-react";
+import { Info, MessageSquare, SlidersHorizontal, X, Heart, Share2, LayoutList, Map as MapIcon } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
 const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
+const MapView = lazy(() => import("@/components/MapView"));
 
 interface FilterChip {
   key: string;
@@ -87,12 +88,14 @@ function removeChip(filters: SearchFilters, chipKey: string): SearchFilters {
 
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
-  const { searchState, setSearchResults, setLocations, setFilters, clearFilters, activeFilterCount } = useSearchContext();
+  const { searchState, setSearchResults, setLocations, setFilters, clearFilters, activeFilterCount, setUserCoords } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [refinePanelOpen, setRefinePanelOpen] = useState(false);
   const [shortlistOpen, setShortlistOpen] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const { favoriteCount, isFavorite, toggleFavorite } = useFavoritesContext();
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -126,10 +129,8 @@ export default function Home() {
 
   const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
 
-  const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
-    // Single location from dropdown (or empty for "All of Alberta")
-    const locationParam = locations.length > 0 ? locations[0] : undefined;
-    const filters = searchStateRef.current.filters;
+  // Shared helper: build filter + coordinate params for search API calls
+  const buildSearchParams = useCallback((filters: SearchFilters, coords?: { lat: number; lng: number } | null) => {
     const filterParams: Partial<SearchFilters> = {};
     if (filters.genderRestriction && filters.genderRestriction !== "all") {
       filterParams.genderRestriction = filters.genderRestriction;
@@ -144,29 +145,62 @@ export default function Home() {
     if (filters.languagesSupported?.length) {
       filterParams.languagesSupported = filters.languagesSupported;
     }
-    search({ query, location: locationParam, ...filterParams, ...(hp ? { hp } : {}) });
-  }, [search]);
+    const coordParams = coords ? { userLat: coords.lat, userLng: coords.lng, sortByDistance: true } : {};
+    return { ...filterParams, ...coordParams };
+  }, []);
+
+  const handleSearch = useCallback((query: string, locations: string[], hp?: string) => {
+    const locationParam = locations.length > 0 ? locations[0] : undefined;
+    const params = buildSearchParams(searchStateRef.current.filters, searchStateRef.current.userCoords);
+    search({ query, location: locationParam, ...params, ...(hp ? { hp } : {}) });
+  }, [search, buildSearchParams]);
+
+  const handleNearMe = useCallback(() => {
+    if (searchState.userCoords) {
+      // Toggle off — clear coords and re-search without distance sorting
+      setUserCoords(null);
+      if (searchStateRef.current.query) {
+        const params = buildSearchParams(searchStateRef.current.filters, null);
+        const locationParam = searchStateRef.current.locations[0] || undefined;
+        search({ query: searchStateRef.current.query, location: locationParam, ...params });
+      }
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = Math.round(pos.coords.latitude * 1000) / 1000;
+        const lng = Math.round(pos.coords.longitude * 1000) / 1000;
+        const coords = { lat, lng, timestamp: Date.now() };
+        setUserCoords(coords);
+        setIsLocating(false);
+        // Re-search with distance sorting if a search is already active
+        if (searchStateRef.current.query) {
+          const params = buildSearchParams(searchStateRef.current.filters, coords);
+          const locationParam = searchStateRef.current.locations[0] || undefined;
+          search({ query: searchStateRef.current.query, location: locationParam, ...params });
+        }
+      },
+      (err) => {
+        setIsLocating(false);
+        const messages: Record<number, string> = {
+          1: 'Location access denied. You can use the location dropdown instead.',
+          2: "Couldn't determine your location. Try using the location dropdown.",
+          3: 'Location request timed out. Try using the location dropdown.',
+        };
+        toast({ title: 'Location unavailable', description: messages[err.code] || messages[2], variant: 'destructive' });
+      },
+      { timeout: 10000, maximumAge: 300000 },
+    );
+  }, [searchState.userCoords, setUserCoords, toast, search, buildSearchParams]);
 
   const handleSearchWithFilters = useCallback(
     (query: string, locations: string[], filters: SearchFilters) => {
       const locationParam = locations.length > 0 ? locations[0] : undefined;
-      const filterParams: Partial<SearchFilters> = {};
-      if (filters.genderRestriction && filters.genderRestriction !== "all") {
-        filterParams.genderRestriction = filters.genderRestriction;
-      }
-      if (filters.ageGroup && filters.ageGroup !== "all_ages") {
-        filterParams.ageGroup = filters.ageGroup;
-      }
-      if (filters.is24_7) filterParams.is24_7 = true;
-      if (filters.isFaithBased) filterParams.isFaithBased = true;
-      if (filters.is12Step) filterParams.is12Step = true;
-      if (filters.serviceFormat) filterParams.serviceFormat = filters.serviceFormat;
-      if (filters.languagesSupported?.length) {
-        filterParams.languagesSupported = filters.languagesSupported;
-      }
-      search({ query, location: locationParam, ...filterParams });
+      const params = buildSearchParams(filters, searchStateRef.current.userCoords);
+      search({ query, location: locationParam, ...params });
     },
-    [search]
+    [search, buildSearchParams]
   );
 
   // Auto-trigger search when page loads with URL params (shared link restoration)
@@ -256,6 +290,9 @@ export default function Home() {
         onOpenWizard={handleOpenWizard}
         onOpenRefinePanel={() => setRefinePanelOpen(true)}
         activeFilterCount={activeFilterCount}
+        userCoords={searchState.userCoords}
+        onNearMe={handleNearMe}
+        isLocating={isLocating}
       />
 
       <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-20' : ''}`}>
@@ -331,8 +368,41 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Results toolbar: Shortlist + Refine buttons */}
-              <div className="flex items-center justify-end gap-2 mb-4">
+              {/* Results toolbar: List/Map toggle + Shortlist + Refine buttons */}
+              <div className="flex items-center justify-between gap-2 mb-4">
+                {/* List/Map toggle */}
+                <div className="inline-flex gap-0.5 p-1 bg-muted rounded-lg border border-border" role="radiogroup" aria-label="View mode">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={viewMode === 'list'}
+                    onClick={() => setViewMode('list')}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      viewMode === 'list'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <LayoutList className="w-4 h-4" aria-hidden="true" />
+                    List
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={viewMode === 'map'}
+                    onClick={() => setViewMode('map')}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      viewMode === 'map'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <MapIcon className="w-4 h-4" aria-hidden="true" />
+                    Map
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
                 {favoriteCount > 0 && (
                   <button
                     type="button"
@@ -368,7 +438,38 @@ export default function Home() {
                     </span>
                   )}
                 </button>
+                </div>
               </div>
+
+              <AnimatePresence mode="wait">
+              {viewMode === 'map' ? (
+                <motion.div
+                  key="map-view"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Suspense fallback={
+                    <div className="glass-card p-8 flex items-center justify-center h-[calc(100vh-200px)]">
+                      <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    </div>
+                  }>
+                    <MapView
+                      services={displayServices}
+                      userLocation={searchState.userCoords}
+                      onSelectService={(id) => setSelectedServiceId(id)}
+                    />
+                  </Suspense>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="list-view"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayServices.map((service, index) => (
@@ -388,6 +489,10 @@ export default function Home() {
                   {t('search.noResults')}
                 </div>
               )}
+
+                </motion.div>
+              )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>

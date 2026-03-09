@@ -156,6 +156,89 @@ def phase_normalize_contacts(session, log, dry_run: bool = False):
     logger.info(f"Normalized {updated_count} services")
 
 
+def phase_geocode_services(session, log, dry_run: bool = False):
+    """Geocode services that have an address but no coordinates via Mapbox API."""
+    import requests
+    from models import Service
+
+    logger.info("=== Finalize: Geocode Services ===")
+
+    token = os.environ.get("MAPBOX_SECRET_TOKEN")
+    if not token:
+        logger.warning("MAPBOX_SECRET_TOKEN not set — skipping geocoding")
+        return
+
+    MAPBOX_BASE = "https://api.mapbox.com/geocoding/v5/mapbox.places"
+    ALBERTA_BBOX = "-120.0,49.0,-110.0,60.0"
+    RELEVANCE_THRESHOLD = 0.6
+
+    services = session.query(Service).filter(
+        Service.latitude.is_(None),
+        Service.is_active.is_(True),
+        or_(
+            Service.address.isnot(None),
+            Service.location.isnot(None),
+        ),
+    ).all()
+
+    if not services:
+        logger.info("No services need geocoding")
+        return
+
+    logger.info(f"Found {len(services)} services to geocode")
+    geocoded = 0
+    skipped = 0
+
+    for svc in services:
+        # Use address if available; for location-only, append Alberta context
+        if svc.address:
+            query_text = svc.address.strip()
+        elif svc.location:
+            query_text = f"{svc.location.strip()}, Alberta, Canada"
+        else:
+            query_text = ""
+        if not query_text:
+            continue
+
+        try:
+            url = f"{MAPBOX_BASE}/{requests.utils.quote(query_text)}.json"
+            resp = requests.get(url, params={
+                "access_token": token,
+                "country": "ca",
+                "bbox": ALBERTA_BBOX,
+                "limit": "1",
+            }, timeout=5)
+            resp.raise_for_status()
+            data = resp.json()
+
+            features = data.get("features", [])
+            if not features or features[0].get("relevance", 0) < RELEVANCE_THRESHOLD:
+                logger.debug(f"Low relevance for {svc.service_id}: {query_text}")
+                skipped += 1
+                continue
+
+            feature = features[0]
+            lng, lat = feature["center"]
+
+            if not dry_run:
+                svc.latitude = lat
+                svc.longitude = lng
+                svc.geocode_source = "mapbox"
+                svc.geocoded_at = datetime.now()
+                geocoded += 1
+
+            # Rate limit: ~10 req/sec
+            time.sleep(0.1)
+
+        except Exception as e:
+            logger.warning(f"Geocode failed for {svc.service_id}: {e}")
+            continue
+
+    if not dry_run:
+        session.commit()
+    logger.info(f"Geocoded {geocoded} services, skipped {skipped} (low relevance)")
+
+
 def phase_enhance_tags(session, log, dry_run: bool = False):
     """Enhance service tags with searchable keywords."""
     from models import Service
@@ -375,6 +458,7 @@ def phase_refresh_views(session, log):
 
 __all__ = [
     "phase_normalize_contacts",
+    "phase_geocode_services",
     "phase_enhance_tags",
     "phase_generate_embeddings",
     "phase_dedupe_services",

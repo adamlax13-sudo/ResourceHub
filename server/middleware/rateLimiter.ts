@@ -65,3 +65,16 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   skipSuccessfulRequests: true, // Don't count successful logins
 });
+
+/**
+ * Geocode rate limiter
+ * 30 requests per 15 minutes per IP — stricter than search
+ * Prevents abuse of the Mapbox geocoding proxy
+ */
+export const geocodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: 'Too many geocoding requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});

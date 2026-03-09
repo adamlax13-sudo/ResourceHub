@@ -130,6 +130,12 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
             <MapPin className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
             <span className="break-words"><span className="sr-only">Location: </span>{service.location}</span>
           </div>
+          {service.distanceKm != null && (
+            <div className="flex items-center text-sm text-muted-foreground gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
+              <span>{service.distanceKm < 1 ? `${Math.round(service.distanceKm * 1000)} m` : service.distanceKm < 10 ? `${service.distanceKm.toFixed(1)} km` : `${Math.round(service.distanceKm)} km`} away</span>
+            </div>
+          )}
           <div className="flex items-start text-sm text-slate-600">
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
             <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || "Contact service provider for wait time"}</span>

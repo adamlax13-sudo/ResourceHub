@@ -54,6 +54,11 @@ export const services = pgTable("services", {
   ageGroup: varchar("age_group", { length: 20 }).default('all_ages'),
   isFaithBased: boolean("is_faith_based").default(false),
   is12Step: boolean("is_12_step").default(false),
+  // Geocoding columns (added by add_geocoding_columns.sql)
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  geocodeSource: varchar("geocode_source", { length: 50 }),
+  geocodedAt: timestamp("geocoded_at"),
 });
 
 // Archive table for feature columns (created by archive_feature_columns.sql)

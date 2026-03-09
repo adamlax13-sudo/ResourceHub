@@ -41,6 +41,10 @@ export function registerSearchRoutes(app: Express): void {
         debug: input.debug,
         emergency: input.emergency,
         filters: hasFilters ? activeFilters : undefined,
+        userLat: input.userLat,
+        userLng: input.userLng,
+        maxDistanceKm: input.maxDistanceKm,
+        sortByDistance: input.sortByDistance,
       });
 
       res.json(result);

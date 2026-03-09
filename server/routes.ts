@@ -11,6 +11,7 @@ import { registerSearchRoutes } from "./routes/search";
 import { registerFeedbackRoutes } from "./routes/feedback";
 import { registerAnalyticsRoutes } from "./routes/analytics";
 import { registerAdminRoutes } from "./routes/admin";
+import { registerLocationRoutes } from "./routes/location";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -20,6 +21,7 @@ export async function registerRoutes(
   registerFeedbackRoutes(app);
   registerAnalyticsRoutes(app);
   registerAdminRoutes(app);
+  registerLocationRoutes(app);
 
   return httpServer;
 }

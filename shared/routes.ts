@@ -19,6 +19,8 @@ export const serviceSummarySchema = z.object({
   phone: z.string().optional(),
   // 24/7 availability flag
   is24_7: z.boolean().optional(),
+  // Distance from user's location in km (null if no coords on service or no user location)
+  distanceKm: z.number().nullable().optional(),
   // Debug mode only - shows scoring breakdown
   scoreExplanation: z.array(scoreExplanationSchema).optional(),
 });
@@ -85,9 +87,17 @@ export const api = {
         debug: z.boolean().optional(),
         // Emergency mode - forces crisis service prioritization (used by "I need help right now" button)
         emergency: z.boolean().optional(),
+        // User location for distance-based sorting/filtering
+        userLat: z.number().min(-90).max(90).optional(),
+        userLng: z.number().min(-180).max(180).optional(),
+        maxDistanceKm: z.number().min(1).max(500).optional(),
+        sortByDistance: z.boolean().optional(),
         // Explicit filters (applied as hard constraints in the search pipeline)
         ...searchFiltersSchema.shape,
-      }),
+      }).refine(
+        (data) => (data.userLat == null) === (data.userLng == null),
+        { message: "userLat and userLng must both be provided or both omitted" }
+      ),
       responses: {
         // Now returns lite summaries for fast display
         200: z.object({

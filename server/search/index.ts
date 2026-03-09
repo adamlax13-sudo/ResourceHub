@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v101'; // Bumped: Tier 2 gate fix for location queries + plural intent regex + SQL location bonus reduction
+const CACHE_VERSION = 'v102'; // Bumped: distance-based sorting/filtering support
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -41,9 +41,42 @@ import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
+import { attachDistances, sortByDistance, filterByMaxDistance } from './distance';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
+
+/**
+ * Attach distance info to services when user coordinates are provided.
+ * Optionally sort by distance and filter by max distance.
+ */
+async function applyDistanceProcessing(
+  services: LiteService[],
+  input: SearchInput,
+): Promise<LiteService[]> {
+  if (input.userLat == null || input.userLng == null) return services;
+
+  // Fetch coordinates for result service IDs
+  const coords = await storage.getServiceCoordinates(services.map(s => s.id));
+
+  // Attach lat/lng to services so attachDistances can compute
+  const withCoords = services.map(s => {
+    const c = coords.get(s.id);
+    return { ...s, latitude: c?.lat ?? null, longitude: c?.lng ?? null };
+  });
+
+  let result = attachDistances(withCoords, input.userLat, input.userLng);
+
+  if (input.maxDistanceKm != null) {
+    result = filterByMaxDistance(result, input.maxDistanceKm);
+  }
+
+  if (input.sortByDistance) {
+    result = sortByDistance(result);
+  }
+
+  return result;
+}
 
 // applyHardFilters is imported from ./filters (extracted for testability)
 
@@ -172,6 +205,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Click-through affinity boost — also on precomputed path
     services = await applyClickAffinityBoost(services, normalizedQuery);
 
+    // Distance processing — attach distances, filter, sort
+    services = await applyDistanceProcessing(services, input);
+
     return formatResponse(services, '', input, startTime, true);
   }
 
@@ -243,6 +279,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Click-through affinity boost — also on cached path
     // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
     services = await applyClickAffinityBoost(services, normalizedQuery);
+
+    // Distance processing — attach distances, filter, sort
+    services = await applyDistanceProcessing(services, input);
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
@@ -332,6 +371,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Click-through affinity boost — learn from user behavior over time
   // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
   result.services = await applyClickAffinityBoost(result.services, normalizedQuery);
+
+  // Distance processing — attach distances, filter, sort
+  result.services = await applyDistanceProcessing(result.services, input);
 
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
 }
