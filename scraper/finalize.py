@@ -172,9 +172,11 @@ def phase_geocode_services(session, log, dry_run: bool = False):
     ALBERTA_BBOX = "-120.0,49.0,-110.0,60.0"
     RELEVANCE_THRESHOLD = 0.6
 
+    # Skip crisis lines — they're phone services, not physical locations
     services = session.query(Service).filter(
         Service.latitude.is_(None),
         Service.is_active.is_(True),
+        Service.category != "Crisis Lines",
         or_(
             Service.address.isnot(None),
             Service.location.isnot(None),
