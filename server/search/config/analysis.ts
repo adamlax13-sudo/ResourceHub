@@ -134,6 +134,8 @@ export const SEARCH_CONFIG = {
       // --- Expressions of not wanting to exist ---
       /\b(don'?t|do not|dont)\s+want\s+to\s+(be here|exist|wake up|live|be alive)\b/i,
       /\b(don'?t|do not|dont)\s+want\s+to\s+be\s+here\s*(anymore|any more)?\b/i,
+      /\b(don'?t|do not|dont)\s+feel\s+like\s+(being here|living|existing|being alive|going on)\b/i,
+      /\b(don'?t|do not|dont)\s+want\s+to\s+(be around|be alive|keep going|keep living|go on)\b/i,
       /\b(no point|what'?s the point|pointless)\s+(in|to|of)?\s*(living|life|going on|continuing)?\b/i,
       /\b(can'?t|cannot|cant)\s+(go on|take it|do this|take this)\s*(anymore|any more)?\b/i,
 
