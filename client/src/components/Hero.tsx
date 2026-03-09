@@ -615,11 +615,6 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               aria-label="Open search filters"
             >
               <SlidersHorizontal className="w-5 h-5" aria-hidden="true" />
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold shadow-sm">
-                  {activeFilterCount}
-                </span>
-              )}
             </button>
             <input
               id="hero-search"
