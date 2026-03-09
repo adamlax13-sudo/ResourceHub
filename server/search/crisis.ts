@@ -230,6 +230,7 @@ export function buildCrisisResults(dbCrisisLines: Service[], userLocation: strin
       waitTimes: s.waitTimes || '',
       phone: s.phone || undefined,
       is24_7: s.is24_7 ?? undefined,
+      ageGroup: s.ageGroup ?? null,
     };
 
     if (relevance === 'local') {
@@ -238,6 +239,10 @@ export function buildCrisisResults(dbCrisisLines: Service[], userLocation: strin
       broad.push(lite); // province-wide or canada-wide
     }
   }
+
+  // Sort within each group: general crisis lines first, specialized (youth/teen/kids/seniors) after
+  local.sort(crisisLinePriority);
+  broad.sort(crisisLinePriority);
 
   // Local lines first, then broader ones
   results.push(...local, ...broad);
@@ -265,6 +270,26 @@ function locationRelevance(svcLocation: string, userCity: string): 'local' | 'br
 
   // No specific city mentioned → province-wide or Canada-wide → always relevant
   return 'broad';
+}
+
+/**
+ * Sort comparator for crisis lines: general-purpose lines first, specialized (youth/teen/kids/seniors) after.
+ * Within each group, "distress" lines are prioritized (most recognized crisis brand).
+ */
+function crisisLinePriority(a: LiteService, b: LiteService): number {
+  return crisisLineRank(a) - crisisLineRank(b);
+}
+
+const SPECIALIZED_PATTERN = /\b(youth|teen|kids|children|seniors?|connecteen)\b/i;
+
+function crisisLineRank(svc: LiteService): number {
+  const name = svc.name || '';
+  const isSpecialized = SPECIALIZED_PATTERN.test(name);
+  const isDistress = /\bdistress\b/i.test(name);
+  // 0 = distress (highest), 1 = general, 2 = specialized
+  if (isDistress) return 0;
+  if (isSpecialized) return 2;
+  return 1;
 }
 
 // Major Alberta cities to detect city-specific services

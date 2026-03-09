@@ -254,6 +254,8 @@ export default function Home() {
         onLocationChange={handleLocationChange}
         onEmergencySearch={handleEmergencySearch}
         onOpenWizard={handleOpenWizard}
+        onOpenRefinePanel={() => setRefinePanelOpen(true)}
+        activeFilterCount={activeFilterCount}
       />
 
       <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-20' : ''}`}>

@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, Check, Mic, MicOff } from "lucide-react";
+import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -42,6 +42,8 @@ interface HeroProps {
   onLocationChange: (location: string) => void;
   onEmergencySearch: () => void;
   onOpenWizard: () => void;
+  onOpenRefinePanel: () => void;
+  activeFilterCount: number;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -319,7 +321,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -605,6 +607,20 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <label htmlFor="hero-search" className="sr-only">{t('app.searchPlaceholder')}</label>
+            {/* Filter icon — opens RefinePanel for pre-search refinement */}
+            <button
+              type="button"
+              onClick={onOpenRefinePanel}
+              className="absolute left-2 top-2 h-12 w-12 rounded-xl flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all z-10"
+              aria-label="Open search filters"
+            >
+              <SlidersHorizontal className="w-5 h-5" aria-hidden="true" />
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold shadow-sm">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
             <input
               id="hero-search"
               type="search"
@@ -612,7 +628,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('app.searchPlaceholder')}
               maxLength={200}
-              className={`relative w-full h-16 pl-6 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)] ${voiceSupported ? 'pr-28' : 'pr-16'}`}
+              className={`relative w-full h-16 pl-14 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)] ${voiceSupported ? 'pr-28' : 'pr-16'}`}
               disabled={isLoading}
               aria-describedby="search-hint"
               data-testid="input-search"
