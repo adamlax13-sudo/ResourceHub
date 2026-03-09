@@ -59,7 +59,7 @@ export function registerSearchRoutes(app: Express): void {
   app.get("/api/services/:id", async (req: Request, res: Response) => {
     try {
       // Validate service ID parameter
-      const idSchema = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid service ID format');
+      const idSchema = z.string().min(1).max(200).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid service ID format');
       const parseResult = idSchema.safeParse(req.params.id);
       if (!parseResult.success) {
         return res.status(400).json(createErrorResponse("Invalid service ID"));
