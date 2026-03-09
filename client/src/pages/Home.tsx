@@ -145,7 +145,7 @@ export default function Home() {
     if (filters.languagesSupported?.length) {
       filterParams.languagesSupported = filters.languagesSupported;
     }
-    const coordParams = coords ? { userLat: coords.lat, userLng: coords.lng, sortByDistance: true } : {};
+    const coordParams = coords ? { userLat: coords.lat, userLng: coords.lng } : {};
     return { ...filterParams, ...coordParams };
   }, []);
 
