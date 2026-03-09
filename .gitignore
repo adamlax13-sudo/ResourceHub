@@ -49,5 +49,9 @@ server/evaluation/reports/
 *.swp
 *.swo
 
+# Claude Code / Playwright MCP
+.claude/
+.playwright-mcp/
+
 # Pip install output (accidental)
 =*
