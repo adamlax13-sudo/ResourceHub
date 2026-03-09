@@ -16,9 +16,14 @@ import type { SearchFilters } from '@shared/routes';
  * Filter services by location.
  * When a user selects a city from the dropdown, exclude services clearly in other cities.
  * Services with province-wide, null/empty, online, or ambiguous locations pass through.
+ *
+ * @param isCrisis - If true, skip location filtering entirely. Crisis services (988, distress lines)
+ *   must ALWAYS be shown regardless of location filter — this is a life-safety requirement.
  */
-export function filterByLocation(services: LiteService[], location: string | null | undefined): LiteService[] {
-  if (!location) return services;
+export function filterByLocation(services: LiteService[], location: string | null | undefined, isCrisis?: boolean): LiteService[] {
+  // SAFETY: Never filter crisis results by location — someone in crisis needs 988 and hotlines
+  // regardless of what city they selected in the dropdown
+  if (!location || isCrisis) return services;
   const loc = location.toLowerCase();
   return services.filter(svc => {
     const svcLoc = (svc.location || '').toLowerCase().trim();
@@ -26,9 +31,9 @@ export function filterByLocation(services: LiteService[], location: string | nul
     if (!svcLoc) return true;
     // Contains the specified city → keep
     if (svcLoc.includes(loc)) return true;
-    // Province-wide / Alberta-wide → keep
+    // Province-wide / Alberta-wide / Canada-wide → keep
     // Must distinguish "Alberta-wide" from "Fort McMurray, Alberta T9H" (just a province in address)
-    if (svcLoc.includes('province-wide') || svcLoc.includes('alberta-wide') || svcLoc.includes('across alberta')) return true;
+    if (svcLoc.includes('province-wide') || svcLoc.includes('alberta-wide') || svcLoc.includes('across alberta') || svcLoc.includes('canada-wide')) return true;
     // Online/virtual/phone services → keep
     if (svcLoc.includes('online') || svcLoc.includes('virtual') || svcLoc.includes('phone') || svcLoc.includes('telehealth')) return true;
     // Bare "Multiple locations" with no city qualifier → could include any city → keep

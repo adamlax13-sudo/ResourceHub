@@ -150,9 +150,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
 
     // Location hard filter — exclude services from other cities
-    services = filterByLocation(services, analysis.location.specified || input.location);
+    // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
+    const isCrisisPrecomputed = analysis.isCrisis || isEmergency;
+    services = filterByLocation(services, analysis.location.specified || input.location, isCrisisPrecomputed);
 
-    if (input.filters) {
+    if (input.filters && !isCrisisPrecomputed) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
       services = applyFilterMatchBoosts(services, input.filters);
@@ -211,9 +213,11 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
 
     // Location hard filter — exclude services from other cities
-    services = filterByLocation(services, analysis.location.specified || input.location);
+    // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
+    const isCrisisCached = analysis.isCrisis || !!input.emergency;
+    services = filterByLocation(services, analysis.location.specified || input.location, isCrisisCached);
 
-    if (input.filters) {
+    if (input.filters && !isCrisisCached) {
       services = applyHardFilters(services, input.filters);
       services = applyPreferenceBoosts(services, input.filters);
       services = applyFilterMatchBoosts(services, input.filters);
@@ -297,10 +301,13 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   }
 
   // Location hard filter — exclude services from other cities
-  result.services = filterByLocation(result.services, analysis.location.specified || input.location);
+  // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
+  const isCrisisFresh = analysis.isCrisis || !!input.emergency;
+  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isCrisisFresh);
 
   // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
-  if (input.filters) {
+  // SAFETY: skip hard filters for crisis queries — never filter out crisis hotlines
+  if (input.filters && !isCrisisFresh) {
     const beforeFilter = result.services.length;
     result.services = applyHardFilters(result.services, input.filters);
     result.services = applyPreferenceBoosts(result.services, input.filters);
