@@ -190,7 +190,7 @@ export default function Home() {
         };
         toast({ title: 'Location unavailable', description: messages[err.code] || messages[2], variant: 'destructive' });
       },
-      { timeout: 10000, maximumAge: 300000 },
+      { enableHighAccuracy: true, timeout: 30000, maximumAge: 300000 },
     );
   }, [searchState.userCoords, setUserCoords, toast, search, buildSearchParams]);
 
