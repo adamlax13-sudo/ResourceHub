@@ -136,7 +136,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'healthcare_access': {
     serviceTypes: ['healthcare', 'medical'],
-    categoryPatterns: /doctor|physician|clinic|hospital|health centre|health center|811|health link|prescription|medication|chronic pain|patient|medical|dental|dentist|sexual health|STI|family planning/i,
+    categoryPatterns: /doctor|physician|clinic|hospital|health centre|health center|811|health link|prescription|medication|chronic pain|patient|medical|dental|dentist|sexual health|STI|family planning|emergency room|emergency department|urgent care|AADL|aids to daily living|wheelchair|mobility aid|home modification|RAMP|SHARP|pharmacare|drug coverage|accessibility/i,
   },
   'basic_needs': {
     serviceTypes: ['basic_needs', 'material_aid'],

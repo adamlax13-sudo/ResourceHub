@@ -591,6 +591,46 @@ export const COMPREHENSIVE_QUERIES: TestQuery[] = [
     expectedPatterns: ["childcare", "daycare", "subsidy"],
   },
 
+  // Healthcare Access (hospitals, clinics, health programs)
+  {
+    query: "hospital near me",
+    intent: "healthcare_access",
+    description: "Hospital search",
+    expectedPatterns: ["hospital", "emergency"],
+  },
+  {
+    query: "emergency room Calgary",
+    location: "Calgary",
+    intent: "healthcare_access",
+    description: "ER search in Calgary",
+    expectedPatterns: ["hospital", "emergency", "Calgary"],
+  },
+  {
+    query: "free clinic Edmonton",
+    location: "Edmonton",
+    intent: "healthcare_access",
+    description: "Free clinic search",
+    expectedPatterns: ["clinic", "health", "Edmonton"],
+  },
+  {
+    query: "AADL wheelchair program",
+    intent: "healthcare_access",
+    description: "Accessibility device program",
+    expectedPatterns: ["AADL", "aids to daily living"],
+  },
+  {
+    query: "help paying for prescriptions",
+    intent: "healthcare_access",
+    description: "Prescription coverage program",
+    expectedPatterns: ["prescription", "drug", "coverage"],
+  },
+  {
+    query: "home modification program seniors",
+    intent: "healthcare_access",
+    description: "RAMP or home accessibility program",
+    expectedPatterns: ["home modification", "accessibility", "senior"],
+  },
+
   // ===========================================
   // EDGE CASES & GENERAL QUERIES
   // ===========================================

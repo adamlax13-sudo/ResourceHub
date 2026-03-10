@@ -84,6 +84,10 @@ const QUERIES = [
   { query: "dental services", intent: "general", mustExclude: ["mental health"] },
   { query: "counslling near me", intent: "mental_health", expectedPatterns: ["counselling", "therapy", "mental health"] },
   { query: "fud bank", intent: "food_insecurity", expectedPatterns: ["food", "bank", "hamper"] },
+  // HEALTHCARE ACCESS
+  { query: "hospital near me", intent: "healthcare_access", expectedPatterns: ["hospital", "emergency"] },
+  { query: "emergency room Calgary", intent: "healthcare_access", expectedPatterns: ["hospital", "emergency", "Calgary"] },
+  { query: "AADL wheelchair program", intent: "healthcare_access", expectedPatterns: ["AADL", "aids to daily living"] },
   // NAME SEARCHES
   { query: "SMART Recovery", intent: "substance_abuse", mustInclude: ["SMART Recovery"] },
   { query: "Kids Help Phone", intent: "youth_services", expectedPatterns: ["Kids Help Phone"] },

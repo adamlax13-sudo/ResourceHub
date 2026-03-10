@@ -27,7 +27,7 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
 export const CATEGORY_GROUPS: { label: string; categories: string[] }[] = [
   {
     label: "Crisis & Safety",
-    categories: ["Crisis Services", "Crisis Lines", "Domestic Violence Support", "Human Trafficking Support"],
+    categories: ["Crisis Services", "Crisis Lines", "Hospital & Emergency", "Domestic Violence Support", "Human Trafficking Support"],
   },
   {
     label: "Mental Health",

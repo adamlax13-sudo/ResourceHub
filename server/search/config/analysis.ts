@@ -564,7 +564,7 @@ export const SEARCH_CONFIG = {
       // Midwifery / prenatal
       /\b(?:midwife|midwifery|doula|prenatal class|birth plan)\b/i,
     ],
-    // Healthcare access (doctors, clinics, prescriptions)
+    // Healthcare access (doctors, clinics, prescriptions, hospitals, accessibility)
     healthcare_access: [
       /\b(?:doctor|physician|family doctor|walk-?in clinic|medical clinic)\b/i,
       /\b(?:prescription|medication|pharmacy|pharmacist)\b.*(?:help|afford|can't|program)/i,
@@ -573,6 +573,9 @@ export const SEARCH_CONFIG = {
       /\b(?:community health|health centre|health center)\b/i,
       /\b(?:dental|dentist|dental clinic)\b.*(?:help|afford|low.?cost|free|program)/i,
       /\b(?:sexual health|STI|STD|contraception|family planning)\b/i,
+      /\b(?:hospital|emergency room|emergency department|ER|urgent care)\b/i,
+      /\b(?:AADL|aids to daily living|wheelchair|mobility aid|home modification)\b/i,
+      /\b(?:RAMP|SHARP|seniors? benefit|drug coverage|pharmacare)\b/i,
     ],
     // Basic needs & material aid (clothing, furniture, supplies)
     basic_needs: [

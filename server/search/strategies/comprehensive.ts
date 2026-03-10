@@ -501,7 +501,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
     if (isDomainIntent || hasAnyPreference) {
       // Use LLM reranker for Tier 3 fresh searches (falls back to regex boostByIntent on failure)
-      services = await llmRerank(services, analysis.corrected, analysis, boostOptions);
+      services = await llmRerank(services, analysis.corrected, analysis, boostOptions, enhancedQuery);
     }
 
     // Apply negative keyword penalty (e.g., "shelter not religious")

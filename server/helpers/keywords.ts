@@ -43,6 +43,9 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'domestic': ['violence', 'abuse', 'intimate', 'partner'],
   'gambling': ['gaming', 'betting'],
   'grief': ['bereavement', 'loss', 'mourning'],
+  'hospital': ['emergency room', 'ER', 'urgent care', 'emergency department'],
+  'prescription': ['medication', 'pharmacare', 'drug coverage', 'pharmacy'],
+  'wheelchair': ['mobility', 'accessibility', 'assistive device', 'walker'],
 };
 
 // Common misspellings mapped to correct terms
@@ -104,6 +107,12 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'indegenous': 'indigenous',
   'aborignal': 'aboriginal',
   'aborginal': 'aboriginal',
+  'perscription': 'prescription',
+  'prescripton': 'prescription',
+  'hosptial': 'hospital',
+  'hospitl': 'hospital',
+  'wheelcahir': 'wheelchair',
+  'weelchair': 'wheelchair',
 };
 
 // Simple stemming rules for common recovery-related terms

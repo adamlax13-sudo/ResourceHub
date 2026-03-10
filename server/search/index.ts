@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v109'; // Bumped: tag quality fixes (men false positive, normalization)
+const CACHE_VERSION = 'v111'; // Bumped: Hospital & Emergency category + health services expansion
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -475,7 +475,7 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   lgbtq_services: new Set(['LGBTQ2S+ Services']),
   indigenous_services: new Set(['Indigenous Services']),
   veteran_services: new Set(['Veterans Services']),
-  healthcare_access: new Set(['Healthcare Access', 'Sexual Health Services']),
+  healthcare_access: new Set(['Healthcare Access', 'Sexual Health Services', 'Hospital & Emergency']),
   student_services: new Set(['Campus & Student Services']),
   parenting_support: new Set(['Family & Parenting Support']),
   crisis: new Set(['Crisis Services', 'Crisis Lines']),

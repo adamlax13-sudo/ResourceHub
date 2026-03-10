@@ -64,7 +64,7 @@ Available intents:
 - student_services: campus mental health, student support
 - parenting_support: single parent, pregnancy, family support
 - community_social: recreation, social connection, volunteering
-- healthcare_access: doctor, walk-in clinic, dental, medical
+- healthcare_access: doctor, walk-in clinic, dental, medical, hospital, ER, emergency room, prescriptions, accessibility programs, home modification, AADL
 - basic_needs: general necessities (clothing, ID, phone)
 - general: can't determine specific intent
 
