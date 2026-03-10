@@ -39,7 +39,6 @@ import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
-import { INTENT_SERVICE_MAP } from './strategies/scoring/intent-boost';
 import type { QueryIntent } from './config';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
@@ -392,13 +391,31 @@ const MIN_RESULTS = 13;
 const MAX_RESULTS = 50;
 const DEFAULT_RESULTS = 30;
 
-// Derive intent→category pattern map from the authoritative INTENT_SERVICE_MAP.
-// Services in the matching category are protected from relevance trimming.
-const INTENT_TO_CATEGORIES: Partial<Record<QueryIntent, RegExp>> = Object.fromEntries(
-  Object.entries(INTENT_SERVICE_MAP)
-    .filter(([, v]) => v.categoryPatterns)
-    .map(([k, v]) => [k, v.categoryPatterns])
-);
+// Map intents to DB category names for category-aware rescue during trimming.
+// Uses exact category name matching (not the description-oriented patterns from
+// INTENT_SERVICE_MAP, which miss categories like "Residential Treatment").
+const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
+  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support']),
+  mental_health: new Set(['Mental Health & Counselling', 'Crisis Services', 'Crisis Lines']),
+  domestic_violence: new Set(['Domestic Violence Support', 'Human Trafficking Support']),
+  food_insecurity: new Set(['Food Banks & Meals']),
+  housing_urgent: new Set(['Emergency Shelter', 'Affordable Housing', 'Supportive Housing', 'Transitional Housing']),
+  disability_support: new Set(['Disability & Autism Support']),
+  grief_support: new Set(['Grief & Bereavement']),
+  senior_services: new Set(['Senior Services']),
+  legal_aid: new Set(['Legal Aid', 'Criminal Justice Reintegration']),
+  employment_support: new Set(['Employment Services']),
+  youth_services: new Set(['Youth Services']),
+  newcomer_services: new Set(['Newcomer & Settlement']),
+  lgbtq_services: new Set(['LGBTQ2S+ Services']),
+  indigenous_services: new Set(['Indigenous Services']),
+  veteran_services: new Set(['Veterans Services']),
+  healthcare_access: new Set(['Healthcare Access', 'Sexual Health Services']),
+  student_services: new Set(['Campus & Student Services']),
+  parenting_support: new Set(['Family & Parenting Support']),
+  crisis: new Set(['Crisis Services', 'Crisis Lines']),
+  financial_support: new Set(['Financial Counselling & Debt Help']),
+};
 
 function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteService[] {
   if (services.length <= MIN_RESULTS) return services;
@@ -438,10 +455,10 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteServ
   // query intent but fell below the score cutoff. These are core results that
   // the user is looking for — generic services shouldn't crowd them out.
   let rescued: LiteService[] = [];
-  const categoryPattern = intent ? INTENT_TO_CATEGORIES[intent] : undefined;
-  if (categoryPattern) {
+  const categorySet = intent ? INTENT_CATEGORY_NAMES[intent] : undefined;
+  if (categorySet) {
     rescued = scored.filter(s =>
-      !keptIds.has(s.id) && s.category && categoryPattern.test(s.category)
+      !keptIds.has(s.id) && s.category && categorySet.has(s.category)
     );
     // Cap total results (kept + rescued) at MAX_RESULTS
     const rescueSlots = Math.max(0, MAX_RESULTS - pinnedCount - trimmedScored.length);

@@ -422,8 +422,12 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     }
 
     // ============= SUPPLEMENTARY SEARCH =============
-    // If initial results are poor AND we have enhanced keywords, do a supplementary search
-    const needsSupplementary = (sqlResults.length < 5 || semanticResults.length < 3) && enhancedQuery;
+    // Always run supplementary search when enhanced keywords are available.
+    // The enhanced query (from OpenAI) is often far better than the raw keywords
+    // (e.g., "cant stop drinking" → "alcohol addiction recovery services").
+    // The initial SQL/semantic may return "enough" results but miss key services
+    // because the original keywords don't match domain terminology.
+    const needsSupplementary = !!enhancedQuery;
 
     if (needsSupplementary && enhancedQuery) {
       const supplementaryQuery = enhancedQuery.keywords.join(' ');

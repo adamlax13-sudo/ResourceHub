@@ -97,7 +97,8 @@ pytest tests/ -v                     # Run scraper tests
 11. Apply data quality boost (confidence score, description richness)
 12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
 13. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
-14. Return paginated results with summary
+14. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue, clamp to [13, 50])
+15. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**

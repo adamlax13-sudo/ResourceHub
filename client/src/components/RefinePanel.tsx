@@ -1,5 +1,5 @@
-import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, X } from "lucide-react";
-import { useEffect, useCallback, useRef } from "react";
+import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, ChevronDown, X } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { SearchFilters } from "@shared/routes";
 
@@ -101,6 +101,12 @@ export function RefinePanel({
   onClear,
 }: RefinePanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  // Auto-expand when categories become active (e.g. URL restore)
+  useEffect(() => {
+    if ((filters.categories ?? []).length > 0) setCategoriesOpen(true);
+  }, [filters.categories]);
 
   // Close on Escape key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -232,59 +238,6 @@ export function RefinePanel({
 
         {/* Filter content */}
         <div className="max-h-[60vh] overflow-y-auto px-6 py-5">
-          {/* Category filter — full width at top */}
-          <section
-            className={`rounded-xl p-4 transition-colors mb-4 ${hasCategories ? "bg-primary/[0.03] ring-1 ring-primary/10" : "bg-gray-50/80"}`}
-            aria-labelledby="filter-category-heading"
-          >
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${hasCategories ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"}`}>
-                <LayoutGrid className="w-4 h-4" />
-              </div>
-              <h3 id="filter-category-heading" className="text-sm font-semibold text-gray-800">
-                Service category
-              </h3>
-              {hasCategories && (
-                <button
-                  type="button"
-                  onClick={() => update({ categories: undefined })}
-                  className="ml-auto text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label="Clear category filters"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-            <div className="space-y-3">
-              {CATEGORY_GROUPS.map((group) => (
-                <div key={group.label}>
-                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5 pl-0.5">
-                    {group.label}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.categories.map((cat) => {
-                      const active = (filters.categories ?? []).includes(cat);
-                      return (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => toggleCategory(cat)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all duration-150 ${
-                            active
-                              ? "bg-primary text-white border-primary shadow-sm"
-                              : "bg-white border-gray-200 text-gray-600 hover:border-primary/40 hover:text-gray-900"
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Gender restriction */}
             <section
@@ -521,6 +474,79 @@ export function RefinePanel({
               </div>
             </section>
           </div>
+
+          {/* Service categories — collapsible, below main filters */}
+          <section
+            className={`rounded-xl transition-colors mt-4 border ${hasCategories ? "bg-primary/[0.03] border-primary/20" : "bg-white border-gray-200 border-dashed"}`}
+            aria-labelledby="filter-category-heading"
+          >
+            <button
+              type="button"
+              onClick={() => setCategoriesOpen((o) => !o)}
+              className="flex items-center gap-2.5 w-full text-left p-4"
+              aria-expanded={categoriesOpen}
+              aria-controls="category-filter-content"
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${hasCategories ? "bg-primary/10 text-primary" : "bg-primary/5 text-primary/60"}`}>
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 id="filter-category-heading" className="text-sm font-semibold text-gray-800">
+                  Browse by category
+                </h3>
+                {!categoriesOpen && !hasCategories && (
+                  <p className="text-xs text-gray-400 mt-0.5">Filter by service type</p>
+                )}
+              </div>
+              {!categoriesOpen && hasCategories && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  {filters.categories!.length} selected
+                </span>
+              )}
+              {hasCategories && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); update({ categories: undefined }); }}
+                  className="ml-auto mr-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Clear category filters"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${hasCategories ? "" : "ml-auto"} ${categoriesOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {categoriesOpen && (
+              <div id="category-filter-content" className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 px-4 pb-4 -mt-1">
+                {CATEGORY_GROUPS.map((group) => (
+                  <div key={group.label}>
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5 pl-0.5">
+                      {group.label}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {group.categories.map((cat) => {
+                        const active = (filters.categories ?? []).includes(cat);
+                        return (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => toggleCategory(cat)}
+                            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150 ${
+                              active
+                                ? "bg-primary text-white border-primary shadow-sm"
+                                : "bg-white border-gray-200 text-gray-600 hover:border-primary/40 hover:text-gray-900"
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
 
         {/* Bottom action bar */}
