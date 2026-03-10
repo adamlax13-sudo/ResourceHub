@@ -1,10 +1,20 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
+import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart, ExternalLink } from "lucide-react";
 import { type ServiceSummary } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
+
+/** Maps AA service names to their regional meeting-finder URL */
+function getAAMeetingUrl(serviceName: string): string | null {
+  if (!serviceName.toLowerCase().includes('alcoholics anonymous')) return null;
+  const name = serviceName.toLowerCase();
+  if (name.includes('calgary')) return 'https://calgaryaa.org/meetings/';
+  if (name.includes('edmonton')) return 'https://edmontonaa.org/meetings/';
+  if (name.includes('red deer')) return 'https://reddeeraa.org/meetings/';
+  return 'https://area78aa.org/meetings/';
+}
 
 const VOTES_STORAGE_KEY = 'roc_service_votes';
 
@@ -152,6 +162,23 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
               <span>Call Now: {service.phone}</span>
             </a>
           )}
+          {/* Direct link to AA meeting finder for Alcoholics Anonymous listings */}
+          {(() => {
+            const meetingUrl = getAAMeetingUrl(service.name);
+            return meetingUrl ? (
+              <a
+                href={meetingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 px-3 py-2 mt-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition-colors"
+                aria-label={`Find an AA meeting near you`}
+              >
+                <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                <span>Find a Meeting</span>
+              </a>
+            ) : null;
+          })()}
         </div>
 
         <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
