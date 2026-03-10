@@ -530,7 +530,12 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteServ
     if (rescued.length > rescueSlots) rescued = rescued.slice(0, rescueSlots);
   }
 
-  const combined = [...pinned, ...trimmedScored, ...rescued];
+  // Interleave rescued services after above-cutoff results but before minimum-fill padding.
+  // Without this, rescued intent-matching services (e.g., LGBTQ2S+ for "lgbtq resources")
+  // appear below generic filler services that only exist to meet MIN_RESULTS.
+  const aboveCutoff = trimmedScored.filter(s => s.rrfScore! >= cutoff);
+  const minimumFill = trimmedScored.filter(s => s.rrfScore! < cutoff);
+  const combined = [...pinned, ...aboveCutoff, ...rescued, ...minimumFill];
 
   const rescueLog = rescued.length > 0 ? `, ${rescued.length} rescued by category` : '';
   console.log(`[SearchOrchestrator] Relevance trim: ${services.length} → ${combined.length} (${pinned.length} pinned, ${relevantScored.length} relevant of ${scored.length} scored, cutoff=${cutoff.toFixed(4)}${rescueLog})`);
