@@ -68,7 +68,7 @@ const albertaMaskLayer: LayerProps = {
   id: "alberta-mask",
   type: "fill",
   paint: {
-    "fill-color": "#FAF6F0",
+    "fill-color": "#f5f5f0",
     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0.55, 7, 0.45, 9, 0.2, 11, 0],
   },
 };
@@ -277,7 +277,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
         mapboxAccessToken={token}
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle="mapbox://styles/mapbox/outdoors-v12"
         scrollZoom={false}
         dragPan={false}
         doubleClickZoom={false}
