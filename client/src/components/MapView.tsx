@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Map, { Marker, Popup, NavigationControl, Source, Layer } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import type { LayerProps } from "react-map-gl/mapbox";
-import type { GeoJSONSource, MapLayerMouseEvent } from "mapbox-gl";
 import { MapPin, MousePointerClick } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -75,33 +74,64 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 const DEFAULT_MARKER_COLOR = "#D6001C";
 
-// ── Inverted polygon: world exterior with Alberta cut out as a hole ──
+// ── Legend items ──────────────────────────────────────────────────────
+const LEGEND_ITEMS = [
+  { color: "#DC2626", label: "Crisis" },
+  { color: "#2563EB", label: "Mental Health" },
+  { color: "#16A34A", label: "Housing" },
+  { color: "#EA580C", label: "Substance Use" },
+  { color: "#9333EA", label: "Youth & Family" },
+  { color: "#0D9488", label: "Community" },
+  { color: "#D97706", label: "Basic Needs" },
+  { color: "#475569", label: "Other" },
+];
+
+// Inverted polygon: world exterior with Alberta cut out as a hole
 const ALBERTA_MASK_GEOJSON: GeoJSON.Feature = {
   type: "Feature",
   properties: {},
   geometry: {
     type: "Polygon",
     coordinates: [
+      // Outer ring: world bounds
       [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]],
+      // Inner ring (hole): simplified Alberta boundary
       [
-        [-110.0, 49.0], [-110.0, 60.0], [-120.0, 60.0], [-120.0, 54.6],
-        [-119.8, 54.3], [-119.5, 54.0], [-119.1, 53.7], [-118.7, 53.4],
-        [-118.3, 53.1], [-117.9, 52.8], [-117.6, 52.5], [-117.3, 52.2],
-        [-117.0, 51.9], [-116.7, 51.6], [-116.4, 51.3], [-116.1, 51.05],
-        [-115.8, 50.8], [-115.55, 50.55], [-115.35, 50.3], [-115.15, 50.0],
-        [-114.9, 49.7], [-114.7, 49.5], [-114.45, 49.25], [-114.07, 49.0],
+        [-110.0, 49.0],
+        [-110.0, 60.0],
+        [-120.0, 60.0],
+        [-120.0, 54.6],
+        [-119.8, 54.3],
+        [-119.5, 54.0],
+        [-119.1, 53.7],
+        [-118.7, 53.4],
+        [-118.3, 53.1],
+        [-117.9, 52.8],
+        [-117.6, 52.5],
+        [-117.3, 52.2],
+        [-117.0, 51.9],
+        [-116.7, 51.6],
+        [-116.4, 51.3],
+        [-116.1, 51.05],
+        [-115.8, 50.8],
+        [-115.55, 50.55],
+        [-115.35, 50.3],
+        [-115.15, 50.0],
+        [-114.9, 49.7],
+        [-114.7, 49.5],
+        [-114.45, 49.25],
+        [-114.07, 49.0],
         [-110.0, 49.0],
       ],
     ],
   },
 };
 
-// ── Layer definitions ────────────────────────────────────────────────
 const albertaMaskLayer: LayerProps = {
   id: "alberta-mask",
   type: "fill",
   paint: {
-    "fill-color": "#f5f5f0",
+    "fill-color": "#FAF6F0",
     "fill-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0.55, 7, 0.45, 9, 0.2, 11, 0],
   },
 };
@@ -116,60 +146,15 @@ const albertaOutlineLayer: LayerProps = {
   },
 };
 
-const clusterLayer: LayerProps = {
-  id: "clusters",
-  type: "circle",
-  source: "services",
-  filter: ["has", "point_count"],
+// Subtle warm tint over the whole map
+const warmTintLayer: LayerProps = {
+  id: "warm-tint",
+  type: "background",
   paint: {
-    "circle-color": "#D6001C",
-    "circle-opacity": 0.85,
-    "circle-radius": ["step", ["get", "point_count"], 18, 10, 24, 50, 32],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#ffffff",
+    "background-color": "#f5e6d3",
+    "background-opacity": 0.08,
   },
 };
-
-const clusterCountLayer: LayerProps = {
-  id: "cluster-count",
-  type: "symbol",
-  source: "services",
-  filter: ["has", "point_count"],
-  layout: {
-    "text-field": "{point_count_abbreviated}",
-    "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-    "text-size": 13,
-  },
-  paint: {
-    "text-color": "#ffffff",
-  },
-};
-
-const unclusteredPointLayer: LayerProps = {
-  id: "unclustered-point",
-  type: "circle",
-  source: "services",
-  filter: ["!", ["has", "point_count"]],
-  paint: {
-    "circle-color": ["get", "color"],
-    "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 5, 10, 7, 14, 9],
-    "circle-stroke-width": 2,
-    "circle-stroke-color": "#ffffff",
-    "circle-opacity": 0.9,
-  },
-};
-
-// ── Legend items ──────────────────────────────────────────────────────
-const LEGEND_ITEMS = [
-  { color: "#DC2626", label: "Crisis" },
-  { color: "#2563EB", label: "Mental Health" },
-  { color: "#16A34A", label: "Housing" },
-  { color: "#EA580C", label: "Substance Use" },
-  { color: "#9333EA", label: "Youth & Family" },
-  { color: "#0D9488", label: "Community" },
-  { color: "#D97706", label: "Basic Needs" },
-  { color: "#475569", label: "Other" },
-];
 
 function formatDistance(km: number): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
@@ -184,7 +169,6 @@ export default function MapView({ services, userLocation, onSelectService }: Map
   const [tokenError, setTokenError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(false);
-  const [mapCursor, setMapCursor] = useState("default");
 
   // Fetch Mapbox public token
   useEffect(() => {
@@ -208,30 +192,19 @@ export default function MapView({ services, userLocation, onSelectService }: Map
     [mappableServices, selectedId]
   );
 
-  // GeoJSON for clustered source
-  const serviceGeoJSON = useMemo((): GeoJSON.FeatureCollection => ({
-    type: "FeatureCollection",
-    features: mappableServices.map((svc) => ({
-      type: "Feature" as const,
-      properties: {
-        id: svc.id,
-        name: svc.name,
-        category: svc.category,
-        distanceKm: svc.distanceKm ?? null,
-        color: CATEGORY_COLORS[svc.category] || DEFAULT_MARKER_COLOR,
-      },
-      geometry: {
-        type: "Point" as const,
-        coordinates: [svc.longitude!, svc.latitude!],
-      },
-    })),
-  }), [mappableServices]);
-
-  const initialViewState = useMemo(() => ({
-    ...ALBERTA_CENTER,
-    zoom: 5,
-    pitch: 30,
-  }), []);
+  const initialViewState = useMemo(() => {
+    if (userLocation) {
+      return { latitude: userLocation.lat, longitude: userLocation.lng, zoom: 10 };
+    }
+    if (mappableServices.length > 0) {
+      return {
+        latitude: mappableServices[0].latitude!,
+        longitude: mappableServices[0].longitude!,
+        zoom: 10,
+      };
+    }
+    return { ...ALBERTA_CENTER, zoom: 5 };
+  }, [userLocation, mappableServices]);
 
   // Auto-fit bounds to search results
   useEffect(() => {
@@ -239,9 +212,6 @@ export default function MapView({ services, userLocation, onSelectService }: Map
     if (!map || mappableServices.length === 0) return;
 
     const doFit = () => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mapboxgl = (map as unknown as { _mapboxgl?: typeof import("mapbox-gl") })._mapboxgl;
-      // Use the map's own LngLatBounds
       let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
       for (const svc of mappableServices) {
         if (svc.longitude != null && svc.latitude != null) {
@@ -260,7 +230,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
       if (minLng <= maxLng && minLat <= maxLat) {
         map.fitBounds(
           [[minLng, minLat], [maxLng, maxLat]],
-          { padding: { top: 60, bottom: 60, left: 60, right: 60 }, maxZoom: 13, pitch: 30, duration: 800 }
+          { padding: { top: 60, bottom: 60, left: 60, right: 60 }, maxZoom: 13, duration: 800 }
         );
       }
     };
@@ -319,28 +289,36 @@ export default function MapView({ services, userLocation, onSelectService }: Map
     const map = mapRef.current?.getMap();
     if (!map) return;
 
-    const PADDING = 40;
-    const POPUP_HEIGHT = 170;
-    const POPUP_HALF_WIDTH = 120;
+    const PADDING = 40; // px from map edge
+    const POPUP_HEIGHT = 170; // approximate popup height including offset
+    const POPUP_HALF_WIDTH = 120; // half of popup max-width
 
     const markerPx = map.project([lng, lat]);
     const canvas = map.getCanvas();
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
 
+    // The popup sits above the marker — check if its top/left/right would be clipped
     let dx = 0;
     let dy = 0;
 
+    // Top edge: popup top = marker y - marker height (36) - popup height
     const popupTop = markerPx.y - 36 - POPUP_HEIGHT;
     if (popupTop < PADDING) {
-      dy = popupTop - PADDING;
+      dy = popupTop - PADDING; // negative = pan up
     }
+
+    // Bottom edge: marker itself below viewport
     if (markerPx.y > h - PADDING) {
       dy = markerPx.y - (h - PADDING);
     }
+
+    // Left edge
     if (markerPx.x - POPUP_HALF_WIDTH < PADDING) {
       dx = (markerPx.x - POPUP_HALF_WIDTH) - PADDING;
     }
+
+    // Right edge
     if (markerPx.x + POPUP_HALF_WIDTH > w - PADDING) {
       dx = (markerPx.x + POPUP_HALF_WIDTH) - (w - PADDING);
     }
@@ -350,37 +328,12 @@ export default function MapView({ services, userLocation, onSelectService }: Map
     }
   }, []);
 
-  // Handle clicks on clusters (zoom in) and unclustered points (show popup)
-  const handleMapClick = useCallback(
-    (event: MapLayerMouseEvent) => {
-      const feature = event.features?.[0];
-      if (!feature) return;
-
-      setIsActive(true);
-
-      // Click on cluster → zoom in
-      if (feature.layer?.id === "clusters" && feature.properties?.cluster_id != null) {
-        const source = mapRef.current?.getSource("services") as GeoJSONSource | undefined;
-        if (!source) return;
-        source.getClusterExpansionZoom(feature.properties.cluster_id, (err: unknown, zoom: number | null | undefined) => {
-          if (err || zoom == null) return;
-          const coords = (feature.geometry as GeoJSON.Point).coordinates;
-          mapRef.current?.easeTo({ center: [coords[0], coords[1]], zoom, duration: 500 });
-        });
-        return;
-      }
-
-      // Click on unclustered point → show popup
-      if (feature.layer?.id === "unclustered-point" && feature.properties?.id) {
-        const coords = (feature.geometry as GeoJSON.Point).coordinates;
-        setSelectedId((prev) =>
-          prev === feature.properties!.id ? null : feature.properties!.id
-        );
-        requestAnimationFrame(() => ensurePopupVisible(coords[1], coords[0]));
-      }
-    },
-    [ensurePopupVisible]
-  );
+  const handleMarkerClick = useCallback((id: string, lat: number, lng: number) => {
+    setIsActive(true);
+    setSelectedId((prev) => (prev === id ? null : id));
+    // Wait a frame for the popup to render, then nudge if needed
+    requestAnimationFrame(() => ensurePopupVisible(lat, lng));
+  }, [ensurePopupVisible]);
 
   if (tokenError) {
     return (
@@ -432,31 +385,18 @@ export default function MapView({ services, userLocation, onSelectService }: Map
         mapboxAccessToken={token}
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/outdoors-v12"
-        terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
-        maxPitch={60}
+        mapStyle="mapbox://styles/mapbox/light-v11"
         scrollZoom={false}
         dragPan={false}
         doubleClickZoom={false}
         touchZoomRotate={false}
-        interactiveLayerIds={["clusters", "unclustered-point"]}
-        onClick={handleMapClick}
-        onMouseEnter={() => setMapCursor("pointer")}
-        onMouseLeave={() => setMapCursor("default")}
-        cursor={mapCursor}
       >
         <NavigationControl position="top-right" />
 
-        {/* 3D terrain */}
-        <Source
-          id="mapbox-dem"
-          type="raster-dem"
-          url="mapbox://mapbox.mapbox-terrain-dem-v1"
-          tileSize={512}
-          maxzoom={14}
-        />
+        {/* Subtle warm tint */}
+        <Layer {...warmTintLayer} beforeId="land" />
 
-        {/* Alberta highlight mask */}
+        {/* Alberta highlight mask — dims areas outside Alberta at wide zoom */}
         <Source id="alberta-mask" type="geojson" data={ALBERTA_MASK_GEOJSON}>
           <Layer {...albertaMaskLayer} />
           <Layer {...albertaOutlineLayer} />
@@ -472,19 +412,32 @@ export default function MapView({ services, userLocation, onSelectService }: Map
           </Marker>
         )}
 
-        {/* Clustered service markers */}
-        <Source
-          id="services"
-          type="geojson"
-          data={serviceGeoJSON}
-          cluster={true}
-          clusterMaxZoom={14}
-          clusterRadius={50}
-        >
-          <Layer {...clusterLayer} />
-          <Layer {...clusterCountLayer} />
-          <Layer {...unclusteredPointLayer} />
-        </Source>
+        {/* Service markers */}
+        {mappableServices.map((svc) => {
+          const color = CATEGORY_COLORS[svc.category] || DEFAULT_MARKER_COLOR;
+          return (
+            <Marker
+              key={svc.id}
+              latitude={svc.latitude!}
+              longitude={svc.longitude!}
+              anchor="bottom"
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                handleMarkerClick(svc.id, svc.latitude!, svc.longitude!);
+              }}
+            >
+              <div className="cursor-pointer transition-transform hover:scale-110">
+                <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                  <path
+                    d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z"
+                    fill={color}
+                  />
+                  <circle cx="14" cy="13" r="5" fill="white" />
+                </svg>
+              </div>
+            </Marker>
+          );
+        })}
 
         {/* Popup for selected service */}
         {selectedService && selectedService.latitude != null && selectedService.longitude != null && (
@@ -492,7 +445,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
             latitude={selectedService.latitude}
             longitude={selectedService.longitude}
             anchor="bottom"
-            offset={[0, -12] as [number, number]}
+            offset={[0, -36] as [number, number]}
             closeOnClick={false}
             onClose={() => setSelectedId(null)}
             className="map-popup"
@@ -501,13 +454,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
               <p className="font-medium text-sm text-foreground leading-tight">
                 {selectedService.name}
               </p>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: CATEGORY_COLORS[selectedService.category] || DEFAULT_MARKER_COLOR }}
-                />
-                <p className="text-xs text-muted-foreground">{selectedService.category}</p>
-              </div>
+              <p className="text-xs text-muted-foreground mt-1">{selectedService.category}</p>
               {selectedService.distanceKm != null && (
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {formatDistance(selectedService.distanceKm)} away
