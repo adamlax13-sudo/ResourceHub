@@ -92,6 +92,16 @@ async function main() {
       AND latitude IS NULL
       AND (address IS NOT NULL OR location IS NOT NULL)
       AND category != 'Crisis Lines'
+      -- Skip virtual/province-wide services with no street address
+      AND NOT (
+        (address IS NULL OR TRIM(address) = '')
+        AND (
+          location ILIKE 'alberta%' OR location ILIKE 'province%'
+          OR location ILIKE 'serving alberta%' OR location ILIKE '%alberta-wide%'
+          OR location ILIKE 'virtual%' OR location ILIKE 'online%'
+          OR location ILIKE '%phone%' OR location ILIKE '%toll%'
+        )
+      )
     ORDER BY id
   `);
 

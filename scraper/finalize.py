@@ -18,7 +18,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, Optional, Set
 
-from sqlalchemy import or_, text
+from sqlalchemy import and_, or_, func, text
 
 logger = logging.getLogger(__name__)
 
@@ -173,11 +173,20 @@ def phase_geocode_services(session, log, dry_run: bool = False):
     ALBERTA_BBOX = "-120.0,49.0,-110.0,60.0"
     RELEVANCE_THRESHOLD = 0.6
 
-    # Skip crisis lines — they're phone services, not physical locations
+    # Skip crisis lines and virtual/province-wide services without a street address
+    VIRTUAL_PATTERNS = [
+        "alberta%", "province%", "serving alberta%", "%alberta-wide%",
+        "virtual%", "online%", "%phone%", "%toll%",
+    ]
+    virtual_filter = and_(
+        or_(Service.address.is_(None), func.trim(Service.address) == ""),
+        or_(*[Service.location.ilike(p) for p in VIRTUAL_PATTERNS]),
+    )
     services = session.query(Service).filter(
         Service.latitude.is_(None),
         Service.is_active.is_(True),
         Service.category != "Crisis Lines",
+        ~virtual_filter,
         or_(
             Service.address.isnot(None),
             Service.location.isnot(None),
@@ -255,7 +264,9 @@ def phase_enhance_tags(session, log, dry_run: bool = False):
         found = set()
         for tag, keywords in keyword_map.items():
             for kw in keywords:
-                if kw in text_lower:
+                # Use word boundary matching to prevent false positives
+                # (e.g., "men" matching "mental", "women", "treatment")
+                if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
                     found.add(tag)
                     break
         return found
@@ -279,9 +290,9 @@ def phase_enhance_tags(session, log, dry_run: bool = False):
         tags.update(extract_keywords(combined_text, TARGET_POPULATIONS))
         tags.update(extract_keywords(combined_text, TREATMENT_TYPES))
 
-        # Category as tag
-        if service.category:
-            tags.add(service.category.lower().strip())
+        # Note: category is NOT added as a tag — it's already in embedding text
+        # twice ("Category: X" and "This is a X service.") and adding it as a tag
+        # was redundant, inflating tag arrays with no search signal benefit.
 
         # Existing tags
         if isinstance(service.tags, list):
