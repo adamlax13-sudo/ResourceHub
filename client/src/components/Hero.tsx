@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, Loader2 } from "lucide-react";
+import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, LocateFixed, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -610,12 +610,12 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                 whileTap={{ scale: 0.98 }}
                 className={`
                   inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full
-                  backdrop-blur-md border text-sm font-medium shadow-sm
+                  backdrop-blur-md border text-sm font-medium
                   focus:outline-none focus:ring-2 focus:ring-white/30
                   transition-all duration-200
                   ${userCoords
-                    ? 'bg-white/25 border-white/40 text-white'
-                    : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:border-white/30 hover:text-white'
+                    ? 'bg-white text-primary border-white shadow-md'
+                    : 'bg-white/10 border-white/20 text-white/90 shadow-sm hover:bg-white/20 hover:border-white/30 hover:text-white'
                   }
                   disabled:opacity-60 disabled:cursor-not-allowed
                 `}
@@ -624,10 +624,12 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               >
                 {isLocating ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
+                ) : userCoords ? (
+                  <LocateFixed className="w-4 h-4" />
                 ) : (
                   <Locate className="w-4 h-4" />
                 )}
-                {isLocating ? 'Locating...' : 'Near me'}
+                {isLocating ? 'Locating...' : userCoords ? 'Near me' : 'Near me'}
               </motion.button>
             )}
 
