@@ -44,9 +44,14 @@ export function filterByLocation(services: LiteService[], location: string | nul
 }
 
 export function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
+  // Hoist category set outside loop — O(1) lookup per service instead of O(n)
+  const cats = filters.categories?.length
+    ? new Set(filters.categories.map(c => c.toLowerCase()))
+    : null;
+
   return services.filter(svc => {
-    // Category: strict match (explicit scoping)
-    if (filters.category && svc.category?.toLowerCase() !== filters.category.toLowerCase()) return false;
+    // Categories: OR logic — service passes if its category matches ANY selected category
+    if (cats && !cats.has(svc.category?.toLowerCase() ?? '')) return false;
 
     // Gender: exclude only the opposite restriction
     if (filters.genderRestriction && filters.genderRestriction !== 'all') {

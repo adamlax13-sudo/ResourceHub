@@ -169,6 +169,52 @@ describe('applyHardFilters', () => {
     });
   });
 
+  describe('categories', () => {
+    it('keeps services matching a single selected category', () => {
+      const svcs = [
+        makeSvc({ id: '1', category: 'Mental Health & Counselling' }),
+        makeSvc({ id: '2', category: 'Addiction Treatment' }),
+      ];
+      const result = applyHardFilters(svcs, { categories: ['Mental Health & Counselling'] });
+      expect(result.map(s => s.id)).toEqual(['1']);
+    });
+
+    it('keeps services matching any selected category (OR logic)', () => {
+      const svcs = [
+        makeSvc({ id: '1', category: 'Mental Health & Counselling' }),
+        makeSvc({ id: '2', category: 'Addiction Treatment' }),
+        makeSvc({ id: '3', category: 'Housing' }),
+      ];
+      const result = applyHardFilters(svcs, { categories: ['Mental Health & Counselling', 'Addiction Treatment'] });
+      expect(result.map(s => s.id)).toEqual(['1', '2']);
+    });
+
+    it('matches categories case-insensitively', () => {
+      const svcs = [makeSvc({ id: '1', category: 'Mental Health & Counselling' })];
+      const result = applyHardFilters(svcs, { categories: ['mental health & counselling'] });
+      expect(result).toHaveLength(1);
+    });
+
+    it('does not filter when categories is undefined', () => {
+      const svcs = [makeSvc({ id: '1' }), makeSvc({ id: '2' })];
+      expect(applyHardFilters(svcs, {})).toHaveLength(2);
+    });
+
+    it('does not filter when categories is empty array', () => {
+      const svcs = [makeSvc({ id: '1' }), makeSvc({ id: '2' })];
+      expect(applyHardFilters(svcs, { categories: [] })).toHaveLength(2);
+    });
+
+    it('excludes services not in selected categories', () => {
+      const svcs = [
+        makeSvc({ id: '1', category: 'Housing' }),
+        makeSvc({ id: '2', category: 'Food Banks & Meals' }),
+      ];
+      const result = applyHardFilters(svcs, { categories: ['Crisis Services'] });
+      expect(result).toHaveLength(0);
+    });
+  });
+
   describe('combined filters', () => {
     it('applies men + youth together correctly', () => {
       const filters: SearchFilters = { genderRestriction: 'men_only', ageGroup: 'youth' };
@@ -180,6 +226,18 @@ describe('applyHardFilters', () => {
       ];
       const result = applyHardFilters(svcs, filters);
       expect(result.map(s => s.id)).toEqual(['1', '2']);
+    });
+
+    it('applies categories + gender together correctly', () => {
+      const filters: SearchFilters = { categories: ['Mental Health & Counselling'], genderRestriction: 'women_only' };
+      const svcs = [
+        makeSvc({ id: '1', category: 'Mental Health & Counselling', genderRestriction: 'women_only' }),
+        makeSvc({ id: '2', category: 'Mental Health & Counselling', genderRestriction: 'men_only' }),
+        makeSvc({ id: '3', category: 'Addiction Treatment', genderRestriction: 'women_only' }),
+        makeSvc({ id: '4', category: 'Mental Health & Counselling', genderRestriction: null }),
+      ];
+      const result = applyHardFilters(svcs, filters);
+      expect(result.map(s => s.id)).toEqual(['1', '4']);
     });
   });
 });

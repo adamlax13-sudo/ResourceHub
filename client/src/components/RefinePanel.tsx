@@ -1,4 +1,4 @@
-import { Users, Calendar, Clock, Monitor, Globe, X } from "lucide-react";
+import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, X } from "lucide-react";
 import { useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { SearchFilters } from "@shared/routes";
@@ -12,6 +12,41 @@ interface RefinePanelProps {
 }
 
 const LANGUAGES = ["English", "French", "Spanish", "Punjabi", "Tagalog", "Mandarin", "Arabic"];
+
+export const CATEGORY_GROUPS: { label: string; categories: string[] }[] = [
+  {
+    label: "Crisis & Safety",
+    categories: ["Crisis Services", "Crisis Lines", "Domestic Violence Support", "Human Trafficking Support"],
+  },
+  {
+    label: "Mental Health",
+    categories: ["Mental Health & Counselling", "Trauma & PTSD Support", "Grief & Bereavement", "Eating Disorder Services", "Gambling Support"],
+  },
+  {
+    label: "Addiction & Recovery",
+    categories: ["Addiction Treatment", "Detox & Withdrawal", "Harm Reduction", "Recovery & Peer Support", "Residential Treatment"],
+  },
+  {
+    label: "Housing",
+    categories: ["Emergency Shelter", "Transitional Housing", "Affordable Housing", "Supportive Housing"],
+  },
+  {
+    label: "Basic Needs",
+    categories: ["Food Banks & Meals", "Basic Needs & Material Aid", "Transportation Assistance", "Healthcare Access", "Sexual Health Services"],
+  },
+  {
+    label: "Community & Identity",
+    categories: [
+      "Community & Social Connection", "Youth Services", "Senior Services", "Family & Parenting Support",
+      "Campus & Student Services", "Disability & Autism Support", "Indigenous Services",
+      "LGBTQ2S+ Services", "Newcomer & Settlement", "Veterans Services",
+    ],
+  },
+  {
+    label: "Legal & Financial",
+    categories: ["Legal Aid", "Financial Counselling & Debt Help", "Employment Services", "Criminal Justice Reintegration"],
+  },
+];
 
 type GenderRestriction = NonNullable<SearchFilters["genderRestriction"]>;
 type AgeGroup = NonNullable<SearchFilters["ageGroup"]>;
@@ -47,6 +82,7 @@ function Toggle({
 
 function countActiveFilters(filters: SearchFilters): number {
   let count = 0;
+  if (filters.categories?.length) count += filters.categories.length;
   if (filters.genderRestriction && filters.genderRestriction !== "all") count++;
   if (filters.ageGroup && filters.ageGroup !== "all_ages") count++;
   if (filters.is24_7) count++;
@@ -89,6 +125,14 @@ export function RefinePanel({
     onFiltersChange({ ...filters, ...patch });
   }
 
+  function toggleCategory(cat: string) {
+    const current = filters.categories ?? [];
+    const next = current.includes(cat)
+      ? current.filter((c) => c !== cat)
+      : [...current, cat];
+    update({ categories: next.length > 0 ? next : undefined });
+  }
+
   function toggleLanguage(lang: string) {
     const current = filters.languagesSupported ?? [];
     const next = current.includes(lang)
@@ -118,6 +162,7 @@ export function RefinePanel({
     { value: "in_person_and_online", label: "Both" },
   ];
 
+  const hasCategories = (filters.categories ?? []).length > 0;
   const hasGender = filters.genderRestriction && filters.genderRestriction !== "all";
   const hasAge = filters.ageGroup && filters.ageGroup !== "all_ages";
   const hasToggles = filters.is24_7 || filters.isFaithBased || filters.is12Step;
@@ -187,6 +232,59 @@ export function RefinePanel({
 
         {/* Filter content */}
         <div className="max-h-[60vh] overflow-y-auto px-6 py-5">
+          {/* Category filter — full width at top */}
+          <section
+            className={`rounded-xl p-4 transition-colors mb-4 ${hasCategories ? "bg-primary/[0.03] ring-1 ring-primary/10" : "bg-gray-50/80"}`}
+            aria-labelledby="filter-category-heading"
+          >
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${hasCategories ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"}`}>
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              <h3 id="filter-category-heading" className="text-sm font-semibold text-gray-800">
+                Service category
+              </h3>
+              {hasCategories && (
+                <button
+                  type="button"
+                  onClick={() => update({ categories: undefined })}
+                  className="ml-auto text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Clear category filters"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="space-y-3">
+              {CATEGORY_GROUPS.map((group) => (
+                <div key={group.label}>
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5 pl-0.5">
+                    {group.label}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.categories.map((cat) => {
+                      const active = (filters.categories ?? []).includes(cat);
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => toggleCategory(cat)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all duration-150 ${
+                            active
+                              ? "bg-primary text-white border-primary shadow-sm"
+                              : "bg-white border-gray-200 text-gray-600 hover:border-primary/40 hover:text-gray-900"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Gender restriction */}
             <section

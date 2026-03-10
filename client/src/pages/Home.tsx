@@ -29,6 +29,9 @@ interface FilterChip {
 function buildFilterChips(filters: SearchFilters): FilterChip[] {
   const chips: FilterChip[] = [];
 
+  (filters.categories ?? []).forEach((cat) => {
+    chips.push({ key: `cat_${cat}`, label: cat });
+  });
   if (filters.genderRestriction && filters.genderRestriction !== "all") {
     chips.push({
       key: "genderRestriction",
@@ -77,6 +80,10 @@ function removeChip(filters: SearchFilters, chipKey: string): SearchFilters {
     delete next.is12Step;
   } else if (chipKey === "serviceFormat") {
     delete next.serviceFormat;
+  } else if (chipKey.startsWith("cat_")) {
+    const cat = chipKey.slice(4);
+    const cats = (next.categories ?? []).filter((c) => c !== cat);
+    next.categories = cats.length > 0 ? cats : undefined;
   } else if (chipKey.startsWith("lang_")) {
     const lang = chipKey.slice(5);
     const langs = (next.languagesSupported ?? []).filter((l) => l !== lang);
@@ -132,6 +139,7 @@ export default function Home() {
   // Shared helper: build filter + coordinate params for search API calls
   const buildSearchParams = useCallback((filters: SearchFilters, coords?: { lat: number; lng: number } | null) => {
     const filterParams: Partial<SearchFilters> = {};
+    if (filters.categories?.length) filterParams.categories = filters.categories;
     if (filters.genderRestriction && filters.genderRestriction !== "all") {
       filterParams.genderRestriction = filters.genderRestriction;
     }
