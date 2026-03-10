@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { ServiceSummary, SearchFilters } from "@shared/routes";
+import { CATEGORY_GROUPS } from "../components/RefinePanel";
 
 interface UserCoords {
   lat: number;
@@ -113,7 +114,12 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     if (!q) return;
 
     const restoredFilters: SearchFilters = {};
-    const cat = params.get('cat'); if (cat) restoredFilters.category = cat;
+    const VALID_CATEGORIES = new Set(CATEGORY_GROUPS.flatMap(g => g.categories));
+    const cats = params.get('cats');
+    if (cats) {
+      const validCats = cats.split(',').filter(c => VALID_CATEGORIES.has(c)).slice(0, 10);
+      if (validCats.length > 0) restoredFilters.categories = validCats;
+    }
     const VALID_GENDERS = ['all', 'women_only', 'men_only'];
     const VALID_AGES = ['all_ages', 'youth', 'adult', 'senior', 'youth_and_adult'];
     const gender = params.get('gender');
@@ -245,7 +251,7 @@ export function updateSearchUrl(query: string, location?: string, filters?: Sear
   const params = new URLSearchParams();
   if (query) params.set('q', query);
   if (location) params.set('loc', location);
-  if (filters?.category) params.set('cat', filters.category);
+  if (filters?.categories?.length) params.set('cats', filters.categories.join(','));
   if (filters?.genderRestriction && filters.genderRestriction !== 'all') params.set('gender', filters.genderRestriction);
   if (filters?.ageGroup && filters.ageGroup !== 'all_ages') params.set('age', filters.ageGroup);
   if (filters?.is24_7) params.set('24h', '1');

@@ -22,7 +22,7 @@ export function registerSearchRoutes(app: Express): void {
 
       // Call the search orchestrator
       const activeFilters = {
-        category: input.category,
+        categories: input.categories?.length ? input.categories : undefined,
         genderRestriction: input.genderRestriction,
         ageGroup: input.ageGroup,
         is24_7: input.is24_7,

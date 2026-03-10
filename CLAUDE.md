@@ -75,6 +75,10 @@ pytest tests/ -v                     # Run scraper tests
 | `server/routes/location.ts` | `/api/mapbox-token` + `/api/geocode` endpoints |
 | `client/src/components/MapView.tsx` | Lazy-loaded Mapbox map component (in separate ~1.7MB chunk) |
 | `scripts/batch-geocode-services.mjs` | One-time batch geocoding of services via Mapbox API |
+| `server/search/filters.ts` | Hard filter application (categories, gender, age, etc.) |
+| `client/src/components/RefinePanel.tsx` | Filter UI — categories (37 in 7 groups), gender, age, preferences, languages |
+| `server/routes/search.ts` | Search route handler — constructs `activeFilters` from input |
+| `scripts/fix-tag-quality.mjs` | Tag quality fix: "men" false positive, normalize duplicates, regen embeddings |
 
 ## Architecture Notes
 
@@ -93,7 +97,8 @@ pytest tests/ -v                     # Run scraper tests
 11. Apply data quality boost (confidence score, description richness)
 12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
 13. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
-14. Return paginated results with summary
+14. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue, clamp to [13, 50])
+15. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
