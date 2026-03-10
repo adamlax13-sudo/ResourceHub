@@ -5,6 +5,13 @@ import type { LayerProps } from "react-map-gl/mapbox";
 import { MapPin, MousePointerClick } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 
+// Red accent overrides for Mapbox navigation controls
+const mapControlStyles = `
+  .map-container .mapboxgl-ctrl-group button .mapboxgl-ctrl-icon {
+    filter: brightness(0) saturate(100%) invert(11%) sepia(95%) saturate(6000%) hue-rotate(348deg) brightness(85%) contrast(110%);
+  }
+`;
+
 interface ServiceMarker {
   id: string;
   name: string;
@@ -23,68 +30,8 @@ interface MapViewProps {
 // Alberta centroid
 const ALBERTA_CENTER = { latitude: 53.9, longitude: -116.6 };
 
-// ── Category color map ──────────────────────────────────────────────
-const CATEGORY_COLORS: Record<string, string> = {
-  // Crisis — red
-  "Crisis Lines": "#DC2626",
-  "Crisis Services": "#DC2626",
-  // Mental health — blue
-  "Mental Health & Counselling": "#2563EB",
-  "Trauma & PTSD Support": "#2563EB",
-  "Grief & Bereavement": "#2563EB",
-  "Eating Disorder Services": "#2563EB",
-  // Housing — green
-  "Emergency Shelter": "#16A34A",
-  "Transitional Housing": "#16A34A",
-  "Affordable Housing": "#16A34A",
-  "Supportive Housing": "#16A34A",
-  // Substance — orange
-  "Addiction Treatment": "#EA580C",
-  "Residential Treatment": "#EA580C",
-  "Detox & Withdrawal": "#EA580C",
-  "Harm Reduction": "#EA580C",
-  "Recovery & Peer Support": "#EA580C",
-  "Gambling Support": "#EA580C",
-  // Youth/family — purple
-  "Youth Services": "#9333EA",
-  "Family & Parenting Support": "#9333EA",
-  "Campus & Student Services": "#9333EA",
-  // Community — teal
-  "Community & Social Connection": "#0D9488",
-  "Indigenous Services": "#0D9488",
-  "Newcomer & Settlement": "#0D9488",
-  "LGBTQ2S+ Services": "#0D9488",
-  "Senior Services": "#0D9488",
-  "Veterans Services": "#0D9488",
-  // Practical — amber
-  "Food Banks & Meals": "#D97706",
-  "Basic Needs & Material Aid": "#D97706",
-  "Employment Services": "#D97706",
-  "Transportation Assistance": "#D97706",
-  "Financial Counselling & Debt Help": "#D97706",
-  // Other — slate
-  "Disability & Autism Support": "#475569",
-  "Domestic Violence Support": "#475569",
-  "Healthcare Access": "#475569",
-  "Legal Aid": "#475569",
-  "Criminal Justice Reintegration": "#475569",
-  "Sexual Health Services": "#475569",
-  "Human Trafficking Support": "#475569",
-};
-
-const DEFAULT_MARKER_COLOR = "#D6001C";
-
-// ── Legend items ──────────────────────────────────────────────────────
-const LEGEND_ITEMS = [
-  { color: "#DC2626", label: "Crisis" },
-  { color: "#2563EB", label: "Mental Health" },
-  { color: "#16A34A", label: "Housing" },
-  { color: "#EA580C", label: "Substance Use" },
-  { color: "#9333EA", label: "Youth & Family" },
-  { color: "#0D9488", label: "Community" },
-  { color: "#D97706", label: "Basic Needs" },
-  { color: "#475569", label: "Other" },
-];
+// Brand red — all pins use the same color to match page style
+const PIN_COLOR = "#D6001C";
 
 // Inverted polygon: world exterior with Alberta cut out as a hole
 const ALBERTA_MASK_GEOJSON: GeoJSON.Feature = {
@@ -146,15 +93,6 @@ const albertaOutlineLayer: LayerProps = {
   },
 };
 
-// Subtle warm tint over the whole map
-const warmTintLayer: LayerProps = {
-  id: "warm-tint",
-  type: "background",
-  paint: {
-    "background-color": "#f5e6d3",
-    "background-opacity": 0.08,
-  },
-};
 
 function formatDistance(km: number): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
@@ -358,10 +296,15 @@ export default function MapView({ services, userLocation, onSelectService }: Map
   return (
     <div
       ref={containerRef}
-      className="rounded-2xl overflow-hidden border border-border shadow-lg h-[calc(100vh-200px)] relative"
+      className="map-container rounded-2xl overflow-hidden border border-border shadow-lg h-[calc(100vh-200px)] relative"
       role="application"
       aria-label="Map showing service locations"
     >
+      <style>{mapControlStyles}</style>
+
+      {/* Warm tint overlay — CSS so it covers map tiles uniformly */}
+      <div className="absolute inset-0 pointer-events-none z-[1]" style={{ backgroundColor: "rgba(200, 140, 80, 0.08)" }} />
+
       <span className="sr-only" aria-live="polite">
         Showing {mappableServices.length} services on map. Use the list view for full accessibility.
       </span>
@@ -393,9 +336,6 @@ export default function MapView({ services, userLocation, onSelectService }: Map
       >
         <NavigationControl position="top-right" />
 
-        {/* Subtle warm tint */}
-        <Layer {...warmTintLayer} beforeId="land" />
-
         {/* Alberta highlight mask — dims areas outside Alberta at wide zoom */}
         <Source id="alberta-mask" type="geojson" data={ALBERTA_MASK_GEOJSON}>
           <Layer {...albertaMaskLayer} />
@@ -413,9 +353,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
         )}
 
         {/* Service markers */}
-        {mappableServices.map((svc) => {
-          const color = CATEGORY_COLORS[svc.category] || DEFAULT_MARKER_COLOR;
-          return (
+        {mappableServices.map((svc) => (
             <Marker
               key={svc.id}
               latitude={svc.latitude!}
@@ -430,14 +368,13 @@ export default function MapView({ services, userLocation, onSelectService }: Map
                 <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
                   <path
                     d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z"
-                    fill={color}
+                    fill={PIN_COLOR}
                   />
                   <circle cx="14" cy="13" r="5" fill="white" />
                 </svg>
               </div>
             </Marker>
-          );
-        })}
+        ))}
 
         {/* Popup for selected service */}
         {selectedService && selectedService.latitude != null && selectedService.longitude != null && (
@@ -471,20 +408,6 @@ export default function MapView({ services, userLocation, onSelectService }: Map
         )}
       </Map>
 
-      {/* Category color legend */}
-      <div className="absolute bottom-3 left-3 z-10 bg-white/90 backdrop-blur-sm rounded-lg border border-border shadow-sm px-3 py-2 text-xs">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-          {LEGEND_ITEMS.map((item) => (
-            <div key={item.color} className="flex items-center gap-1.5">
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: item.color }}
-              />
-              <span className="text-muted-foreground">{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
