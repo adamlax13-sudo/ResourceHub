@@ -1,0 +1,244 @@
+[
+  {
+    "name": "Footprints Healing Centre — Alexander First Nation",
+    "category": "Residential Treatment",
+    "description": "NNADAP-funded residential addiction treatment centre on Alexander First Nation near Morinville. Offers a culturally grounded healing program for adults 18+ with 12 in-patient beds and an average 42-day treatment cycle. Programs include concurrent disorders treatment, residential school trauma healing, on-the-land programming, couples counselling, AA/NA meetings, cognitive behavioural therapy, a 7-week virtual program, and cultural programming. Accepts pregnant women, court/corrections referrals, clients on psychoactive medications, and child welfare clients. Block intake model.",
+    "location": "Alexander First Nation, near Morinville, AB",
+    "address": "Box 357, Morinville, AB T8R 1S3",
+    "phone": "780-939-3544",
+    "email": "footprintshealingcenter@gmail.com",
+    "website_url": null,
+    "hours_of_operation": "Residential program — contact for intake schedule",
+    "is_24_7": false,
+    "eligibility": "Adults 18+, male and female. Accepts pregnant women, court/corrections referrals, clients on psychoactive medications, and child welfare clients. Must complete NNADAP referral form.",
+    "process_steps": [
+      "Call 780-939-3544 to inquire about bed availability",
+      "Complete the Alberta NNADAP Adult Residential Treatment Referral Form",
+      "Submit referral form to the centre",
+      "Wait for intake confirmation — block intake model (set start dates)",
+      "Arrive on intake day prepared for 42-day residential stay"
+    ],
+    "required_docs": [
+      "Alberta NNADAP Adult Residential Treatment Referral Form",
+      "Alberta Health Care card",
+      "Status/Treaty card if applicable"
+    ],
+    "wait_times": "Block intake — call for next available intake date",
+    "tags": [
+      "Indigenous", "First Nations", "residential treatment", "addiction",
+      "NNADAP", "cultural healing", "concurrent disorders",
+      "residential school trauma", "on-the-land", "couples counselling",
+      "CBT", "AA", "NA", "virtual program", "Alexander First Nation"
+    ],
+    "source_urls": [
+      "https://www.sac-isc.gc.ca/eng/1576090254932/1576090371511",
+      "https://cortico.health/clinics/alexander-134-ab/footprints-healing-centre-33579/"
+    ],
+    "confidence_score": 90,
+    "age_group": "adult",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  },
+  {
+    "name": "Kapown Rehabilitation Centre — Grouard",
+    "category": "Residential Treatment",
+    "description": "NNADAP-funded 32-bed residential addiction treatment centre on Kapawe'no First Nation near Grouard, on the shore of Buffalo Bay. Operating for over 25 years, Kapown treats approximately 300 clients annually with a comprehensive evidence-based program integrating Cognitive Behavioural Therapy, Solution-Focused Therapy, Mindfulness, Motivationally Enhanced Therapy, and Twelve Step Facilitation with Western Cree cultural practices woven throughout. Programs include concurrent disorders, residential school trauma healing, on-the-land activities, gender-based programming, family treatment, child counselling, couples counselling, prescription drug abuse treatment, aftercare services, and recreation. Also offers out-patient treatment and a 2nd Stage Treatment Program. Counsellors are CACII/ICADC certified.",
+    "location": "Kapawe'no First Nation, near Grouard, AB",
+    "address": "Box 40, Grouard, AB T0G 1C0",
+    "phone": "780-751-3921",
+    "email": "intake@kapown.ca",
+    "website_url": "http://kapown.ca",
+    "hours_of_operation": "Residential program — contact for intake. Toll-free: 1-888-751-3921",
+    "is_24_7": false,
+    "eligibility": "Adults 18+, male and female. Accepts clients with disabilities, pregnant women, court/corrections referrals, clients on Methadone/Suboxone, and 2SLGBTQIA+ individuals. Continuous intake for in-patient and out-patient programs.",
+    "process_steps": [
+      "Call 780-751-3921 or toll-free 1-888-751-3921, or email intake@kapown.ca",
+      "Complete the NNADAP referral form (downloadable from kapown.ca)",
+      "Submit referral and wait for intake confirmation",
+      "Continuous intake — beds available on rolling basis",
+      "Out-patient treatment also available"
+    ],
+    "required_docs": [
+      "Alberta NNADAP Adult Residential Treatment Referral Form",
+      "Alberta Health Care card",
+      "Status/Treaty card if applicable"
+    ],
+    "wait_times": "Continuous intake — contact for current availability",
+    "tags": [
+      "Indigenous", "First Nations", "residential treatment", "addiction",
+      "NNADAP", "cultural healing", "Western Cree", "concurrent disorders",
+      "residential school trauma", "on-the-land", "family treatment",
+      "couples counselling", "CBT", "Twelve Step", "aftercare",
+      "out-patient", "prescription drug abuse", "2SLGBTQIA+",
+      "gender-based", "Kapawe'no First Nation"
+    ],
+    "source_urls": [
+      "https://www.sac-isc.gc.ca/eng/1576090254932/1576090371511",
+      "https://recoveryaccessalberta.ca/service/kapown-rehabilitation-centre/"
+    ],
+    "confidence_score": 92,
+    "age_group": "adult",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  },
+  {
+    "name": "Beaver Lake Wah-Pow Treatment Centre",
+    "category": "Residential Treatment",
+    "description": "NNADAP-funded accredited not-for-profit residential addiction treatment centre on Beaver Lake Cree Nation, 15 km southeast of Lac La Biche. Operating since 1984, the centre provides an intensive 49-day holistic program specializing in the treatment of trauma and abuse for couples and individuals. Cultural programming includes sweat lodge ceremonies, pipe ceremonies, cultural dances, seasonal pow wows, and daily smudging and prayer to support physical, emotional, mental, and spiritual well-being. Offers individual and couples counselling, with couples accommodated in shared cabins. 24-hour security and round-the-clock counselling services on-site.",
+    "location": "Beaver Lake Cree Nation, near Lac La Biche, AB",
+    "address": "Box 1648, Lac La Biche, AB T0A 2C0",
+    "phone": "780-623-2553",
+    "email": "beaverlaketreatmentcenter@yahoo.ca",
+    "website_url": "https://beaverlakecreenation.ca/Health/",
+    "hours_of_operation": "Residential program — 24/7 on-site support. Contact for intake dates.",
+    "is_24_7": true,
+    "eligibility": "Adults 18+, male and female. Accepts couples. Accepts clients with disabilities, pregnant women (0-5 months), court/corrections referrals, and clients on psychoactive medications. Block intake model.",
+    "process_steps": [
+      "Call 780-623-2553 to inquire about bed availability",
+      "Edmonton direct line: 780-652-0571, Calgary direct line: 403-744-5271",
+      "Complete the NNADAP referral form",
+      "Submit referral and wait for intake confirmation — block intake",
+      "Arrive prepared for 49-day residential stay"
+    ],
+    "required_docs": [
+      "Alberta NNADAP Adult Residential Treatment Referral Form",
+      "Alberta Health Care card",
+      "Status/Treaty card if applicable"
+    ],
+    "wait_times": "Block intake — call for next available intake date",
+    "tags": [
+      "Indigenous", "First Nations", "Cree", "residential treatment", "addiction",
+      "NNADAP", "cultural healing", "sweat lodge", "trauma",
+      "couples treatment", "holistic", "pow wow", "ceremony",
+      "24/7", "Beaver Lake Cree Nation"
+    ],
+    "source_urls": [
+      "https://www.sac-isc.gc.ca/eng/1576090254932/1576090371511",
+      "https://recoveryaccessalberta.ca/service/beaver-lake-wah-pow-treatment-centre/"
+    ],
+    "confidence_score": 90,
+    "age_group": "adult",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  },
+  {
+    "name": "Hinton Friendship Centre",
+    "category": "Indigenous Services",
+    "description": "Aboriginal non-profit organization serving Indigenous and non-Indigenous community members in Hinton and area since 1995. Programs include the Mamowichihitowin inclusive therapy program, Aboriginal Head Start for Indigenous children ages 3-5, Indigenous Language and Culture Program (ILC) teaching Plains Cree, Saulteaux, and Michif at local schools, Restoring Balance wrap-around reintegration program for offenders, teen cooking classes, and cultural programming. Provides holistic support addressing spiritual, emotional, mental, and physical wellness.",
+    "location": "965 Switzer Drive, Hinton, AB T7V 1V1",
+    "address": "965 Switzer Drive, Hinton, AB T7V 1V1",
+    "phone": "780-865-5189",
+    "email": null,
+    "website_url": "https://www.fchinton.com/",
+    "hours_of_operation": "Contact for program-specific hours",
+    "is_24_7": false,
+    "eligibility": "Open to Indigenous and non-Indigenous community members. Some programs have specific eligibility (e.g., Aboriginal Head Start for Indigenous children 3-5).",
+    "process_steps": [
+      "Call 780-865-5189 or visit the centre at 965 Switzer Drive, Hinton",
+      "Staff will assess needs and connect to appropriate programs",
+      "No referral required for most programs"
+    ],
+    "required_docs": [],
+    "wait_times": null,
+    "tags": [
+      "Indigenous", "First Nations", "Metis", "friendship centre",
+      "therapy", "Head Start", "children", "youth", "language",
+      "Cree", "Saulteaux", "Michif", "cultural programming",
+      "reintegration", "holistic", "family", "free"
+    ],
+    "source_urls": [
+      "https://www.fchinton.com/",
+      "https://www.fchinton.com/programs-services",
+      "https://anfca.com/friendship-centres/hinton/"
+    ],
+    "confidence_score": 88,
+    "age_group": "all_ages",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  },
+  {
+    "name": "Cold Lake Native Friendship Centre",
+    "category": "Indigenous Services",
+    "description": "The only Indigenous organization in the Cold Lake area, serving both Indigenous and non-Indigenous community members. Acts as a cultural support hub providing access to family services, addiction support, food programs, and housing services. Offers on-site counselling, career guidance, youth programs, a weekly Soup and Bannock Thursday community meal, free copying/faxing, resume creation, tax filing assistance, and a Community Temporary Work Agency providing temporary employment opportunities. Currently developing Kokum's House, a culturally relevant recovery program with 10 beds for men, blending Indigenous healing methods with western recovery models including land-based healing and peer mentorship.",
+    "location": "5015 55 Street, Cold Lake, AB T9M 1P4",
+    "address": "5015 55 Street, Cold Lake, AB T9M 1P4",
+    "phone": "780-594-7526",
+    "email": null,
+    "website_url": "https://www.clnfc.net/",
+    "hours_of_operation": "Contact for hours",
+    "is_24_7": false,
+    "eligibility": "Open to all Indigenous and non-Indigenous community members. No eligibility requirements for drop-in services.",
+    "process_steps": [
+      "Walk in or call 780-594-7526",
+      "Staff will connect you to appropriate services",
+      "No referral or documentation required for most services"
+    ],
+    "required_docs": [],
+    "wait_times": null,
+    "tags": [
+      "Indigenous", "First Nations", "Metis", "friendship centre",
+      "counselling", "addiction support", "food", "bannock",
+      "employment", "career guidance", "youth", "housing",
+      "tax filing", "drop-in", "cultural support", "free",
+      "recovery", "land-based healing"
+    ],
+    "source_urls": [
+      "https://www.clnfc.net/about-us",
+      "https://anfca.com/friendship-centres/cold-lake/",
+      "https://www.lakelandtoday.ca/cold-lake-news/cold-lake-council-supports-friendship-centres-bid-for-culturally-relevant-recovery-program-10629902"
+    ],
+    "confidence_score": 85,
+    "age_group": "all_ages",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  },
+  {
+    "name": "Bent Arrow Traditional Healing Society — Cultural & Family Programs",
+    "category": "Indigenous Services",
+    "description": "Edmonton-based Indigenous organization serving children, youth, families, and seniors since 1994, dedicated to restoring cultural pride and well-being. Offers a wide range of culturally grounded programs including Sacred Circle family intervention, Elder's counsel and Elder breakfasts, Coyote Kids weekly program, Coyote Pride youth mentoring, White Cloud Head Start, Wind Dancers youth program, Her Way women's program, Warriors Way men's program, Kikosewin Family Resource Network, seniors programming, traditional Indigenous teachings, community outreach, Wichitowin family nights, monthly soup and bannock lunches, Aboriginal awareness training, employment career centre, Journey to Success adult employment, and the Equipped to Work initiative for Indigenous newcomers to Edmonton. Part of the Wellness Network Edmonton.",
+    "location": "11648 85 Street NW, Edmonton, AB T5B 3E5",
+    "address": "11648 85 Street NW, Edmonton, AB T5B 3E5",
+    "phone": "780-481-3451",
+    "email": "reception@bentarrow.ca",
+    "website_url": "https://bentarrow.ca",
+    "hours_of_operation": "Contact for program-specific hours",
+    "is_24_7": false,
+    "eligibility": "Open to Indigenous community members — children, youth, families, and seniors. Some programs open to all. Contact for specific program eligibility.",
+    "process_steps": [
+      "Call 780-481-3451 or email reception@bentarrow.ca",
+      "Visit the centre at 11648 85 Street NW, Edmonton (Parkdale School)",
+      "Staff will connect you to appropriate programs based on your needs",
+      "No referral required for most programs"
+    ],
+    "required_docs": [],
+    "wait_times": null,
+    "tags": [
+      "Indigenous", "First Nations", "Metis", "cultural healing",
+      "Elders", "youth", "children", "family", "seniors",
+      "mentoring", "Head Start", "employment", "women",
+      "men", "traditional teachings", "community meals",
+      "outreach", "housing", "free"
+    ],
+    "source_urls": [
+      "https://bentarrow.ca",
+      "https://wellnessnetworkedmonton.com/partners/bent-arrow/",
+      "https://informalberta.ca/public/organization/orgProfileStyled.do?organizationQueryId=1031426"
+    ],
+    "confidence_score": 90,
+    "age_group": "all_ages",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "in-person"
+  }
+]
