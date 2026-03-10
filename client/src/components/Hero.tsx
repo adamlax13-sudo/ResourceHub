@@ -602,17 +602,15 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
             </button>
 
             {'geolocation' in navigator && (
-              <motion.button
+              <button
                 type="button"
                 onClick={onNearMe}
                 disabled={isLocating}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 className={`
                   inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full
                   backdrop-blur-md border text-sm font-medium
                   focus:outline-none focus:ring-2 focus:ring-white/30
-                  transition-all duration-200
+                  transition-[background-color,border-color,color,box-shadow] duration-300 ease-in-out
                   ${userCoords
                     ? 'bg-white text-primary border-white shadow-md'
                     : 'bg-white/10 border-white/20 text-white/90 shadow-sm hover:bg-white/20 hover:border-white/30 hover:text-white'
@@ -629,8 +627,8 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                 ) : (
                   <Locate className="w-4 h-4" />
                 )}
-                {isLocating ? 'Locating...' : userCoords ? 'Near me' : 'Near me'}
-              </motion.button>
+                {isLocating ? 'Locating...' : 'Near me'}
+              </button>
             )}
 
             <LocationDropdown
