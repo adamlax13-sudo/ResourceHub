@@ -40,6 +40,8 @@ SELECT
   s.search_vector,
   s.is_24_7,
   s.gender_restriction,
+  s.latitude,
+  s.longitude,
   -- Pre-computed search fields
   lower(COALESCE(s.location, '')) as location_lower,
   lower(COALESCE(s.name, '') || ' ' || COALESCE(s.category, '') || ' ' || COALESCE(s.description, '')) as search_text_combined

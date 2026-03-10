@@ -71,6 +71,10 @@ pytest tests/ -v                     # Run scraper tests
 | `server/evaluation/ci_runner.mjs` | CI test runner — 38 queries with per-intent thresholds |
 | `.github/workflows/search-eval.yml` | GitHub Actions CI for search quality regression testing |
 | `scripts/compute-click-affinities.mjs` | Batch job: compute (query, service) affinity scores from click data |
+| `server/search/distance.ts` | Haversine distance + attachDistances/sortByDistance/filterByMaxDistance |
+| `server/routes/location.ts` | `/api/mapbox-token` + `/api/geocode` endpoints |
+| `client/src/components/MapView.tsx` | Lazy-loaded Mapbox map component (in separate ~1.7MB chunk) |
+| `scripts/batch-geocode-services.mjs` | One-time batch geocoding of services via Mapbox API |
 
 ## Architecture Notes
 
@@ -88,7 +92,8 @@ pytest tests/ -v                     # Run scraper tests
 10. Pin crisis services if detected
 11. Apply data quality boost (confidence score, description richness)
 12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
-13. Return paginated results with summary
+13. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
+14. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
@@ -108,7 +113,7 @@ Three phases: discover → enrich → finalize.
 
 - **Discover**: Source plugins scrape directories (211, AHS, CRA, etc.) with no AI cost.
 - **Enrich**: Claude extracts process steps, eligibility, hours from service websites.
-- **Finalize**: Normalize contacts, enhance tags, generate embeddings, deduplicate, refresh views.
+- **Finalize**: Normalize contacts, geocode services (Mapbox), enhance tags, generate embeddings, deduplicate, refresh views.
 
 Run with `python scraper.py` (all phases) or `--phase discover|enrich|finalize`.
 
@@ -133,6 +138,8 @@ See `.env.example` for required variables. Key ones:
 - `AI_INTEGRATIONS_OPENAI_API_KEY` — OpenAI API key
 - `ANTHROPIC_API_KEY` — Claude API key (optional, better extraction)
 - `ADMIN_API_KEY` — protects admin endpoints
+- `MAPBOX_PUBLIC_TOKEN` — client-side map rendering (URL-restrict in Mapbox dashboard)
+- `MAPBOX_SECRET_TOKEN` — server-side geocoding only (never exposed to client)
 
 ## MCP Servers
 

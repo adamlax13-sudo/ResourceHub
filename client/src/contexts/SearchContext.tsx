@@ -1,12 +1,19 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { ServiceSummary, SearchFilters } from "@shared/routes";
 
+interface UserCoords {
+  lat: number;
+  lng: number;
+  timestamp: number;
+}
+
 interface SearchState {
   query: string;
   locations: string[]; // Changed from single location to array
   services: ServiceSummary[];
   hasSearched: boolean;
   filters: SearchFilters;
+  userCoords: UserCoords | null;
 }
 
 interface SearchContextType {
@@ -18,6 +25,7 @@ interface SearchContextType {
   setFilters: (filters: SearchFilters) => void;
   clearFilters: () => void;
   activeFilterCount: number;
+  setUserCoords: (coords: UserCoords | null) => void;
 }
 
 const defaultState: SearchState = {
@@ -26,12 +34,32 @@ const defaultState: SearchState = {
   services: [],
   hasSearched: false,
   filters: {},
+  userCoords: null,
 };
 
 const SearchContext = createContext<SearchContextType | null>(null);
 
 const STORAGE_KEY = 'roc_search_state';
 const LOCATION_KEY = 'roc_selected_locations';
+const COORDS_KEY = 'roc_user_coords';
+const COORDS_TTL = 60 * 60 * 1000; // 1 hour
+
+function loadStoredCoords(): UserCoords | null {
+  try {
+    const raw = localStorage.getItem(COORDS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      typeof parsed?.lat === 'number' && parsed.lat >= -90 && parsed.lat <= 90 &&
+      typeof parsed?.lng === 'number' && parsed.lng >= -180 && parsed.lng <= 180 &&
+      typeof parsed?.timestamp === 'number' && Date.now() - parsed.timestamp < COORDS_TTL
+    ) {
+      return parsed;
+    }
+    localStorage.removeItem(COORDS_KEY);
+  } catch { /* ignore */ }
+  return null;
+}
 
 // Type guard for validating parsed localStorage data
 function isStringArray(value: unknown): value is string[] {
@@ -55,10 +83,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
             hasSearched: typeof parsed.hasSearched === 'boolean' ? parsed.hasSearched : false,
             filters: typeof parsed.filters === 'object' && parsed.filters !== null && !Array.isArray(parsed.filters) ? parsed.filters : {},
             locations: validLocations,
+            userCoords: loadStoredCoords(),
           };
         }
       }
-      return { ...defaultState, locations: validLocations };
+      return { ...defaultState, locations: validLocations, userCoords: loadStoredCoords() };
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Failed to load search state from storage:', e);
@@ -125,11 +154,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 
   const setSearchResults = useCallback((query: string, services: ServiceSummary[], locations?: string[]) => {
     setSearchState(prev => ({
+      ...prev,
       query,
       locations: locations ?? prev.locations,
       services,
       hasSearched: true,
-      filters: prev.filters,
     }));
   }, []);
 
@@ -179,6 +208,17 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     setSearchState(prev => ({ ...prev, filters: {} }));
   }, []);
 
+  const setUserCoords = useCallback((coords: UserCoords | null) => {
+    setSearchState(prev => ({ ...prev, userCoords: coords }));
+    try {
+      if (coords) {
+        localStorage.setItem(COORDS_KEY, JSON.stringify(coords));
+      } else {
+        localStorage.removeItem(COORDS_KEY);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   const activeFilterCount = Object.entries(searchState.filters).filter(([k, v]) => {
     if (v === undefined || v === false) return false;
     if (v === 'all' || v === 'all_ages') return false;  // sentinel values = no filter
@@ -187,7 +227,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }).length;
 
   return (
-    <SearchContext.Provider value={{ searchState, setSearchResults, setLocations, toggleLocation, clearSearch, setFilters, clearFilters, activeFilterCount }}>
+    <SearchContext.Provider value={{ searchState, setSearchResults, setLocations, toggleLocation, clearSearch, setFilters, clearFilters, activeFilterCount, setUserCoords }}>
       {children}
     </SearchContext.Provider>
   );
@@ -217,4 +257,4 @@ export function updateSearchUrl(query: string, location?: string, filters?: Sear
   window.history.replaceState(window.history.state, '', qs ? `?${qs}` : window.location.pathname);
 }
 
-export type { SearchFilters };
+export type { SearchFilters, UserCoords };

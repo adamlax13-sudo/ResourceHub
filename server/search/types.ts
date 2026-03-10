@@ -64,6 +64,11 @@ export interface SearchInput {
   emergency?: boolean;
   // Explicit filters from UI (applied as hard constraints, not semantic boosts)
   filters?: SearchFilters;
+  // User location for distance-based sorting/filtering
+  userLat?: number;
+  userLng?: number;
+  maxDistanceKm?: number;
+  sortByDistance?: boolean;
 }
 
 // === QUERY ANALYSIS ===
@@ -112,6 +117,8 @@ export interface LiteService {
   phone?: string;
   /** 24/7 availability flag */
   is24_7?: boolean;
+  /** Distance from user in km (null if no coords) */
+  distanceKm?: number | null;
   /** Source of this result in search */
   matchType?: 'sql' | 'semantic' | 'both';
   /** RRF score from merge (higher = better) */
@@ -129,6 +136,9 @@ export interface LiteService {
   is12Step?: boolean | null;
   serviceFormat?: string | null;
   languagesSupported?: string[] | null;
+  // Coordinates for distance computation (from materialized view)
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 /** Full service detail format for expanded view */

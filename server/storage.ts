@@ -142,6 +142,9 @@ export interface IStorage {
   // Batch confidence score lookup for data quality boosting
   getConfidenceScores(serviceIds: string[]): Promise<Map<string, number>>;
 
+  // Batch coordinate lookup for distance calculations
+  getServiceCoordinates(serviceIds: string[]): Promise<Map<string, { lat: number; lng: number }>>;
+
   // Check if materialized view exists (for graceful fallback)
   hasOptimizedSearch(): Promise<boolean>;
 
@@ -830,6 +833,27 @@ export class DatabaseStorage implements IStorage {
     for (const row of result) {
       if (row.confidenceScore !== null) {
         map.set(row.serviceId, row.confidenceScore);
+      }
+    }
+    return map;
+  }
+
+  async getServiceCoordinates(serviceIds: string[]): Promise<Map<string, { lat: number; lng: number }>> {
+    if (serviceIds.length === 0) return new Map();
+
+    const result = await db
+      .select({
+        serviceId: services.serviceId,
+        latitude: services.latitude,
+        longitude: services.longitude,
+      })
+      .from(services)
+      .where(inArray(services.serviceId, serviceIds));
+
+    const map = new Map<string, { lat: number; lng: number }>();
+    for (const row of result) {
+      if (row.latitude != null && row.longitude != null) {
+        map.set(row.serviceId, { lat: row.latitude, lng: row.longitude });
       }
     }
     return map;

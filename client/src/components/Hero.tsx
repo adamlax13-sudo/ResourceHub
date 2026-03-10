@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal } from "lucide-react";
+import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -44,6 +44,9 @@ interface HeroProps {
   onOpenWizard: () => void;
   onOpenRefinePanel: () => void;
   activeFilterCount: number;
+  userCoords: { lat: number; lng: number } | null;
+  onNearMe: () => void;
+  isLocating: boolean;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -321,7 +324,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -597,6 +600,36 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
               <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
               I need help right now
             </button>
+
+            {'geolocation' in navigator && (
+              <motion.button
+                type="button"
+                onClick={onNearMe}
+                disabled={isLocating}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`
+                  inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full
+                  backdrop-blur-md border text-sm font-medium shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-white/30
+                  transition-all duration-200
+                  ${userCoords
+                    ? 'bg-white/25 border-white/40 text-white'
+                    : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:border-white/30 hover:text-white'
+                  }
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                `}
+                aria-label="Find services near your current location"
+                aria-busy={isLocating}
+              >
+                {isLocating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Locate className="w-4 h-4" />
+                )}
+                {isLocating ? 'Locating...' : 'Near me'}
+              </motion.button>
+            )}
 
             <LocationDropdown
               value={selectedLocation}

@@ -13,6 +13,7 @@ from enrichment import EnrichmentEngine, should_enrich, batch_services_by_catego
 from upserter import upsert_service, invalidate_service_cache
 from finalize import (
     phase_normalize_contacts,
+    phase_geocode_services,
     phase_enhance_tags,
     phase_generate_embeddings,
     phase_dedupe_services,
@@ -265,6 +266,7 @@ class Pipeline:
         self.log.info("=== Finalize Phase ===")
 
         phase_normalize_contacts(self.session, self.log, dry_run=dry_run)
+        phase_geocode_services(self.session, self.log, dry_run=dry_run)
         phase_enhance_tags(self.session, self.log, dry_run=dry_run)
 
         # phase_generate_embeddings needs an OpenAI client; create one if available

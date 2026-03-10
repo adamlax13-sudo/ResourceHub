@@ -2,7 +2,7 @@
 Database models for service tracking and history.
 """
 from sqlalchemy import (
-    Column, Integer, String, Text, DateTime, JSON, Boolean, ForeignKey, Index
+    Column, Integer, String, Text, DateTime, JSON, Boolean, Float, ForeignKey, Index
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -62,6 +62,12 @@ class Service(Base):
 
     # Metadata
     tags = Column(JSON)  # Array of tags for search
+
+    # Geocoding
+    latitude = Column(Float)
+    longitude = Column(Float)
+    geocode_source = Column(String(50))       # "mapbox", "manual", "scraper"
+    geocoded_at = Column(DateTime)
 
     # Enrichment tracking
     enrichment_source = Column(String)       # "found", "verified", "inferred"

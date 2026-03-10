@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v101'; // Bumped: Tier 2 gate fix for location queries + plural intent regex + SQL location bonus reduction
+const CACHE_VERSION = 'v106'; // Bumped: dynamic result count based on relevance scoring
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -41,9 +41,42 @@ import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
+import { attachDistances, sortByDistance, filterByMaxDistance } from './distance';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
+
+/**
+ * Attach coordinates to services (always — needed for map view).
+ * When user coordinates are provided, also compute distances and optionally sort/filter.
+ */
+async function applyDistanceProcessing(
+  services: LiteService[],
+  input: SearchInput,
+): Promise<LiteService[]> {
+  // Always fetch coordinates so the map view can render pins
+  const coords = await storage.getServiceCoordinates(services.map(s => s.id));
+
+  let result: LiteService[] = services.map(s => {
+    const c = coords.get(s.id);
+    return { ...s, latitude: c?.lat ?? null, longitude: c?.lng ?? null };
+  });
+
+  // Compute distances only when user location is provided
+  if (input.userLat != null && input.userLng != null) {
+    result = attachDistances(result, input.userLat, input.userLng);
+
+    if (input.maxDistanceKm != null) {
+      result = filterByMaxDistance(result, input.maxDistanceKm);
+    }
+
+    if (input.sortByDistance) {
+      result = sortByDistance(result);
+    }
+  }
+
+  return result;
+}
 
 // applyHardFilters is imported from ./filters (extracted for testability)
 
@@ -172,6 +205,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Click-through affinity boost — also on precomputed path
     services = await applyClickAffinityBoost(services, normalizedQuery);
 
+    // Distance processing — attach distances, filter, sort
+    services = await applyDistanceProcessing(services, input);
+
     return formatResponse(services, '', input, startTime, true);
   }
 
@@ -243,6 +279,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Click-through affinity boost — also on cached path
     // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
     services = await applyClickAffinityBoost(services, normalizedQuery);
+
+    // Distance processing — attach distances, filter, sort
+    services = await applyDistanceProcessing(services, input);
 
     return formatResponse(services, cachedResults.summary, input, startTime, true);
   }
@@ -333,7 +372,61 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
   result.services = await applyClickAffinityBoost(result.services, normalizedQuery);
 
+  // Distance processing — attach distances, filter, sort
+  result.services = await applyDistanceProcessing(result.services, input);
+
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug);
+}
+
+/**
+ * Trim results to the number of truly relevant services.
+ * Uses a relative score threshold: services scoring below 25% of the top score
+ * are considered irrelevant tail results. Pinned services (no rrfScore) are
+ * always preserved. Result count is clamped to [MIN_RESULTS, MAX_RESULTS]
+ * with DEFAULT_RESULTS as the cap when scores are unavailable.
+ */
+const RELEVANCE_THRESHOLD = 0.20; // 20% of top score
+const MIN_RESULTS = 10;
+const MAX_RESULTS = 50;
+const DEFAULT_RESULTS = 30;
+
+function trimToRelevant(services: LiteService[]): LiteService[] {
+  if (services.length <= MIN_RESULTS) return services;
+
+  // Separate pinned services (no rrfScore) — always included
+  const pinned = services.filter(s => s.rrfScore == null);
+  const scored = services.filter(s => s.rrfScore != null);
+
+  if (scored.length === 0) {
+    // No scores available — likely legacy cached data or all crisis results.
+    // If few services, they're probably crisis results — return as-is.
+    // Otherwise cap at DEFAULT_RESULTS to avoid showing an irrelevant tail.
+    if (services.length <= DEFAULT_RESULTS) {
+      return services;
+    }
+    console.log(`[SearchOrchestrator] Relevance trim: ${services.length} → ${DEFAULT_RESULTS} (no scores, applying default cap)`);
+    return services.slice(0, DEFAULT_RESULTS);
+  }
+
+  const topScore = Math.max(...scored.map(s => s.rrfScore!));
+  if (topScore <= 0) return services.slice(0, DEFAULT_RESULTS);
+
+  const cutoff = topScore * RELEVANCE_THRESHOLD;
+  const relevantScored = scored.filter(s => s.rrfScore! >= cutoff);
+
+  // Clamp the count of scored results to [MIN_RESULTS - pinned, MAX_RESULTS - pinned]
+  const pinnedCount = pinned.length;
+  const minScored = Math.max(0, MIN_RESULTS - pinnedCount);
+  const maxScored = Math.max(0, MAX_RESULTS - pinnedCount);
+  const cappedCount = Math.max(minScored, Math.min(relevantScored.length, maxScored));
+
+  // Take the top cappedCount scored results (they're already sorted by score/distance)
+  const trimmedScored = scored.slice(0, cappedCount);
+  const combined = [...pinned, ...trimmedScored];
+
+  console.log(`[SearchOrchestrator] Relevance trim: ${services.length} → ${combined.length} (${pinned.length} pinned, ${relevantScored.length} relevant of ${scored.length} scored, cutoff=${cutoff.toFixed(4)})`);
+
+  return combined;
 }
 
 /**
@@ -348,6 +441,14 @@ function formatResponse(
   searchType?: SearchType,
   servicesWithDebug?: LiteServiceWithDebug[]
 ): SearchResponse {
+  // Trim to relevant results before pagination
+  services = trimToRelevant(services);
+  if (servicesWithDebug) {
+    // Keep debug array in sync — trim to same IDs
+    const keptIds = new Set(services.map(s => s.id));
+    servicesWithDebug = servicesWithDebug.filter(s => keptIds.has(s.id));
+  }
+
   const totalResults = services.length;
   const totalPages = Math.ceil(totalResults / input.pageSize);
   const startIndex = (input.page - 1) * input.pageSize;
