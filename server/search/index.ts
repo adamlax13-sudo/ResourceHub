@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v111'; // Bumped: Hospital & Emergency category + health services expansion
+const CACHE_VERSION = 'v112'; // Bumped: rescued services replace filler, full category rescue map
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -460,8 +460,8 @@ const DEFAULT_RESULTS = 30;
 // Uses exact category name matching (not the description-oriented patterns from
 // INTENT_SERVICE_MAP, which miss categories like "Residential Treatment").
 const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
-  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support']),
-  mental_health: new Set(['Mental Health & Counselling', 'Crisis Services', 'Crisis Lines']),
+  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support', 'Gambling Support']),
+  mental_health: new Set(['Mental Health & Counselling', 'Crisis Services', 'Crisis Lines', 'Eating Disorder Services', 'Trauma & PTSD Support']),
   domestic_violence: new Set(['Domestic Violence Support', 'Human Trafficking Support']),
   food_insecurity: new Set(['Food Banks & Meals']),
   housing_urgent: new Set(['Emergency Shelter', 'Affordable Housing', 'Supportive Housing', 'Transitional Housing']),
@@ -480,6 +480,10 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   parenting_support: new Set(['Family & Parenting Support']),
   crisis: new Set(['Crisis Services', 'Crisis Lines']),
   financial_support: new Set(['Financial Counselling & Debt Help']),
+  community_social: new Set(['Community & Social Connection']),
+  basic_needs: new Set(['Basic Needs & Material Aid', 'Food Banks & Meals', 'Transportation Assistance']),
+  family_addiction_support: new Set(['Family & Parenting Support', 'Recovery & Peer Support']),
+  caregiver_support: new Set(['Family & Parenting Support', 'Senior Services']),
 };
 
 function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteService[] {
@@ -504,41 +508,42 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteServ
   if (topScore <= 0) return services.slice(0, DEFAULT_RESULTS);
 
   const cutoff = topScore * RELEVANCE_THRESHOLD;
-  const relevantScored = scored.filter(s => s.rrfScore! >= cutoff);
+  const aboveCutoff = scored.filter(s => s.rrfScore! >= cutoff);
+  const belowCutoff = scored.filter(s => s.rrfScore! < cutoff);
 
-  // Clamp the count of scored results to [MIN_RESULTS - pinned, MAX_RESULTS - pinned]
   const pinnedCount = pinned.length;
-  const minScored = Math.max(0, MIN_RESULTS - pinnedCount);
   const maxScored = Math.max(0, MAX_RESULTS - pinnedCount);
-  const cappedCount = Math.max(minScored, Math.min(relevantScored.length, maxScored));
 
-  // Take the top cappedCount scored results (they're already sorted by score/distance)
-  const trimmedScored = scored.slice(0, cappedCount);
-  const keptIds = new Set(trimmedScored.map(s => s.id));
-
-  // Category-aware preservation: rescue services whose category matches the
-  // query intent but fell below the score cutoff. These are core results that
-  // the user is looking for — generic services shouldn't crowd them out.
+  // Category-aware rescue: pull in on-category services that fell below the
+  // score cutoff. These are core results the user is looking for.
   let rescued: LiteService[] = [];
   const categorySet = intent ? INTENT_CATEGORY_NAMES[intent] : undefined;
   if (categorySet) {
-    rescued = scored.filter(s =>
-      !keptIds.has(s.id) && s.category && categorySet.has(s.category)
+    const aboveCutoffIds = new Set(aboveCutoff.map(s => s.id));
+    rescued = belowCutoff.filter(s =>
+      !aboveCutoffIds.has(s.id) && s.category && categorySet.has(s.category)
     );
-    // Cap total results (kept + rescued) at MAX_RESULTS
-    const rescueSlots = Math.max(0, MAX_RESULTS - pinnedCount - trimmedScored.length);
-    if (rescued.length > rescueSlots) rescued = rescued.slice(0, rescueSlots);
   }
 
-  // Interleave rescued services after above-cutoff results but before minimum-fill padding.
-  // Without this, rescued intent-matching services (e.g., LGBTQ2S+ for "lgbtq resources")
-  // appear below generic filler services that only exist to meet MIN_RESULTS.
-  const aboveCutoff = trimmedScored.filter(s => s.rrfScore! >= cutoff);
-  const minimumFill = trimmedScored.filter(s => s.rrfScore! < cutoff);
-  const combined = [...pinned, ...aboveCutoff, ...rescued, ...minimumFill];
+  // Build result: above-cutoff first, then rescued category matches, then
+  // minimum-fill padding from remaining below-cutoff (non-rescued) services.
+  // Rescued services COUNT toward MIN_RESULTS so they replace irrelevant
+  // padding rather than adding to it.
+  const rescuedIds = new Set(rescued.map(s => s.id));
+  const fillerPool = belowCutoff.filter(s => !rescuedIds.has(s.id));
+
+  const relevantCount = aboveCutoff.length + rescued.length;
+  const minTotal = Math.max(0, MIN_RESULTS - pinnedCount);
+  const fillNeeded = Math.max(0, minTotal - relevantCount);
+  const filler = fillerPool.slice(0, fillNeeded);
+
+  // Cap everything at MAX_RESULTS
+  const allScored = [...aboveCutoff, ...rescued, ...filler].slice(0, maxScored);
+  const combined = [...pinned, ...allScored];
 
   const rescueLog = rescued.length > 0 ? `, ${rescued.length} rescued by category` : '';
-  console.log(`[SearchOrchestrator] Relevance trim: ${services.length} → ${combined.length} (${pinned.length} pinned, ${relevantScored.length} relevant of ${scored.length} scored, cutoff=${cutoff.toFixed(4)}${rescueLog})`);
+  const fillLog = filler.length > 0 ? `, ${filler.length} minimum-fill` : '';
+  console.log(`[SearchOrchestrator] Relevance trim: ${services.length} → ${combined.length} (${pinned.length} pinned, ${aboveCutoff.length} above cutoff, cutoff=${cutoff.toFixed(4)}${rescueLog}${fillLog})`);
 
   return combined;
 }
