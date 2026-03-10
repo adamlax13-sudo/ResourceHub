@@ -121,17 +121,17 @@ export default function MapView({ services, userLocation, onSelectService }: Map
 
   const initialViewState = useMemo(() => {
     if (userLocation) {
-      return { latitude: userLocation.lat, longitude: userLocation.lng, zoom: 10 };
+      return { latitude: userLocation.lat, longitude: userLocation.lng, zoom: 10, pitch: 30 };
     }
-    // If services have coords, center on first one
     if (mappableServices.length > 0) {
       return {
         latitude: mappableServices[0].latitude!,
         longitude: mappableServices[0].longitude!,
         zoom: 10,
+        pitch: 30,
       };
     }
-    return { ...ALBERTA_CENTER, zoom: 5 };
+    return { ...ALBERTA_CENTER, zoom: 5, pitch: 30 };
   }, [userLocation, mappableServices]);
 
   // Click-to-activate: deactivate when clicking outside or pressing Esc
@@ -278,12 +278,23 @@ export default function MapView({ services, userLocation, onSelectService }: Map
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/outdoors-v12"
+        terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
+        maxPitch={60}
         scrollZoom={false}
         dragPan={false}
         doubleClickZoom={false}
         touchZoomRotate={false}
       >
         <NavigationControl position="top-right" />
+
+        {/* 3D terrain */}
+        <Source
+          id="mapbox-dem"
+          type="raster-dem"
+          url="mapbox://mapbox.mapbox-terrain-dem-v1"
+          tileSize={512}
+          maxzoom={14}
+        />
 
         {/* Alberta highlight mask — dims areas outside Alberta at wide zoom */}
         <Source id="alberta-mask" type="geojson" data={ALBERTA_MASK_GEOJSON}>
