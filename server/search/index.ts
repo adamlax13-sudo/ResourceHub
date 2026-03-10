@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v108'; // Bumped: category filter supplementation from DB
+const CACHE_VERSION = 'v109'; // Bumped: tag quality fixes (men false positive, normalization)
 
 import { SEARCH_CONFIG } from './config';
 import type {
