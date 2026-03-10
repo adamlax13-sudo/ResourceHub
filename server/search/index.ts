@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v107'; // Bumped: tag quality fixes + multi-category filter
+const CACHE_VERSION = 'v108'; // Bumped: category filter supplementation from DB
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -34,7 +34,7 @@ import {
 import { storage } from '../storage';
 import { createHash } from 'crypto';
 import type { Service } from '@shared/schema';
-import type { ServiceDetail } from '@shared/routes';
+import type { ServiceDetail, SearchFilters } from '@shared/routes';
 import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
@@ -80,6 +80,68 @@ async function applyDistanceProcessing(
 }
 
 // applyHardFilters is imported from ./filters (extracted for testability)
+
+/**
+ * Supplement filtered results with DB services when category filters are active.
+ *
+ * The search cache stores top results ranked by query relevance. When a user
+ * selects a category filter (e.g., "Emergency Shelter"), the cache may contain
+ * very few services from that category — even though many exist in the DB.
+ *
+ * This function fetches services from the DB matching the selected categories,
+ * applies location + remaining hard filters, and merges them into results.
+ * Supplements get no rrfScore so they sort after search-ranked results.
+ */
+const SUPPLEMENT_THRESHOLD = 15; // Only supplement if fewer than this many results after filtering
+
+async function supplementCategories(
+  services: LiteService[],
+  filters: SearchFilters,
+  location: string | null | undefined,
+): Promise<LiteService[]> {
+  if (!filters.categories?.length) return services;
+  if (services.length >= SUPPLEMENT_THRESHOLD) return services;
+
+  const existingIds = new Set(services.map(s => s.id));
+
+  // Fetch ALL active services in the selected categories from DB
+  const dbServices = await storage.getServicesByCategories(filters.categories);
+
+  // Convert Service → LiteService (minimal fields needed for display)
+  let supplements: LiteService[] = dbServices.map(s => ({
+    id: s.serviceId,
+    name: s.name,
+    category: s.category,
+    description: (s.description || '').slice(0, 300),
+    location: s.address || s.location || '',
+    waitTimes: s.waitTimes || '',
+    phone: s.phone || undefined,
+    genderRestriction: s.genderRestriction ?? null,
+    ageGroup: s.ageGroup ?? null,
+    isFaithBased: s.isFaithBased ?? null,
+    is12Step: s.is12Step ?? null,
+    serviceFormat: s.serviceFormat ?? null,
+    languagesSupported: (s.languagesSupported as string[] | null) ?? null,
+    // No rrfScore — supplements sort after search-ranked results
+  }));
+
+  // Apply location filter to supplements
+  supplements = filterByLocation(supplements, location);
+
+  // Apply non-category hard filters (gender, age, etc.)
+  const { categories: _cats, ...otherFilters } = filters;
+  const hasOtherFilters = Object.values(otherFilters).some(v => v !== undefined);
+  if (hasOtherFilters) {
+    supplements = applyHardFilters(supplements, otherFilters as SearchFilters);
+  }
+
+  // Remove duplicates (already in search results)
+  const newServices = supplements.filter(s => !existingIds.has(s.id));
+  if (newServices.length === 0) return services;
+
+  console.log(`[SearchOrchestrator] Category supplement: +${newServices.length} services from DB (${filters.categories.join(', ')})`);
+  return [...services, ...newServices];
+}
 
 // In-memory services cache for generating database hash and active ID set
 interface ServicesCacheData {
@@ -190,6 +252,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     if (input.filters && !isCrisisPrecomputed) {
       services = applyHardFilters(services, input.filters);
+      services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
       services = applyPreferenceBoosts(services, input.filters);
       services = applyFilterMatchBoosts(services, input.filters);
     }
@@ -264,6 +327,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     if (input.filters && !isCrisisCached) {
       services = applyHardFilters(services, input.filters);
+      services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
       services = applyPreferenceBoosts(services, input.filters);
       services = applyFilterMatchBoosts(services, input.filters);
     }
@@ -358,6 +422,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (input.filters && !isCrisisFresh) {
     const beforeFilter = result.services.length;
     result.services = applyHardFilters(result.services, input.filters);
+    result.services = await supplementCategories(result.services, input.filters, analysis.location.specified || input.location);
     result.services = applyPreferenceBoosts(result.services, input.filters);
     result.services = applyFilterMatchBoosts(result.services, input.filters);
     if (result.services.length < beforeFilter) {

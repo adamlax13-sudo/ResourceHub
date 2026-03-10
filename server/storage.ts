@@ -139,6 +139,9 @@ export interface IStorage {
   // Batch enrichment lookup (avoids N+1)
   getEnrichmentsBatch(serviceIds: string[]): Promise<Map<string, EnrichmentData>>;
 
+  // Category-based service lookup (for supplementing filtered results)
+  getServicesByCategories(categories: string[]): Promise<Service[]>;
+
   // Batch confidence score lookup for data quality boosting
   getConfidenceScores(serviceIds: string[]): Promise<Map<string, number>>;
 
@@ -206,6 +209,20 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(services.isActive, true),
           eq(services.category, 'Crisis Lines')
+        )
+      )
+      .orderBy(services.name);
+  }
+
+  async getServicesByCategories(categories: string[]): Promise<Service[]> {
+    if (categories.length === 0) return [];
+    return await db
+      .select()
+      .from(services)
+      .where(
+        and(
+          eq(services.isActive, true),
+          inArray(services.category, categories)
         )
       )
       .orderBy(services.name);
