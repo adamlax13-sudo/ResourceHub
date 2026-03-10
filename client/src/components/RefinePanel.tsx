@@ -1,4 +1,5 @@
-import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, ChevronDown, X } from "lucide-react";
+import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, ChevronDown, X, ShieldAlert, Brain, HeartPulse, Home, Package, Handshake, Scale } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { SearchFilters } from "@shared/routes";
@@ -12,6 +13,16 @@ interface RefinePanelProps {
 }
 
 const LANGUAGES = ["English", "French", "Spanish", "Punjabi", "Tagalog", "Mandarin", "Arabic"];
+
+const GROUP_ICONS: Record<string, LucideIcon> = {
+  "Crisis & Safety": ShieldAlert,
+  "Mental Health": Brain,
+  "Addiction & Recovery": HeartPulse,
+  "Housing": Home,
+  "Basic Needs": Package,
+  "Community & Identity": Handshake,
+  "Legal & Financial": Scale,
+};
 
 export const CATEGORY_GROUPS: { label: string; categories: string[] }[] = [
   {
@@ -517,13 +528,16 @@ export function RefinePanel({
             </button>
 
             {categoriesOpen && (
-              <div id="category-filter-content" className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 px-4 pb-4 -mt-1">
-                {CATEGORY_GROUPS.map((group) => (
-                  <div key={group.label}>
-                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5 pl-0.5">
+              <div id="category-filter-content" className="px-4 pb-4 pt-1 space-y-1">
+                {CATEGORY_GROUPS.map((group) => {
+                  const Icon = GROUP_ICONS[group.label];
+                  return (
+                  <div key={group.label} className="rounded-lg bg-gray-50/70 p-3">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      {Icon && <Icon className="w-3.5 h-3.5" />}
                       {group.label}
                     </p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {group.categories.map((cat) => {
                         const active = (filters.categories ?? []).includes(cat);
                         return (
@@ -543,7 +557,8 @@ export function RefinePanel({
                       })}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </section>
