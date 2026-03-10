@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyHardFilters } from '../filters';
+import { applyHardFilters, filterByLocation } from '../filters';
 import type { LiteService } from '../types';
 import type { SearchFilters } from '@shared/routes';
 
@@ -12,6 +12,53 @@ function makeSvc(overrides: Partial<LiteService> = {}): LiteService {
     ...overrides,
   };
 }
+
+describe('filterByLocation — province-wide suppression', () => {
+  it('suppresses province-wide service when local counterpart exists', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alcoholics Anonymous Alberta', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Alcoholics Anonymous Calgary', location: 'Calgary - multiple locations' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary');
+    expect(result.map(s => s.id)).toEqual(['2']);
+  });
+
+  it('keeps province-wide service when no local counterpart exists', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alberta Brain Injury Society', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Some Calgary Service', location: 'Calgary' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary');
+    expect(result.map(s => s.id)).toEqual(['1', '2']);
+  });
+
+  it('keeps province-wide service when searching Alberta-wide (no location)', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alcoholics Anonymous Alberta', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Alcoholics Anonymous Calgary', location: 'Calgary - multiple locations' }),
+    ];
+    const result = filterByLocation(svcs, null);
+    expect(result.map(s => s.id)).toEqual(['1', '2']);
+  });
+
+  it('suppresses province-wide for Edmonton with local counterpart', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alcoholics Anonymous Alberta', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Alcoholics Anonymous Edmonton', location: 'Edmonton — multiple meeting locations' }),
+    ];
+    const result = filterByLocation(svcs, 'edmonton');
+    expect(result.map(s => s.id)).toEqual(['2']);
+  });
+
+  it('keeps province-wide for city without a local counterpart', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alcoholics Anonymous Alberta', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Some Lethbridge Service', location: 'Lethbridge' }),
+    ];
+    const result = filterByLocation(svcs, 'lethbridge');
+    expect(result.map(s => s.id)).toEqual(['1', '2']);
+  });
+});
 
 describe('applyHardFilters', () => {
   describe('genderRestriction', () => {

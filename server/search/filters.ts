@@ -25,7 +25,7 @@ export function filterByLocation(services: LiteService[], location: string | nul
   // regardless of what city they selected in the dropdown
   if (!location || isCrisis) return services;
   const loc = location.toLowerCase();
-  return services.filter(svc => {
+  const filtered = services.filter(svc => {
     const svcLoc = (svc.location || '').toLowerCase().trim();
     // No location data → could be available anywhere → keep
     if (!svcLoc) return true;
@@ -41,6 +41,41 @@ export function filterByLocation(services: LiteService[], location: string | nul
     // Everything else is clearly in a different city → exclude
     return false;
   });
+  return suppressRedundantProvinceWide(filtered);
+}
+
+const PROVINCE_WIDE_PATTERNS = ['province-wide', 'alberta-wide', 'across alberta'];
+const TRAILING_LOCATION = /\s+(alberta|ab)$/i;
+
+/**
+ * Suppress province-wide services when a local counterpart is already in the results.
+ * E.g., "Alcoholics Anonymous Alberta" is removed when "Alcoholics Anonymous Calgary" is present.
+ * Matching: strip trailing "Alberta"/"AB" from the province-wide name, then check if any
+ * non-province-wide service's name starts with that base name.
+ */
+function suppressRedundantProvinceWide(services: LiteService[]): LiteService[] {
+  const isProvinceWide = (svc: LiteService) => {
+    const loc = (svc.location || '').toLowerCase();
+    return PROVINCE_WIDE_PATTERNS.some(p => loc.includes(p));
+  };
+
+  const provinceWide = services.filter(isProvinceWide);
+  if (provinceWide.length === 0) return services;
+
+  const local = services.filter(svc => !isProvinceWide(svc));
+  if (local.length === 0) return services;
+
+  const suppressed = new Set<string>();
+  for (const pw of provinceWide) {
+    const baseName = pw.name.replace(TRAILING_LOCATION, '').trim().toLowerCase();
+    if (baseName.length < 3) continue; // safety: don't match on tiny base names
+    if (local.some(l => l.name.toLowerCase().startsWith(baseName))) {
+      suppressed.add(pw.id);
+    }
+  }
+
+  if (suppressed.size === 0) return services;
+  return services.filter(svc => !suppressed.has(svc.id));
 }
 
 export function applyHardFilters(services: LiteService[], filters: SearchFilters): LiteService[] {
