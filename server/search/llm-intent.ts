@@ -11,7 +11,7 @@
  */
 
 import { LRUCache } from 'lru-cache';
-import type { QueryAnalysis, ScoredIntent, QueryAttributes } from './types';
+import type { QueryAnalysis, ScoredIntent, QueryAttributes, IntentResult } from './types';
 import type { QueryIntent } from './config';
 import { getOpenAI, extractJSON } from '../helpers/openai';
 import { VALID_SUB_INTENTS } from './config';
@@ -266,10 +266,8 @@ function applyLLMUnderstanding(analysis: QueryAnalysis, understanding: LLMUnders
   // Merge LLM subIntents with regex-detected ones (union, deduplicated)
   if (understanding.subIntents?.length) {
     const existing = new Set(result.subIntents ?? []);
-    for (const si of understanding.subIntents) {
-      existing.add(si);
-    }
-    result = { ...result, subIntents: [...existing] };
+    understanding.subIntents.forEach(si => existing.add(si));
+    result = { ...result, subIntents: Array.from(existing) };
   }
 
   return result;
