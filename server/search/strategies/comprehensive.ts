@@ -126,6 +126,7 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
   const response = await openai.embeddings.create({
     model: SEARCH_CONFIG.semantic.model,
     input: query,
+    dimensions: SEARCH_CONFIG.semantic.dimensions,
   });
   const embedding = response.data[0].embedding;
 

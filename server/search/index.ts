@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v136'; // legal/custody/eviction keywords, veteran/student/anger expansions
+const CACHE_VERSION = 'v137'; // text-embedding-3-large upgrade + off-category penalty
 
 import { SEARCH_CONFIG } from './config';
 import type {

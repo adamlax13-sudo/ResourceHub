@@ -29,7 +29,7 @@ export const SEARCH_CONFIG = {
 
   // === SEMANTIC SEARCH SETTINGS ===
   semantic: {
-    model: 'text-embedding-3-small' as const,
+    model: 'text-embedding-3-large' as const,
     dimensions: 1536,
     matchThresholdPrimary: 0.15,   // Low threshold for maximum coverage
     matchThresholdFallback: 0.2,   // Higher threshold for fallback

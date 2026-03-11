@@ -67,7 +67,8 @@ TREATMENT_TYPES = {
 }
 
 # Embedding configuration
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "text-embedding-3-large"
+EMBEDDING_DIMENSIONS = 1536  # Truncate to 1536 dims (same schema, better quality)
 EMBEDDING_BATCH_SIZE = 100
 RATE_LIMIT_DELAY = 0.1
 
@@ -381,7 +382,7 @@ def phase_generate_embeddings(session, client: Optional[Any], log, regenerate_al
         embed_text = "\n".join(parts)[:30000]
 
         try:
-            response = client.embeddings.create(model=EMBEDDING_MODEL, input=embed_text)
+            response = client.embeddings.create(model=EMBEDDING_MODEL, input=embed_text, dimensions=EMBEDDING_DIMENSIONS)
             embedding = response.data[0].embedding
             batch.append((svc["service_id"], embedding))
 
