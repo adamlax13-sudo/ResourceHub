@@ -6,7 +6,7 @@
  * scattered across routes.ts.
  */
 
-import { SEARCH_CONFIG } from './config';
+import { SEARCH_CONFIG, SUB_INTENT_PATTERNS } from './config';
 import type { QueryAnalysis, QueryAttributes, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
 import {
   extractLocationContext,
@@ -102,6 +102,15 @@ export function analyzeQuery(
   // Regex-based attribute detection (fallback when LLM unavailable/times out)
   const attributes = detectServiceAttributes(corrected);
 
+  // Collect all detected parent intents for sub-intent lookup
+  const detectedParentIntents = [
+    intents.primary.intent,
+    ...(intents.secondary ? [intents.secondary.intent] : []),
+    ...(intents.tertiary ? [intents.tertiary.intent] : []),
+  ].filter(i => i && i !== 'general');
+
+  const subIntents = detectSubIntents(corrected, detectedParentIntents);
+
   return {
     raw: sanitized,
     corrected: phoneticCorrected,
@@ -118,6 +127,7 @@ export function analyzeQuery(
     substanceType,
     negativeTerms,
     attributes,
+    subIntents,
   };
 }
 
@@ -352,6 +362,33 @@ function detectSubstanceType(query: string): SubstanceType {
   if (/\b(addict|addiction|recovery|sober|relapse)\b/i.test(q)) return 'general';
 
   return null;
+}
+
+/**
+ * Detect sub-intents for a query based on detected parent intents.
+ * Orphaned sub-intents (parent not detected) are dropped.
+ *
+ * @param query - The corrected query string (use normalized/corrected, same as detectServiceAttributes)
+ * @param detectedIntents - Array of detected parent intent strings (primary + secondaries)
+ * @returns Array of namespaced sub-intent strings e.g. ["housing_urgent.eviction_defense"]
+ */
+export function detectSubIntents(query: string, detectedIntents: string[]): string[] {
+  if (!detectedIntents.length) return [];
+
+  const results: string[] = [];
+
+  for (const parentIntent of detectedIntents) {
+    const subMap = SUB_INTENT_PATTERNS[parentIntent];
+    if (!subMap) continue;
+
+    for (const [subIntentKey, patterns] of Object.entries(subMap)) {
+      if (patterns.some(re => re.test(query))) {
+        results.push(subIntentKey);
+      }
+    }
+  }
+
+  return results;
 }
 
 /**
