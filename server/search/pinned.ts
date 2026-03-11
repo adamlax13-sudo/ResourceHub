@@ -38,9 +38,21 @@ export function isFamilyAddictionQuery(query: string): boolean {
   return (
     /\b(al-?anon|nar-?anon)\b/i.test(lower) ||
     /\bliving with.*(addict|alcoholic|someone who)\b/i.test(lower) ||
-    /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcohol|drug|drinking|using)\b/i.test(lower) ||
-    /\b(loved one|family member|someone i (know|love|care)).*(addict|alcohol|drug)\b/i.test(lower) ||
+    /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcoholi[cs]|alcohol|drug|drinking|using)/i.test(lower) ||
+    /\b(loved one|family member|someone i (know|love|care)).*(addict|alcoholi[cs]|alcohol|drug)/i.test(lower) ||
     /\b(codependent|family.*addict|addict.*family)\b/i.test(lower)
+  );
+}
+
+/**
+ * Detect if a query is about custody/access/visitation disputes (legal, not DV)
+ */
+export function isCustodyLegalQuery(query: string): boolean {
+  const lower = query.toLowerCase();
+  return (
+    /\b(custody|visitation|access|parenting time|parenting order)\b/i.test(lower) ||
+    /\b(ex|partner|husband|wife|spouse).*(?:won'?t|will not|refuse|denied|keeping|not allow).*(?:see|visit|take|have).*(?:kids?|children|son|daughter)\b/i.test(lower) ||
+    /(?:won'?t|can'?t|not allowed).*(?:see|visit).*(?:my\s+)?(?:kids?|children|son|daughter)\b/i.test(lower)
   );
 }
 

@@ -35,7 +35,7 @@ Scoring guidelines — USE THE FULL RANGE, do not cluster scores in 50-80:
 
 Critical rules:
 1. MATCH INTENT, NOT KEYWORDS. A service name containing "friend" or "community" doesn't mean it helps with making friends. Read the description to understand what the service actually does.
-2. DEMOGRAPHIC FIT MATTERS. Services targeting specific populations (Indigenous, newcomers, people with disabilities, youth, seniors) should score lower unless the query indicates that population — a general "I'm lonely" query should prefer general-population services.
+2. DEMOGRAPHIC FIT MATTERS. Services targeting specific populations (Indigenous, newcomers, people with disabilities, youth, seniors) should score 15-25 points LOWER than equivalent general-population services unless the query specifically indicates that demographic. "Kicked out of my house" with no age signal → general emergency shelters score 90+, youth-specific shelters cap at 70. Only elevate demographic-specific services when the query mentions that demographic (e.g., "teen shelter", "Indigenous housing").
 3. PENALIZE REDUNDANCY. If multiple services are from the same organization, score the most relevant one normally and reduce others by 15-20 points — users want diverse options.
 4. DESCRIPTION OVER NAME. The service description reveals actual purpose. A "Friendship Centre" that provides employment referrals is an employment service, not a friendship service.
 5. SECONDARY INTENT AMPLIFIES RELEVANCE. When a secondary intent is detected with meaningful confidence (shown in parentheses), services matching BOTH the primary and secondary intent should score 90-100. Services matching only the primary intent should cap around 70 unless exceptionally relevant. The user explicitly mentioned both dimensions — honor that. For example, "indigenous addiction recovery" means Indigenous-specific addiction services should rank above generic addiction services.
@@ -166,8 +166,11 @@ export async function llmRerank(
     // High confidence (0.8+) → 70/30 LLM/RRF — we know what the user wants
     // Medium (0.5-0.8) → 60/40 — standard blend
     // Low (<0.5) → 50/50 — ambiguous query, lean on keyword/embedding signal
+    // Specific serviceType (e.g., "dental services") → 80/20 — LLM can filter irrelevant categories
     const confidence = intents.primary.confidence;
-    const llmWeight = confidence >= 0.8 ? 0.70
+    const hasSpecificType = !!analysis.attributes?.serviceType;
+    const llmWeight = hasSpecificType && confidence >= 0.8 ? 0.80
+      : confidence >= 0.8 ? 0.70
       : confidence >= 0.5 ? 0.60
       : 0.50;
     const rrfWeight = 1 - llmWeight;

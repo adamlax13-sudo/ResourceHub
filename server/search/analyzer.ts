@@ -79,14 +79,15 @@ export function analyzeQuery(
     !ALBERTA_LOCATIONS.has(kw) && !LOCATION_ALIASES[kw]
   );
 
-  // Detect crisis
-  const isCrisis = detectCrisis(normalized);
+  // Detect crisis — returns both crisis flag and whether it's third-party concern
+  const crisisResult = detectCrisis(normalized);
+  const isCrisis = crisisResult.isCrisis;
 
   // Find alias matches (e.g., "CMHA" -> service ID)
   const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
 
   // Determine query intent(s) with confidence scores
-  const intents = determineIntent(keywords, effectiveLocation, isCrisis, aliasMatch, sanitized);
+  const intents = determineIntent(keywords, effectiveLocation, crisisResult, aliasMatch, sanitized);
   const intent = intents.primary.intent; // Backward compat
 
   // Detect specific substance type if any intent is substance_abuse
@@ -120,11 +121,21 @@ export function analyzeQuery(
   };
 }
 
+/** Result of crisis detection with third-party awareness */
+interface CrisisDetection {
+  isCrisis: boolean;
+  /** True when someone is asking about another person (not themselves) */
+  isThirdParty: boolean;
+}
+
 /**
- * Detect if query is crisis-related
- * Checks both explicit keywords AND implicit patterns for suicidal ideation
+ * Detect if query is crisis-related and whether it's a third-party concern.
+ *
+ * Third-party patterns: "my teenager is self-harming", "my son wants to kill himself",
+ * "my daughter is cutting". These need crisis info (988 pinned) BUT also need
+ * service results (youth mental health, family support), not just helplines.
  */
-function detectCrisis(normalizedQuery: string): boolean {
+function detectCrisis(normalizedQuery: string): CrisisDetection {
   const lower = normalizedQuery.toLowerCase();
 
   // Check explicit crisis keywords first
@@ -132,12 +143,8 @@ function detectCrisis(normalizedQuery: string): boolean {
     lower.includes(keyword)
   );
 
-  if (hasExplicitCrisis) {
-    return true;
-  }
-
   // Check implicit crisis patterns (subtle expressions of suicidal ideation)
-  const hasImplicitCrisis = SEARCH_CONFIG.crisis.implicitPatterns.some(pattern =>
+  const hasImplicitCrisis = !hasExplicitCrisis && SEARCH_CONFIG.crisis.implicitPatterns.some(pattern =>
     pattern.test(lower)
   );
 
@@ -145,7 +152,23 @@ function detectCrisis(normalizedQuery: string): boolean {
     console.log(`[QueryAnalyzer] Implicit crisis detected in query`);
   }
 
-  return hasImplicitCrisis;
+  const isCrisis = hasExplicitCrisis || hasImplicitCrisis;
+  if (!isCrisis) {
+    return { isCrisis: false, isThirdParty: false };
+  }
+
+  // Detect third-party concern: someone asking about another person's crisis
+  // e.g., "my teenager is self-harming", "my son wants to die", "my child is cutting"
+  const thirdPartyPattern = /\b(my\s+)?(teenager|teen|child|kid|son|daughter|husband|wife|partner|friend|parent|mother|father|mom|dad|brother|sister|sibling|grandchild|student|employee|coworker|colleague|neighbour|neighbor|roommate)\b.*\b(self[- ]?harm|cut|hurt|suicid|kill|harm|overdos|self[- ]?injur)/i;
+  const thirdPartyPattern2 = /\b(self[- ]?harm|cut|hurt|suicid|kill|harm|overdos|self[- ]?injur).*\b(my\s+)?(teenager|teen|child|kid|son|daughter|husband|wife|partner|friend|parent|mother|father|mom|dad|brother|sister|sibling|grandchild|student|employee|coworker|colleague|neighbour|neighbor|roommate)\b/i;
+
+  const isThirdParty = thirdPartyPattern.test(lower) || thirdPartyPattern2.test(lower);
+
+  if (isThirdParty) {
+    console.log(`[QueryAnalyzer] Third-party crisis concern detected — will use situational crisis path`);
+  }
+
+  return { isCrisis, isThirdParty };
 }
 
 /**
@@ -338,12 +361,14 @@ function detectSubstanceType(query: string): SubstanceType {
 function determineIntent(
   keywords: string[],
   location: string | null,
-  isCrisis: boolean,
+  crisisResult: CrisisDetection,
   aliasMatch: string | null,
   rawQuery: string
 ): IntentResult {
-  // Crisis short-circuits (safety priority)
-  if (isCrisis) {
+  // Crisis short-circuits (safety priority) — but NOT for third-party concerns.
+  // Third-party: "my teenager is self-harming" → isCrisis=true for 988 pinning,
+  // but let intent scoring run to return mental_health/youth services.
+  if (crisisResult.isCrisis && !crisisResult.isThirdParty) {
     return { primary: { intent: 'crisis', confidence: 1.0 } };
   }
 

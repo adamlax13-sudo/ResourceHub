@@ -63,6 +63,19 @@ Return a JSON object with these fields:
    lgbtq_services, indigenous_services, veteran_services, student_services, parenting_support,
    community_social, healthcare_access, basic_needs, general
 
+   DISAMBIGUATION RULES:
+   - family_addiction_support: ONLY for family members affected by someone's ADDICTION (Al-Anon, Nar-Anon).
+     NOT for custody, divorce, general family conflict, or parenting disputes.
+   - legal_aid: Use for custody disputes, divorce, child access/visitation, tenant rights, court matters.
+     "ex won't let me see my kids" = legal_aid, NOT domestic_violence (unless violence is mentioned).
+   - domestic_violence: Requires actual violence, abuse, threats, control, or safety concerns.
+     Custody disputes and relationship conflict alone are NOT domestic violence.
+   - crisis: ONLY for self-directed suicidal ideation or self-harm. When someone is concerned about
+     ANOTHER person's self-harm/suicidal behavior ("my teen is self-harming"), include crisis as
+     secondary (for helpline pinning) but make mental_health or youth_services the primary intent.
+   - healthcare_access: Use for dental, medical, hospital, prescription, clinic queries.
+     "dental services" = healthcare_access, NOT general.
+
 2. "formats": Array of service format preferences detected in the query. Only include if EXPLICITLY mentioned.
    Values: "free", "low_cost", "walk_in", "virtual", "phone", "in_person", "24_7", "no_waitlist"
    Examples: "free counselling" → ["free"], "24/7 crisis line" → ["24_7", "phone"], "online therapy" → ["virtual"]
@@ -283,15 +296,31 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
 
   // Normal override: LLM must be meaningfully more confident than regex
   if (llmPrimary.confidence > regexConfidence + 0.1) {
+    // When LLM overrides with a DIFFERENT intent than regex, clear stale regex
+    // secondaries that the LLM didn't detect — they can cause incorrect category
+    // rescue in trimToRelevant(). E.g., regex detects DV(0.29) as secondary for
+    // "my ex won't let me see my kids", but LLM correctly identifies it as legal_aid.
+    const newIntents: IntentResult = {
+      primary: llmPrimary,
+    };
+    if (llmIntents.length >= 2) {
+      newIntents.secondary = llmIntents[1];
+    } else if (analysis.intents.secondary && analysis.intents.secondary.intent !== llmPrimary.intent) {
+      // Keep regex secondary only if LLM didn't contradict it
+      // (i.e., regex secondary intent is different from what LLM overrode FROM)
+      if (analysis.intents.secondary.confidence >= 0.4 &&
+          analysis.intents.secondary.intent !== analysis.intents.primary.intent) {
+        newIntents.secondary = analysis.intents.secondary;
+      }
+    }
+    if (llmIntents.length >= 3) {
+      newIntents.tertiary = llmIntents[2];
+    }
+
     return {
       ...analysis,
       intent: llmPrimary.intent,
-      intents: {
-        ...analysis.intents,
-        primary: llmPrimary,
-        ...(llmIntents.length >= 2 && { secondary: llmIntents[1] }),
-        ...(llmIntents.length >= 3 && { tertiary: llmIntents[2] }),
-      },
+      intents: newIntents,
     };
   }
 

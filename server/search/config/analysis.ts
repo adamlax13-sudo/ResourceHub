@@ -29,7 +29,7 @@ export const SEARCH_CONFIG = {
 
   // === SEMANTIC SEARCH SETTINGS ===
   semantic: {
-    model: 'text-embedding-3-small' as const,
+    model: 'text-embedding-3-large' as const,
     dimensions: 1536,
     matchThresholdPrimary: 0.15,   // Low threshold for maximum coverage
     matchThresholdFallback: 0.2,   // Higher threshold for fallback
@@ -456,8 +456,12 @@ export const SEARCH_CONFIG = {
       /(?:need|looking for|find).*(?:a\s+)?(?:lawyer|attorney|legal help|legal aid)/i,
       /(?:legal|court|custody|divorce|immigration).*(?:help|support|services?|assistance)/i,
       /(?:can'?t afford|free|low cost).*(?:lawyer|legal)/i,
-      /\b(?:tenant rights|eviction.*legal|housing.*legal|family court|child support)\b/i,
-      /\b(?:legal aid|pro bono|lawyer referral)\b/i,
+      /\b(?:tenant rights|eviction|evicted|landlord|tenancy|housing.*legal|family court|child support)\b/i,
+      /\b(?:legal aid|pro bono|lawyer referral|restraining order|protection order)\b/i,
+      // Custody and access disputes (not violence — legal issue)
+      /(?:ex|partner|husband|wife|spouse).*(?:won'?t|will not|refuse|denied|keeping).*(?:see|visit|access|take).*(?:kids?|children|son|daughter)\b/i,
+      /(?:won'?t|can'?t|not allowed).*(?:see|visit|access).*(?:my\s+)?(?:kids?|children|son|daughter)\b/i,
+      /\b(?:custody|access|visitation|parenting time|parenting order|custody battle|custody dispute)\b/i,
       // Criminal justice reintegration
       /\b(?:just|recently).*(?:released|out of|left).*(?:prison|jail|custody|penitentiary)\b/i,
       /\b(?:halfway house|reintegration|re-?entry|parole|probation)\b.*(?:help|support|services?)/i,
@@ -571,7 +575,7 @@ export const SEARCH_CONFIG = {
       /\b(?:no doctor|need a doctor|find a doctor|finding a doctor)\b/i,
       /\b(?:health benefits|health coverage|health insurance)\b/i,
       /\b(?:community health|health centre|health center)\b/i,
-      /\b(?:dental|dentist|dental clinic)\b.*(?:help|afford|low.?cost|free|program)/i,
+      /\b(?:dental|dentist|dental clinic|dental services|dental care|teeth|tooth)\b/i,
       /\b(?:sexual health|STI|STD|contraception|family planning)\b/i,
       /\b(?:hospital|emergency room|emergency department|ER|urgent care)\b/i,
       /\b(?:AADL|aids to daily living|wheelchair|mobility aid|home modification)\b/i,

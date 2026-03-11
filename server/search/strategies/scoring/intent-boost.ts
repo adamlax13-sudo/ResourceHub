@@ -145,6 +145,47 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
 };
 
 /**
+ * Categories that exclusively belong to a specific set of intents.
+ * Services in these categories get a strong penalty when the query intent
+ * is not one of the listed owners. This prevents cross-category embedding
+ * leakage (e.g., "restraining order" returning eating disorder services
+ * because "order" ~ "disorder" in embedding space).
+ *
+ * Only include categories with CLEAR semantic boundaries — do NOT add
+ * broad categories like "Mental Health & Counselling" which legitimately
+ * appears in many query types.
+ */
+const EXCLUSIVE_CATEGORY_INTENTS: Readonly<Record<string, QueryIntent[]>> = {
+  'eating disorder services':           ['mental_health'],
+  'addiction treatment':                ['substance_abuse'],
+  'detox & withdrawal':                 ['substance_abuse'],
+  'residential treatment':              ['substance_abuse'],
+  'harm reduction':                     ['substance_abuse'],
+  'legal aid':                          ['legal_aid'],
+  'criminal justice reintegration':     ['legal_aid'],
+  'food banks & meals':                 ['food_insecurity', 'basic_needs'],
+  'domestic violence support':          ['domestic_violence', 'crisis'],
+  'human trafficking support':          ['domestic_violence'],
+  'grief & bereavement':                ['grief_support'],
+  'veterans services':                  ['veteran_services'],
+  'lgbtq2s+ services':                  ['lgbtq_services'],
+  'indigenous services':                ['indigenous_services'],
+  'newcomer & settlement':              ['newcomer_services'],
+  'campus & student services':          ['student_services'],
+  'hospital & emergency':               ['healthcare_access', 'crisis'],
+  'sexual health services':             ['healthcare_access'],
+  'healthcare access':                  ['healthcare_access'],
+  'disability & autism support':        ['disability_support'],
+  'employment services':                ['employment_support'],
+  'financial counselling & debt help':  ['financial_support'],
+  'community & social connection':      ['community_social'],
+  'basic needs & material aid':         ['basic_needs'],
+  'transportation assistance':          ['basic_needs'],
+};
+
+const OFF_CATEGORY_PENALTY = 0.30;
+
+/**
  * Check if a specific intent is present in any slot (primary, secondary, or tertiary).
  */
 function hasIntent(analysis: QueryAnalysis | undefined, target: QueryIntent, primaryIntent: QueryIntent): boolean {
@@ -1380,6 +1421,28 @@ export function boostByIntent(
       s.svc.rrfScore += s.boost;
     }
   }
+
+  // Off-category penalty: demote services whose DB category exclusively belongs
+  // to a different intent. Prevents embedding leakage (e.g. "restraining order"
+  // pulling "Eating Disorder Services" because "order" ~ "disorder").
+  // Intents with broad overlap (mental_health, general) are exempt as callers.
+  const BROAD_INTENTS = new Set<QueryIntent>(['mental_health', 'general', 'crisis', 'healthcare_access']);
+  if (!BROAD_INTENTS.has(intent)) {
+    let offCategoryCount = 0;
+    for (const s of scored) {
+      if (s.svc.rrfScore == null) continue;
+      const categoryLower = s.svc.category.toLowerCase().trim();
+      const owners = EXCLUSIVE_CATEGORY_INTENTS[categoryLower];
+      if (owners && !owners.includes(intent)) {
+        s.svc.rrfScore *= OFF_CATEGORY_PENALTY;
+        offCategoryCount++;
+      }
+    }
+    if (offCategoryCount > 0) {
+      searchLog.debug(`[ComprehensiveSearch] Off-category penalty: ${offCategoryCount} services demoted for intent=${intent}`);
+    }
+  }
+
   // Sort by rrfScore descending (consistent with other scoring modules)
   scored.sort((a, b) => (b.svc.rrfScore ?? 0) - (a.svc.rrfScore ?? 0));
 

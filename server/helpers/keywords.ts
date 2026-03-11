@@ -47,8 +47,24 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'meth': ['methamphetamine', 'crystal', 'stimulant', 'addiction'],
   'weed': ['cannabis', 'marijuana', 'substance'],
   'fentanyl': ['opioid', 'overdose', 'harm reduction', 'naloxone'],
+  'lgbtq': ['queer', 'gay', 'lesbian', 'bisexual', 'transgender', 'pride', 'two-spirit', '2slgbtq'],
+  'queer': ['lgbtq', 'gay', 'lesbian', 'pride', 'transgender', 'two-spirit'],
+  'gay': ['lgbtq', 'queer', 'pride', 'sexuality'],
+  'lesbian': ['lgbtq', 'queer', 'pride', 'sexuality'],
+  'transgender': ['trans', 'gender', 'lgbtq', 'queer', 'nonbinary'],
+  'trans': ['transgender', 'gender', 'lgbtq', 'queer', 'nonbinary', 'transition'],
+  'pride': ['lgbtq', 'queer', 'gay', 'sexuality'],
+  'legal': ['lawyer', 'attorney', 'court', 'law', 'legal aid'],
+  'custody': ['family court', 'visitation', 'parenting order', 'access rights', 'legal'],
+  'eviction': ['tenant', 'landlord', 'rental', 'housing legal', 'tenancy'],
+  'restraining': ['protection order', 'legal', 'court order', 'safety'],
+  'veteran': ['military', 'armed forces', 'CAF', 'ex-military', 'service member'],
+  'military': ['veteran', 'armed forces', 'CAF', 'service member'],
+  'student': ['university', 'college', 'campus', 'academic'],
+  'anger': ['anger management', 'aggression', 'rage'],
   'gambling': ['gaming', 'betting'],
   'grief': ['bereavement', 'loss', 'mourning'],
+  'dental': ['dentist', 'teeth', 'tooth', 'oral health', 'dental clinic'],
   'hospital': ['emergency room', 'ER', 'urgent care', 'emergency department'],
   'prescription': ['medication', 'pharmacare', 'drug coverage', 'pharmacy'],
   'wheelchair': ['mobility', 'accessibility', 'assistive device', 'walker'],
@@ -65,6 +81,10 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'dental': 'dental',      // Not "mental" (Levenshtein distance 1)
   'rental': 'rental',      // Not "mental" (Levenshtein distance 2)
   // Common English words that false-match KEYWORD_EXPANSIONS keys (distance ≤ 1)
+  'ride': 'ride',          // Not "pride" (Levenshtein distance 1)
+  'hide': 'hide',          // Not "pride" (Levenshtein distance 1)
+  'side': 'side',          // Not "pride" (Levenshtein distance 1)
+  'bride': 'bride',        // Not "pride" (Levenshtein distance 1)
   'mouth': 'mouth',        // Not "youth"
   'south': 'south',        // Not "youth"
   'math': 'math',          // Not "meth"
