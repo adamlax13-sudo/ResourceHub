@@ -23,6 +23,18 @@ import {
 } from '../helpers/keywords';
 import { scrubPii } from '../helpers/pii';
 
+/** Matches "crisis" as a forward compound noun: "crisis centre", "crisis counselling", etc. */
+const CRISIS_FORWARD_DESCRIPTOR =
+  /\bcrisis\s+(centre|center|counsell|service|support|line|help|team|unit|worker)\b/i;
+
+/** Matches "crisis" as a trailing descriptor: "mental health crisis", "student crisis", etc. */
+const CRISIS_TRAILING_DESCRIPTOR =
+  /\b(mental health|student|financial|housing|emotional|youth)\s+crisis\b/i;
+
+/** First-person distress signals that indicate genuine self-referential crisis */
+const FIRST_PERSON_DISTRESS =
+  /\b(i\s+(want|am|feel|need)|me|myself|my\s+life|kill\s+myself|end\s+my\s+life|want\s+to\s+die|self[- ]harm|hurt\s+myself)\b/i;
+
 /**
  * Analyze a search query and extract all relevant information.
  * This is the single entry point for query analysis.
@@ -81,7 +93,6 @@ export function analyzeQuery(
 
   // Detect crisis — returns both crisis flag and whether it's third-party concern
   const crisisResult = detectCrisis(normalized);
-  const isCrisis = crisisResult.isCrisis;
 
   // Find alias matches (e.g., "CMHA" -> service ID)
   const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
@@ -89,6 +100,20 @@ export function analyzeQuery(
   // Determine query intent(s) with confidence scores
   const intents = determineIntent(keywords, effectiveLocation, crisisResult, aliasMatch, sanitized);
   const intent = intents.primary.intent; // Backward compat
+
+  // Apply crisis descriptor guard:
+  // Override isCrisis=false if "crisis" is used as a service descriptor
+  // (e.g. "student mental health crisis") rather than self-referential ideation.
+  let isCrisis = crisisResult.isCrisis;
+  if (
+    isCrisis &&
+    !FIRST_PERSON_DISTRESS.test(normalized) &&
+    (CRISIS_FORWARD_DESCRIPTOR.test(normalized) || CRISIS_TRAILING_DESCRIPTOR.test(normalized)) &&
+    intent !== 'general' &&
+    intent !== 'crisis'
+  ) {
+    isCrisis = false;
+  }
 
   // Detect specific substance type if any intent is substance_abuse
   const hasSubstanceIntent = intent === 'substance_abuse' ||
