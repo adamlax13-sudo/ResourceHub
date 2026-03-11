@@ -38,7 +38,7 @@ export function isFamilyAddictionQuery(query: string): boolean {
   return (
     /\b(al-?anon|nar-?anon)\b/i.test(lower) ||
     /\bliving with.*(addict|alcoholic|someone who)\b/i.test(lower) ||
-    /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|family|loved one).*(addict|alcoholi[cs]|alcohol|drug|drinking|using)/i.test(lower) ||
+    /\b(my|our).*(spouse|husband|wife|partner|parent|child|son|daughter|kid|kids|teen|teenager|family|loved one).*(addict|alcoholi[cs]|alcohol|drug|drinking|using)/i.test(lower) ||
     /\b(loved one|family member|someone i (know|love|care)).*(addict|alcoholi[cs]|alcohol|drug)/i.test(lower) ||
     /\b(codependent|family.*addict|addict.*family)\b/i.test(lower)
   );
