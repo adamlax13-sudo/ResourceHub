@@ -22,5 +22,5 @@ export {
   PCHAD_PINNED_SERVICE_FULL,
 } from './pinned';
 
-export { SEARCH_CONFIG } from './analysis';
+export { SEARCH_CONFIG, SUB_INTENT_PATTERNS, VALID_SUB_INTENTS } from './analysis';
 export type { SearchType, QueryIntent, SubstanceType, SearchConfigType } from './analysis';
