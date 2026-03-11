@@ -24,7 +24,7 @@ No database changes. No schema migrations. All work on a feature branch.
 
 | Query | Root Cause | Fix |
 |---|---|---|
-| `student mental health crisis` | "crisis" as service descriptor fires direct crisis path, replaces all results with helplines | Crisis descriptor guard in `determineIntent()` |
+| `student mental health crisis` | "crisis" as service descriptor fires direct crisis path, replaces all results with helplines | Crisis descriptor guard in `analyzeQuery()` — override `isCrisis` after `detectCrisis()` + `determineIntent()` both run |
 | `child custody lawyer free` | "child" triggers `youth_services` over `legal_aid` | LLM + regex disambiguation already handles this; confirm `isCustodyLegalQuery()` fires |
 | `my kid is using drugs` | "kid" not in `isFamilyAddictionQuery()` regex — falls through to addiction treatment | Add `kid\|kids\|teen\|teenager` to the relationship list in the 3rd regex of `isFamilyAddictionQuery()` (line ~41). Note: `teen`/`teenager` also appear in the third-party crisis pattern in `detectCrisis()`. Family addiction routing takes priority — confirm `isFamilyAddictionQuery()` is evaluated before the crisis short-circuit in `index.ts` (it already is via `isPchadQuery` check ordering). |
 | `NIHB mental health coverage` | NIHB not mapped to indigenous keywords | Add `nihb → indigenous, first nations` to KEYWORD_EXPANSIONS |
@@ -127,10 +127,11 @@ Query
   → correctTypos() + scrubPii()
   → analyzeQuery()
       → detectCrisis()
-          ← [FIX] crisis descriptor guard: if no first-person distress language
-             and "crisis" only appears as compound noun, set isCrisis=false
       → determineIntent()
       → detectSubIntents()  ← NEW: regex pass, populates analysis.subIntents
+      ← [FIX] crisis descriptor guard applied here — after both detectCrisis()
+         and determineIntent() run, override isCrisis=false if query uses
+         "crisis" as a service descriptor (see Crisis Descriptor Guard section)
   → enhanceIntentWithLLM()
       → LLM returns intents + attributes + subIntents?: string[]  ← NEW field
       → LLM subIntents merged into analysis.subIntents
