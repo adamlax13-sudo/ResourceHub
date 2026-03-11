@@ -60,15 +60,15 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'housing_urgent': {
     serviceTypes: ['emergency_shelter'],
-    categoryPatterns: /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in|affordable|subsidized|rent supplement|habitat|capital region housing|calgary housing|silvera|homespace/i,
+    categoryPatterns: /shelter|housing|homeless|beds|accommodation|emergency housing|drop-in|affordable|subsidized|rent supplement|habitat|capital region housing|calgary housing|silvera|homespace|evict|tenant|transitional/i,
   },
   'substance_abuse': {
     serviceTypes: ['addiction_recovery', 'residential_treatment'],
-    categoryPatterns: /addiction|alcohol|drug|detox|rehab|sober|AA\b|NA\b|AADAC|addiction recovery|addiction treatment|substance|harm reduction/i,
+    categoryPatterns: /addiction|alcohol|drug|detox|rehab|sober|AA\b|NA\b|AADAC|addiction recovery|addiction treatment|substance|harm reduction|naloxone|outpatient|gambling/i,
   },
   'mental_health': {
     serviceTypes: ['mental_health', 'counselling', 'crisis_line'],
-    categoryPatterns: /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog/i,
+    categoryPatterns: /mental|counselling|counseling|therapy|therapist|depression|anxiety|support|crisis|psycholog|anger management|postpartum|eating disorder|trauma|psychiatr/i,
   },
   'disability_support': {
     serviceTypes: ['disability_services', 'support_groups', 'community_programs'],
@@ -96,7 +96,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'newcomer_services': {
     serviceTypes: ['newcomer', 'settlement', 'immigration'],
-    categoryPatterns: /immigrant|refugee|newcomer|settlement|ESL|language|citizenship|sponsorship|asylum/i,
+    categoryPatterns: /immigrant|refugee|newcomer|settlement|ESL|english language|language|citizenship|sponsorship|asylum|credential|interpret/i,
   },
   'family_addiction_support': {
     serviceTypes: ['family_support', 'addiction_family'],
@@ -116,7 +116,7 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'indigenous_services': {
     serviceTypes: ['indigenous_services', 'first_nations'],
-    categoryPatterns: /indigenous|first nations?|métis|metis|inuit|native|aboriginal|treaty|reserve|elder|ceremony|traditional healing/i,
+    categoryPatterns: /indigenous|first nations?|métis|metis|inuit|native|aboriginal|treaty|reserve|elder|ceremony|traditional healing|healing|residential school/i,
   },
   'student_services': {
     serviceTypes: ['campus_services', 'student_support'],
