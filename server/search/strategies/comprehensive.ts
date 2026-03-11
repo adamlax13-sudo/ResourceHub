@@ -264,7 +264,7 @@ const DOMAIN_INTENTS = [
   'legal_aid', 'employment_support', 'youth_services', 'newcomer_services',
   'family_addiction_support', 'financial_support', 'caregiver_support', 'lgbtq_services',
   'indigenous_services', 'student_services', 'parenting_support', 'veteran_services',
-  'community_social'
+  'community_social', 'healthcare_access', 'basic_needs'
 ];
 
 export class ComprehensiveSearchStrategy extends BaseSearchStrategy {

@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v127'; // Keyword expansion + typo correction false positive fixes
+const CACHE_VERSION = 'v133'; // Third-party crisis, custody/legal, LGBTQ/dental, healthcare_access domain intent
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -28,6 +28,7 @@ import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } 
 import {
   isFamilyAddictionQuery,
   isTenantLegalQuery,
+  isCustodyLegalQuery,
   pinAlAnonService,
   ensureLegalAidInResults,
 } from './pinned';
@@ -245,7 +246,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (isFamilyAddictionQuery(input.query)) {
       pinAlAnonService(services);
     }
-    if (isTenantLegalQuery(input.query)) {
+    if (isTenantLegalQuery(input.query) || isCustodyLegalQuery(input.query)) {
       ensureLegalAidInResults(services);
     }
 
@@ -326,7 +327,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     if (isFamilyAddictionQuery(input.query)) {
       pinAlAnonService(services);
     }
-    if (isTenantLegalQuery(input.query)) {
+    if (isTenantLegalQuery(input.query) || isCustodyLegalQuery(input.query)) {
       ensureLegalAidInResults(services);
     }
 
@@ -742,5 +743,5 @@ export { SEARCH_CONFIG } from './config';
 export { analyzeQuery } from './analyzer';
 export { pinCrisisService, isCrisisQuery } from './crisis';
 export { pinPchadService, isPchadQuery } from './pchad';
-export { pinAlAnonService, isFamilyAddictionQuery, ensureLegalAidInResults, isTenantLegalQuery } from './pinned';
+export { pinAlAnonService, isFamilyAddictionQuery, ensureLegalAidInResults, isTenantLegalQuery, isCustodyLegalQuery } from './pinned';
 export type { SearchInput, SearchResponse, LiteService } from './types';

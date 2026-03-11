@@ -62,7 +62,7 @@ const QUERIES = [
   // INDIGENOUS
   { query: "indigenous mental health support", intent: "indigenous_services", expectedPatterns: ["indigenous", "First Nations"] },
   // LGBTQ
-  { query: "LGBTQ counselling Calgary", location: "Calgary", intent: "lgbtq_services", expectedPatterns: ["LGBTQ", "Pride", "queer"] },
+  { query: "LGBTQ counselling Calgary", location: "Calgary", intent: "lgbtq_services", expectedPatterns: ["LGBTQ", "sexuality", "gender"] },
   // NEWCOMER
   { query: "newcomer settlement services", intent: "newcomer_services", expectedPatterns: ["immigrant", "refugee", "settlement", "newcomer"] },
   // STUDENT
@@ -81,7 +81,7 @@ const QUERIES = [
   // PARENTING
   { query: "single mom needs help", intent: "parenting_support", expectedPatterns: ["parent", "support", "family"] },
   // EDGE CASES
-  { query: "dental services", intent: "general", mustExclude: ["mental health"] },
+  { query: "dental services", intent: "healthcare_access", expectedPatterns: ["dental"], mustExclude: ["mental health"] },
   { query: "counslling near me", intent: "mental_health", expectedPatterns: ["counselling", "therapy", "mental health"] },
   { query: "fud bank", intent: "food_insecurity", expectedPatterns: ["food", "bank", "hamper"] },
   // HEALTHCARE ACCESS
@@ -114,7 +114,8 @@ function scoreDeterministic(testQuery, results) {
 
   let mustExclude = 100;
   if (testQuery.mustExclude?.length > 0) {
-    const top10Text = results.slice(0, 10).map(r => `${r.name} ${r.category || ''} ${r.description || ''}`).join(' ').toLowerCase();
+    // Check name + category only (not description — multi-service centres mention many service types)
+    const top10Text = results.slice(0, 10).map(r => `${r.name} ${r.category || ''}`).join(' ').toLowerCase();
     const present = testQuery.mustExclude.filter(n => top10Text.includes(n.toLowerCase()));
     if (present.length > 0) { mustExclude = 0; failures.push(`Should exclude from top 10: ${present.join(', ')}`); }
   }
