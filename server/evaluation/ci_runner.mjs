@@ -15,7 +15,7 @@
  */
 
 const API_BASE = process.env.API_BASE || 'http://localhost:5000';
-const REQUEST_DELAY_MS = 300; // 300ms between requests
+const REQUEST_DELAY_MS = 500; // 500ms between requests (52 queries need headroom)
 const TIMEOUT_MS = 15000; // 15s per request (LLM cold starts can be slow)
 
 // ============= THRESHOLDS =============
@@ -29,7 +29,7 @@ const THRESHOLDS = {
 const CRITICAL_INTENTS = ['crisis', 'domestic_violence', 'housing_urgent'];
 
 // ============= TEST QUERIES =============
-// Subset of comprehensive_test_queries.ts — the key regression tests.
+// Subset of comprehensive_test_queries.ts — 52 key regression tests.
 // Kept inline to avoid tsx dependency in CI.
 const QUERIES = [
   // CRISIS (must never regress)
@@ -94,6 +94,23 @@ const QUERIES = [
   // COMPOUND
   { query: "homeless veteran with PTSD", intent: "veteran_services", expectedPatterns: ["veteran", "PTSD", "shelter"] },
   { query: "housing for women fleeing abuse", intent: "domestic_violence", expectedPatterns: ["shelter", "women", "domestic violence", "abuse"] },
+  // CAREGIVER SUPPORT
+  { query: "caregiver burnout support", intent: "caregiver_support", expectedPatterns: ["caregiver", "respite", "support"] },
+  { query: "help caring for elderly parent", intent: "caregiver_support", expectedPatterns: ["caregiver", "senior", "support", "respite"] },
+  // COMMUNITY & SOCIAL
+  { query: "community programs for social connection", intent: "community_social", expectedPatterns: ["community", "social", "program", "group"] },
+  { query: "lonely and need friends", intent: "community_social", expectedPatterns: ["social", "community", "support", "group"] },
+  // SENIOR SERVICES
+  { query: "help for seniors living alone", intent: "senior_services", expectedPatterns: ["senior", "elderly", "home care", "support"] },
+  { query: "senior meal delivery program", intent: "senior_services", expectedPatterns: ["senior", "meal", "delivery"] },
+  // BASIC NEEDS
+  { query: "I need clothing and household items", intent: "basic_needs", expectedPatterns: ["clothing", "household", "donation", "free"] },
+  { query: "where can I get free furniture", intent: "basic_needs", expectedPatterns: ["free", "basic needs"] },
+  // EDGE CASES
+  { query: "my teenager is self-harming", intent: "mental_health", expectedPatterns: ["youth", "mental health", "self-harm", "crisis"] },
+  { query: "my ex won't let me see my kids", intent: "legal_aid", expectedPatterns: ["legal", "custody", "family"] },
+  { query: "addcition help", intent: "substance_abuse", expectedPatterns: ["addiction", "recovery"] },
+  { query: "Indigenous youth mental health", intent: "indigenous_services", expectedPatterns: ["indigenous", "youth", "mental health"] },
 ];
 
 // ============= SCORING =============

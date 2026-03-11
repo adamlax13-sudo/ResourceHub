@@ -1,0 +1,162 @@
+[
+  {
+    "name": "AHS Public Health Dental Clinic — Sheldon Chumir Centre",
+    "category": "Healthcare Access",
+    "city": "Calgary",
+    "website": "https://www.albertahealthservices.ca/findhealth/Service.aspx?id=1670&serviceAtFacilityID=1040109",
+    "description": "Reduced-fee dental treatment for eligible low-income individuals and families without dental insurance. Fees are approximately 20% of the Alberta Fee Guide with sliding scale options.",
+    "gap_reason": "No dedicated low-cost dental clinic entries exist in the database. University dental clinics are listed but not the AHS public health dental clinics that serve low-income adults."
+  },
+  {
+    "name": "AHS Public Health Dental Clinic — Sunridge Medical Gallery",
+    "category": "Healthcare Access",
+    "city": "Calgary",
+    "website": "https://www.albertahealthservices.ca/findhealth/Service.aspx?id=1670&serviceAtFacilityID=1124990",
+    "description": "Reduced-fee dental services for low-income individuals and families without dental insurance, operating on a sliding scale.",
+    "gap_reason": "Second AHS public dental clinic location in Calgary not in database."
+  },
+  {
+    "name": "The Alex — Dental Health Program",
+    "category": "Healthcare Access",
+    "city": "Calgary",
+    "website": "https://www.thealex.ca/program/dental-health/",
+    "description": "Free dental care for children and youth ages 3-24. Includes the Alex Dental Health Bus that visits high-need elementary schools and community sites for preventative services like sealants, cleanings, and fluoride treatments.",
+    "gap_reason": "The Alex is in the database for healthcare and housing but the dedicated dental program for youth is not listed as a separate service."
+  },
+  {
+    "name": "SHINE Dental Clinic (University of Alberta)",
+    "category": "Healthcare Access",
+    "city": "Edmonton",
+    "website": "https://www.shineclinic.ca/services",
+    "description": "Free student-run dental clinic providing care to low-income and inner-city youth. Operates most Saturdays at Radius Community Health & Healing, staffed by volunteer dental students supervised by licensed dentists.",
+    "gap_reason": "The U of A Dental Clinic is listed but not the separate SHINE volunteer clinic which specifically targets low-income youth at no cost."
+  },
+  {
+    "name": "Alberta Dental Foundation",
+    "category": "Healthcare Access",
+    "city": "Province-wide",
+    "website": "https://www.albertadentalfoundation.ca/about/",
+    "description": "Non-profit foundation that coordinates volunteer dentists to provide free dental care to low-income Albertans who do not qualify for government programs.",
+    "gap_reason": "No province-wide dental charity entry exists in the database."
+  },
+  {
+    "name": "Calgary Pride",
+    "category": "LGBTQ2S+ Services",
+    "city": "Calgary",
+    "website": "https://calgarypride.ca/",
+    "description": "Non-profit organization promoting equality and celebrating Calgary's 2SLGBTQ+ diversity through year-round programs, partnerships, events, and the annual Calgary Pride Parade & Festival.",
+    "gap_reason": "Calgary Outlink and Centre for Sexuality are in the database but Calgary Pride itself is not listed despite being a major community organization."
+  },
+  {
+    "name": "Edmonton 2 Spirit Society",
+    "category": "Indigenous Services",
+    "city": "Edmonton",
+    "website": "https://e2s.ca/",
+    "description": "Non-profit providing social, health, and cultural programs for Two-Spirit, IndigiQueer, and Indigenous LGBTQIA+ communities. Services include sharing circles, cultural events, mentoring, and emergency/transitional housing for Two-Spirit people fleeing gender-based violence (12 emergency spaces).",
+    "gap_reason": "Not in the database. Fills a unique intersection of Indigenous and LGBTQ2S+ services with housing for Two-Spirit people."
+  },
+  {
+    "name": "Calgary Queer Arts Society",
+    "category": "LGBTQ2S+ Services",
+    "city": "Calgary",
+    "website": "https://www.calgaryqueerartssociety.com/",
+    "description": "Non-profit giving voice to queer people and their stories through arts programming, committed to creating and sharing narratives that shape the LGBTQ2IA+ community.",
+    "gap_reason": "No LGBTQ+ arts/community organizations in the database beyond direct service providers."
+  },
+  {
+    "name": "Al-Anon Family Groups Alberta/NWT — Provincial Information Service",
+    "category": "Recovery & Peer Support",
+    "city": "Province-wide",
+    "website": "https://al-anon.ab.ca/meetings/",
+    "description": "Provincial Al-Anon information service connecting families and friends of alcoholics to meetings across Alberta. Toll-free line 1-888-322-6902. Meetings available in Edmonton, Calgary, Red Deer, Lethbridge, Medicine Hat, and many smaller communities.",
+    "gap_reason": "Only the Edmonton Al-Anon group is in the database. The provincial service with meeting finder covering all Alberta cities is missing."
+  },
+  {
+    "name": "Nar-Anon Edmonton",
+    "category": "Recovery & Peer Support",
+    "city": "Edmonton",
+    "website": "https://www.naranonedmonton.com/",
+    "description": "Support group for family members and friends affected by someone's drug addiction. Provides regular meetings where members share experiences, strength, and hope.",
+    "gap_reason": "No Nar-Anon entries exist in the database at all. This is the primary family support group for drug addiction (parallel to Al-Anon for alcohol)."
+  },
+  {
+    "name": "Caregivers Alberta",
+    "category": "Family & Parenting Support",
+    "city": "Province-wide",
+    "website": "https://www.caregiversalberta.ca/",
+    "description": "Non-profit empowering unpaid caregivers through educational workshops, online webinars, the Caregiver Support Community, respite programs, and mental health resources. Founded in 2001 by a group of concerned caregivers.",
+    "gap_reason": "No dedicated caregiver support organization in the database. One brief intervention program (Kindred) exists but not the main provincial caregiver organization."
+  },
+  {
+    "name": "AHS Family Caregiver Centre",
+    "category": "Family & Parenting Support",
+    "city": "Calgary",
+    "website": "https://www.albertahealthservices.ca/services/Page13155.aspx",
+    "description": "AHS initiative in partnership with the Calgary Health Foundation offering information, education, and support to family caregivers caring for loved ones with chronic illness, disability, or aging-related needs.",
+    "gap_reason": "No AHS caregiver-specific service entry in the database."
+  },
+  {
+    "name": "Respite for ALL Program (Healthy Aging CORE Alberta)",
+    "category": "Family & Parenting Support",
+    "city": "Province-wide",
+    "website": "https://corealberta.ca/resources/caregiver-support-program-respite-for-all",
+    "description": "Pilot program providing caregivers who work at least 30 hours per week and provide unpaid care to a loved one with 10 hours of free home-based respite support.",
+    "gap_reason": "No respite care programs in the database for unpaid family caregivers."
+  },
+  {
+    "name": "Wood's Homes — EXIT Community Outreach",
+    "category": "Youth Services",
+    "city": "Calgary",
+    "website": "https://www.woodshomes.ca/",
+    "description": "Downtown storefront, outreach, and mobile van service for youth ages 12-24 who have run away, are at risk of homelessness, self-harm, or sexual exploitation. EXIT Crisis Stabilization at 112 16 Ave NE provides 24/7 walk-in shelter for ages 12-17. Phone: 403-509-2323.",
+    "gap_reason": "Wood's Homes is in the database for mental health and Stepping Stones shelter, but the EXIT outreach program specifically serving street-involved and runaway youth is not listed."
+  },
+  {
+    "name": "Trellis Society — Infinity Project (Youth Housing First)",
+    "category": "Affordable Housing",
+    "city": "Calgary",
+    "website": "https://www.growwithtrellis.ca/youth-programs/housing-shelters/infinity-project",
+    "description": "Housing First program for youth ages 16-24 experiencing homelessness. Scattered-site housing with harm reduction focus, helping youth find housing in their community of choice with wrap-around support for healing and self-sufficiency.",
+    "gap_reason": "Trellis has many entries but the Infinity Housing First program for homeless youth is not listed as a separate service."
+  },
+  {
+    "name": "Trellis Society — The Orion (Transitional Youth Housing)",
+    "category": "Affordable Housing",
+    "city": "Calgary",
+    "website": "https://www.growwithtrellis.ca/youth-programs/housing-shelters",
+    "description": "5-story apartment building in partnership with HomeSpace providing affordable transitional housing for 46 youth exiting homelessness, with 24/7 support workers, mental health services, cultural programs, and employment/education supports.",
+    "gap_reason": "New transitional housing facility for youth not in database."
+  },
+  {
+    "name": "Indigenous Psychological Services",
+    "category": "Mental Health & Counselling",
+    "city": "Edmonton",
+    "website": "https://www.indigenouspsychologicalservices.com",
+    "description": "Psychological and counselling services for Indigenous peoples across Alberta, with locations in Edmonton and Calgary plus secure online sessions. Culturally grounded approach to mental health treatment.",
+    "gap_reason": "Not in the database. Dedicated Indigenous-specific psychology practice filling a gap between general counselling and cultural healing services."
+  },
+  {
+    "name": "Supporting Wellness — Indigenous Counselling",
+    "category": "Mental Health & Counselling",
+    "city": "Calgary",
+    "website": "https://supportingwellness.com/indigenous-counselling/",
+    "description": "Indigenous counselling services in Calgary, Red Deer, and Cold Lake, helping heal trauma, addiction, and systemic challenges with culturally informed approaches.",
+    "gap_reason": "Not in the database. Provides Indigenous-specific counselling across multiple Alberta cities beyond Edmonton/Calgary."
+  },
+  {
+    "name": "Hope for Wellness Help Line",
+    "category": "Crisis Support",
+    "city": "Province-wide",
+    "website": "https://www.hopeforwellness.ca/",
+    "description": "Immediate mental health counselling and crisis intervention for Indigenous peoples, available 24/7 by phone (1-855-242-3310) or online chat in English, French, Cree, Ojibway, and Inuktitut.",
+    "gap_reason": "National Indigenous-specific crisis line not in the database. Critical for Indigenous mental health crisis support with service in Indigenous languages."
+  },
+  {
+    "name": "Inspire Wellness Therapy — NIHB-Covered Indigenous Mental Health",
+    "category": "Mental Health & Counselling",
+    "city": "Calgary",
+    "website": "https://www.inspirewellnesstherapy.ca/blog-mental-health-and-wellness/-nihb-coverage-accepted-in-calgary-alberta",
+    "description": "Free trauma-informed counselling for Indigenous clients covered through NIHB (Non-Insured Health Benefits), available in Calgary and online across Alberta.",
+    "gap_reason": "No NIHB-specific therapy provider in the database. Important because NIHB makes therapy free for status First Nations and Inuit."
+  }
+]
