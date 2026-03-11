@@ -38,7 +38,7 @@ Critical rules:
 2. DEMOGRAPHIC FIT MATTERS. Services targeting specific populations (Indigenous, newcomers, people with disabilities, youth, seniors) should score 15-25 points LOWER than equivalent general-population services unless the query specifically indicates that demographic. "Kicked out of my house" with no age signal → general emergency shelters score 90+, youth-specific shelters cap at 70. Only elevate demographic-specific services when the query mentions that demographic (e.g., "teen shelter", "Indigenous housing").
 3. PENALIZE REDUNDANCY. If multiple services are from the same organization, score the most relevant one normally and reduce others by 15-20 points — users want diverse options.
 4. DESCRIPTION OVER NAME. The service description reveals actual purpose. A "Friendship Centre" that provides employment referrals is an employment service, not a friendship service.
-5. SECONDARY INTENT AMPLIFIES RELEVANCE. When a secondary intent is detected with meaningful confidence (shown in parentheses), services matching BOTH the primary and secondary intent should score 90-100. Services matching only the primary intent should cap around 70 unless exceptionally relevant. The user explicitly mentioned both dimensions — honor that. For example, "indigenous addiction recovery" means Indigenous-specific addiction services should rank above generic addiction services.
+5. SUB-INTENT & SECONDARY INTENT AMPLIFICATION. If the service matches both the primary intent AND a detected sub-intent (e.g. primary=housing_urgent + sub-intent=housing_urgent.eviction_defense), score 90-100. If the service matches the primary intent only (no sub-intent match), cap score at ~70 unless it's uniquely exceptional. If secondary intents are listed and the service matches primary + secondary, score 85-95. Never score a service above 80 if it only matches a secondary/tertiary intent.
 
 The detected intent (with confidence), any secondary intent, and a semantic interpretation of the query are provided. Use them to understand what the person actually needs, but also use your own judgment.
 
@@ -115,6 +115,11 @@ export async function llmRerank(
       intentContext += `, Secondary: ${intents.secondary.intent} (${intents.secondary.confidence.toFixed(1)})`;
     }
 
+    // Build sub-intents line if available
+    const subIntentsLine = analysis.subIntents?.length
+      ? `Sub-intents: ${analysis.subIntents.join(', ')}\n`
+      : '';
+
     // Include semantic interpretation if available (from OpenAI query enhancement)
     const semanticLine = enhancedQuery
       ? `\nSemantic interpretation: ${sanitize(enhancedQuery.keywords.join(' ').slice(0, 150))}`
@@ -131,7 +136,7 @@ export async function llmRerank(
       if (parts.length) attrLine = `\n${parts.join(' | ')}`;
     }
 
-    const userPrompt = `Query: "${sanitizedQuery}"\n${intentContext}${semanticLine}${attrLine}\n\nServices:\n${serviceList}`;
+    const userPrompt = `Query: "${sanitizedQuery}"\n${intentContext}\n${subIntentsLine}${semanticLine}${attrLine}\n\nServices:\n${serviceList}`;
 
     // Call LLM with timeout
     const controller = new AbortController();
