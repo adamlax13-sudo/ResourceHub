@@ -26,7 +26,7 @@ No database changes. No schema migrations. All work on a feature branch.
 |---|---|---|
 | `student mental health crisis` | "crisis" as service descriptor fires direct crisis path, replaces all results with helplines | Crisis descriptor guard in `determineIntent()` |
 | `child custody lawyer free` | "child" triggers `youth_services` over `legal_aid` | LLM + regex disambiguation already handles this; confirm `isCustodyLegalQuery()` fires |
-| `my kid is using drugs` | "kid" not in `isFamilyAddictionQuery()` regex — falls through to addiction treatment | Add `kid|kids|teen|teenager` to pinned.ts pattern |
+| `my kid is using drugs` | "kid" not in `isFamilyAddictionQuery()` regex — falls through to addiction treatment | Add `kid\|kids\|teen\|teenager` to the relationship list in the 3rd regex of `isFamilyAddictionQuery()` (line ~41). Note: `teen`/`teenager` also appear in the third-party crisis pattern in `detectCrisis()`. Family addiction routing takes priority — confirm `isFamilyAddictionQuery()` is evaluated before the crisis short-circuit in `index.ts` (it already is via `isPchadQuery` check ordering). |
 | `NIHB mental health coverage` | NIHB not mapped to indigenous keywords | Add `nihb → indigenous, first nations` to KEYWORD_EXPANSIONS |
 | `ESL classes free` | ESL not mapped to newcomer/language | Add `esl → english, newcomer, language` to KEYWORD_EXPANSIONS |
 | `military family support` | "military" maps to veteran but "family" aspect lost | Add `military family` compound expansion |
@@ -61,21 +61,33 @@ Each of the 24 top-level intents is a cluster of related-but-distinct user needs
 
 ### Structure
 
-Sub-intents are defined in `server/search/config.ts` as a new `subIntents` map, structured identically to `categoryIndicators`:
+Sub-intents are defined in `server/search/config.ts` as a new `subIntents` map, structured identically to `categoryIndicators`. Sub-intent names are **namespaced** with their parent intent to avoid collisions when the same concept (e.g., `eviction_defense`, `credential_recognition`) appears under multiple parents:
 
 ```ts
 subIntents: {
   housing_urgent: {
-    emergency_shelter: [/\bemergency shelter\b/i, /\bnowhere to sleep\b/i, ...],
-    eviction_defense: [/\bevict/i, /\btenant rights\b/i, ...],
-    transitional_housing: [/\btransitional\b/i, /\bhalfway house\b/i, ...],
-    affordable_housing: [/\baffordable\b/i, /\bsubsidized\b/i, /\brent geared\b/i, ...],
+    'housing_urgent.emergency_shelter': [/\bemergency shelter\b/i, /\bnowhere to sleep\b/i, ...],
+    'housing_urgent.eviction_defense': [/\bevict/i, /\btenant rights\b/i, ...],
+    'housing_urgent.transitional_housing': [/\btransitional\b/i, /\bhalfway house\b/i, ...],
+    'housing_urgent.affordable_housing': [/\baffordable\b/i, /\bsubsidized\b/i, /\brent geared\b/i, ...],
+  },
+  legal_aid: {
+    'legal_aid.eviction_defense': [/\bevict/i, /\btenant rights\b/i, ...],  // same signals, different namespace
+    'legal_aid.family_court': [/\bcustody\b/i, /\bvisitation\b/i, ...],
+    // ...
   },
   // ...
 }
 ```
 
-`QueryAnalysis` gains `subIntents?: string[]` — an array of detected sub-intent names.
+`QueryAnalysis` gains `subIntents?: string[]` — an array of namespaced sub-intent strings (e.g., `["housing_urgent.eviction_defense", "legal_aid.eviction_defense"]`). Sub-intents live on `QueryAnalysis` only, **not** inside `QueryAttributes` — the reranker and boost layers read from `analysis.subIntents` directly.
+
+A `VALID_SUB_INTENTS` set is defined in `server/search/config.ts` alongside the `subIntents` taxonomy map (so the source of truth is in one place). It is imported into `llm-intent.ts` alongside the existing imports from `config.ts`. Unknown sub-intent strings returned by the LLM are filtered against `VALID_SUB_INTENTS` before merging into `analysis.subIntents`, consistent with how `VALID_FORMATS` and `VALID_URGENCY` work today.
+
+`detectSubIntents()` in `analyzer.ts`:
+- Input: `corrected` query string (same as `detectServiceAttributes()`)
+- Guard: only runs when `analysis.intent !== 'general'`
+- Orphaned sub-intents (sub-intent fires but parent intent not detected) are dropped
 
 ### Full Taxonomy
 
@@ -138,7 +150,7 @@ No new API calls. No new DB tables. Sub-intents are in-memory metadata.
 | File | Change |
 |---|---|
 | `server/search/config.ts` | Add `subIntents` map alongside `categoryIndicators` |
-| `server/search/types.ts` | Add `subIntents?: string[]` to `QueryAnalysis` + `QueryAttributes` |
+| `server/search/types.ts` | Add `subIntents?: string[]` to `QueryAnalysis` only (not `QueryAttributes`) |
 | `server/search/analyzer.ts` | Add `detectSubIntents()` + crisis descriptor guard in `determineIntent()` |
 | `server/search/llm-intent.ts` | Add `subIntents?: string[]` to LLM response schema + system prompt instruction |
 | `server/search/strategies/scoring/llm-rerank.ts` | Pass `subIntents` in reranker prompt, extend rule 5 |
@@ -165,7 +177,7 @@ Never a narrow keyword dependent on exact wording in service names.
 
 | Sub-Intent | Query | Expected Patterns |
 |---|---|---|
-| `harm_reduction` | `"where to get naloxone in Edmonton"` | `["harm reduction", "naloxone", "overdose"]` |
+| `harm_reduction` | `"where to get naloxone in Edmonton"` | Routing test only — validates `substance_abuse` intent with `harm_reduction` sub-intent fires correctly. No `expectedPatterns` until harm reduction services are in DB (flagged in `service-gaps-report.json`). |
 | `residential_school_survivor` | `"residential school survivors support"` | `["Indigenous", "healing", "trauma"]` |
 | `nihb_coverage` | `"NIHB mental health coverage"` | `["Indigenous", "First Nations", "health"]` |
 | `esl_language` | `"ESL classes free"` | `["newcomer", "settlement", "language"]` |
@@ -195,16 +207,27 @@ New sub-intent tests go into the **overnight harness only** until stable, then p
 
 **Problem:** `"student mental health crisis"` contains "crisis" → fires direct crisis path → replaces all results with 988/helplines.
 
-**Fix logic (in `determineIntent()`):**
+**Architecture:** `detectCrisis()` runs first in `analyzeQuery()` and returns `{ isCrisis, isThirdParty }`. `determineIntent()` is called next and receives the crisis result. The guard must be applied *after* both functions run, inside `analyzeQuery()`, which is the only place that can override `isCrisis` before returning `QueryAnalysis`.
+
+**Fix logic — applied in `analyzeQuery()` after `detectCrisis()` + `determineIntent()`:**
 
 ```
-if isCrisis AND no first-person distress signals (I/me/myself/want to die/kill myself/self-harm/etc.)
-   AND "crisis" appears only as a compound noun modifier (crisis centre/counselling/services/support/line/help)
-   AND other intent signals are present (student/mental health/etc.)
-THEN: set isCrisis = false, route to detected primary intent normally
+if isCrisis=true
+   AND no first-person distress signals in query
+     (no: "I", "me", "myself", "want to die", "kill myself", "end my life", "self-harm", etc.)
+   AND "crisis" appears only as a descriptor, not as self-referential ideation — matched by EITHER:
+     (a) forward compound noun: /\bcrisis\s+(centre|center|counsell|service|support|line|help|team|unit|worker)\b/i
+     (b) trailing descriptor:   /\b(mental health|student|financial|housing|emotional|youth)\s+crisis\b/i
+   AND at least one non-crisis intent scored above 'general'
+THEN: override isCrisis = false in the returned QueryAnalysis
+      (detectCrisis result is unchanged; only analysis.isCrisis is overridden)
 ```
 
-This preserves the safety-critical path for genuine ideation while allowing service-seeking queries that use "crisis" descriptively.
+Pattern (b) is what fixes the motivating failure: `"student mental health crisis"` matches `/\bmental health\s+crisis\b/i` and `"student"` is a non-crisis intent signal. Both patterns must be checked — either match is sufficient to trigger the override.
+
+This preserves the safety-critical path for genuine ideation while allowing service-seeking queries that use "crisis" descriptively. The override is applied in `analyzeQuery()` before returning — no changes needed to `detectCrisis()` or `determineIntent()` signatures.
+
+**Interaction with precomputed cache:** Bumping to `v138` is sufficient to invalidate any precomputed cache entries where the crisis descriptor guard would change routing — cache keys include `CACHE_VERSION` so a miss triggers a fresh search.
 
 ---
 
