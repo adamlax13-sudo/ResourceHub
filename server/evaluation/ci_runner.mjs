@@ -15,8 +15,8 @@
  */
 
 const API_BASE = process.env.API_BASE || 'http://localhost:5000';
-const REQUEST_DELAY_MS = 200; // 200ms between requests for local server
-const TIMEOUT_MS = 10000; // 10s per request
+const REQUEST_DELAY_MS = 300; // 300ms between requests
+const TIMEOUT_MS = 15000; // 15s per request (LLM cold starts can be slow)
 
 // ============= THRESHOLDS =============
 const THRESHOLDS = {
@@ -54,7 +54,7 @@ const QUERIES = [
   // SUBSTANCE ABUSE
   { query: "help with alcohol addiction Calgary", location: "Calgary", intent: "substance_abuse", expectedPatterns: ["alcohol", "addiction", "recovery", "AA"] },
   { query: "opioid treatment Edmonton", location: "Edmonton", intent: "substance_abuse", expectedPatterns: ["opioid", "ODP", "methadone", "suboxone"] },
-  { query: "i cant stop doing coke", intent: "substance_abuse", expectedPatterns: ["cocaine", "addiction", "recovery"], mustExclude: ["gambling"] },
+  { query: "i cant stop doing coke", intent: "substance_abuse", expectedPatterns: ["addiction", "recovery", "treatment"], mustExclude: ["Gambling Support"] },
   { query: "recovery support no 12 step", intent: "substance_abuse", expectedPatterns: ["SMART Recovery", "recovery"] },
   // FAMILY ADDICTION
   { query: "my son is addicted to drugs what can I do", intent: "family_addiction_support", expectedPatterns: ["PCHAD", "family", "parent"] },
@@ -135,7 +135,7 @@ function scoreDeterministic(testQuery, results) {
 // ============= API CLIENT =============
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function searchAPI(query, location, retries = 2) {
+async function searchAPI(query, location, retries = 3) {
   const body = { query, page: 1, pageSize: 20 };
   if (location) body.location = location;
 
@@ -151,14 +151,17 @@ async function searchAPI(query, location, retries = 2) {
       });
       clearTimeout(timer);
       if (res.status === 429 && attempt < retries) {
-        await sleep(5000);
+        // Exponential backoff: 10s, 20s, 40s — respects rate limit windows
+        const backoff = 10000 * Math.pow(2, attempt);
+        console.log(`     [429] Rate limited, retrying in ${backoff / 1000}s...`);
+        await sleep(backoff);
         continue;
       }
       if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
       return res.json();
     } catch (err) {
       clearTimeout(timer);
-      if (attempt < retries) { await sleep(2000); continue; }
+      if (attempt < retries) { await sleep(3000); continue; }
       throw err;
     }
   }

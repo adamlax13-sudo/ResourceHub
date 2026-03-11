@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v112'; // Bumped: rescued services replace filler, full category rescue map
+const CACHE_VERSION = 'v127'; // Keyword expansion + typo correction false positive fixes
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -228,12 +228,16 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Filter out any deactivated services from precomputed cache
     let services = filterActiveServices((precomputed.results as LiteService[]).map(s => ({ ...s })), servicesCache.activeIds);
 
-    // For crisis queries, replace results entirely with all crisis lines from DB
+    // For crisis queries: direct crisis replaces results, situational crisis pins 988
     const analysis = analyzeQuery(input.query, input.location);
     const isEmergency = input.emergency === true;
-    if (analysis.isCrisis || isEmergency) {
+    const isDirectCrisisPrecomputed = analysis.intent === 'crisis' || isEmergency;
+    if (isDirectCrisisPrecomputed) {
       const dbCrisisLines = await storage.getCrisisLines();
       services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
+    } else if (analysis.isCrisis) {
+      // Situational crisis (DV, homelessness): pin 988, keep search results
+      pinCrisisService(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -246,11 +250,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
 
     // Location hard filter — exclude services from other cities
-    // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
-    const isCrisisPrecomputed = analysis.isCrisis || isEmergency;
-    services = filterByLocation(services, analysis.location.specified || input.location, isCrisisPrecomputed);
+    // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
+    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisPrecomputed);
 
-    if (input.filters && !isCrisisPrecomputed) {
+    if (input.filters && !isDirectCrisisPrecomputed) {
       services = applyHardFilters(services, input.filters);
       services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
       services = applyPreferenceBoosts(services, input.filters);
@@ -272,7 +275,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent);
+    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent);
   }
 
   // Load alias map for query analysis
@@ -292,7 +295,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   const intentLog = analysis.intents.secondary
     ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
     : `${analysis.intent}(${analysis.intents.primary.confidence})`;
-  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}`);
+  const attrLog = analysis.attributes
+    ? `, Attrs: ${JSON.stringify(analysis.attributes)}`.slice(0, 120)
+    : '';
+  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}${attrLog}`);
 
   // Check regular cache - include version, substance type, and secondary intent in key
   const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
@@ -305,10 +311,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Filter out any deactivated services from cached results
     let services = filterActiveServices(cachedResults.services.map(s => ({ ...s })), servicesCache.activeIds);
 
-    // For crisis queries, replace results entirely with all crisis lines from DB
-    if (analysis.isCrisis || input.emergency) {
+    // For crisis queries: direct crisis replaces results, situational crisis pins 988
+    const isDirectCrisisCached = analysis.intent === 'crisis' || !!input.emergency;
+    if (isDirectCrisisCached) {
       const dbCrisisLines = await storage.getCrisisLines();
       services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
+    } else if (analysis.isCrisis) {
+      // Situational crisis (DV, homelessness): pin 988, keep search results
+      pinCrisisService(services);
     }
     if (isPchadQuery(input.query)) {
       pinPchadService(services);
@@ -321,11 +331,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
 
     // Location hard filter — exclude services from other cities
-    // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
-    const isCrisisCached = analysis.isCrisis || !!input.emergency;
-    services = filterByLocation(services, analysis.location.specified || input.location, isCrisisCached);
+    // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
+    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached);
 
-    if (input.filters && !isCrisisCached) {
+    if (input.filters && !isDirectCrisisCached) {
       services = applyHardFilters(services, input.filters);
       services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
       services = applyPreferenceBoosts(services, input.filters);
@@ -348,7 +357,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent);
+    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
 
@@ -385,13 +394,17 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Filter out deactivated services from fresh results (materialized view may be stale)
   result.services = filterActiveServices(result.services, servicesCache.activeIds);
 
-  // For crisis queries, replace results entirely with all crisis lines from DB.
+  // For crisis queries: direct crisis replaces results, situational crisis pins 988.
   // MUST run AFTER filterActiveServices — 988 is a synthetic service not in the DB,
   // so filterActiveServices would remove it if crisis replacement ran first.
-  if (analysis.isCrisis || input.emergency) {
+  const isDirectCrisisFresh = analysis.intent === 'crisis' || !!input.emergency;
+  if (isDirectCrisisFresh) {
     const dbCrisisLines = await storage.getCrisisLines();
     result.services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
-    console.log(`[SearchOrchestrator] Crisis query - replaced with all crisis lines from DB`);
+    console.log(`[SearchOrchestrator] Direct crisis query - replaced with all crisis lines from DB`);
+  } else if (analysis.isCrisis) {
+    pinCrisisService(result.services);
+    console.log(`[SearchOrchestrator] Situational crisis - pinned 988, keeping ${result.services.length} service results`);
   }
 
   // Apply PCHAD pinning for parent/child addiction queries
@@ -413,13 +426,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   }
 
   // Location hard filter — exclude services from other cities
-  // SAFETY: skip location filter for crisis queries so 988 and hotlines always show
-  const isCrisisFresh = analysis.isCrisis || !!input.emergency;
-  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isCrisisFresh);
+  // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
+  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isDirectCrisisFresh);
 
   // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
-  // SAFETY: skip hard filters for crisis queries — never filter out crisis hotlines
-  if (input.filters && !isCrisisFresh) {
+  // SAFETY: skip hard filters for direct crisis — never filter out crisis hotlines
+  if (input.filters && !isDirectCrisisFresh) {
     const beforeFilter = result.services.length;
     result.services = applyHardFilters(result.services, input.filters);
     result.services = await supplementCategories(result.services, input.filters, analysis.location.specified || input.location);
@@ -441,7 +453,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Distance processing — attach distances, filter, sort
   result.services = await applyDistanceProcessing(result.services, input);
 
-  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent);
+  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent);
 }
 
 /**
@@ -460,7 +472,7 @@ const DEFAULT_RESULTS = 30;
 // Uses exact category name matching (not the description-oriented patterns from
 // INTENT_SERVICE_MAP, which miss categories like "Residential Treatment").
 const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
-  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support', 'Gambling Support']),
+  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support']),
   mental_health: new Set(['Mental Health & Counselling', 'Crisis Services', 'Crisis Lines', 'Eating Disorder Services', 'Trauma & PTSD Support']),
   domestic_violence: new Set(['Domestic Violence Support', 'Human Trafficking Support']),
   food_insecurity: new Set(['Food Banks & Meals']),
@@ -486,7 +498,7 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   caregiver_support: new Set(['Family & Parenting Support', 'Senior Services']),
 };
 
-function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteService[] {
+function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent): LiteService[] {
   if (services.length <= MIN_RESULTS) return services;
 
   // Separate pinned services (no rrfScore) — always included
@@ -516,8 +528,18 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent): LiteServ
 
   // Category-aware rescue: pull in on-category services that fell below the
   // score cutoff. These are core results the user is looking for.
+  // Merge primary + secondary intent category sets so both are rescued.
   let rescued: LiteService[] = [];
-  const categorySet = intent ? INTENT_CATEGORY_NAMES[intent] : undefined;
+  const primarySet = intent ? INTENT_CATEGORY_NAMES[intent] : undefined;
+  const secondarySet = secondaryIntent ? INTENT_CATEGORY_NAMES[secondaryIntent] : undefined;
+  let categorySet: Set<string> | undefined;
+  if (primarySet && secondarySet) {
+    categorySet = new Set<string>();
+    primarySet.forEach(v => categorySet!.add(v));
+    secondarySet.forEach(v => categorySet!.add(v));
+  } else {
+    categorySet = primarySet ?? secondarySet;
+  }
   if (categorySet) {
     const aboveCutoffIds = new Set(aboveCutoff.map(s => s.id));
     rescued = belowCutoff.filter(s =>
@@ -559,10 +581,11 @@ function formatResponse(
   cached: boolean,
   searchType?: SearchType,
   servicesWithDebug?: LiteServiceWithDebug[],
-  intent?: QueryIntent
+  intent?: QueryIntent,
+  secondaryIntent?: QueryIntent
 ): SearchResponse {
-  // Trim to relevant results before pagination
-  services = trimToRelevant(services, intent);
+  // Trim to relevant results before pagination (rescue categories from both intents)
+  services = trimToRelevant(services, intent, secondaryIntent);
   if (servicesWithDebug) {
     // Keep debug array in sync — trim to same IDs
     const keptIds = new Set(services.map(s => s.id));

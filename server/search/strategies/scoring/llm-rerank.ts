@@ -38,8 +38,9 @@ Critical rules:
 2. DEMOGRAPHIC FIT MATTERS. Services targeting specific populations (Indigenous, newcomers, people with disabilities, youth, seniors) should score lower unless the query indicates that population — a general "I'm lonely" query should prefer general-population services.
 3. PENALIZE REDUNDANCY. If multiple services are from the same organization, score the most relevant one normally and reduce others by 15-20 points — users want diverse options.
 4. DESCRIPTION OVER NAME. The service description reveals actual purpose. A "Friendship Centre" that provides employment referrals is an employment service, not a friendship service.
+5. SECONDARY INTENT AMPLIFIES RELEVANCE. When a secondary intent is detected with meaningful confidence (shown in parentheses), services matching BOTH the primary and secondary intent should score 90-100. Services matching only the primary intent should cap around 70 unless exceptionally relevant. The user explicitly mentioned both dimensions — honor that. For example, "indigenous addiction recovery" means Indigenous-specific addiction services should rank above generic addiction services.
 
-The detected intent, any secondary intent, and a semantic interpretation of the query are provided. Use them to understand what the person actually needs, but also use your own judgment.
+The detected intent (with confidence), any secondary intent, and a semantic interpretation of the query are provided. Use them to understand what the person actually needs, but also use your own judgment.
 
 Example:
 Query: "i feel so alone and have no one to talk to"
@@ -107,11 +108,11 @@ export async function llmRerank(
     // Truncate and sanitize query to limit prompt injection surface
     const sanitizedQuery = query.slice(0, 200).replace(/[`"\\]/g, '');
 
-    // Build intent context for the LLM
+    // Build intent context for the LLM (include confidence so it can weight dual-intent matches)
     const { intents } = analysis;
-    let intentContext = `Intent: ${intents.primary.intent}`;
+    let intentContext = `Intent: ${intents.primary.intent} (${intents.primary.confidence.toFixed(1)})`;
     if (intents.secondary) {
-      intentContext += `, Secondary: ${intents.secondary.intent}`;
+      intentContext += `, Secondary: ${intents.secondary.intent} (${intents.secondary.confidence.toFixed(1)})`;
     }
 
     // Include semantic interpretation if available (from OpenAI query enhancement)
@@ -119,7 +120,18 @@ export async function llmRerank(
       ? `\nSemantic interpretation: ${sanitize(enhancedQuery.keywords.join(' ').slice(0, 150))}`
       : '';
 
-    const userPrompt = `Query: "${sanitizedQuery}"\n${intentContext}${semanticLine}\n\nServices:\n${serviceList}`;
+    // Include structured attributes from LLM understanding (if available)
+    let attrLine = '';
+    if (analysis.attributes) {
+      const parts: string[] = [];
+      if (analysis.attributes.serviceFormat?.length) parts.push(`Preferred format: ${analysis.attributes.serviceFormat.join(', ')}`);
+      if (analysis.attributes.demographic) parts.push(`Demographic: ${sanitize(analysis.attributes.demographic)}`);
+      if (analysis.attributes.serviceType) parts.push(`Service type: ${sanitize(analysis.attributes.serviceType)}`);
+      if (analysis.attributes.urgency) parts.push(`Urgency: ${analysis.attributes.urgency}`);
+      if (parts.length) attrLine = `\n${parts.join(' | ')}`;
+    }
+
+    const userPrompt = `Query: "${sanitizedQuery}"\n${intentContext}${semanticLine}${attrLine}\n\nServices:\n${serviceList}`;
 
     // Call LLM with timeout
     const controller = new AbortController();

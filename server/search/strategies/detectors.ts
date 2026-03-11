@@ -449,6 +449,13 @@ export function detectOrganizationSearch(query: string): string | null {
  * Tries to identify the organization by common patterns
  */
 export function extractOrganization(serviceName: string): string {
+  // First: parse em-dash convention ("OrgName — Service Descriptor")
+  // This is the most reliable method for our naming convention
+  const emDashIdx = serviceName.indexOf(' \u2014 ');
+  if (emDashIdx > 0) {
+    return serviceName.slice(0, emDashIdx).trim().toLowerCase().replace(/\s+/g, '_');
+  }
+
   const name = serviceName.toLowerCase();
 
   // Common organization patterns in Alberta
@@ -468,6 +475,15 @@ export function extractOrganization(serviceName: string): string {
     { pattern: /\bdrop-?in.*centre\b|drop-?in.*shelter/i, org: 'drop_in_centre' },
     { pattern: /\bmustard seed\b/i, org: 'mustard_seed' },
     { pattern: /\binn from the cold\b/i, org: 'inn_from_cold' },
+    { pattern: /\blegal aid alberta\b/i, org: 'legal_aid_alberta' },
+    { pattern: /\bcarya\b/i, org: 'carya' },
+    { pattern: /\bthe alex\b/i, org: 'the_alex' },
+    { pattern: /\bhope mission\b/i, org: 'hope_mission' },
+    { pattern: /\bhull services\b/i, org: 'hull_services' },
+    { pattern: /\btrellis\b/i, org: 'trellis' },
+    { pattern: /\bgovernment of alberta\b/i, org: 'gov_alberta' },
+    { pattern: /\bcity of calgary\b/i, org: 'city_calgary' },
+    { pattern: /\bcalgary john howard/i, org: 'john_howard_calgary' },
   ];
 
   for (const { pattern, org } of orgPatterns) {

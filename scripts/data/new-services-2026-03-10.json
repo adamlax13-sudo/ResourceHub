@@ -1,0 +1,157 @@
+[
+  {
+    "name": "SORCe — Housing Assessment & Placement",
+    "category": "Supportive Housing",
+    "description": "SORCe (Safe Communities Opportunity and Resource Centre) is a multi-agency collaborative that connects people experiencing or at risk of homelessness to programs and services that address barriers to stable housing. Nine partner agencies — including Alpha House, The Alex, Distress Centre Calgary, Gateway Immigrant Services, Recovery Alberta, Trellis Society, Alberta Justice and Solicitor General, and HomeFront — are co-located in one space, providing coordinated walk-in access to housing assessment, addiction support, mental health services, immigration assistance, domestic violence resources, and justice navigation. SORCe operates as a grassroots initiative supported by community-based organizations, expanding the capacity and coordination of existing programs aimed at achieving stable and sustainable housing.",
+    "location": "Calgary — 1944 10th Ave SW",
+    "address": "1944 10th Avenue SW, Calgary, AB",
+    "phone": "(403) 428-3300",
+    "email": "admin@sorcecalgary.ca",
+    "website_url": "https://sorcecalgary.ca/",
+    "hours_of_operation": "Mon–Fri 9:00 AM – 4:00 PM (closed 12:00–1:00 PM for lunch). Closes at noon on the first Thursday of each month. Closed weekends and statutory holidays.",
+    "is_24_7": false,
+    "eligibility": "Anyone experiencing or at risk of homelessness. No referral needed. Walk-in access during business hours.",
+    "process_steps": [
+      {
+        "step": 1,
+        "action": "Walk in during business hours",
+        "details": "Visit SORCe at 1944 10th Ave SW, Calgary during Mon–Fri 9:00 AM – 4:00 PM (closed 12:00–1:00 PM). No appointment needed."
+      },
+      {
+        "step": 2,
+        "action": "Complete intake questionnaire",
+        "details": "Fill out a client profile questionnaire. Information shared with SORCe will be shared with all participating partner agencies."
+      },
+      {
+        "step": 3,
+        "action": "Meet with partner agency staff",
+        "details": "Based on your needs, you'll be connected with the appropriate partner agency on-site — housing, mental health, addiction, immigration, domestic violence, or justice support."
+      }
+    ],
+    "required_docs": [],
+    "wait_times": "Walk-in; served on a first-come, first-served basis",
+    "tags": ["calgary", "homelessness", "housing", "walk-in", "free", "assessment", "placement", "in-person", "multi-agency", "supportive housing", "housing first", "homeless services"],
+    "source_urls": ["https://sorcecalgary.ca/", "https://sorcecalgary.ca/what-is-sorce", "https://sorcecalgary.ca/accessing-programs-at-sorce"],
+    "confidence_score": 90,
+    "age_group": "adult",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "In-person"
+  },
+  {
+    "name": "The Alex — Seniors Health Clinic",
+    "category": "Senior Services",
+    "description": "The Alex Seniors Health Clinic provides comprehensive primary healthcare for adults aged 60 and older in Calgary. Services include all the care of a family doctor — examinations, prescriptions, blood tests, and foot care — along with nutrition support, chronic disease management with ongoing monitoring, pain management, smoking cessation, and mental health counselling for depression, anxiety, and loneliness. The clinic emphasizes continuity of care tailored to improving senior well-being and quality of life. Social and wellness programming is also available. The clinic does not provide emergency medical care.",
+    "location": "Calgary — 630 9 Ave SE",
+    "address": "630 9 Ave SE, Calgary, AB",
+    "phone": "403-920-0011",
+    "email": "info@thealex.ca",
+    "website_url": "https://www.thealex.ca/clinics-programs/senior-health-clinic/",
+    "hours_of_operation": "Mon–Fri 9:00 AM – 4:00 PM (by appointment only)",
+    "is_24_7": false,
+    "eligibility": "Adults aged 60 and older. By appointment only — call or email to book.",
+    "process_steps": [
+      {
+        "step": 1,
+        "action": "Contact the clinic to book an appointment",
+        "details": "Call 403-920-0011 or email info@thealex.ca to schedule. No walk-in services available."
+      },
+      {
+        "step": 2,
+        "action": "Attend your appointment",
+        "details": "Visit the clinic at 630 9 Ave SE, Calgary. Accessible via Calgary Transit route #1."
+      },
+      {
+        "step": 3,
+        "action": "Receive ongoing care",
+        "details": "The clinic provides continuity of care — follow-up appointments are scheduled as needed for chronic disease management and monitoring."
+      }
+    ],
+    "required_docs": ["Alberta Health Care card"],
+    "wait_times": null,
+    "tags": ["calgary", "senior", "healthcare", "primary care", "family doctor", "chronic disease", "mental health", "counselling", "nutrition", "foot care", "pain management", "appointment", "free", "in-person"],
+    "source_urls": ["https://www.thealex.ca/clinics-programs/senior-health-clinic/"],
+    "confidence_score": 90,
+    "age_group": "senior",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "In-person"
+  },
+  {
+    "name": "The Alex — Assertive Community Treatment (ACT)",
+    "category": "Mental Health & Counselling",
+    "description": "The Alex Assertive Community Treatment (ACT) program is a proven, people-first approach for individuals aged 18+ living with severe and persistent mental illness who need more than traditional clinic care. Dedicated teams deliver wraparound support directly in the community, including psychiatric care, integrated primary healthcare, social support, justice navigation, and housing assistance. The program operates two streams: Pathways to Housing (P2H), which combines mental health support with rent assistance and help securing regular community housing (capacity: 160 people), and Pathways Assertive Outreach (PAO), which provides hands-on mental health care and life supports without rent subsidies but helps locate housing options (capacity: 50 people). Note: These are not shelters and do not provide overnight accommodation.",
+    "location": "Calgary — #103, 2840 2 Ave SE",
+    "address": "#103, 2840 2 Ave SE, Calgary, AB",
+    "phone": "403-266-8881",
+    "email": "info@thealex.ca",
+    "website_url": "https://www.thealex.ca/clinics-programs/act-programs/",
+    "hours_of_operation": "Contact for hours",
+    "is_24_7": false,
+    "eligibility": "Adults aged 18+ with severe and persistent mental illness. Referral required through SORCe (sorcecalgary.ca) — no direct walk-in referrals.",
+    "process_steps": [
+      {
+        "step": 1,
+        "action": "Get assessed through SORCe",
+        "details": "Visit SORCe at sorcecalgary.ca or walk in to their location for housing assessment and placement. ACT referrals come through this coordinated intake."
+      },
+      {
+        "step": 2,
+        "action": "Receive referral to ACT program",
+        "details": "Based on your assessment, SORCe staff will refer you to the appropriate ACT stream — Pathways to Housing (P2H) or Pathways Assertive Outreach (PAO)."
+      },
+      {
+        "step": 3,
+        "action": "Begin receiving community-based support",
+        "details": "A dedicated ACT team meets you in your community to provide psychiatric care, primary healthcare, social support, and housing assistance."
+      }
+    ],
+    "required_docs": [],
+    "wait_times": "Subject to program capacity (P2H: 160, PAO: 50)",
+    "tags": ["calgary", "mental health", "severe mental illness", "psychiatric care", "housing first", "community outreach", "assertive community treatment", "ACT", "referral", "in-person", "free", "wraparound support"],
+    "source_urls": ["https://www.thealex.ca/clinics-programs/act-programs/"],
+    "confidence_score": 90,
+    "age_group": "adult",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "In-person"
+  },
+  {
+    "name": "The Alex — Social & Wellness Programs",
+    "category": "Community & Social Connection",
+    "description": "The Alex Social & Wellness Programs offer a range of free community-based activities and supports designed to build connection, wellness, and life skills. Programs span eight areas: Community Kitchen (bi-weekly meals, cooking, and nutrition), Social Connection & Support (peer connection and social work), Gender Identity & Expression (affirming spaces for exploration and LGBTQ+ community), Cultural Wellness & Wisdom (Indigenous knowledge and traditional practices), Food & Nutrition (healthy eating education and meal programs), Mind & Body Wellbeing (yoga, fitness, relaxation, and self-care), Care & Support for Substance Use (non-judgmental support and education), and Life Skills & Growth (employment, finances, and systems navigation). Specific programs include Beading With Bobby, Fire Starters Sharing Circle, Art Groups, Yoga, Seniors Fitness Class, Wellbriety, Community Breakfast and Lunch, Self Care Social Club, Dollar Smart Cooking, Queer Connections, and more.",
+    "location": "Calgary — #101, 2840 2 Ave SE",
+    "address": "#101, 2840 2 Ave SE, Calgary, AB T2A 7X9",
+    "phone": "403-520-2260",
+    "email": "info@thealex.ca",
+    "website_url": "https://www.thealex.ca/clinics-programs/social-wellness-programs/",
+    "hours_of_operation": "Varies by program — check program calendar at thealex.ca for current schedule",
+    "is_24_7": false,
+    "eligibility": "Open to community members. No specific eligibility restrictions.",
+    "process_steps": [
+      {
+        "step": 1,
+        "action": "Check the program calendar",
+        "details": "Visit thealex.ca or call 403-520-2260 to see current program days, times, and availability."
+      },
+      {
+        "step": 2,
+        "action": "Drop in or register",
+        "details": "Most programs are drop-in. Some may require registration — check individual program details."
+      }
+    ],
+    "required_docs": [],
+    "wait_times": null,
+    "tags": ["calgary", "community", "social connection", "wellness", "drop-in", "free", "in-person", "indigenous", "lgbtq+", "yoga", "fitness", "cooking", "nutrition", "art", "support group", "life skills", "harm reduction", "senior"],
+    "source_urls": ["https://www.thealex.ca/clinics-programs/social-wellness-programs/"],
+    "confidence_score": 85,
+    "age_group": "all_ages",
+    "gender_restriction": null,
+    "is_faith_based": false,
+    "is_12_step": false,
+    "service_format": "In-person"
+  }
+]

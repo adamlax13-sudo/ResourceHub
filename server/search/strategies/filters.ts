@@ -21,7 +21,7 @@ export const FILTER_CONFIG = {
   },
   orgDiversity: {
     maxPerOrg: 2,        // Max services per organization in top results
-    topN: 10,            // Number of top results to apply diversity to
+    topN: 15,            // Number of top results to apply diversity to (Google uses ~10, we use 15 for broader coverage)
   },
 };
 

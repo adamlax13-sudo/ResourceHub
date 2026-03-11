@@ -101,6 +101,26 @@ export interface QueryAnalysis {
   substanceType: SubstanceType;
   /** Terms user wants to exclude (e.g., "not religious" -> ["religious"]) */
   negativeTerms: string[];
+  /** Structured query attributes extracted by LLM understanding (optional, enriches search) */
+  attributes?: QueryAttributes;
+}
+
+/**
+ * Structured query attributes extracted by LLM.
+ * Inspired by Google's query understanding: one forward pass, multiple signals.
+ * All fields optional — regex fallback produces no attributes.
+ */
+export interface QueryAttributes {
+  /** Service format preferences detected from query */
+  serviceFormat?: ('free' | 'low_cost' | 'walk_in' | 'virtual' | 'phone' | 'in_person' | '24_7' | 'no_waitlist')[];
+  /** Demographic the searcher is seeking services for */
+  demographic?: string;
+  /** Specific service type requested (more precise than intent) */
+  serviceType?: string;
+  /** Emotional state / urgency level */
+  urgency?: 'crisis' | 'urgent' | 'soon' | 'flexible';
+  /** Semantic rewrite: what the user actually needs (for embedding search) */
+  semanticQuery?: string;
 }
 
 // === SERVICE TYPES ===

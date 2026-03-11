@@ -1,5 +1,9 @@
 import rateLimit from 'express-rate-limit';
 
+// In development/CI, relax rate limits so evaluations can run fully.
+// Production keeps strict limits to prevent abuse.
+const isProduction = process.env.NODE_ENV === 'production';
+
 /**
  * General API rate limiter
  * Limits requests to 100 per 15 minutes per IP
@@ -21,7 +25,7 @@ export const apiLimiter = rateLimit({
  */
 export const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Limit each IP to 20 requests per windowMs
+  max: isProduction ? 20 : 200, // Production: 20, Dev/CI: 200
   message: 'Too many requests to this endpoint, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

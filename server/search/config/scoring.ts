@@ -18,6 +18,7 @@ export const SCORING_CONFIG = {
     categoryPattern: 10,  // Text pattern matching for intent
     categoryName: 5,      // Category name contains relevant keywords
     urgentService: 2,     // 24/7 services for urgent intents
+    dualIntentMatch: 15,  // Bonus when service matches 2+ detected intents (e.g., indigenous + addiction)
   },
 
   // Location-only boosts

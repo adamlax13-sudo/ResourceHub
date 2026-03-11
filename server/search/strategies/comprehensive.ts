@@ -43,6 +43,7 @@ import {
   applyNegativePenalty,
   applyPreferenceBoosts,
   applyFilterMatchBoosts,
+  applyDualIntentBoost,
   llmRerank,
   type BoostOptions,
 } from './scoring';
@@ -60,6 +61,8 @@ import {
   buildSummary,
   type SQLSearchResult,
 } from './merger';
+
+import { getExpandedKeywords } from '../../search/analyzer';
 
 // LRU cache for query embeddings - avoids repeated OpenAI API calls
 const embeddingCache = new LRUCache<string, number[]>({
@@ -301,10 +304,23 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       }
     }
 
+    // ============= KEYWORD EXPANSION FOR SQL =============
+    // Expand slang/synonyms (e.g. "naloxone" → "harm reduction narcan overdose")
+    // so SQL full-text search finds services using formal terminology.
+    const expandedKeywords = getExpandedKeywords(analysis);
+    const originalWords = new Set(analysis.corrected.toLowerCase().split(/\s+/));
+    const newTerms = expandedKeywords.filter(kw => !originalWords.has(kw.toLowerCase()));
+    const sqlQuery = newTerms.length > 0
+      ? `${analysis.corrected} ${newTerms.join(' ')}`
+      : analysis.corrected;
+    if (newTerms.length > 0) {
+      console.log(`[KeywordExpansion] Added ${newTerms.length} terms: ${newTerms.join(', ')}`);
+    }
+
     // ============= TIER 2: FAST SQL PATH (<50ms) =============
     // For simple, high-confidence queries, SQL alone may be sufficient
     const sqlOnly = await storage.fastSearch(
-      analysis.corrected,
+      sqlQuery,
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults
@@ -362,7 +378,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       const nameMatched = boostByNameMatch(services, analysis.corrected, aliasMap, boostOptions);
 
       // Apply minimal intent boosting and return early
-      const boosted = boostByIntent(nameMatched, analysis.intent, analysis.corrected, analysis, boostOptions);
+      let boosted = boostByIntent(nameMatched, analysis.intent, analysis.corrected, analysis, boostOptions);
+      boosted = applyDualIntentBoost(boosted, analysis);
       let final = analysis.negativeTerms?.length
         ? applyNegativePenalty(boosted, analysis.negativeTerms, boostOptions)
         : boosted;
@@ -392,14 +409,16 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // This saves 200-500ms compared to waiting for OpenAI before searching
 
     const sqlPromise = storage.fastSearch(
-      analysis.corrected,
+      sqlQuery,
       analysis.location.specified,
       analysis.intent === 'location_only',
       config.maxResults
     );
 
+    // Use LLM semantic rewrite for embedding search if available (better embedding match)
+    const semanticQueryText = analysis.attributes?.semanticQuery || analysis.corrected;
     const semanticPromise = hasEmbeddings
-      ? this.runSemanticSearch(analysis.corrected, analysis.location.specified)
+      ? this.runSemanticSearch(semanticQueryText, analysis.location.specified)
       : Promise.resolve([]);
 
     // OpenAI enhancement runs in parallel - no longer blocks initial search!
@@ -503,6 +522,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
       // Use LLM reranker for Tier 3 fresh searches (falls back to regex boostByIntent on failure)
       services = await llmRerank(services, analysis.corrected, analysis, boostOptions, enhancedQuery);
     }
+
+    // Dual-intent boost: services matching both primary + secondary intent get 35% score boost
+    services = applyDualIntentBoost(services, analysis);
 
     // Apply negative keyword penalty (e.g., "shelter not religious")
     if (analysis.negativeTerms && analysis.negativeTerms.length > 0) {

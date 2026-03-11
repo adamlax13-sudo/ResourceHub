@@ -50,7 +50,8 @@ pytest tests/ -v                     # Run scraper tests
 | `server/search/strategies/scoring/preference-boost.ts` | Preference boosts for filter toggles (faith-based, 12-step, 24/7) |
 | `server/search/strategies/scoring/filter-match-boost.ts` | Filter-match boosts for explicit DB matches |
 | `server/search/strategies/comprehensive.ts` | Main search strategy |
-| `server/search/analyzer.ts` | Query analysis, typo correction, intent detection |
+| `server/search/analyzer.ts` | Query analysis, typo correction, intent detection, attribute extraction |
+| `server/search/types.ts` | Search type definitions including QueryAttributes, QueryAnalysis |
 | `server/search/config.ts` | Search configuration and thresholds (48KB) |
 | `shared/schema.ts` | Drizzle ORM schema — all table definitions |
 | `shared/routes.ts` | Shared Zod schemas for API request/response types |
@@ -84,16 +85,16 @@ pytest tests/ -v                     # Run scraper tests
 
 ### Search Pipeline
 1. Normalize query + correct typos
-2. Analyze intent via regex (`analyzeQuery()`)
-3. Enhance intent with LLM classifier (`enhanceIntentWithLLM()` — skips crisis/alias)
-4. Check precomputed cache for popular queries
-5. Stage 1: Fast SQL search (indexed)
-6. Stage 2: Semantic search (pgvector embeddings)
-7. Merge results via Reciprocal Rank Fusion
-8. Apply filters (age, gender, exclusions, diversity)
-9. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
-   **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
-10. Pin crisis services if detected
+2. Analyze intent via regex (`analyzeQuery()`) + extract service attributes
+3. Enhance with LLM structured understanding (`enhanceIntentWithLLM()` — returns intents + attributes + semantic rewrite)
+4. **Crisis routing**: Direct crisis (suicidal ideation) → full helpline replacement. Situational crisis (DV, homelessness) → pin 988 + keep search results.
+5. Check precomputed cache for popular queries
+6. Stage 1: Fast SQL search (indexed, uses expanded keywords)
+7. Stage 2: Semantic search (pgvector embeddings, uses LLM semantic rewrite if available)
+8. Merge results via Reciprocal Rank Fusion
+9. Apply filters (age, gender, exclusions, diversity)
+10. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
+    **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
 11. Apply data quality boost (confidence score, description richness)
 12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
 13. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)

@@ -810,6 +810,7 @@ export const SEARCH_CONFIG = {
       /\b(?:addiction|addictions|addict)\b/i,
       /\b(?:rehab|rehabilitation|treatment center|treatment centre)\b/i,
       /\b(?:sober living|recovery house|halfway house|oxford house)\b/i,
+      /\b(?:naloxone|narcan|needle exchange|safe injection|harm reduction|overdose)\b/i,
     ],
     // Caregiver indicators
     caregiver: [

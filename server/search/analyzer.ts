@@ -7,7 +7,7 @@
  */
 
 import { SEARCH_CONFIG } from './config';
-import type { QueryAnalysis, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
+import type { QueryAnalysis, QueryAttributes, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
 import {
   extractLocationContext,
   ALBERTA_LOCATIONS,
@@ -98,6 +98,9 @@ export function analyzeQuery(
     console.log(`[QueryAnalyzer] Substance type detected: ${substanceType}`);
   }
 
+  // Regex-based attribute detection (fallback when LLM unavailable/times out)
+  const attributes = detectServiceAttributes(corrected);
+
   return {
     raw: sanitized,
     corrected: phoneticCorrected,
@@ -113,6 +116,7 @@ export function analyzeQuery(
     aliasMatch,
     substanceType,
     negativeTerms,
+    attributes,
   };
 }
 
@@ -514,5 +518,40 @@ function extractNegativeTerms(query: string): string[] {
   return negatives.slice(0, 10);
 }
 
+/**
+ * Detect service format attributes from query text (regex fallback).
+ * LLM understanding will override these if available.
+ * Returns undefined if no attributes detected (not an empty object).
+ */
+function detectServiceAttributes(query: string): QueryAttributes | undefined {
+  const lower = query.toLowerCase();
+  const formats: QueryAttributes['serviceFormat'] = [];
+
+  if (/\bfree\b|no.?cost|\$0|\bat no charge\b/i.test(lower)) formats.push('free');
+  if (/\blow.?cost|afford|cheap|sliding.?scale|subsidiz/i.test(lower)) formats.push('low_cost');
+  if (/\bwalk.?in|drop.?in|no.?appointment/i.test(lower)) formats.push('walk_in');
+  if (/\bvirtual|online|tele(health|therapy|medicine)|remote|video/i.test(lower)) formats.push('virtual');
+  if (/\bphone|call|hotline|helpline|text/i.test(lower)) formats.push('phone');
+  if (/\bin.?person|face.?to.?face/i.test(lower)) formats.push('in_person');
+  if (/\b24.?7|24.?hour|around.?the.?clock|anytime/i.test(lower)) formats.push('24_7');
+  if (/\bno.?wait|immediate|same.?day|right.?now/i.test(lower)) formats.push('no_waitlist');
+
+  let urgency: QueryAttributes['urgency'];
+  if (/\bsuicid|kill (my|him|her|them)self|want to die|end (my|it all)/i.test(lower)) {
+    urgency = 'crisis';
+  } else if (/\btonight|today|right now|asap|emergency|urgent|about to be evicted|fleeing/i.test(lower)) {
+    urgency = 'urgent';
+  } else if (/\bthis week|soon|need help|looking for|can you help/i.test(lower)) {
+    urgency = 'soon';
+  }
+
+  if (formats.length === 0 && !urgency) return undefined;
+
+  return {
+    ...(formats.length > 0 && { serviceFormat: formats }),
+    ...(urgency && { urgency }),
+  };
+}
+
 // Re-export types for convenience
-export type { QueryAnalysis, QueryIntent, SubstanceType, IntentResult, ScoredIntent };
+export type { QueryAnalysis, QueryAttributes, QueryIntent, SubstanceType, IntentResult, ScoredIntent };

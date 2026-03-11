@@ -225,6 +225,7 @@ export function boostByIntent(
       allIntents.push({ intent, confidence: 1.0 });
     }
 
+    const matchedIntents: string[] = [];
     for (const { intent: thisIntent, confidence } of allIntents) {
       const config = INTENT_SERVICE_MAP[thisIntent];
       if (!config) continue;
@@ -232,16 +233,24 @@ export function boostByIntent(
       if (config.categoryPatterns.test(text)) {
         const value = Math.round(cfg.intent.categoryPattern * confidence);
         addFactor(`intent.categoryPattern.${thisIntent}`, value, `Matches ${thisIntent} pattern (conf: ${confidence})`);
+        matchedIntents.push(thisIntent);
       }
       const category = svc.category.toLowerCase();
       if (config.serviceTypes.some(st => category.includes(st.replace('_', ' ')))) {
         const value = Math.round(cfg.intent.categoryName * confidence);
         addFactor(`intent.categoryName.${thisIntent}`, value, `Category matches ${thisIntent} type (conf: ${confidence})`);
+        if (!matchedIntents.includes(thisIntent)) matchedIntents.push(thisIntent);
       }
       if (['housing_urgent', 'domestic_violence'].includes(thisIntent) && /24\/7|24 hour/i.test(text)) {
         const value = Math.round(cfg.intent.urgentService * confidence);
         addFactor(`intent.urgentService.${thisIntent}`, value, `24/7 service for urgent ${thisIntent} (conf: ${confidence})`);
       }
+    }
+
+    // Dual-intent match bonus: services matching 2+ detected intents get extra boost
+    if (matchedIntents.length >= 2) {
+      addFactor('intent.dualIntentMatch', cfg.intent.dualIntentMatch,
+        `Matches ${matchedIntents.length} intents: ${matchedIntents.join(' + ')}`);
     }
 
     // Location-only boosting
@@ -1402,4 +1411,51 @@ export function computeRRFScore(sqlRank: number | null, semanticRank: number | n
     score += 1 / (k + semanticRank);
   }
   return score;
+}
+
+/**
+ * Standalone dual-intent boost — applies AFTER LLM reranking or boostByIntent.
+ * Services matching both primary and secondary intent patterns get a multiplicative boost.
+ * This runs on ALL cache paths (Tier 2, Tier 3, cached) for consistent behavior.
+ */
+export function applyDualIntentBoost(services: LiteService[], analysis: QueryAnalysis): LiteService[] {
+  if (!analysis.intents.secondary) return services;
+
+  // Skip if secondary is same intent as primary (degenerate case from LLM merge)
+  if (analysis.intents.secondary.intent === analysis.intents.primary.intent) return services;
+
+  // Require meaningful secondary confidence to avoid false dual-intent boosts
+  if (analysis.intents.secondary.confidence < 0.4) return services;
+
+  const primary = INTENT_SERVICE_MAP[analysis.intents.primary.intent];
+  const secondary = INTENT_SERVICE_MAP[analysis.intents.secondary.intent];
+  if (!primary || !secondary) return services;
+
+  // Confidence-scaled boost (inspired by learning-to-rank lambda weighting):
+  // Higher secondary confidence → stronger boost. Range: 1.2x (conf=0.4) to 1.5x (conf=1.0)
+  const secondaryConf = analysis.intents.secondary.confidence;
+  const DUAL_BOOST = 1.0 + 0.5 * secondaryConf; // 0.4→1.2x, 0.7→1.35x, 0.9→1.45x, 1.0→1.5x
+  let boostedCount = 0;
+
+  const result = services.map(svc => {
+    const text = `${svc.name} ${svc.category} ${svc.description ?? ''}`;
+    const matchesPrimary = primary.categoryPatterns.test(text) ||
+      primary.serviceTypes.some(st => svc.category.toLowerCase().includes(st.replace('_', ' ')));
+    const matchesSecondary = secondary.categoryPatterns.test(text) ||
+      secondary.serviceTypes.some(st => svc.category.toLowerCase().includes(st.replace('_', ' ')));
+
+    if (matchesPrimary && matchesSecondary && svc.rrfScore != null) {
+      boostedCount++;
+      return { ...svc, rrfScore: Math.round(svc.rrfScore * DUAL_BOOST * 100) / 100 };
+    }
+    return svc;
+  });
+
+  if (boostedCount > 0) {
+    // Re-sort by score after boosting
+    result.sort((a, b) => (b.rrfScore ?? 0) - (a.rrfScore ?? 0));
+    console.log(`[DualIntentBoost] Boosted ${boostedCount} services ×${DUAL_BOOST.toFixed(2)} matching both ${analysis.intents.primary.intent} + ${analysis.intents.secondary.intent} (secondary conf: ${secondaryConf.toFixed(2)})`);
+  }
+
+  return result;
 }

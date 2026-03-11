@@ -41,6 +41,12 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'rehab': ['rehabilitation', 'residential', 'inpatient', 'treatment'],
   'homeless': ['houseless', 'unhoused', 'shelter', 'street'],
   'domestic': ['violence', 'abuse', 'intimate', 'partner'],
+  'naloxone': ['harm reduction', 'narcan', 'overdose', 'needle exchange', 'opioid'],
+  'narcan': ['naloxone', 'harm reduction', 'overdose', 'opioid'],
+  'coke': ['cocaine', 'crack', 'stimulant', 'addiction'],
+  'meth': ['methamphetamine', 'crystal', 'stimulant', 'addiction'],
+  'weed': ['cannabis', 'marijuana', 'substance'],
+  'fentanyl': ['opioid', 'overdose', 'harm reduction', 'naloxone'],
   'gambling': ['gaming', 'betting'],
   'grief': ['bereavement', 'loss', 'mourning'],
   'hospital': ['emergency room', 'ER', 'urgent care', 'emergency department'],
@@ -58,6 +64,26 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'worthless': 'worthless', // Emotional state word
   'dental': 'dental',      // Not "mental" (Levenshtein distance 1)
   'rental': 'rental',      // Not "mental" (Levenshtein distance 2)
+  // Common English words that false-match KEYWORD_EXPANSIONS keys (distance ≤ 1)
+  'mouth': 'mouth',        // Not "youth"
+  'south': 'south',        // Not "youth"
+  'math': 'math',          // Not "meth"
+  'mood': 'mood',          // Not "food"
+  'foot': 'foot',          // Not "food"
+  'week': 'week',          // Not "weed"
+  'code': 'code',          // Not "coke"
+  'farm': 'farm',          // Not "harm"
+  'warm': 'warm',          // Not "harm"
+  'hard': 'hard',          // Not "harm"
+  'need': 'need',          // Not "weed"
+  'come': 'come',          // Not "coke"
+  'cope': 'cope',          // Not "coke"
+  'core': 'core',          // Not "coke"
+  'seed': 'seed',          // Not "weed"
+  'feed': 'feed',          // Not "weed"
+  'mesh': 'mesh',          // Not "meth"
+  'drag': 'drag',          // Not "drug"
+  'ford': 'ford',          // Not "food"
   // Short-word misspellings (bypasses length check via dictionary lookup)
   'fud': 'food',           // Phonetic: "fud bank"
   // Actual misspellings
@@ -170,14 +196,18 @@ export function findClosestKeyword(input: string, maxDistance: number = 2): stri
     return COMMON_MISSPELLINGS[inputLower];
   }
 
+  // Short words (< 6 chars) need stricter matching — distance 2 produces
+  // too many false positives (e.g. "month"→"youth", "math"→"meth")
+  const effectiveMax = inputLower.length < 6 ? Math.min(maxDistance, 1) : maxDistance;
+
   // Then try fuzzy matching against known keywords
   const knownKeywords = Object.keys(KEYWORD_EXPANSIONS);
   let bestMatch: string | null = null;
-  let bestDistance = maxDistance + 1;
+  let bestDistance = effectiveMax + 1;
 
   for (const keyword of knownKeywords) {
     const distance = levenshteinDistance(inputLower, keyword);
-    if (distance <= maxDistance && distance < bestDistance) {
+    if (distance <= effectiveMax && distance < bestDistance) {
       bestDistance = distance;
       bestMatch = keyword;
     }
