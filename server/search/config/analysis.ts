@@ -456,8 +456,8 @@ export const SEARCH_CONFIG = {
       /(?:need|looking for|find).*(?:a\s+)?(?:lawyer|attorney|legal help|legal aid)/i,
       /(?:legal|court|custody|divorce|immigration).*(?:help|support|services?|assistance)/i,
       /(?:can'?t afford|free|low cost).*(?:lawyer|legal)/i,
-      /\b(?:tenant rights|eviction.*legal|housing.*legal|family court|child support)\b/i,
-      /\b(?:legal aid|pro bono|lawyer referral)\b/i,
+      /\b(?:tenant rights|eviction|evicted|landlord|tenancy|housing.*legal|family court|child support)\b/i,
+      /\b(?:legal aid|pro bono|lawyer referral|restraining order|protection order)\b/i,
       // Custody and access disputes (not violence — legal issue)
       /(?:ex|partner|husband|wife|spouse).*(?:won'?t|will not|refuse|denied|keeping).*(?:see|visit|access|take).*(?:kids?|children|son|daughter)\b/i,
       /(?:won'?t|can'?t|not allowed).*(?:see|visit|access).*(?:my\s+)?(?:kids?|children|son|daughter)\b/i,

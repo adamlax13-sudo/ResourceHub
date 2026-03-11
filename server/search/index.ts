@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v134'; // ride→pride typo fix, Phase 1+2 search quality improvements
+const CACHE_VERSION = 'v136'; // legal/custody/eviction keywords, veteran/student/anger expansions
 
 import { SEARCH_CONFIG } from './config';
 import type {
