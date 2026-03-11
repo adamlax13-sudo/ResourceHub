@@ -73,6 +73,10 @@ export const COMMON_MISSPELLINGS: Record<string, string> = {
   'dental': 'dental',      // Not "mental" (Levenshtein distance 1)
   'rental': 'rental',      // Not "mental" (Levenshtein distance 2)
   // Common English words that false-match KEYWORD_EXPANSIONS keys (distance ≤ 1)
+  'ride': 'ride',          // Not "pride" (Levenshtein distance 1)
+  'hide': 'hide',          // Not "pride" (Levenshtein distance 1)
+  'side': 'side',          // Not "pride" (Levenshtein distance 1)
+  'bride': 'bride',        // Not "pride" (Levenshtein distance 1)
   'mouth': 'mouth',        // Not "youth"
   'south': 'south',        // Not "youth"
   'math': 'math',          // Not "meth"

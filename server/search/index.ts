@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v133'; // Third-party crisis, custody/legal, LGBTQ/dental, healthcare_access domain intent
+const CACHE_VERSION = 'v134'; // ride→pride typo fix, Phase 1+2 search quality improvements
 
 import { SEARCH_CONFIG } from './config';
 import type {
