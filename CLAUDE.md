@@ -69,7 +69,8 @@ pytest tests/ -v                     # Run scraper tests
 | `server/search/llm-intent.ts` | LLM intent classification (enhances regex, LRU cached 24h) |
 | `server/search/strategies/scoring/llm-rerank.ts` | LLM reranking of top 20 RRF candidates for Tier 3 searches |
 | `server/search/strategies/scoring/click-affinity-boost.ts` | Click-through affinity boost (1.0-1.3x, LRU cached 1h) |
-| `server/evaluation/ci_runner.mjs` | CI test runner — 38 queries with per-intent thresholds |
+| `server/evaluation/ci_runner.mjs` | CI test runner — 52 queries with per-intent thresholds |
+| `scripts/data/service-gaps-report.json` | 20 real Alberta orgs identified as data gaps (dental, LGBTQ, caregiver) |
 | `.github/workflows/search-eval.yml` | GitHub Actions CI for search quality regression testing |
 | `scripts/compute-click-affinities.mjs` | Batch job: compute (query, service) affinity scores from click data |
 | `server/search/distance.ts` | Haversine distance + attachDistances/sortByDistance/filterByMaxDistance |
@@ -87,7 +88,7 @@ pytest tests/ -v                     # Run scraper tests
 1. Normalize query + correct typos
 2. Analyze intent via regex (`analyzeQuery()`) + extract service attributes
 3. Enhance with LLM structured understanding (`enhanceIntentWithLLM()` — returns intents + attributes + semantic rewrite)
-4. **Crisis routing**: Direct crisis (suicidal ideation) → full helpline replacement. Situational crisis (DV, homelessness) → pin 988 + keep search results.
+4. **Crisis routing**: Direct crisis (suicidal ideation) → full helpline replacement. Situational crisis (DV, homelessness) → pin 988 + keep search results. Third-party crisis ("my teen is self-harming") → pin 988 + route to relevant services (youth/mental health).
 5. Check precomputed cache for popular queries
 6. Stage 1: Fast SQL search (indexed, uses expanded keywords)
 7. Stage 2: Semantic search (pgvector embeddings, uses LLM semantic rewrite if available)
