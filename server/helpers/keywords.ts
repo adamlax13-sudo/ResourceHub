@@ -68,6 +68,17 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'hospital': ['emergency room', 'ER', 'urgent care', 'emergency department'],
   'prescription': ['medication', 'pharmacare', 'drug coverage', 'pharmacy'],
   'wheelchair': ['mobility', 'accessibility', 'assistive device', 'walker'],
+  // Indigenous health benefit program
+  'nihb': ['indigenous', 'first nations', 'health', 'benefit', 'coverage'],
+  // English as a Second/Additional Language
+  'esl': ['english', 'newcomer', 'language', 'settlement', 'class'],
+  'ell': ['english', 'newcomer', 'language', 'settlement'],
+  // Residential school trauma
+  'residential school': ['indigenous', 'trauma', 'healing', 'survivor'],
+  // Postpartum mental health
+  'postpartum': ['mental health', 'counselling', 'perinatal', 'maternal'],
+  // Alberta disability benefit
+  'aish': ['disability', 'benefit', 'income', 'support'],
 };
 
 // Common misspellings mapped to correct terms
