@@ -103,6 +103,8 @@ export interface QueryAnalysis {
   negativeTerms: string[];
   /** Structured query attributes extracted by LLM understanding (optional, enriches search) */
   attributes?: QueryAttributes;
+  /** Sub-intents detected for the query */
+  subIntents?: string[];
 }
 
 /**

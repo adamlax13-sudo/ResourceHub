@@ -6,7 +6,7 @@
  * scattered across routes.ts.
  */
 
-import { SEARCH_CONFIG } from './config';
+import { SEARCH_CONFIG, SUB_INTENT_PATTERNS } from './config';
 import type { QueryAnalysis, QueryAttributes, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
 import {
   extractLocationContext,
@@ -22,6 +22,18 @@ import {
   correctQueryPhonetic,
 } from '../helpers/keywords';
 import { scrubPii } from '../helpers/pii';
+
+/** Matches "crisis" as a forward compound noun: "crisis centre", "crisis counselling", etc. */
+const CRISIS_FORWARD_DESCRIPTOR =
+  /\bcrisis\s+(centre|center|counsell|service|support|line|help|team|unit|worker)\b/i;
+
+/** Matches "crisis" as a trailing descriptor: "mental health crisis", "student crisis", etc. */
+const CRISIS_TRAILING_DESCRIPTOR =
+  /\b(mental health|student|financial|housing|emotional|youth)\s+crisis\b/i;
+
+/** First-person distress signals that indicate genuine self-referential crisis */
+const FIRST_PERSON_DISTRESS =
+  /\b(i\s+(want|am|feel|need)|me|myself|my\s+life|kill\s+myself|end\s+my\s+life|want\s+to\s+die|self[- ]harm|hurt\s+myself)\b/i;
 
 /**
  * Analyze a search query and extract all relevant information.
@@ -81,7 +93,6 @@ export function analyzeQuery(
 
   // Detect crisis — returns both crisis flag and whether it's third-party concern
   const crisisResult = detectCrisis(normalized);
-  const isCrisis = crisisResult.isCrisis;
 
   // Find alias matches (e.g., "CMHA" -> service ID)
   const aliasMatch = findAliasMatch(rawKeywords, aliasLookup);
@@ -89,6 +100,20 @@ export function analyzeQuery(
   // Determine query intent(s) with confidence scores
   const intents = determineIntent(keywords, effectiveLocation, crisisResult, aliasMatch, sanitized);
   const intent = intents.primary.intent; // Backward compat
+
+  // Apply crisis descriptor guard:
+  // Override isCrisis=false if "crisis" is used as a service descriptor
+  // (e.g. "student mental health crisis") rather than self-referential ideation.
+  let isCrisis = crisisResult.isCrisis;
+  if (
+    isCrisis &&
+    !FIRST_PERSON_DISTRESS.test(normalized) &&
+    (CRISIS_FORWARD_DESCRIPTOR.test(normalized) || CRISIS_TRAILING_DESCRIPTOR.test(normalized)) &&
+    intent !== 'general' &&
+    intent !== 'crisis'
+  ) {
+    isCrisis = false;
+  }
 
   // Detect specific substance type if any intent is substance_abuse
   const hasSubstanceIntent = intent === 'substance_abuse' ||
@@ -101,6 +126,15 @@ export function analyzeQuery(
 
   // Regex-based attribute detection (fallback when LLM unavailable/times out)
   const attributes = detectServiceAttributes(corrected);
+
+  // Collect all detected parent intents for sub-intent lookup
+  const detectedParentIntents = [
+    intents.primary.intent,
+    ...(intents.secondary ? [intents.secondary.intent] : []),
+    ...(intents.tertiary ? [intents.tertiary.intent] : []),
+  ].filter(i => i && i !== 'general');
+
+  const subIntents = detectSubIntents(corrected, detectedParentIntents);
 
   return {
     raw: sanitized,
@@ -118,6 +152,7 @@ export function analyzeQuery(
     substanceType,
     negativeTerms,
     attributes,
+    subIntents,
   };
 }
 
@@ -352,6 +387,33 @@ function detectSubstanceType(query: string): SubstanceType {
   if (/\b(addict|addiction|recovery|sober|relapse)\b/i.test(q)) return 'general';
 
   return null;
+}
+
+/**
+ * Detect sub-intents for a query based on detected parent intents.
+ * Orphaned sub-intents (parent not detected) are dropped.
+ *
+ * @param query - The corrected query string (use normalized/corrected, same as detectServiceAttributes)
+ * @param detectedIntents - Array of detected parent intent strings (primary + secondaries)
+ * @returns Array of namespaced sub-intent strings e.g. ["housing_urgent.eviction_defense"]
+ */
+export function detectSubIntents(query: string, detectedIntents: string[]): string[] {
+  if (!detectedIntents.length) return [];
+
+  const results: string[] = [];
+
+  for (const parentIntent of detectedIntents) {
+    const subMap = SUB_INTENT_PATTERNS[parentIntent];
+    if (!subMap) continue;
+
+    for (const [subIntentKey, patterns] of Object.entries(subMap)) {
+      if (patterns.some(re => re.test(query))) {
+        results.push(subIntentKey);
+      }
+    }
+  }
+
+  return results;
 }
 
 /**

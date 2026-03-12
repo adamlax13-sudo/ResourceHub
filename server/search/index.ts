@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v137'; // text-embedding-3-large upgrade + off-category penalty
+const CACHE_VERSION = 'v138';
 
 import { SEARCH_CONFIG } from './config';
 import type {

@@ -958,3 +958,372 @@ export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'g
 
 // Re-export the config type
 export type SearchConfigType = typeof SEARCH_CONFIG;
+
+// ─── Sub-Intent Taxonomy ───────────────────────────────────────────────────
+//
+// Namespaced sub-intents: '<parent_intent>.<sub_intent>'
+// Only 10 intents covered in v138; 14 deferred to future iteration.
+// Deferred: domestic_violence, youth_services, family_addiction_support,
+//   parenting_support, financial_support, grief_support, senior_services,
+//   caregiver_support, lgbtq_services, crisis, food_insecurity, basic_needs,
+//   community_social, student_services
+// ────────────────────────────────────────────────────────────────────────────
+
+export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
+  housing_urgent: {
+    'housing_urgent.emergency_shelter': [
+      /\bemergency shelter\b/i,
+      /\bnowhere to (?:sleep|stay|go)\b/i,
+      /\bhomeless(ness)?\b/i,
+      /\bno (?:fixed address|place to stay)\b/i,
+      /\bsleeping rough\b/i,
+    ],
+    'housing_urgent.eviction_defense': [
+      /\bevict(ion|ed|ing)?\b/i,
+      /\btenant rights\b/i,
+      /\bbeing forced out\b/i,
+      /\blandlord.*(?:kick|throw|push|forc).*out\b/i,
+    ],
+    'housing_urgent.transitional_housing': [
+      /\btransitional housing\b/i,
+      /\bhalfway house\b/i,
+      /\bsober living\b/i,
+      /\bgroup home\b/i,
+    ],
+    'housing_urgent.affordable_housing': [
+      /\baffordable housing\b/i,
+      /\bsubsidized (housing|rent|apartment)\b/i,
+      /\brent[- ]geared[- ]to[- ]income\b/i,
+      /\bRGI\b/,
+      /\blow[- ]income housing\b/i,
+      /\bhousing (?:subsidy|benefit|allowance)\b/i,
+    ],
+    'housing_urgent.youth_housing': [
+      /\byouth (?:shelter|housing|hostel)\b/i,
+      /\brunaway\b/i,
+      /\bcouch surfing\b/i,
+      /\byoung (?:adult|person).*hous/i,
+    ],
+  },
+
+  substance_abuse: {
+    'substance_abuse.detox': [
+      /\bdetox(ification)?\b/i,
+      /\bwithdraw(al)?\b/i,
+      /\bmedically supervised\b/i,
+      /\bsober(ing) up\b/i,
+    ],
+    'substance_abuse.residential_treatment': [
+      /\bresidential treat(ment)?\b/i,
+      /\binpatient (rehab|treatment)\b/i,
+      /\brehab(ilitation)?\b/i,
+      /\btreatment cent(re|er)\b/i,
+    ],
+    'substance_abuse.harm_reduction': [
+      /\bharm reduction\b/i,
+      /\bnaloxone\b/i,
+      /\bnarcan\b/i,
+      /\bsafe (supply|injection|consumption)\b/i,
+      /\bneedle (exchange|program)\b/i,
+      /\boverdose prevention\b/i,
+      /\bfentanyl\b/i,
+    ],
+    'substance_abuse.outpatient': [
+      /\boutpatient\b/i,
+      /\bday program\b/i,
+      /\bsubstitut(ion|e) therapy\b/i,
+      /\bmethadone\b/i,
+      /\bsuboxone\b/i,
+    ],
+    'substance_abuse.gambling': [
+      /\bgambl(ing|er|ed)\b/i,
+      /\bbetting (problem|addiction)\b/i,
+      /\bgamblers anonymous\b/i,
+    ],
+    'substance_abuse.cannabis': [
+      /\bcannabis (use disorder|addiction|dependence)\b/i,
+      /\bmarijuana (problem|addiction)\b/i,
+      /\bweed.*problem\b/i,
+    ],
+  },
+
+  healthcare_access: {
+    'healthcare_access.dental': [
+      /\bdental\b/i,
+      /\bdentist\b/i,
+      /\btooth|teeth\b/i,
+      /\boral health\b/i,
+    ],
+    'healthcare_access.walk_in_clinic': [
+      /\bwalk[- ]in (clinic|centre|center)\b/i,
+      /\bno (?:appointment|referral) (needed|required)\b/i,
+      /\bdrop[- ]in (?:clinic|health)\b/i,
+      /\bsame[- ]day (care|appointment)\b/i,
+    ],
+    'healthcare_access.hospital_er': [
+      /\b(?:hospital|ER|emergency room|emergency department)\b/i,
+      /\burgent care\b/i,
+      /\btrauma cent(re|er)\b/i,
+    ],
+    'healthcare_access.prescription_coverage': [
+      /\bprescription (?:coverage|cost|afford|help|free)\b/i,
+      /\bmedication (?:cost|coverage|afford)\b/i,
+      /\bdrug (?:coverage|plan|benefit)\b/i,
+      /\bNHIB\b/i,
+      /\bblue cross\b/i,
+    ],
+    'healthcare_access.disability_equipment': [
+      /\b(?:mobility|assistive) (?:aids?|equipment|devices?)\b/i,
+      /\bwheelchair\b/i,
+      /\bwalker\b/i,
+      /\bAADL\b/,
+      /\bRGP\b/,
+    ],
+  },
+
+  mental_health: {
+    'mental_health.counselling': [
+      /\bcounsell?ing\b/i,
+      /\btherapy\b/i,
+      /\btherapist\b/i,
+      /\bpsychologist\b/i,
+      /\bmental health support\b/i,
+    ],
+    'mental_health.psychiatry': [
+      /\bpsychiatry\b/i,
+      /\bpsychiatrist\b/i,
+      /\bmedication management\b/i,
+      /\bantidepressant\b/i,
+      /\bbipolar\b/i,
+      /\bschizophrenia\b/i,
+    ],
+    'mental_health.eating_disorder': [
+      /\beating dis(?:order|ordered eating)\b/i,
+      /\banorexia\b/i,
+      /\bbulimia\b/i,
+      /\bbinge eating\b/i,
+      /\bEDSA\b/,
+    ],
+    'mental_health.trauma': [
+      /\btrauma\b/i,
+      /\bPTSD\b/i,
+      /\bpost[- ]traumatic\b/i,
+      /\babuse (survivor|recovery)\b/i,
+      /\bcomplex trauma\b/i,
+    ],
+    'mental_health.anger_management': [
+      /\banger management\b/i,
+      /\brage\b/i,
+      /\baggression\b/i,
+      /\bconflict (?:management|resolution)\b/i,
+      /\bviolent behaviour\b/i,
+    ],
+    'mental_health.postpartum': [
+      /\bpostpartum\b/i,
+      /\bpost[- ]natal\b/i,
+      /\bperinatal mental health\b/i,
+      /\bafter (birth|baby|delivery).*(?:depression|anxiety)\b/i,
+      /\bnew (mom|mother|parent).*(?:depression|anxiety|struggle)\b/i,
+    ],
+  },
+
+  indigenous_services: {
+    'indigenous_services.residential_school_survivor': [
+      /\bresidential school\b/i,
+      /\bsurvivor (support|healing)\b/i,
+      /\bIRS (support|survivors)\b/i,
+      /\btruth and reconciliation\b/i,
+    ],
+    'indigenous_services.nihb_coverage': [
+      /\bNIHB\b/i,
+      /\bNon[- ]Insured Health Benefits\b/i,
+      /\bfederal health (?:benefit|coverage).*(?:indigenous|first nations|inuit|métis)\b/i,
+    ],
+    'indigenous_services.cultural_healing': [
+      /\bcultural healing\b/i,
+      /\btraditional (?:healing|medicine|ceremony)\b/i,
+      /\bElders?\b/i,
+      /\bsmudging\b/i,
+      /\bsweat lodge\b/i,
+      /\bIndigenous (?:culture|tradition|ceremony)\b/i,
+    ],
+    'indigenous_services.language_preservation': [
+      /\b(?:Cree|Blackfoot|Dene|Nakoda|Michif|Stoney) (?:language|class|program)\b/i,
+      /\bIndigenous language\b/i,
+      /\blanguage (?:revitalization|preservation|nest)\b/i,
+    ],
+  },
+
+  newcomer_services: {
+    'newcomer_services.esl_language': [
+      /\bESL\b/i,
+      /\bELL\b/i,
+      /\benglish (?:class|lesson|language|course|school)\b/i,
+      /\blearn english\b/i,
+      /\blanguage (?:class|training|program)\b/i,
+      /\bFSL\b/i,
+    ],
+    'newcomer_services.credential_recognition': [
+      /\bcredential (?:recognition|assessment|evaluation)\b/i,
+      /\bforeign (?:credential|degree|diploma|qualification)\b/i,
+      /\bIQAS\b/i,
+      /\bWES\b/i,
+      /\bprofessional (?:licence|license|certification).*(?:foreign|international|overseas)\b/i,
+    ],
+    'newcomer_services.settlement': [
+      /\bsettlement (?:service|agency|program|worker)\b/i,
+      /\bnewcomer (?:service|program|support)\b/i,
+      /\bimmigrant (?:service|support|program)\b/i,
+      /\bwelcome cent(re|er)\b/i,
+    ],
+    'newcomer_services.refugee': [
+      /\brefugee\b/i,
+      /\basylum seeker\b/i,
+      /\bprotected person\b/i,
+      /\bsponsorship (?:agreement|holder)\b/i,
+      /\bIFH\b/i,
+    ],
+    'newcomer_services.interpretation': [
+      /\binterpreter\b/i,
+      /\btranslat(or|ion)\b/i,
+      /\blanguage (?:barrier|access|help)\b/i,
+      /\bculturally? (?:appropriate|sensitive) service\b/i,
+    ],
+  },
+
+  legal_aid: {
+    'legal_aid.family_court': [
+      /\bcustody\b/i,
+      /\bvisitation\b/i,
+      /\bparenting (order|plan|time)\b/i,
+      /\bfamily (?:court|law|lawyer)\b/i,
+      /\bdivorce\b/i,
+      /\bseparation (agreement|order)\b/i,
+      /\bchild support\b/i,
+    ],
+    'legal_aid.eviction_defense': [
+      /\bevict(ion|ed|ing)?\b/i,
+      /\btenant rights\b/i,
+      /\blandlord (?:dispute|problem|issue)\b/i,
+      /\bRTDRS\b/i,
+    ],
+    'legal_aid.restraining_order': [
+      /\brestraining order\b/i,
+      /\bprotection order\b/i,
+      /\bEPO\b/,
+      /\bQEP\b/,
+      /\bno[- ]contact order\b/i,
+    ],
+    'legal_aid.immigration_law': [
+      /\bimmigration (?:lawyer|legal|law|help)\b/i,
+      /\bdeportation\b/i,
+      /\bvisa (?:problem|issue|appeal|denied)\b/i,
+      /\brefugee (?:claim|board|hearing)\b/i,
+    ],
+    'legal_aid.criminal_court': [
+      /\bcriminal (?:record|charge|lawyer|court)\b/i,
+      /\bpardon\b/i,
+      /\brecord suspension\b/i,
+      /\bcharge (dismissed|stayed|withdrawn)\b/i,
+    ],
+  },
+
+  employment_support: {
+    'employment_support.job_search': [
+      /\bjob (?:search|hunt|seek|find)\b/i,
+      /\blooking for work\b/i,
+      /\bunemployed\b/i,
+      /\bjob (?:fair|posting|board|listing)\b/i,
+    ],
+    'employment_support.resume_help': [
+      /\bresume\b/i,
+      /\bCV\b/,
+      /\bcover letter\b/i,
+      /\bjob application\b/i,
+      /\binterview (?:prep|skills|coaching)\b/i,
+    ],
+    'employment_support.credential_recognition': [
+      /\bcredential (?:recognition|assessment)\b/i,
+      /\bforeign (credential|degree|qualification)\b/i,
+      /\bprofessional (?:licence|license).*(?:foreign|international)\b/i,
+    ],
+    'employment_support.barrier_employment': [
+      /\bbarrier(s)? to employment\b/i,
+      /\bsupported employment\b/i,
+      /\bworkplace (accommodation|modification)\b/i,
+      /\bdisability.*work\b/i,
+    ],
+    'employment_support.apprenticeship': [
+      /\bapprenticeship\b/i,
+      /\btrades (training|program)\b/i,
+      /\bvocational training\b/i,
+      /\bskills training\b/i,
+    ],
+  },
+
+  veteran_services: {
+    'veteran_services.ptsd_trauma': [
+      /\bPTSD\b/i,
+      /\boperational stress injury\b/i,
+      /\bOSI\b/,
+      /\bcombat trauma\b/i,
+      /\bmilitary.*trauma\b/i,
+    ],
+    'veteran_services.military_family': [
+      /\bmilitary family\b/i,
+      /\bdeployment (?:support|stress)\b/i,
+      /\bspouse.*military\b/i,
+      /\bCAF (?:family|member|veteran)\b/i,
+    ],
+    'veteran_services.transition_support': [
+      /\btransition(ing)? (out of|from) (?:military|service|forces)\b/i,
+      /\breleas(ed|ing) (?:from)? (?:military|CF|CAF|forces)\b/i,
+      /\bVAC\b/,
+      /\bVeterans Affairs\b/i,
+    ],
+    'veteran_services.benefits_navigation': [
+      /\bveteran (benefit|pension|allowance|disability)\b/i,
+      /\bVAC benefit\b/i,
+      /\bservice benefit\b/i,
+      /\bmilitary pension\b/i,
+    ],
+  },
+
+  disability_support: {
+    'disability_support.aish_application': [
+      /\bAISH\b/i,
+      /\bAssured Income for the Severely Handicapped\b/i,
+      /\bdisability benefit.*(?:Alberta|provincial)\b/i,
+      /\bapply.*AISH\b/i,
+    ],
+    'disability_support.mobility_aids': [
+      /\bwheelchair\b/i,
+      /\bwalker\b/i,
+      /\bmobility (?:aid|device|equipment|scooter)\b/i,
+      /\bAADL\b/,
+      /\bassistive (?:device|technology|equipment)\b/i,
+    ],
+    'disability_support.autism_support': [
+      /\bautism\b/i,
+      /\bASD\b/,
+      /\bAsperger\b/i,
+      /\bPDD\b/,
+      /\bneurodiverg(ent|ence)\b/i,
+    ],
+    'disability_support.acquired_brain_injury': [
+      /\bacquired brain injury\b/i,
+      /\bABI\b/,
+      /\btraumatic brain injury\b/i,
+      /\bTBI\b/,
+      /\bstroke (?:recovery|rehabilitation|support)\b/i,
+    ],
+  },
+};
+
+/**
+ * Flat set of all valid sub-intent strings derived from SUB_INTENT_PATTERNS.
+ * Used to validate LLM-returned sub-intents before merging.
+ */
+export const VALID_SUB_INTENTS: Set<string> = new Set(
+  Object.values(SUB_INTENT_PATTERNS).flatMap(subMap => Object.keys(subMap))
+);
