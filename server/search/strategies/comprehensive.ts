@@ -519,10 +519,8 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     const hasCommunityPref = detectCommunityPreference(analysis.raw) !== null;
     const hasAnyPreference = hasGenderPreference || hasAgeGroup || hasUrgency || hasFamilySituation || hasCommunityPref;
 
-    if (isDomainIntent || hasAnyPreference) {
-      // Use LLM reranker for Tier 3 fresh searches (falls back to regex boostByIntent on failure)
-      services = await llmRerank(services, analysis.corrected, analysis, boostOptions, enhancedQuery);
-    }
+    // Use LLM reranker for all Tier 3 fresh searches (falls back to regex boostByIntent on failure)
+    services = await llmRerank(services, analysis.corrected, analysis, boostOptions, enhancedQuery);
 
     // Dual-intent boost: services matching both primary + secondary intent get 35% score boost
     services = applyDualIntentBoost(services, analysis);
