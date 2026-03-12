@@ -14,7 +14,7 @@ import type { BoostOptions } from './name-match';
 import { getOpenAI, extractJSON } from '../../../helpers/openai';
 
 // How many services to send to the LLM for reranking
-const RERANK_TOP_N = 20;
+const RERANK_TOP_N = 30;
 
 // Timeout for the LLM call (ms)
 const RERANK_TIMEOUT_MS = 6000;
