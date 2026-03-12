@@ -1495,9 +1495,12 @@ export function applyDualIntentBoost(services: LiteService[], analysis: QueryAna
   if (!primary || !secondary) return services;
 
   // Confidence-scaled boost (inspired by learning-to-rank lambda weighting):
-  // Higher secondary confidence → stronger boost. Range: 1.2x (conf=0.4) to 1.5x (conf=1.0)
+  // Higher secondary confidence → stronger boost.
+  // When secondary is strong (≥0.55), apply aggressive boost to overcome LLM-reranked
+  // generic services that dominate the top-20 candidate pool.
+  // Range: 1.2x (conf=0.4) to 2.5x (conf=1.0)
   const secondaryConf = analysis.intents.secondary.confidence;
-  const DUAL_BOOST = 1.0 + 0.5 * secondaryConf; // 0.4→1.2x, 0.7→1.35x, 0.9→1.45x, 1.0→1.5x
+  const DUAL_BOOST = 1.0 + 1.5 * secondaryConf; // 0.4→1.6x, 0.55→1.825x, 0.7→2.05x, 1.0→2.5x
   let boostedCount = 0;
 
   const result = services.map(svc => {
