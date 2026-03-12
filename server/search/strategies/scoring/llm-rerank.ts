@@ -163,9 +163,13 @@ export async function llmRerank(
     const scores: number[] = Array.isArray(parsed)
       ? parsed
       : (parsed.scores ?? parsed.relevance ?? parsed.results);
-    if (!Array.isArray(scores) || scores.length !== toRerank.length) {
-      throw new Error(`Expected ${toRerank.length} scores, got ${Array.isArray(scores) ? scores.length : 'non-array'}`);
+    if (!Array.isArray(scores)) {
+      throw new Error(`Expected array of scores, got non-array`);
     }
+    // Tolerate LLM returning slightly wrong count (off-by-one is common):
+    // truncate if too many, pad with neutral 50 if too few
+    while (scores.length < toRerank.length) scores.push(50);
+    if (scores.length > toRerank.length) scores.splice(toRerank.length);
 
     // Dynamic blend: trust LLM more when intent confidence is high
     // High confidence (0.8+) → 70/30 LLM/RRF — we know what the user wants
