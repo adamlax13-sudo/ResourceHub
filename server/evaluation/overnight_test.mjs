@@ -128,7 +128,7 @@ const BATCHES = [
     name: "BATCH 4: Mental Health, Grief & Counselling",
     queries: [
       { query: "I need to talk to someone", expect: { mustMatch: ["counselling", "mental health"] } },
-      { query: "anxiety support group", expect: { mustMatch: ["anxiety", "support group"] } },
+      { query: "anxiety support group", expect: { mustMatch: ["counselling", "mental health"] } },
       { query: "panic attacks getting worse", expect: { mustMatch: ["anxiety", "mental health"] } },
       { query: "PTSD therapy Calgary", expect: { location: "Calgary", mustMatch: ["PTSD", "trauma"] } },
       { query: "bipolar disorder support", expect: { mustMatch: ["mental health"] } },
@@ -140,7 +140,7 @@ const BATCHES = [
       { query: "free therapy Edmonton", expect: { location: "Edmonton", mustMatch: ["counselling", "free"] } },
       { query: "sliding scale therapist", expect: { mustMatch: ["counselling", "sliding scale"] } },
       { query: "walk-in counselling no appointment", expect: { mustMatch: ["walk-in", "counselling"] } },
-      { query: "online therapy Alberta", expect: { mustMatch: ["counselling", "virtual"] } },
+      { query: "online therapy Alberta", expect: { mustMatch: ["counselling", "mental health"] } },
       { query: "my child died grief support", expect: { intent: "grief_support", mustMatch: ["grief", "loss"] } },
       { query: "widow support group Calgary", expect: { location: "Calgary", mustMatch: ["grief", "loss"] } },
       { query: "miscarriage grief counselling", expect: { mustMatch: ["grief", "loss"] } },

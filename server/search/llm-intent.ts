@@ -290,8 +290,15 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
   // SAFETY: If LLM detects crisis, escalate. Use higher bar (0.6) when regex already
   // has a confident non-crisis intent — prevents "emergency shelter" false positives.
   // Use lower bar (0.5) when regex is uncertain (general/low confidence).
+  // GUARD: LLM must not introduce crisis for queries with no first-person signals.
+  // "feeling really down lately" → no "I/me/my/myself" → LLM should not escalate to crisis.
+  // Without this, LLM over-confidently routes colloquial sadness to 988.
   const llmCrisis = llmIntents.find(i => i.intent === 'crisis');
-  const crisisBar = (regexConfidence >= 0.5 && analysis.intent !== 'crisis') ? 0.6 : 0.5;
+  const hasFirstPersonSignal = /\b(i\b|i'm|i've|i'll|i'd|me\b|my\b|myself\b)/i.test(analysis.normalized);
+  // If no first-person signal, block LLM from introducing crisis entirely.
+  // If first-person present, use normal confidence bars.
+  const crisisBar = !hasFirstPersonSignal ? Infinity
+    : (regexConfidence >= 0.5 && analysis.intent !== 'crisis') ? 0.6 : 0.5;
   // GUARD: Crisis descriptor override — if "crisis" appears as a service descriptor
   // (e.g. "student crisis support", "crisis centre calgary") and there's no first-person
   // distress, skip the crisis escalation even if LLM detected crisis.
@@ -335,8 +342,11 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
   }
 
   // Normal override: LLM must be meaningfully more confident than regex.
-  // Exception: if isCrisisDescriptor, don't let LLM set crisis as primary intent.
-  if (llmPrimary.confidence > regexConfidence + 0.1 && !(isCrisisDescriptor && llmPrimary.intent === 'crisis')) {
+  // Exceptions: don't let LLM set crisis as primary if (a) it's a crisis descriptor,
+  // or (b) the query has no first-person signal (blocks colloquial sadness escalation).
+  if (llmPrimary.confidence > regexConfidence + 0.1 &&
+      !(isCrisisDescriptor && llmPrimary.intent === 'crisis') &&
+      !(!hasFirstPersonSignal && llmPrimary.intent === 'crisis')) {
     // When LLM overrides with a DIFFERENT intent than regex, clear stale regex
     // secondaries that the LLM didn't detect — they can cause incorrect category
     // rescue in trimToRelevant(). E.g., regex detects DV(0.29) as secondary for
