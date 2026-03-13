@@ -29,11 +29,9 @@ const FILTER_MATCH_CONFIGS: FilterMatchConfig[] = [
   {
     filterKey: 'ageGroup',
     getServiceValue: (svc) => svc.ageGroup,
-    isExplicitMatch: (filterVal, svcVal) => {
-      if (svcVal === filterVal) return true;
-      if (svcVal === 'youth_and_adult' && (filterVal === 'youth' || filterVal === 'adult')) return true;
-      return false;
-    },
+    // Only exact matches get the full boost. youth_and_adult passes the hard filter
+    // for both youth/adult queries but shouldn't rank above dedicated services.
+    isExplicitMatch: (filterVal, svcVal) => svcVal === filterVal,
     label: 'age',
   },
   {
