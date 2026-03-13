@@ -390,3 +390,41 @@ export function applyExclusionFilter(
 
   return filtered;
 }
+
+/**
+ * CULTURAL SAFETY: Hard-exclude Western Christian / faith-based services for Indigenous queries.
+ *
+ * Many Indigenous people have experienced institutional trauma through Catholic/Christian
+ * residential schools and missions. Showing faith-based services for indigenous searches
+ * is culturally unsafe and potentially re-traumatizing.
+ *
+ * Deliberately avoids filtering "spiritual", "healing", "ceremony", "elder" — these
+ * appear in legitimate Indigenous cultural healing contexts.
+ *
+ * Triggers when indigenous_services is the primary intent OR a strong secondary (conf ≥ 0.5).
+ */
+const CHRISTIAN_EXCLUSION_PATTERN =
+  /\b(catholic|christian|baptist|evangelical|pentecostal|lutheran|methodist|presbyterian|salvation\s*army|rescue\s*mission|faith[- ]based|dream\s*cent(?:re|er)|life\s*cent(?:re|er)|mission\s*cent(?:re|er)|bible\b|jesus\b|christ\b|pastoral|diocese|parish)\b/i;
+
+export function filterChristianForIndigenous(
+  services: LiteService[],
+  primaryIntent: string,
+  secondaryIntent?: { intent: string; confidence: number },
+): LiteService[] {
+  const isIndigenousQuery =
+    primaryIntent === 'indigenous_services' ||
+    (secondaryIntent?.intent === 'indigenous_services' && secondaryIntent.confidence >= 0.5);
+
+  if (!isIndigenousQuery) return services;
+
+  const before = services.length;
+  const filtered = services.filter(svc => {
+    const text = `${svc.name ?? ''} ${svc.description ?? ''} ${svc.category ?? ''}`;
+    return !CHRISTIAN_EXCLUSION_PATTERN.test(text);
+  });
+
+  if (filtered.length < before) {
+    console.log(`[IndigenousFilter] Excluded ${before - filtered.length} faith-based/Christian services for indigenous query`);
+  }
+  return filtered;
+}

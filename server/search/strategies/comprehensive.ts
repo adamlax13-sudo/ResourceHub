@@ -53,6 +53,7 @@ import {
   applyOrganizationDiversity,
   applyAgeFilter,
   applyExclusionFilter,
+  filterChristianForIndigenous,
 } from './filters';
 
 import {
@@ -502,6 +503,9 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Apply exclusion filter for hard filtering (must happen before scoring)
     const exclusions = detectExclusions(analysis.raw, analysis.intent);
     services = applyExclusionFilter(services, exclusions);
+
+    // CULTURAL SAFETY: Hard-exclude Western Christian/faith-based services for Indigenous queries
+    services = filterChristianForIndigenous(services, analysis.intent, analysis.intents.secondary);
 
     // Apply age-based filtering for high-confidence queries
     const ageDetection = detectAgeGroup(analysis.raw);
