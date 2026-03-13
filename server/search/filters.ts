@@ -89,8 +89,11 @@ export function applyHardFilters(services: LiteService[], filters: SearchFilters
     if (cats && !cats.has(svc.category?.toLowerCase() ?? '')) return false;
 
     // Gender: exclude only the opposite restriction
+    // Normalize DB values: "women" → "women_only", "men" → "men_only" (data inconsistency guard)
     if (filters.genderRestriction && filters.genderRestriction !== 'all') {
-      const g = svc.genderRestriction;
+      let g = svc.genderRestriction;
+      if (g === 'women') g = 'women_only';
+      else if (g === 'men') g = 'men_only';
       if (g && g !== 'all' && g !== filters.genderRestriction) return false;
     }
 

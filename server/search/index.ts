@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v149';
+const CACHE_VERSION = 'v150';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -209,6 +209,45 @@ function filterActiveServices(services: LiteService[], activeIds: Set<string>): 
 }
 
 /**
+ * Derive implicit hard filters from LLM-extracted demographic attributes.
+ * When the user types "mens addiction services", the LLM extracts demographic: "men"
+ * but this was never converted to a genderRestriction filter — so women-only services leaked through.
+ *
+ * Only applies when the user hasn't already set the corresponding UI filter.
+ */
+function deriveImplicitFilters(attributes: import('./types').QueryAttributes | undefined, existingFilters?: SearchFilters): SearchFilters | undefined {
+  if (!attributes?.demographic) return existingFilters;
+
+  const demo = attributes.demographic.toLowerCase();
+  const derived: SearchFilters = {};
+
+  // Gender: map demographic to genderRestriction (only if UI filter not already set)
+  if (!existingFilters?.genderRestriction || existingFilters.genderRestriction === 'all') {
+    if (/\b(men|male|father|dad|husband|boy)\b/.test(demo) && !/\b(women|woman|female)\b/.test(demo)) {
+      derived.genderRestriction = 'men_only';
+    } else if (/\b(women|woman|female|mother|mom|girl)\b/.test(demo) && !/\b(men|male)\b/.test(demo)) {
+      derived.genderRestriction = 'women_only';
+    }
+  }
+
+  // Age: map demographic to ageGroup (only if UI filter not already set)
+  if (!existingFilters?.ageGroup || existingFilters.ageGroup === 'all_ages') {
+    if (/\b(youth|teen|adolescent|teenager|young|child|kid|juvenile|minor)\b/.test(demo)) {
+      derived.ageGroup = 'youth';
+    } else if (/\b(senior|elderly|older adult|aging|aged|retired|retiree)\b/.test(demo)) {
+      derived.ageGroup = 'senior';
+    }
+  }
+
+  if (Object.keys(derived).length === 0) return existingFilters;
+
+  const merged = { ...existingFilters, ...derived };
+  const derivedLabels = Object.entries(derived).map(([k, v]) => `${k}=${v}`).join(', ');
+  console.log(`[SearchOrchestrator] Implicit filters from demographic "${attributes.demographic}": ${derivedLabels}`);
+  return merged;
+}
+
+/**
  * Main search function - the single entry point for all search requests.
  */
 export async function search(input: SearchInput): Promise<SearchResponse> {
@@ -254,11 +293,13 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
     services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisPrecomputed);
 
-    if (input.filters && !isDirectCrisisPrecomputed) {
-      services = applyHardFilters(services, input.filters);
-      services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
-      services = applyPreferenceBoosts(services, input.filters);
-      services = applyFilterMatchBoosts(services, input.filters);
+    // Merge implicit demographic filters from query text with explicit UI filters
+    const precomputedFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
+    if (precomputedFilters && !isDirectCrisisPrecomputed) {
+      services = applyHardFilters(services, precomputedFilters);
+      services = await supplementCategories(services, precomputedFilters, analysis.location.specified || input.location);
+      services = applyPreferenceBoosts(services, precomputedFilters);
+      services = applyFilterMatchBoosts(services, precomputedFilters);
     }
 
     // Data quality boost applies regardless of filters
@@ -335,11 +376,13 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
     services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached);
 
-    if (input.filters && !isDirectCrisisCached) {
-      services = applyHardFilters(services, input.filters);
-      services = await supplementCategories(services, input.filters, analysis.location.specified || input.location);
-      services = applyPreferenceBoosts(services, input.filters);
-      services = applyFilterMatchBoosts(services, input.filters);
+    // Merge implicit demographic filters from query text with explicit UI filters
+    const cachedFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
+    if (cachedFilters && !isDirectCrisisCached) {
+      services = applyHardFilters(services, cachedFilters);
+      services = await supplementCategories(services, cachedFilters, analysis.location.specified || input.location);
+      services = applyPreferenceBoosts(services, cachedFilters);
+      services = applyFilterMatchBoosts(services, cachedFilters);
     }
 
     // Data quality boost applies regardless of filters
@@ -430,14 +473,16 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
   result.services = filterByLocation(result.services, analysis.location.specified || input.location, isDirectCrisisFresh);
 
-  // Apply hard UI filters AFTER caching — filters are re-applied on cache hits too
+  // Apply hard filters AFTER caching — filters are re-applied on cache hits too
+  // Merge implicit demographic filters from query text with explicit UI filters
   // SAFETY: skip hard filters for direct crisis — never filter out crisis hotlines
-  if (input.filters && !isDirectCrisisFresh) {
+  const freshFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
+  if (freshFilters && !isDirectCrisisFresh) {
     const beforeFilter = result.services.length;
-    result.services = applyHardFilters(result.services, input.filters);
-    result.services = await supplementCategories(result.services, input.filters, analysis.location.specified || input.location);
-    result.services = applyPreferenceBoosts(result.services, input.filters);
-    result.services = applyFilterMatchBoosts(result.services, input.filters);
+    result.services = applyHardFilters(result.services, freshFilters);
+    result.services = await supplementCategories(result.services, freshFilters, analysis.location.specified || input.location);
+    result.services = applyPreferenceBoosts(result.services, freshFilters);
+    result.services = applyFilterMatchBoosts(result.services, freshFilters);
     if (result.services.length < beforeFilter) {
       console.log(`[SearchOrchestrator] Hard filters applied: ${beforeFilter} → ${result.services.length} services`);
     }
