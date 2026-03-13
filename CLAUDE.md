@@ -8,7 +8,7 @@
 
 ResourceHub is an Alberta social services directory. Users search for recovery, support, housing, disability, healthcare, and emergency services. The search is AI-powered with semantic understanding, intent detection, and crisis service pinning.
 
-Live at https://resourcehub-wwg6.onrender.com. Deployed on Render.com (free tier).
+Live at https://resourcehub-wwg6.onrender.com. Deployed on Render.com (Hobby tier — no spin-down, persistent instances).
 
 ## Tech Stack
 
