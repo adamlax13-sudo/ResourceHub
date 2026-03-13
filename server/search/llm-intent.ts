@@ -15,7 +15,7 @@ import type { QueryAnalysis, ScoredIntent, QueryAttributes, IntentResult } from 
 import type { QueryIntent } from './config';
 import { getOpenAI, extractJSON } from '../helpers/openai';
 import { VALID_SUB_INTENTS } from './config';
-import { CRISIS_FORWARD_DESCRIPTOR, CRISIS_TRAILING_DESCRIPTOR, FIRST_PERSON_DISTRESS } from './analyzer';
+import { CRISIS_FORWARD_DESCRIPTOR, CRISIS_TRAILING_DESCRIPTOR, FIRST_PERSON_DISTRESS, HARM_REDUCTION_DESCRIPTOR } from './analyzer';
 
 const LLM_TIMEOUT_MS = 5000;
 
@@ -297,7 +297,7 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
   // distress, skip the crisis escalation even if LLM detected crisis.
   const isCrisisDescriptor =
     !FIRST_PERSON_DISTRESS.test(analysis.normalized) &&
-    (CRISIS_FORWARD_DESCRIPTOR.test(analysis.normalized) || CRISIS_TRAILING_DESCRIPTOR.test(analysis.normalized));
+    (CRISIS_FORWARD_DESCRIPTOR.test(analysis.normalized) || CRISIS_TRAILING_DESCRIPTOR.test(analysis.normalized) || HARM_REDUCTION_DESCRIPTOR.test(analysis.normalized));
   if (llmCrisis && llmCrisis.confidence >= crisisBar && !isCrisisDescriptor) {
     // SITUATIONAL vs DIRECT crisis:
     // If the LLM's top intent is a specific service need (not crisis itself),

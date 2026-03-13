@@ -36,6 +36,13 @@ export const FIRST_PERSON_DISTRESS =
   /\b(i\s+(want|am|feel|need)|me|myself|my\s+life|kill\s+myself|end\s+my\s+life|want\s+to\s+die|self[- ]harm|hurt\s+myself)\b/i;
 
 /**
+ * Harm reduction service descriptors — "overdose" used in a professional/service context,
+ * not personal ideation. E.g. "overdose prevention", "overdose response training", "OD kit".
+ */
+export const HARM_REDUCTION_DESCRIPTOR =
+  /\b(overdose\s+(prevention|response|training|kit|awareness|reversal)|naloxone|narcan|needle\s*exchange|safe\s*injection|harm\s*reduction)\b/i;
+
+/**
  * Analyze a search query and extract all relevant information.
  * This is the single entry point for query analysis.
  */
@@ -99,18 +106,26 @@ export function analyzeQuery(
 
   // Determine query intent(s) with confidence scores
   const intents = determineIntent(keywords, effectiveLocation, crisisResult, aliasMatch, sanitized);
-  const intent = intents.primary.intent; // Backward compat
+  let intent = intents.primary.intent; // Backward compat (may be overridden by descriptor guard)
 
   // Apply crisis descriptor guard:
   // Override isCrisis=false if "crisis" is used as a service descriptor
-  // (e.g. "student mental health crisis") rather than self-referential ideation.
+  // (e.g. "student mental health crisis") rather than self-referential ideation,
+  // or if the query is about a harm reduction service (overdose prevention, naloxone, etc.).
   let isCrisis = crisisResult.isCrisis;
+  const isHarmReduction = HARM_REDUCTION_DESCRIPTOR.test(normalized);
   if (
     isCrisis &&
     !FIRST_PERSON_DISTRESS.test(normalized) &&
-    (CRISIS_FORWARD_DESCRIPTOR.test(normalized) || CRISIS_TRAILING_DESCRIPTOR.test(normalized))
+    (CRISIS_FORWARD_DESCRIPTOR.test(normalized) || CRISIS_TRAILING_DESCRIPTOR.test(normalized) || isHarmReduction)
   ) {
     isCrisis = false;
+    // Also reset the intent for harm reduction queries — "overdose" is a substance_abuse
+    // service term, not a crisis, so fix the intent that determineIntent() set to crisis(1).
+    if (isHarmReduction && intent === 'crisis') {
+      intents.primary = { intent: 'substance_abuse' as QueryIntent, confidence: 0.9 };
+      intent = 'substance_abuse';
+    }
   }
 
   // Detect specific substance type if any intent is substance_abuse
