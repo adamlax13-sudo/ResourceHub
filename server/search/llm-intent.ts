@@ -15,6 +15,7 @@ import type { QueryAnalysis, ScoredIntent, QueryAttributes, IntentResult } from 
 import type { QueryIntent } from './config';
 import { getOpenAI, extractJSON } from '../helpers/openai';
 import { VALID_SUB_INTENTS } from './config';
+import { CRISIS_FORWARD_DESCRIPTOR, CRISIS_TRAILING_DESCRIPTOR, FIRST_PERSON_DISTRESS } from './analyzer';
 
 const LLM_TIMEOUT_MS = 5000;
 
@@ -291,7 +292,13 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
   // Use lower bar (0.5) when regex is uncertain (general/low confidence).
   const llmCrisis = llmIntents.find(i => i.intent === 'crisis');
   const crisisBar = (regexConfidence >= 0.5 && analysis.intent !== 'crisis') ? 0.6 : 0.5;
-  if (llmCrisis && llmCrisis.confidence >= crisisBar) {
+  // GUARD: Crisis descriptor override — if "crisis" appears as a service descriptor
+  // (e.g. "student crisis support", "crisis centre calgary") and there's no first-person
+  // distress, skip the crisis escalation even if LLM detected crisis.
+  const isCrisisDescriptor =
+    !FIRST_PERSON_DISTRESS.test(analysis.normalized) &&
+    (CRISIS_FORWARD_DESCRIPTOR.test(analysis.normalized) || CRISIS_TRAILING_DESCRIPTOR.test(analysis.normalized));
+  if (llmCrisis && llmCrisis.confidence >= crisisBar && !isCrisisDescriptor) {
     // SITUATIONAL vs DIRECT crisis:
     // If the LLM's top intent is a specific service need (not crisis itself),
     // this is a situational crisis (e.g., DV, homelessness). Set isCrisis=true
@@ -327,8 +334,9 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
     };
   }
 
-  // Normal override: LLM must be meaningfully more confident than regex
-  if (llmPrimary.confidence > regexConfidence + 0.1) {
+  // Normal override: LLM must be meaningfully more confident than regex.
+  // Exception: if isCrisisDescriptor, don't let LLM set crisis as primary intent.
+  if (llmPrimary.confidence > regexConfidence + 0.1 && !(isCrisisDescriptor && llmPrimary.intent === 'crisis')) {
     // When LLM overrides with a DIFFERENT intent than regex, clear stale regex
     // secondaries that the LLM didn't detect — they can cause incorrect category
     // rescue in trimToRelevant(). E.g., regex detects DV(0.29) as secondary for
