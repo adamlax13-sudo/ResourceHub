@@ -15,3 +15,4 @@ export * from './filter-match-boost';
 export * from './quality-boost';
 export * from './llm-rerank';
 export * from './click-affinity-boost';
+export * from './sub-intent-boost';
