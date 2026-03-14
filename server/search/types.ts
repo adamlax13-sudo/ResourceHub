@@ -105,6 +105,38 @@ export interface QueryAnalysis {
   attributes?: QueryAttributes;
   /** Sub-intents detected for the query */
   subIntents?: string[];
+
+  // === QueryContext fields (layered migration) ===
+
+  /** Who is performing the search */
+  searcher?: 'self' | 'family_member' | 'professional' | 'unknown';
+
+  /** The person the services are FOR (may differ from searcher) */
+  targetPerson?: {
+    ageGroup: 'youth' | 'adult' | 'senior' | 'unknown';
+    ageConfidence: 'high' | 'medium' | 'low';
+    gender: 'male' | 'female' | 'any';
+    contexts: ('student' | 'newcomer' | 'indigenous' | 'veteran' | 'lgbtq' | 'unhoused')[];
+  };
+
+  /** Needs implied but not explicitly stated in the query */
+  impliedNeeds?: string[];
+
+  /** Pre-computed detector results (avoids re-running in boostByIntent) */
+  detections?: {
+    genderPref: 'women_only' | 'men_only' | null;
+    ageGroup: import('./strategies/detectors').AgeGroupDetection | null;
+    urgency: 'immediate' | null;
+    familySituations: string[];
+    communityPref: string | null;
+    studentContext: import('./strategies/detectors').StudentContext | null;
+    languagePref: string | null;
+    familyContext: 'immediate' | 'extended' | 'concerned' | null;
+    exclusions: Exclusions;
+  };
+
+  /** Which tier resolved this query */
+  resolvedBy?: 'pattern' | 'llm';
 }
 
 /**
