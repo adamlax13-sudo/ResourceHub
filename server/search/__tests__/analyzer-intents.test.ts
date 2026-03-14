@@ -81,6 +81,18 @@ describe('Intent Detection — Existing Intents (regression)', () => {
   });
 });
 
+describe('Intent Detection — Reduce General Fallback', () => {
+  it('detects student_services for "university resources"', () => {
+    const analysis = analyzeQuery('university resources');
+    expect(analysis.intent).toBe('student_services');
+  });
+
+  it('detects student_services for "college support services"', () => {
+    const analysis = analyzeQuery('college support services');
+    expect(analysis.intent).toBe('student_services');
+  });
+});
+
 // === Sub-Intent Detection Tests ===
 
 describe('Sub-Intent Detection — domestic_violence', () => {

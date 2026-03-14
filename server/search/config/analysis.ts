@@ -547,7 +547,8 @@ export const SEARCH_CONFIG = {
     ],
     // Student/campus services
     student_services: [
-      /\b(?:student|university|college|campus).*(?:counsell?ing|mental health|support|crisis)/i,
+      /\b(?:student|university|college|campus).*(?:counsell?ing|mental health|support|crisis|resource|service|help)/i,
+      /\b(?:resource|help|support|service)s?\b.*\b(?:university|college|campus)\b/i,
       /\b(?:u of c|u of a|uofc|uofa|ucalgary|ualberta|mount royal|mru|sait|nait|macewan|bow valley)\b/i,
       /\b(?:academic|exam|finals|stress|thesis|dissertation|failing|dropped out)\b/i,
       /\b(?:dorm|residence|student housing|roommate|tuition|student loan)\b/i,
