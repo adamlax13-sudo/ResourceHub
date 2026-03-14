@@ -43,6 +43,7 @@ import { applyHardFilters, filterByLocation } from './filters';
 import type { QueryIntent } from './config';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
+import { applySubIntentBoost, SUB_INTENT_CATEGORY_OVERRIDE } from './strategies/scoring/sub-intent-boost';
 import { attachDistances, sortByDistance, filterByMaxDistance } from './distance';
 
 // Single search strategy - comprehensive mode only
@@ -311,13 +312,16 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyNegativePenalty(services, analysis.negativeTerms);
     }
 
+    // Sub-intent scoring boost
+    services = applySubIntentBoost(services, analysis.subIntents || []);
+
     // Click-through affinity boost — also on precomputed path
     services = await applyClickAffinityBoost(services, normalizedQuery);
 
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent);
+    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
   }
 
   // Load alias map for query analysis
@@ -394,6 +398,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyNegativePenalty(services, analysis.negativeTerms);
     }
 
+    // Sub-intent scoring boost
+    services = applySubIntentBoost(services, analysis.subIntents || []);
+
     // Click-through affinity boost — also on cached path
     // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
     services = await applyClickAffinityBoost(services, normalizedQuery);
@@ -401,7 +408,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent);
+    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
 
@@ -492,6 +499,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   const freshConfScores = await storage.getConfidenceScores(result.services.map(s => s.id));
   result.services = applyDataQualityBoost(result.services, freshConfScores);
 
+  // Sub-intent scoring boost
+  result.services = applySubIntentBoost(result.services, analysis.subIntents || []);
+
   // Click-through affinity boost — learn from user behavior over time
   // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
   result.services = await applyClickAffinityBoost(result.services, normalizedQuery);
@@ -499,7 +509,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Distance processing — attach distances, filter, sort
   result.services = await applyDistanceProcessing(result.services, input);
 
-  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent);
+  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
 }
 
 /**
@@ -544,7 +554,7 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   caregiver_support: new Set(['Family & Parenting Support', 'Senior Services']),
 };
 
-function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent): LiteService[] {
+function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent, subIntents?: string[]): LiteService[] {
   if (services.length <= MIN_RESULTS) return services;
 
   // Separate pinned services (no rrfScore) — always included
@@ -585,6 +595,20 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondary
     secondarySet.forEach(v => categorySet!.add(v));
   } else {
     categorySet = primarySet ?? secondarySet;
+  }
+  // Narrow category rescue when sub-intents provide overrides
+  if (subIntents && subIntents.length > 0 && categorySet) {
+    const overrideSets: Set<string>[] = [];
+    for (const si of subIntents) {
+      const override = SUB_INTENT_CATEGORY_OVERRIDE[si];
+      if (override) overrideSets.push(override);
+    }
+    if (overrideSets.length > 0) {
+      categorySet = new Set<string>();
+      for (const os of overrideSets) {
+        os.forEach(v => categorySet!.add(v));
+      }
+    }
   }
   if (categorySet) {
     const aboveCutoffIds = new Set(aboveCutoff.map(s => s.id));
@@ -628,10 +652,11 @@ function formatResponse(
   searchType?: SearchType,
   servicesWithDebug?: LiteServiceWithDebug[],
   intent?: QueryIntent,
-  secondaryIntent?: QueryIntent
+  secondaryIntent?: QueryIntent,
+  subIntents?: string[]
 ): SearchResponse {
   // Trim to relevant results before pagination (rescue categories from both intents)
-  services = trimToRelevant(services, intent, secondaryIntent);
+  services = trimToRelevant(services, intent, secondaryIntent, subIntents);
   if (servicesWithDebug) {
     // Keep debug array in sync — trim to same IDs
     const keptIds = new Set(services.map(s => s.id));
