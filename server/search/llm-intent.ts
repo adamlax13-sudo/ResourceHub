@@ -113,6 +113,19 @@ Return a JSON object with these fields:
    - employment_support: job_search, resume_help, credential_recognition, barrier_employment, apprenticeship
    - veteran_services: ptsd_trauma, military_family, transition_support, benefits_navigation
    - disability_support: aish_application, mobility_aids, autism_support, acquired_brain_injury
+   - domestic_violence: sexual_assault, stalking, human_trafficking, coercive_control, safety_planning
+   - financial_support: debt_counselling, utility_arrears, income_support, tax_clinic
+   - grief_support: violent_loss, pet_loss, pregnancy_loss, suicide_loss
+   - senior_services: home_care, dementia, elder_abuse, meals_delivery
+   - community_social: social_connection, recreation, volunteering, adaptive_sports
+   - youth_services: runaway, youth_mental_health, youth_addiction, aging_out_of_care
+   - parenting_support: prenatal, postpartum, childcare, teen_parent
+   - food_insecurity: food_bank, free_meals, hamper_program
+   - basic_needs: clothing, furniture, hygiene, emergency_financial
+   - student_services: campus_counselling, financial_aid, student_housing
+   - lgbtq_services: trans_healthcare, coming_out, lgbtq_youth
+   - caregiver_support: respite, caregiver_burnout, dementia_caregiver
+   - family_addiction_support: parent_of_addict, spouse_of_addict
    Format: ["parent_intent.sub_intent", ...] e.g. ["housing_urgent.eviction_defense", "legal_aid.eviction_defense"]
    Only include sub-intents whose parent intent is also detected. Return [] if none apply.
 
