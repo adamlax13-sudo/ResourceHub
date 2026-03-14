@@ -212,16 +212,18 @@ export function boostByIntent(
   const cfg = SCORING_CONFIG;
   const trackExplanations = options?.trackExplanations ?? false;
 
-  // Detect all preferences from query
-  const genderPref = detectGenderPreference(rawQuery);
-  const ageGroup = detectAgeGroup(rawQuery);
-  const urgency = detectUrgency(rawQuery);
-  const familySituations = detectFamilySituation(rawQuery);
-  const communityPref = detectCommunityPreference(rawQuery);
-  const studentContext = detectStudentContext(rawQuery);
-  const languagePref = detectLanguagePreference(rawQuery);
-  const familyContext = detectFamilyContext(rawQuery);
-  const exclusions = detectExclusions(rawQuery, intent);
+  // Use pre-computed detections if available (from understandQuery),
+  // otherwise fall back to per-call detection for backward compat
+  const precomputed = analysis?.detections;
+  const genderPref = precomputed?.genderPref ?? detectGenderPreference(rawQuery);
+  const ageGroup = precomputed?.ageGroup ?? detectAgeGroup(rawQuery);
+  const urgency = precomputed?.urgency ?? detectUrgency(rawQuery);
+  const familySituations = precomputed?.familySituations ?? detectFamilySituation(rawQuery);
+  const communityPref = precomputed?.communityPref ?? detectCommunityPreference(rawQuery);
+  const studentContext = precomputed?.studentContext ?? detectStudentContext(rawQuery);
+  const languagePref = precomputed?.languagePref ?? detectLanguagePreference(rawQuery);
+  const familyContext = precomputed?.familyContext ?? detectFamilyContext(rawQuery);
+  const exclusions = precomputed?.exclusions ?? detectExclusions(rawQuery, intent);
 
   // Log detected preferences
   const detections: string[] = [];
@@ -1442,6 +1444,21 @@ export function boostByIntent(
     }
     if (offCategoryCount > 0) {
       searchLog.debug(`[ComprehensiveSearch] Off-category penalty: ${offCategoryCount} services demoted for intent=${intent}`);
+    }
+  }
+
+  // Searcher-aware boost: when searching on behalf of someone else,
+  // also boost services for the SEARCHER (not just the target person)
+  if (analysis?.searcher === 'family_member') {
+    for (const s of scored) {
+      if (s.svc.rrfScore == null) continue;
+      const textLower = `${s.svc.name} ${s.svc.description || ''}`.toLowerCase();
+      if (/\b(?:family support|family program|for families|family counsell?ing|al-?anon|nar-?anon|parent support|caregiver)\b/i.test(textLower)) {
+        s.svc.rrfScore += 8;
+        if (trackExplanations) {
+          s.explanations.push({ factor: 'searcher.familySupportBoost', value: 8, reason: 'Family support service for family-member searcher' });
+        }
+      }
     }
   }
 

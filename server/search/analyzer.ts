@@ -8,6 +8,7 @@
 
 import { SEARCH_CONFIG, SUB_INTENT_PATTERNS } from './config';
 import type { QueryAnalysis, QueryAttributes, QueryIntent, SubstanceType, IntentResult, ScoredIntent } from './types';
+import { understandQuery } from './query-context';
 import {
   extractLocationContext,
   ALBERTA_LOCATIONS,
@@ -149,6 +150,9 @@ export function analyzeQuery(
 
   const subIntents = detectSubIntents(corrected, detectedParentIntents);
 
+  // Enrich with consolidated query context (searcher, targetPerson, impliedNeeds, pre-computed detections)
+  const contextFields = understandQuery(corrected, intent);
+
   return {
     raw: sanitized,
     corrected: phoneticCorrected,
@@ -166,6 +170,7 @@ export function analyzeQuery(
     negativeTerms,
     attributes,
     subIntents,
+    ...contextFields,
   };
 }
 

@@ -86,7 +86,7 @@ export function understandQuery(rawQuery: string, intent?: QueryIntent): Partial
     // Use standard age detector for self/professional/unknown
     if (detections.ageGroup) {
       ageGroup = detections.ageGroup.ageGroup === 'youth_and_adult' ? 'adult' : detections.ageGroup.ageGroup;
-      ageConfidence = detections.ageGroup.confidence >= 0.7 ? 'high' : 'medium';
+      ageConfidence = detections.ageGroup.confidence === 'high' ? 'high' : 'medium';
     }
     if (detections.genderPref === 'women_only') gender = 'female';
     else if (detections.genderPref === 'men_only') gender = 'male';

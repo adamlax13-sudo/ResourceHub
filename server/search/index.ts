@@ -321,7 +321,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
+    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
   }
 
   // Load alias map for query analysis
@@ -408,7 +408,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     // Distance processing — attach distances, filter, sort
     services = await applyDistanceProcessing(services, input);
 
-    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
+    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
 
@@ -509,7 +509,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Distance processing — attach distances, filter, sort
   result.services = await applyDistanceProcessing(result.services, input);
 
-  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents);
+  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
 }
 
 /**
@@ -554,7 +554,20 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   caregiver_support: new Set(['Family & Parenting Support', 'Senior Services']),
 };
 
-function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent, subIntents?: string[]): LiteService[] {
+// Map implied needs to categories for rescue
+const NEED_CATEGORY_MAP: Record<string, string[]> = {
+  'housing': ['Emergency Shelter', 'Affordable Housing', 'Transitional Housing', 'Supportive Housing'],
+  'employment': ['Employment Services'],
+  'reintegration': ['Criminal Justice Reintegration'],
+  'family_support': ['Family & Parenting Support', 'Recovery & Peer Support'],
+  'settlement': ['Newcomer & Settlement'],
+  'language': ['Newcomer & Settlement'],
+  'crisis_support': ['Crisis Services', 'Crisis Lines'],
+  'safety_planning': ['Domestic Violence Support'],
+  'life_skills': ['Community & Social Connection'],
+};
+
+function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent, subIntents?: string[], impliedNeeds?: string[]): LiteService[] {
   if (services.length <= MIN_RESULTS) return services;
 
   // Separate pinned services (no rrfScore) — always included
@@ -610,6 +623,14 @@ function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondary
       }
     }
   }
+  // Expand rescue set with implied needs categories
+  if (impliedNeeds && impliedNeeds.length > 0) {
+    if (!categorySet) categorySet = new Set<string>();
+    for (const need of impliedNeeds) {
+      const cats = NEED_CATEGORY_MAP[need];
+      if (cats) cats.forEach(c => categorySet!.add(c));
+    }
+  }
   if (categorySet) {
     const aboveCutoffIds = new Set(aboveCutoff.map(s => s.id));
     rescued = belowCutoff.filter(s =>
@@ -653,10 +674,11 @@ function formatResponse(
   servicesWithDebug?: LiteServiceWithDebug[],
   intent?: QueryIntent,
   secondaryIntent?: QueryIntent,
-  subIntents?: string[]
+  subIntents?: string[],
+  impliedNeeds?: string[]
 ): SearchResponse {
   // Trim to relevant results before pagination (rescue categories from both intents)
-  services = trimToRelevant(services, intent, secondaryIntent, subIntents);
+  services = trimToRelevant(services, intent, secondaryIntent, subIntents, impliedNeeds);
   if (servicesWithDebug) {
     // Keep debug array in sync — trim to same IDs
     const keptIds = new Set(services.map(s => s.id));
