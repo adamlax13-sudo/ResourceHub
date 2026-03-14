@@ -84,10 +84,32 @@ pytest tests/ -v                     # Run scraper tests
 | `server/routes/search.ts` | Search route handler — constructs `activeFilters` from input |
 | `scripts/check-source-urls.mjs` | URL health checker + source_urls backfill for services missing provenance |
 | `scripts/regen-embeddings-by-id.mjs` | Regenerate embeddings for specific service IDs |
+| `scripts/add-services.mjs` | Generic service inserter from JSON data file (dedup, history logging) |
+| `scripts/bulk-update-services.mjs` | Generic field updater — update any fields by ID from JSON |
+| `scripts/deactivate-services.mjs` | Deactivate services by ID with reason logging + optional field merge |
 
-### Data Fix Scripts
+### Data Scripts
 
-Reusable utility scripts live in `scripts/`. One-off data fix scripts (location normalization, batch enrichments, dedup, name fixes, etc.) are archived in `scripts/archive/`. **If the user asks for a data operation that may have been done before** (e.g., normalize locations, fix names, deduplicate, enrich fields, add services), check `scripts/archive/` first — there may be an existing script to reference or adapt.
+**Reusable scripts** in `scripts/` cover all common data operations. Prepare a JSON file with the data, then run:
+
+```bash
+# Add new services from JSON
+node scripts/add-services.mjs scripts/data/new-services.json
+# Update fields on existing services
+node scripts/bulk-update-services.mjs scripts/data/field-fixes.json
+# Deactivate services (with optional dedup field merge)
+node scripts/deactivate-services.mjs scripts/data/deactivations.json
+# Regenerate embeddings after name/description/tag changes
+node scripts/regen-embeddings-by-id.mjs 123 456 789
+# Refresh materialized view after deactivations
+node scripts/refresh-search-view.mjs
+# Check URL health + backfill source_urls
+node scripts/check-source-urls.mjs
+```
+
+All scripts use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply.
+
+**Archive:** 159 one-off scripts in `scripts/archive/`. **If the user asks for a data operation that may have been done before** (e.g., normalize locations, fix names, deduplicate, enrich fields), check `scripts/archive/` first — there may be an existing script to reference or adapt.
 
 ## Architecture Notes
 
@@ -108,7 +130,7 @@ Reusable utility scripts live in `scripts/`. One-off data fix scripts (location 
 13. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
 14. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
 15. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue + sub-intent narrowing + impliedNeeds expansion, clamp to [13, 50])
-15. Return paginated results with summary
+16. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
