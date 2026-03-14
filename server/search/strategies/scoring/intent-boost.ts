@@ -167,6 +167,7 @@ const EXCLUSIVE_CATEGORY_INTENTS: Readonly<Record<string, QueryIntent[]>> = {
   'domestic violence support':          ['domestic_violence', 'crisis'],
   'human trafficking support':          ['domestic_violence'],
   'grief & bereavement':                ['grief_support'],
+  'trauma & ptsd support':              ['mental_health', 'domestic_violence', 'veteran_services', 'indigenous_services'],
   'veterans services':                  ['veteran_services'],
   'lgbtq2s+ services':                  ['lgbtq_services'],
   'indigenous services':                ['indigenous_services'],
@@ -181,6 +182,7 @@ const EXCLUSIVE_CATEGORY_INTENTS: Readonly<Record<string, QueryIntent[]>> = {
   'community & social connection':      ['community_social'],
   'basic needs & material aid':         ['basic_needs'],
   'transportation assistance':          ['basic_needs'],
+  'gambling support':                   ['substance_abuse'],
 };
 
 const OFF_CATEGORY_PENALTY = 0.30;

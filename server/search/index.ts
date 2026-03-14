@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v151';
+const CACHE_VERSION = 'v153';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -518,9 +518,9 @@ const DEFAULT_RESULTS = 30;
 // Uses exact category name matching (not the description-oriented patterns from
 // INTENT_SERVICE_MAP, which miss categories like "Residential Treatment").
 const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
-  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support']),
+  substance_abuse: new Set(['Addiction Treatment', 'Detox & Withdrawal', 'Harm Reduction', 'Residential Treatment', 'Recovery & Peer Support', 'Gambling Support']),
   mental_health: new Set(['Mental Health & Counselling', 'Crisis Services', 'Crisis Lines', 'Eating Disorder Services', 'Trauma & PTSD Support']),
-  domestic_violence: new Set(['Domestic Violence Support', 'Human Trafficking Support']),
+  domestic_violence: new Set(['Domestic Violence Support', 'Human Trafficking Support', 'Trauma & PTSD Support']),
   food_insecurity: new Set(['Food Banks & Meals']),
   housing_urgent: new Set(['Emergency Shelter', 'Affordable Housing', 'Supportive Housing', 'Transitional Housing']),
   disability_support: new Set(['Disability & Autism Support']),
@@ -531,8 +531,8 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   youth_services: new Set(['Youth Services']),
   newcomer_services: new Set(['Newcomer & Settlement']),
   lgbtq_services: new Set(['LGBTQ2S+ Services']),
-  indigenous_services: new Set(['Indigenous Services']),
-  veteran_services: new Set(['Veterans Services']),
+  indigenous_services: new Set(['Indigenous Services', 'Trauma & PTSD Support']),
+  veteran_services: new Set(['Veterans Services', 'Trauma & PTSD Support']),
   healthcare_access: new Set(['Healthcare Access', 'Sexual Health Services', 'Hospital & Emergency']),
   student_services: new Set(['Campus & Student Services']),
   parenting_support: new Set(['Family & Parenting Support']),
