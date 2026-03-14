@@ -1318,6 +1318,311 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bstroke (?:recovery|rehabilitation|support)\b/i,
     ],
   },
+
+  domestic_violence: {
+    'domestic_violence.sexual_assault': [
+      /\b(?:raped?|sexual assault|sexually assaulted|molested|sexual abuse|sexual violence)\b/i,
+      /\bsexual (?:trauma|survivor|exploitation)\b/i,
+    ],
+    'domestic_violence.stalking': [
+      /\bstalk(?:ing|er|ed)\b/i,
+      /\bharass(?:ment|ing|ed)\b.*(?:ex|partner|former)\b/i,
+      /\bcyberstalking\b/i,
+    ],
+    'domestic_violence.human_trafficking': [
+      /\bhuman trafficking\b/i,
+      /\bsex trafficking\b/i,
+      /\blabour trafficking\b/i,
+      /\bforced (labour|labor|prostitution)\b/i,
+    ],
+    'domestic_violence.coercive_control': [
+      /\bcoercive control\b/i,
+      /\bfinancial abuse\b/i,
+      /\bemotional abuse\b/i,
+      /\bisolat(?:ing|ed|ion).*(?:partner|spouse|husband|wife)\b/i,
+    ],
+    'domestic_violence.safety_planning': [
+      /\bsafety plan\b/i,
+      /\bleav(?:e|ing).*(?:abus(?:er|ive)|partner|husband|wife|spouse)\b/i,
+      /\bescape.*(?:abus(?:er|ive)|violent|relationship)\b/i,
+      /\bsafe (?:house|place|shelter)\b/i,
+    ],
+  },
+
+  financial_support: {
+    'financial_support.debt_counselling': [
+      /\bdebt\b/i,
+      /\bcredit counsell?ing\b/i,
+      /\bbankruptcy\b/i,
+      /\bcollection agency\b/i,
+      /\bpayday loan\b/i,
+    ],
+    'financial_support.utility_arrears': [
+      /\butility (?:bill|arrears|help|assist)\b/i,
+      /\b(?:electric|gas|heat|power|water) bill\b/i,
+      /\benergy (?:assist|rebate|program)\b/i,
+      /\brent (?:arrears|behind|help)\b/i,
+    ],
+    'financial_support.income_support': [
+      /\bincome support\b/i,
+      /\bsocial assistance\b/i,
+      /\bwelfare\b/i,
+      /\bAlberta Works\b/i,
+      /\bAISH\b/i,
+    ],
+    'financial_support.tax_clinic': [
+      /\btax(?:es)? (?:clinic|help|filing|preparation|return)\b/i,
+      /\bfil(?:e|ing).*\btax(?:es)?\b/i,
+      /\bfree tax\b/i,
+      /\bCVITP\b/,
+      /\bincome tax\b/i,
+    ],
+  },
+
+  grief_support: {
+    'grief_support.violent_loss': [
+      /\b(?:murder(?:ed)?|homicide|killed|shooting|stabbing|manslaughter)\b/i,
+      /\bviol(?:ent|ence).*(?:death|loss|lost)\b/i,
+      /\bvictim.*(?:crime|violence)\b/i,
+    ],
+    'grief_support.pet_loss': [
+      /\bpet (?:loss|died|death|passing|grief|euthan)\b/i,
+      /\b(?:dog|cat|animal).*(?:died|death|put down|passing)\b/i,
+      /\bpet bereavement\b/i,
+    ],
+    'grief_support.pregnancy_loss': [
+      /\bmiscarriage\b/i,
+      /\bstillb(?:irth|orn)\b/i,
+      /\bpregnancy loss\b/i,
+      /\binfant loss\b/i,
+      /\bneonatal (?:death|loss)\b/i,
+      /\bSIDS\b/,
+    ],
+    'grief_support.suicide_loss': [
+      /\b(?:lost|loss).*(?:to|by) suicide\b/i,
+      /\bsuicide (?:bereavement|survivor|loss|grief)\b/i,
+      /\b(?:friend|family|parent|child|sibling).*(?:took|ended).*(?:own|their) life\b/i,
+    ],
+  },
+
+  senior_services: {
+    'senior_services.home_care': [
+      /\bhome (?:care|support|help|health)\b/i,
+      /\bin[- ]home (?:care|support|nursing)\b/i,
+      /\baging in place\b/i,
+      /\bpersonal care.*senior\b/i,
+    ],
+    'senior_services.dementia': [
+      /\bdementia\b/i,
+      /\balzheimer\b/i,
+      /\bmemory (?:care|loss|clinic)\b/i,
+      /\bcognitive decline\b/i,
+    ],
+    'senior_services.elder_abuse': [
+      /\belder abuse\b/i,
+      /\bsenior abuse\b/i,
+      /\babusing.*(?:elderly|senior|older|parent|grandparent)\b/i,
+      /\b(?:elderly|senior|older).*(?:neglect|exploit|abus)\b/i,
+    ],
+    'senior_services.meals_delivery': [
+      /\bmeals on wheels\b/i,
+      /\bmeal delivery.*senior\b/i,
+      /\bsenior.*meal (?:program|delivery|service)\b/i,
+      /\bcongregat(e|ion) dining\b/i,
+    ],
+  },
+
+  community_social: {
+    'community_social.social_connection': [
+      /\blonely\b/i,
+      /\bloneliness\b/i,
+      /\bisolat(?:ed|ion)\b/i,
+      /\bneed (?:friends|companionship|company|people)\b/i,
+      /\bsocial (?:connection|group|club|circle)\b/i,
+    ],
+    'community_social.recreation': [
+      /\brecreation\b/i,
+      /\b(?:swimming|skating|fitness|gym|yoga|sports?)\b.*(?:lesson|class|program|free)\b/i,
+      /\bfree (?:swimming|skating|fitness|gym|yoga|sports?)\b/i,
+      /\bdrop[- ]in (?:sport|gym|rec|activity)\b/i,
+    ],
+    'community_social.volunteering': [
+      /\bvolunteer(?:ing)?\b/i,
+      /\bgive back\b/i,
+      /\bcommunity (?:service|involvement)\b/i,
+    ],
+    'community_social.adaptive_sports': [
+      /\badaptive (?:sport|recreation|fitness|program)\b/i,
+      /\bwheelchair (?:sport|basketball|hockey|rugby|racing)\b/i,
+      /\binclusive (?:sport|recreation|fitness)\b/i,
+      /\bpara[- ]?sport\b/i,
+    ],
+  },
+
+  youth_services: {
+    'youth_services.runaway': [
+      /\brunaway\b/i,
+      /\bstreet youth\b/i,
+      /\byouth.*(?:homeless|shelter)\b/i,
+      /\bkicked out\b.*(?:teen|youth|kid)\b/i,
+    ],
+    'youth_services.youth_mental_health': [
+      /\b(?:teen|youth|adolescent).*(?:depress|anxi|mental health|counsell?ing|therapy)\b/i,
+      /\bkids help\b/i,
+    ],
+    'youth_services.youth_addiction': [
+      /\b(?:teen|youth|adolescent).*(?:addict|substance|drug|alcohol|vaping)\b/i,
+      /\bPCHAD\b/i,
+    ],
+    'youth_services.aging_out_of_care': [
+      /\baging out\b/i,
+      /\bformer (?:foster|ward|youth in care)\b/i,
+      /\btransition(?:ing)? (?:out of|from) care\b/i,
+    ],
+  },
+
+  parenting_support: {
+    'parenting_support.prenatal': [
+      /\bprenat(?:al|e)\b/i,
+      /\bpregnant\b/i,
+      /\bpregnancy (?:support|help|class|resource)\b/i,
+      /\bexpecting (?:mom|mother|parent)\b/i,
+    ],
+    'parenting_support.postpartum': [
+      /\bpostpartum\b/i,
+      /\bpost[- ]natal\b/i,
+      /\bnew (?:mom|mother|parent|baby)\b/i,
+      /\bbreastfeed(?:ing)?\b/i,
+    ],
+    'parenting_support.childcare': [
+      /\bchildcare\b/i,
+      /\bdaycare\b/i,
+      /\bchild care subsidy\b/i,
+      /\bafter[- ]school\b/i,
+    ],
+    'parenting_support.teen_parent': [
+      /\bteen (?:mom|parent|pregnancy|pregnant)\b/i,
+      /\byoung (?:mom|parent|mother|father)\b/i,
+    ],
+  },
+
+  food_insecurity: {
+    'food_insecurity.food_bank': [
+      /\bfood bank\b/i,
+      /\bfood hamper\b/i,
+      /\bgrocery (?:help|assistance|hamper)\b/i,
+      /\bfood pantry\b/i,
+    ],
+    'food_insecurity.free_meals': [
+      /\bfree (?:meal|lunch|dinner|breakfast|soup)\b/i,
+      /\bsoup kitchen\b/i,
+      /\bcommunity (?:meal|kitchen|dinner)\b/i,
+      /\bfood (?:program|drop[- ]in)\b/i,
+    ],
+    'food_insecurity.hamper_program': [
+      /\bhamper (?:program|delivery|pick[- ]?up)\b/i,
+      /\bChristmas (?:hamper|food)\b/i,
+      /\bholiday (?:hamper|food)\b/i,
+      /\bemergency food\b/i,
+    ],
+  },
+
+  basic_needs: {
+    'basic_needs.clothing': [
+      /\bclothing\b/i,
+      /\bclothes\b/i,
+      /\bwinter (?:coat|jacket|gear)\b/i,
+      /\bthrift store\b/i,
+      /\bfree clothing\b/i,
+    ],
+    'basic_needs.furniture': [
+      /\bfurniture\b/i,
+      /\bhousehold (?:item|good|essential)\b/i,
+      /\bbed(?:ding)?\b/i,
+      /\bfurniture bank\b/i,
+      /\bhome (?:starter|setup) kit\b/i,
+    ],
+    'basic_needs.hygiene': [
+      /\bhygiene\b/i,
+      /\btoiletr(?:y|ies)\b/i,
+      /\bshower (?:access|facility)\b/i,
+      /\blaundry\b/i,
+    ],
+    'basic_needs.emergency_financial': [
+      /\bemergency (?:financial|funds?|money|cash|assistance)\b/i,
+      /\bone[- ]time (?:financial|emergency|assistance)\b/i,
+      /\beviction prevention\b/i,
+    ],
+  },
+
+  student_services: {
+    'student_services.campus_counselling': [
+      /\b(?:university|college|campus|student) counsell?ing\b/i,
+      /\bstudent (?:mental health|wellness|therapy)\b/i,
+      /\bcampus (?:mental health|wellness|counsell?ing)\b/i,
+    ],
+    'student_services.financial_aid': [
+      /\bstudent (?:loan|finance|bursary|scholarship|aid)\b/i,
+      /\btuition (?:help|assistance|waiver)\b/i,
+      /\bstudent (?:emergency fund|food bank)\b/i,
+    ],
+    'student_services.student_housing': [
+      /\bstudent (?:housing|residence|accommodation)\b/i,
+      /\bcampus (?:housing|residence)\b/i,
+    ],
+  },
+
+  lgbtq_services: {
+    'lgbtq_services.trans_healthcare': [
+      /\btrans (?:health|healthcare|care|clinic|surgery|hormone)\b/i,
+      /\bgender[- ]affirm(?:ing|ation)\b/i,
+      /\bHRT\b/,
+      /\bhormone (?:therapy|replacement|treatment)\b/i,
+    ],
+    'lgbtq_services.coming_out': [
+      /\bcoming out\b/i,
+      /\bacceptance\b.*(?:gay|lesbian|bi|trans|queer)\b/i,
+      /\b(?:gay|lesbian|bi|trans|queer).*(?:support|group|community)\b/i,
+    ],
+    'lgbtq_services.lgbtq_youth': [
+      /\b(?:lgbtq?|queer|gay|trans|lesbian|bi).*(?:youth|teen|young)\b/i,
+      /\b(?:youth|teen).*(?:lgbtq?|queer|gay|trans)\b/i,
+      /\bGSA\b/,
+    ],
+  },
+
+  caregiver_support: {
+    'caregiver_support.respite': [
+      /\brespite\b/i,
+      /\brespite care\b/i,
+      /\bbreak from caregiving\b/i,
+      /\bshort[- ]term relief\b/i,
+    ],
+    'caregiver_support.caregiver_burnout': [
+      /\bcaregiver (?:burnout|stress|exhaust|overwhelm)\b/i,
+      /\bcaring for.*(?:exhaust|overwhelm|burnout|stress)\b/i,
+      /\bcaregiver (?:support|counsell?ing|group)\b/i,
+    ],
+    'caregiver_support.dementia_caregiver': [
+      /\bcaregiver.*(?:dementia|alzheimer|memory)\b/i,
+      /\b(?:dementia|alzheimer).*caregiver\b/i,
+      /\bcaring for.*(?:dementia|alzheimer)\b/i,
+    ],
+  },
+
+  family_addiction_support: {
+    'family_addiction_support.parent_of_addict': [
+      /\b(?:my|our) (?:son|daughter|child|kid|teen).*(?:addict|drugs?|alcohol|substance|using)\b/i,
+      /\bparent.*(?:addict|substance|drug)\b/i,
+      /\bPCHAD\b/i,
+    ],
+    'family_addiction_support.spouse_of_addict': [
+      /\b(?:my|our) (?:husband|wife|partner|spouse).*(?:addict|alcohol|drug|drink|using)\b/i,
+      /\bliving with (?:an? )?addict\b/i,
+      /\bcodependen(?:t|cy)\b/i,
+      /\bal[- ]?anon\b/i,
+    ],
+  },
 };
 
 /**
