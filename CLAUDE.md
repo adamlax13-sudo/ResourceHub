@@ -49,8 +49,10 @@ pytest tests/ -v                     # Run scraper tests
 | `server/search/strategies/scoring/quality-boost.ts` | Data quality boost — promotes high-confidence, well-described services |
 | `server/search/strategies/scoring/preference-boost.ts` | Preference boosts for filter toggles (faith-based, 12-step, 24/7) |
 | `server/search/strategies/scoring/filter-match-boost.ts` | Filter-match boosts for explicit DB matches |
+| `server/search/strategies/scoring/sub-intent-boost.ts` | Sub-intent-aware scoring boost (1.15x) + category overrides |
 | `server/search/strategies/comprehensive.ts` | Main search strategy |
 | `server/search/analyzer.ts` | Query analysis, typo correction, intent detection, attribute extraction |
+| `server/search/query-context.ts` | Consolidated query understanding — searcher/targetPerson/impliedNeeds |
 | `server/search/types.ts` | Search type definitions including QueryAttributes, QueryAnalysis |
 | `server/search/config.ts` | Search configuration and thresholds (48KB) |
 | `shared/schema.ts` | Drizzle ORM schema — all table definitions |
@@ -76,11 +78,16 @@ pytest tests/ -v                     # Run scraper tests
 | `server/search/distance.ts` | Haversine distance + attachDistances/sortByDistance/filterByMaxDistance |
 | `server/routes/location.ts` | `/api/mapbox-token` + `/api/geocode` endpoints |
 | `client/src/components/MapView.tsx` | Lazy-loaded Mapbox map component (in separate ~1.7MB chunk) |
-| `scripts/batch-geocode-services.mjs` | One-time batch geocoding of services via Mapbox API |
+| `scripts/batch-geocode-services.mjs` | Batch geocoding of services via Mapbox API |
 | `server/search/filters.ts` | Hard filter application (categories, gender, age, etc.) |
 | `client/src/components/RefinePanel.tsx` | Filter UI — categories (38 in 7 groups), gender, age, preferences, languages |
 | `server/routes/search.ts` | Search route handler — constructs `activeFilters` from input |
-| `scripts/fix-tag-quality.mjs` | Tag quality fix: "men" false positive, normalize duplicates, regen embeddings |
+| `scripts/check-source-urls.mjs` | URL health checker + source_urls backfill for services missing provenance |
+| `scripts/regen-embeddings-by-id.mjs` | Regenerate embeddings for specific service IDs |
+
+### Data Fix Scripts
+
+Reusable utility scripts live in `scripts/`. One-off data fix scripts (location normalization, batch enrichments, dedup, name fixes, etc.) are archived in `scripts/archive/`. **If the user asks for a data operation that may have been done before** (e.g., normalize locations, fix names, deduplicate, enrich fields, add services), check `scripts/archive/` first — there may be an existing script to reference or adapt.
 
 ## Architecture Notes
 
@@ -97,9 +104,10 @@ pytest tests/ -v                     # Run scraper tests
 10. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
     **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
 11. Apply data quality boost (confidence score, description richness)
-12. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
-13. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
-14. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue, clamp to [13, 50])
+12. Apply sub-intent boost (`applySubIntentBoost()` — 1.15x for sub-intent text/category matches, on all 3 cache paths)
+13. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
+14. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
+15. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue + sub-intent narrowing + impliedNeeds expansion, clamp to [13, 50])
 15. Return paginated results with summary
 
 ### Search Caching
