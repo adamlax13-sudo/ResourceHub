@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation, useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
@@ -70,6 +71,12 @@ interface HistoryEntry {
 export default function Services() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const searchString = useSearch();
+  const [, navigate] = useLocation();
+
+  // Parse ?selected=ID from URL (linked from Quality page)
+  const urlParams = new URLSearchParams(searchString);
+  const urlSelectedId = urlParams.get("selected");
 
   // List state
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,10 +85,23 @@ export default function Services() {
   const [sortBy, setSortBy] = useState<string>("lastUpdated-desc");
   const [pageSize, setPageSize] = useState<number>(25);
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(
+    urlSelectedId ? Number(urlSelectedId) : null
+  );
   const [showHistory, setShowHistory] = useState(false);
   const [flagReason, setFlagReason] = useState<string>("");
   const [showFlagDialog, setShowFlagDialog] = useState(false);
+
+  // Sync URL ?selected= param to state
+  useEffect(() => {
+    if (urlSelectedId) {
+      const id = Number(urlSelectedId);
+      if (id && id !== selectedId) {
+        setSelectedId(id);
+        setShowHistory(false);
+      }
+    }
+  }, [urlSelectedId]);
 
   // Parse sortBy into sort and order params
   const [sortCol, sortDir] = sortBy.split("-") as [string, string];
