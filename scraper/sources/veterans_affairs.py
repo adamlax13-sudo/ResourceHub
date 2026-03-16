@@ -5,10 +5,8 @@ Source: https://www.veterans.gc.ca/en/contact-us
 """
 import logging
 import re
-import time
 from typing import Dict, List, Optional
 
-import requests
 from bs4 import BeautifulSoup, Tag
 
 from sources.plugin import Source, RawService
@@ -17,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 VAC_CONTACT_URL = "https://www.veterans.gc.ca/en/contact-us"
 
-USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
 TIMEOUT_SECONDS = 15
 
 
@@ -27,17 +24,17 @@ class VeteransAffairsSource(Source):
     CATEGORY = "Veterans Services"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
-        http = requests.Session()
-        http.headers.update({"User-Agent": USER_AGENT})
+        from backends.interface import CrawlConfig
 
-        try:
-            resp = http.get(VAC_CONTACT_URL, timeout=TIMEOUT_SECONDS)
-            resp.raise_for_status()
-            soup = BeautifulSoup(resp.content, "html.parser")
-        except requests.RequestException as e:
-            logger.error(f"Failed to fetch VAC contact page: {e}")
+        page = self.backend.fetch_page(VAC_CONTACT_URL, CrawlConfig(
+            js_rendering=False,
+            timeout_seconds=TIMEOUT_SECONDS,
+        ))
+        if page.error:
+            logger.error(f"Failed to fetch VAC contact page: {page.error}")
             return []
 
+        soup = BeautifulSoup(page.html, "html.parser")
         return self.parse_offices(soup)
 
     def parse_offices(self, soup: BeautifulSoup) -> List[RawService]:
