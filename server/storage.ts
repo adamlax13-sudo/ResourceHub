@@ -1,7 +1,7 @@
 import { db } from "./db";
-import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, type Search, type Feedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias } from "@shared/schema";
+import { searches, feedback, services, aiServiceEnrichments, searchAnalytics, serviceAliases, serviceVotes, serviceHistory, serviceChangeRequests, scraperLogs, type Search, type Feedback, type Service, type AiServiceEnrichment, type SearchAnalytics, type ServiceAlias, type ServiceHistory, type ServiceChangeRequest, type InsertServiceChangeRequest, type ScraperLog } from "@shared/schema";
 
-import { eq, or, ilike, and, desc, inArray, sql, type SQL } from "drizzle-orm";
+import { eq, or, ilike, and, desc, asc, inArray, sql, isNull, isNotNull, lt, gte, count as drizzleCount, type SQL } from "drizzle-orm";
 
 type InsertFeedback = typeof feedback.$inferInsert;
 
@@ -170,6 +170,61 @@ export interface IStorage {
 
   // ============= SERVICE VOTES =============
   createServiceVote(serviceId: string, vote: 'up' | 'down', queryContext?: string): Promise<void>;
+
+  // ============= ADMIN: SERVICE CRUD =============
+  createService(data: Partial<Service> & { name: string; category: string }): Promise<Service>;
+  updateService(id: number, changes: Partial<Service>): Promise<Service>;
+  deactivateService(id: number, reason: string): Promise<Service>;
+  restoreService(id: number): Promise<Service>;
+  getServiceHistory(serviceId: number): Promise<ServiceHistory[]>;
+  getAdminServices(params: {
+    q?: string;
+    category?: string;
+    status?: 'active' | 'inactive' | 'all';
+    location?: string;
+    hasEmbedding?: boolean;
+    hasGeocoding?: boolean;
+    page?: number;
+    limit?: number;
+    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated';
+    order?: 'asc' | 'desc';
+  }): Promise<{ services: Service[]; total: number }>;
+  getAdminServiceDetail(id: number): Promise<Service | null>;
+
+  // ============= ADMIN: BULK OPERATIONS =============
+  bulkUpdateServices(ids: number[], changes: Partial<Service>, reason?: string): Promise<number>;
+  bulkDeactivateServices(ids: number[], reason: string): Promise<number>;
+
+  // ============= ADMIN: REVIEW QUEUE =============
+  createChangeRequest(data: InsertServiceChangeRequest): Promise<ServiceChangeRequest>;
+  getChangeRequests(params: {
+    status?: string;
+    source?: string;
+    changeType?: string;
+    batchId?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ requests: ServiceChangeRequest[]; total: number }>;
+  getChangeRequestById(id: number): Promise<ServiceChangeRequest | null>;
+  updateChangeRequest(id: number, changes: Partial<ServiceChangeRequest>): Promise<ServiceChangeRequest>;
+  approveChangeRequest(id: number, reviewedBy?: string): Promise<Service>;
+  rejectChangeRequest(id: number, reason: string, reviewedBy?: string): Promise<void>;
+  bulkApproveChangeRequests(ids: number[], reviewedBy?: string): Promise<number>;
+
+  // ============= ADMIN: QUALITY =============
+  getQualitySummary(): Promise<Record<string, number>>;
+  getQualityIssues(params: {
+    page?: number;
+    limit?: number;
+  }): Promise<{ issues: { service: Service; severity: string; missingFields: string[] }[]; total: number }>;
+
+  // ============= ADMIN: DASHBOARD =============
+  getDashboardStats(): Promise<{ activeServices: number; pendingReviews: number; searchesToday: number; qualityScore: number }>;
+  getRecentActivity(limit?: number): Promise<ServiceHistory[]>;
+
+  // ============= ADMIN: SCRAPER =============
+  getScraperRuns(params: { page?: number; limit?: number }): Promise<{ runs: ScraperLog[]; total: number }>;
+  getScraperRunById(id: number): Promise<ScraperLog | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1135,6 +1190,689 @@ export class DatabaseStorage implements IStorage {
 
   async createServiceVote(serviceId: string, vote: 'up' | 'down', queryContext?: string): Promise<void> {
     await db.insert(serviceVotes).values({ serviceId, vote, queryContext: queryContext ?? null });
+  }
+
+  // ============= ADMIN: SERVICE CRUD =============
+
+  /**
+   * Generate a URL-safe slug from a service name.
+   * E.g., "Alberta Health Services — Mental Health" -> "alberta-health-services-mental-health"
+   */
+  private generateServiceSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/[—–]/g, '-')        // em-dash, en-dash → hyphen
+      .replace(/[^a-z0-9\s-]/g, '') // strip non-alphanumeric
+      .replace(/\s+/g, '-')         // spaces → hyphens
+      .replace(/-+/g, '-')          // collapse multiple hyphens
+      .replace(/^-|-$/g, '')        // trim leading/trailing hyphens
+      .substring(0, 200);           // cap length
+  }
+
+  async createService(data: Partial<Service> & { name: string; category: string }): Promise<Service> {
+    const now = new Date();
+    const baseSlug = this.generateServiceSlug(data.name);
+
+    // Ensure unique slug by appending a counter if needed
+    let slug = baseSlug;
+    let attempt = 0;
+    while (true) {
+      const existing = await db.select({ id: services.id }).from(services).where(eq(services.serviceId, slug)).limit(1);
+      if (existing.length === 0) break;
+      attempt++;
+      slug = `${baseSlug}-${attempt}`;
+    }
+
+    const [created] = await db.insert(services).values({
+      serviceId: slug,
+      name: data.name,
+      category: data.category,
+      description: data.description ?? null,
+      location: data.location ?? 'Alberta',
+      contact: data.contact ?? null,
+      eligibility: data.eligibility ?? null,
+      phone: data.phone ?? null,
+      email: data.email ?? null,
+      address: data.address ?? null,
+      processSteps: data.processSteps ?? null,
+      waitTimes: data.waitTimes ?? null,
+      requiredDocs: data.requiredDocs ?? null,
+      hoursOfOperation: data.hoursOfOperation ?? null,
+      languagesSupported: data.languagesSupported ?? null,
+      serviceFormat: data.serviceFormat ?? null,
+      websiteUrl: data.websiteUrl ?? null,
+      confidenceScore: data.confidenceScore ?? 70,
+      isActive: true,
+      lastChecked: now,
+      lastUpdated: now,
+      tags: data.tags ?? null,
+      genderRestriction: data.genderRestriction ?? null,
+      ageGroup: data.ageGroup ?? 'all_ages',
+      isFaithBased: data.isFaithBased ?? false,
+      is12Step: data.is12Step ?? false,
+      latitude: data.latitude ?? null,
+      longitude: data.longitude ?? null,
+    }).returning();
+
+    // Log to service_history
+    await db.insert(serviceHistory).values({
+      serviceId: slug,
+      name: created.name,
+      category: created.category,
+      description: created.description,
+      location: created.location,
+      contact: created.contact,
+      eligibility: created.eligibility,
+      processSteps: created.processSteps,
+      waitTimes: created.waitTimes,
+      requiredDocs: created.requiredDocs,
+      hoursOfOperation: created.hoursOfOperation,
+      languagesSupported: created.languagesSupported,
+      serviceFormat: created.serviceFormat,
+      websiteUrl: created.websiteUrl,
+      changedFields: { all: 'initial creation' },
+      changeType: 'created',
+      confidenceScore: created.confidenceScore,
+    });
+
+    return created;
+  }
+
+  async updateService(id: number, changes: Partial<Service>): Promise<Service> {
+    // Get current service to detect which fields actually changed
+    const [current] = await db.select().from(services).where(eq(services.id, id));
+    if (!current) throw new Error(`Service with id ${id} not found`);
+
+    const now = new Date();
+
+    // Detect changed fields
+    const changedFields: Record<string, { from: any; to: any }> = {};
+    for (const [key, newVal] of Object.entries(changes)) {
+      if (key === 'id' || key === 'serviceId' || key === 'lastUpdated') continue;
+      const oldVal = (current as any)[key];
+      if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+        changedFields[key] = { from: oldVal, to: newVal };
+      }
+    }
+
+    // Apply update
+    const [updated] = await db.update(services)
+      .set({ ...changes, lastUpdated: now })
+      .where(eq(services.id, id))
+      .returning();
+
+    // Log to service_history if anything actually changed
+    if (Object.keys(changedFields).length > 0) {
+      await db.insert(serviceHistory).values({
+        serviceId: current.serviceId,
+        name: updated.name,
+        category: updated.category,
+        description: updated.description,
+        location: updated.location,
+        contact: updated.contact,
+        eligibility: updated.eligibility,
+        processSteps: updated.processSteps,
+        waitTimes: updated.waitTimes,
+        requiredDocs: updated.requiredDocs,
+        hoursOfOperation: updated.hoursOfOperation,
+        languagesSupported: updated.languagesSupported,
+        serviceFormat: updated.serviceFormat,
+        websiteUrl: updated.websiteUrl,
+        changedFields,
+        changeType: 'updated',
+        confidenceScore: updated.confidenceScore,
+      });
+    }
+
+    return updated;
+  }
+
+  async deactivateService(id: number, reason: string): Promise<Service> {
+    const [current] = await db.select().from(services).where(eq(services.id, id));
+    if (!current) throw new Error(`Service with id ${id} not found`);
+
+    const now = new Date();
+    const [updated] = await db.update(services)
+      .set({ isActive: false, lastUpdated: now })
+      .where(eq(services.id, id))
+      .returning();
+
+    await db.insert(serviceHistory).values({
+      serviceId: current.serviceId,
+      name: updated.name,
+      category: updated.category,
+      description: updated.description,
+      location: updated.location,
+      contact: updated.contact,
+      eligibility: updated.eligibility,
+      processSteps: updated.processSteps,
+      waitTimes: updated.waitTimes,
+      requiredDocs: updated.requiredDocs,
+      hoursOfOperation: updated.hoursOfOperation,
+      languagesSupported: updated.languagesSupported,
+      serviceFormat: updated.serviceFormat,
+      websiteUrl: updated.websiteUrl,
+      changedFields: { reason, isActive: { from: true, to: false } },
+      changeType: 'deactivated',
+      confidenceScore: updated.confidenceScore,
+    });
+
+    return updated;
+  }
+
+  async restoreService(id: number): Promise<Service> {
+    const [current] = await db.select().from(services).where(eq(services.id, id));
+    if (!current) throw new Error(`Service with id ${id} not found`);
+
+    const now = new Date();
+    const [updated] = await db.update(services)
+      .set({ isActive: true, lastUpdated: now })
+      .where(eq(services.id, id))
+      .returning();
+
+    await db.insert(serviceHistory).values({
+      serviceId: current.serviceId,
+      name: updated.name,
+      category: updated.category,
+      description: updated.description,
+      location: updated.location,
+      contact: updated.contact,
+      eligibility: updated.eligibility,
+      processSteps: updated.processSteps,
+      waitTimes: updated.waitTimes,
+      requiredDocs: updated.requiredDocs,
+      hoursOfOperation: updated.hoursOfOperation,
+      languagesSupported: updated.languagesSupported,
+      serviceFormat: updated.serviceFormat,
+      websiteUrl: updated.websiteUrl,
+      changedFields: { isActive: { from: false, to: true } },
+      changeType: 'updated',
+      confidenceScore: updated.confidenceScore,
+    });
+
+    return updated;
+  }
+
+  async getServiceHistory(serviceId: number): Promise<ServiceHistory[]> {
+    // Look up the string slug from the integer id
+    const [svc] = await db.select({ serviceId: services.serviceId }).from(services).where(eq(services.id, serviceId));
+    if (!svc) return [];
+
+    return await db.select().from(serviceHistory)
+      .where(eq(serviceHistory.serviceId, svc.serviceId))
+      .orderBy(desc(serviceHistory.recordedAt))
+      .limit(100);
+  }
+
+  async getAdminServices(params: {
+    q?: string;
+    category?: string;
+    status?: 'active' | 'inactive' | 'all';
+    location?: string;
+    hasEmbedding?: boolean;
+    hasGeocoding?: boolean;
+    page?: number;
+    limit?: number;
+    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated';
+    order?: 'asc' | 'desc';
+  }): Promise<{ services: Service[]; total: number }> {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 50;
+    const offset = (page - 1) * limit;
+
+    // Build WHERE conditions
+    const conditions: SQL[] = [];
+
+    // Status filter
+    if (params.status === 'active') {
+      conditions.push(eq(services.isActive, true));
+    } else if (params.status === 'inactive') {
+      conditions.push(eq(services.isActive, false));
+    }
+    // 'all' or undefined → no status filter
+
+    // Text search
+    if (params.q) {
+      const term = `%${params.q}%`;
+      conditions.push(
+        or(
+          ilike(services.name, term),
+          ilike(services.category, term),
+          ilike(services.location, term),
+        )!
+      );
+    }
+
+    // Category filter
+    if (params.category) {
+      conditions.push(eq(services.category, params.category));
+    }
+
+    // Location filter
+    if (params.location) {
+      conditions.push(ilike(services.location, `%${params.location}%`));
+    }
+
+    // Embedding filter (raw SQL since embedding isn't in Drizzle schema)
+    if (params.hasEmbedding === true) {
+      conditions.push(sql`embedding IS NOT NULL`);
+    } else if (params.hasEmbedding === false) {
+      conditions.push(sql`embedding IS NULL`);
+    }
+
+    // Geocoding filter
+    if (params.hasGeocoding === true) {
+      conditions.push(isNotNull(services.latitude));
+    } else if (params.hasGeocoding === false) {
+      conditions.push(isNull(services.latitude));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Determine sort column and order
+    let orderExpr: SQL;
+    const sortDir = params.order === 'asc' ? asc : desc;
+    switch (params.sort) {
+      case 'name':
+        orderExpr = sortDir(services.name);
+        break;
+      case 'category':
+        orderExpr = sortDir(services.category);
+        break;
+      case 'confidence':
+        orderExpr = sortDir(services.confidenceScore);
+        break;
+      case 'lastUpdated':
+        orderExpr = sortDir(services.lastUpdated);
+        break;
+      default:
+        orderExpr = desc(services.lastUpdated);
+    }
+
+    // Run count and data queries in parallel
+    const [countResult, dataResult] = await Promise.all([
+      db.select({ count: sql<number>`count(*)` }).from(services).where(whereClause),
+      db.select().from(services).where(whereClause).orderBy(orderExpr).limit(limit).offset(offset),
+    ]);
+
+    return {
+      services: dataResult,
+      total: Number(countResult[0]?.count ?? 0),
+    };
+  }
+
+  async getAdminServiceDetail(id: number): Promise<Service | null> {
+    const [svc] = await db.select().from(services).where(eq(services.id, id));
+    return svc ?? null;
+  }
+
+  // ============= ADMIN: BULK OPERATIONS =============
+
+  async bulkUpdateServices(ids: number[], changes: Partial<Service>, reason?: string): Promise<number> {
+    let successCount = 0;
+    for (const id of ids) {
+      try {
+        await this.updateService(id, changes);
+        successCount++;
+      } catch (err) {
+        console.warn(`[Admin] bulkUpdateServices: failed to update service ${id}:`, err);
+      }
+    }
+    return successCount;
+  }
+
+  async bulkDeactivateServices(ids: number[], reason: string): Promise<number> {
+    let successCount = 0;
+    for (const id of ids) {
+      try {
+        await this.deactivateService(id, reason);
+        successCount++;
+      } catch (err) {
+        console.warn(`[Admin] bulkDeactivateServices: failed to deactivate service ${id}:`, err);
+      }
+    }
+    return successCount;
+  }
+
+  // ============= ADMIN: REVIEW QUEUE =============
+
+  async createChangeRequest(data: InsertServiceChangeRequest): Promise<ServiceChangeRequest> {
+    const [created] = await db.insert(serviceChangeRequests).values(data).returning();
+    return created;
+  }
+
+  async getChangeRequests(params: {
+    status?: string;
+    source?: string;
+    changeType?: string;
+    batchId?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ requests: ServiceChangeRequest[]; total: number }> {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 50;
+    const offset = (page - 1) * limit;
+
+    const conditions: SQL[] = [];
+
+    if (params.status) {
+      conditions.push(eq(serviceChangeRequests.status, params.status));
+    }
+    if (params.source) {
+      conditions.push(eq(serviceChangeRequests.source, params.source));
+    }
+    if (params.changeType) {
+      conditions.push(eq(serviceChangeRequests.changeType, params.changeType));
+    }
+    if (params.batchId) {
+      conditions.push(eq(serviceChangeRequests.batchId, params.batchId));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const [countResult, dataResult] = await Promise.all([
+      db.select({ count: sql<number>`count(*)` }).from(serviceChangeRequests).where(whereClause),
+      db.select().from(serviceChangeRequests).where(whereClause)
+        .orderBy(desc(serviceChangeRequests.submittedAt))
+        .limit(limit).offset(offset),
+    ]);
+
+    return {
+      requests: dataResult,
+      total: Number(countResult[0]?.count ?? 0),
+    };
+  }
+
+  async getChangeRequestById(id: number): Promise<ServiceChangeRequest | null> {
+    const [req] = await db.select().from(serviceChangeRequests).where(eq(serviceChangeRequests.id, id));
+    return req ?? null;
+  }
+
+  async updateChangeRequest(id: number, changes: Partial<ServiceChangeRequest>): Promise<ServiceChangeRequest> {
+    const [updated] = await db.update(serviceChangeRequests)
+      .set(changes)
+      .where(eq(serviceChangeRequests.id, id))
+      .returning();
+    if (!updated) throw new Error(`Change request with id ${id} not found`);
+    return updated;
+  }
+
+  async approveChangeRequest(id: number, reviewedBy?: string): Promise<Service> {
+    const req = await this.getChangeRequestById(id);
+    if (!req) throw new Error(`Change request with id ${id} not found`);
+    if (req.status !== 'pending') throw new Error(`Change request ${id} is not pending (status: ${req.status})`);
+
+    let resultService: Service;
+    const proposed = req.proposedChanges as Record<string, any>;
+
+    switch (req.changeType) {
+      case 'create': {
+        resultService = await this.createService({
+          name: proposed.name,
+          category: proposed.category,
+          ...proposed,
+        });
+        break;
+      }
+      case 'update': {
+        if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for update`);
+        resultService = await this.updateService(req.serviceId, proposed);
+        break;
+      }
+      case 'deactivate': {
+        if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for deactivation`);
+        resultService = await this.deactivateService(req.serviceId, proposed.reason || 'Approved via review queue');
+        break;
+      }
+      default:
+        throw new Error(`Unknown changeType: ${req.changeType}`);
+    }
+
+    // Mark the change request as approved
+    await this.updateChangeRequest(id, {
+      status: 'approved',
+      reviewedAt: new Date(),
+      reviewedBy: reviewedBy ?? 'admin',
+    });
+
+    return resultService;
+  }
+
+  async rejectChangeRequest(id: number, reason: string, reviewedBy?: string): Promise<void> {
+    const req = await this.getChangeRequestById(id);
+    if (!req) throw new Error(`Change request with id ${id} not found`);
+
+    await this.updateChangeRequest(id, {
+      status: 'rejected',
+      reviewNotes: reason,
+      reviewedAt: new Date(),
+      reviewedBy: reviewedBy ?? 'admin',
+    });
+  }
+
+  async bulkApproveChangeRequests(ids: number[], reviewedBy?: string): Promise<number> {
+    let successCount = 0;
+    for (const id of ids) {
+      try {
+        await this.approveChangeRequest(id, reviewedBy);
+        successCount++;
+      } catch (err) {
+        console.warn(`[Admin] bulkApproveChangeRequests: failed to approve ${id}:`, err);
+      }
+    }
+    return successCount;
+  }
+
+  // ============= ADMIN: QUALITY =============
+
+  async getQualitySummary(): Promise<Record<string, number>> {
+    const result = await db.execute(sql`
+      SELECT
+        COUNT(*) FILTER (WHERE phone IS NOT NULL AND phone != '') * 100.0 / NULLIF(COUNT(*), 0) AS phone,
+        COUNT(*) FILTER (WHERE email IS NOT NULL AND email != '') * 100.0 / NULLIF(COUNT(*), 0) AS email,
+        COUNT(*) FILTER (WHERE website_url IS NOT NULL AND website_url != '') * 100.0 / NULLIF(COUNT(*), 0) AS "websiteUrl",
+        COUNT(*) FILTER (WHERE address IS NOT NULL AND address != '') * 100.0 / NULLIF(COUNT(*), 0) AS address,
+        COUNT(*) FILTER (WHERE description IS NOT NULL AND description != '') * 100.0 / NULLIF(COUNT(*), 0) AS description,
+        COUNT(*) FILTER (WHERE hours_of_operation IS NOT NULL AND hours_of_operation != '') * 100.0 / NULLIF(COUNT(*), 0) AS "hoursOfOperation",
+        COUNT(*) FILTER (WHERE eligibility IS NOT NULL AND eligibility != '') * 100.0 / NULLIF(COUNT(*), 0) AS eligibility,
+        COUNT(*) FILTER (WHERE latitude IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS latitude,
+        COUNT(*) FILTER (WHERE tags IS NOT NULL AND tags::text != '[]' AND tags::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS tags,
+        COUNT(*) FILTER (WHERE embedding IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS embedding
+      FROM services
+      WHERE is_active = true
+    `);
+
+    const row = result.rows[0] as any;
+    const summary: Record<string, number> = {};
+    for (const field of ['phone', 'email', 'websiteUrl', 'address', 'description', 'hoursOfOperation', 'eligibility', 'latitude', 'tags', 'embedding']) {
+      summary[field] = Math.round(Number(row?.[field] ?? 0) * 10) / 10;
+    }
+    return summary;
+  }
+
+  async getQualityIssues(params: {
+    page?: number;
+    limit?: number;
+  }): Promise<{ issues: { service: Service; severity: string; missingFields: string[] }[]; total: number }> {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 50;
+    const offset = (page - 1) * limit;
+
+    // Query active services that have quality issues, ordered by confidence ASC
+    const result = await db.execute(sql`
+      SELECT *,
+        CASE
+          WHEN (phone IS NULL OR phone = '') AND (email IS NULL OR email = '') AND (website_url IS NULL OR website_url = '') THEN 'critical'
+          WHEN confidence_score < 30 OR (description IS NULL OR description = '') THEN 'high'
+          ELSE 'medium'
+        END AS severity_level
+      FROM services
+      WHERE is_active = true
+        AND (
+          -- Critical: no contact info at all
+          ((phone IS NULL OR phone = '') AND (email IS NULL OR email = '') AND (website_url IS NULL OR website_url = ''))
+          -- High: low confidence or no description
+          OR confidence_score < 30
+          OR (description IS NULL OR description = '')
+          -- Medium: missing geocoding, hours, or embedding
+          OR latitude IS NULL
+          OR (hours_of_operation IS NULL OR hours_of_operation = '')
+          OR embedding IS NULL
+        )
+      ORDER BY
+        CASE
+          WHEN (phone IS NULL OR phone = '') AND (email IS NULL OR email = '') AND (website_url IS NULL OR website_url = '') THEN 1
+          WHEN confidence_score < 30 OR (description IS NULL OR description = '') THEN 2
+          ELSE 3
+        END,
+        COALESCE(confidence_score, 999) ASC
+      LIMIT ${limit} OFFSET ${offset}
+    `);
+
+    // Get total count
+    const countResult = await db.execute(sql`
+      SELECT COUNT(*) AS total
+      FROM services
+      WHERE is_active = true
+        AND (
+          ((phone IS NULL OR phone = '') AND (email IS NULL OR email = '') AND (website_url IS NULL OR website_url = ''))
+          OR confidence_score < 30
+          OR (description IS NULL OR description = '')
+          OR latitude IS NULL
+          OR (hours_of_operation IS NULL OR hours_of_operation = '')
+          OR embedding IS NULL
+        )
+    `);
+
+    const issues = (result.rows as any[]).map(row => {
+      const missingFields: string[] = [];
+      if (!row.phone) missingFields.push('phone');
+      if (!row.email) missingFields.push('email');
+      if (!row.website_url) missingFields.push('websiteUrl');
+      if (!row.description) missingFields.push('description');
+      if (!row.address) missingFields.push('address');
+      if (row.confidence_score < 30) missingFields.push('lowConfidence');
+      if (!row.latitude) missingFields.push('latitude');
+      if (!row.hours_of_operation) missingFields.push('hoursOfOperation');
+
+      // Map raw row to Service shape
+      const service: Service = {
+        id: row.id,
+        serviceId: row.service_id,
+        name: row.name,
+        category: row.category,
+        description: row.description,
+        location: row.location,
+        contact: row.contact,
+        eligibility: row.eligibility,
+        phone: row.phone,
+        email: row.email,
+        address: row.address,
+        processSteps: row.process_steps,
+        waitTimes: row.wait_times,
+        requiredDocs: row.required_docs,
+        hoursOfOperation: row.hours_of_operation,
+        languagesSupported: row.languages_supported,
+        serviceFormat: row.service_format,
+        websiteUrl: row.website_url,
+        confidenceScore: row.confidence_score,
+        isActive: row.is_active,
+        lastChecked: row.last_checked,
+        lastUpdated: row.last_updated,
+        tags: row.tags,
+        popularityScore: row.popularity_score,
+        clickCount: row.click_count,
+        enrichmentSource: row.enrichment_source,
+        enrichmentDate: row.enrichment_date,
+        sourcePageHash: row.source_page_hash,
+        genderRestriction: row.gender_restriction,
+        is24_7: row.is_24_7,
+        ageGroup: row.age_group,
+        isFaithBased: row.is_faith_based,
+        is12Step: row.is_12_step,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        geocodeSource: row.geocode_source,
+        geocodedAt: row.geocoded_at,
+        embeddingUpdatedAt: row.embedding_updated_at,
+      };
+
+      return {
+        service,
+        severity: row.severity_level as string,
+        missingFields,
+      };
+    });
+
+    return {
+      issues,
+      total: Number((countResult.rows[0] as any)?.total ?? 0),
+    };
+  }
+
+  // ============= ADMIN: DASHBOARD =============
+
+  async getDashboardStats(): Promise<{ activeServices: number; pendingReviews: number; searchesToday: number; qualityScore: number }> {
+    const [activeResult, pendingResult, searchResult, qualityResult] = await Promise.all([
+      db.select({ count: sql<number>`count(*)` }).from(services).where(eq(services.isActive, true)),
+      db.select({ count: sql<number>`count(*)` }).from(serviceChangeRequests).where(eq(serviceChangeRequests.status, 'pending')),
+      db.execute(sql`
+        SELECT COUNT(*) AS count FROM search_analytics
+        WHERE created_at >= CURRENT_DATE
+      `),
+      db.execute(sql`
+        SELECT
+          ROUND(AVG(
+            CASE WHEN phone IS NOT NULL AND phone != '' THEN 1 ELSE 0 END +
+            CASE WHEN email IS NOT NULL AND email != '' THEN 1 ELSE 0 END +
+            CASE WHEN website_url IS NOT NULL AND website_url != '' THEN 1 ELSE 0 END +
+            CASE WHEN description IS NOT NULL AND description != '' THEN 1 ELSE 0 END +
+            CASE WHEN address IS NOT NULL AND address != '' THEN 1 ELSE 0 END +
+            CASE WHEN hours_of_operation IS NOT NULL AND hours_of_operation != '' THEN 1 ELSE 0 END +
+            CASE WHEN eligibility IS NOT NULL AND eligibility != '' THEN 1 ELSE 0 END +
+            CASE WHEN latitude IS NOT NULL THEN 1 ELSE 0 END
+          ) / 8.0 * 100, 1) AS quality_score
+        FROM services WHERE is_active = true
+      `),
+    ]);
+
+    return {
+      activeServices: Number(activeResult[0]?.count ?? 0),
+      pendingReviews: Number(pendingResult[0]?.count ?? 0),
+      searchesToday: Number((searchResult.rows[0] as any)?.count ?? 0),
+      qualityScore: Number((qualityResult.rows[0] as any)?.quality_score ?? 0),
+    };
+  }
+
+  async getRecentActivity(limit: number = 20): Promise<ServiceHistory[]> {
+    return await db.select().from(serviceHistory)
+      .orderBy(desc(serviceHistory.recordedAt))
+      .limit(limit);
+  }
+
+  // ============= ADMIN: SCRAPER =============
+
+  async getScraperRuns(params: { page?: number; limit?: number }): Promise<{ runs: ScraperLog[]; total: number }> {
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 50;
+    const offset = (page - 1) * limit;
+
+    const [countResult, dataResult] = await Promise.all([
+      db.select({ count: sql<number>`count(*)` }).from(scraperLogs),
+      db.select().from(scraperLogs)
+        .orderBy(desc(scraperLogs.startedAt))
+        .limit(limit).offset(offset),
+    ]);
+
+    return {
+      runs: dataResult,
+      total: Number(countResult[0]?.count ?? 0),
+    };
+  }
+
+  async getScraperRunById(id: number): Promise<ScraperLog | null> {
+    const [run] = await db.select().from(scraperLogs).where(eq(scraperLogs.id, id));
+    return run ?? null;
   }
 }
 
