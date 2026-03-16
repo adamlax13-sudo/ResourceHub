@@ -30,7 +30,8 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/admin/login" component={AdminLogin} />
-          <Route path="/admin/:rest*" component={AdminLayout} />
+          <Route path="/admin/:rest*">{() => <AdminLayout />}</Route>
+          <Route path="/admin">{() => <AdminLayout />}</Route>
           <Route component={NotFound} />
         </Switch>
       </Suspense>

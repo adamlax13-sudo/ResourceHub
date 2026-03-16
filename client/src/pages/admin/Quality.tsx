@@ -6,30 +6,30 @@ import { Loader2, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 
-interface QualitySummary {
-  totalActive: number;
-  withPhone: number;
-  withEmail: number;
-  withAddress: number;
-  withDescription: number;
-  withWebsite: number;
-  withEmbedding: number;
-  withGeocoding: number;
-  averageConfidence: number;
-}
+const FIELD_LABELS: Record<string, string> = {
+  phone: "Phone",
+  email: "Email",
+  websiteUrl: "Website",
+  address: "Address",
+  description: "Description",
+  hoursOfOperation: "Hours",
+  eligibility: "Eligibility",
+  latitude: "Geocoding",
+  tags: "Tags",
+  embedding: "Embedding",
+};
 
-interface QualityIssue {
-  id: number;
-  name: string;
-  category: string;
-  issues: string[];
-  confidenceScore?: number;
-}
+const SEVERITY_COLORS: Record<string, string> = {
+  critical: "bg-red-600/20 text-red-400 border-red-800",
+  high: "bg-orange-600/20 text-orange-400 border-orange-800",
+  medium: "bg-amber-600/20 text-amber-400 border-amber-800",
+  low: "bg-slate-600/20 text-slate-400 border-slate-600",
+};
 
 export default function Quality() {
   const { data: summaryData, isPending: summaryLoading } = useQuery<{
     success: boolean;
-    summary: QualitySummary;
+    summary: Record<string, number>;
   }>({
     queryKey: ["/api/admin/quality/summary"],
     queryFn: async () => {
@@ -41,7 +41,11 @@ export default function Quality() {
 
   const { data: issuesData, isPending: issuesLoading } = useQuery<{
     success: boolean;
-    issues: QualityIssue[];
+    issues: Array<{
+      service: { id: number; name: string; category: string; confidenceScore: number | null };
+      severity: string;
+      missingFields: string[];
+    }>;
     total: number;
   }>({
     queryKey: ["/api/admin/quality/issues"],
@@ -54,17 +58,11 @@ export default function Quality() {
 
   const summary = summaryData?.summary;
 
-  // Build field bars
   const fieldBars = summary
-    ? [
-        { label: "Phone", value: summary.withPhone, total: summary.totalActive },
-        { label: "Email", value: summary.withEmail, total: summary.totalActive },
-        { label: "Address", value: summary.withAddress, total: summary.totalActive },
-        { label: "Description", value: summary.withDescription, total: summary.totalActive },
-        { label: "Website", value: summary.withWebsite, total: summary.totalActive },
-        { label: "Embedding", value: summary.withEmbedding, total: summary.totalActive },
-        { label: "Geocoding", value: summary.withGeocoding, total: summary.totalActive },
-      ]
+    ? Object.entries(summary)
+        .filter(([key]) => FIELD_LABELS[key])
+        .map(([key, pct]) => ({ label: FIELD_LABELS[key], pct: Math.round(pct as number) }))
+        .sort((a, b) => a.pct - b.pct)
     : [];
 
   return (
@@ -83,47 +81,24 @@ export default function Quality() {
             </div>
           ) : (
             <div className="space-y-3">
-              {summary && (
-                <div className="flex items-center gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-slate-400">Active Services</p>
-                    <p className="text-xl font-bold text-white">{summary.totalActive}</p>
+              {fieldBars.map((bar) => (
+                <div key={bar.label} className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">{bar.label}</span>
+                    <span className="text-slate-300">{bar.pct}%</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-slate-400">Average Confidence</p>
-                    <p className={cn(
-                      "text-xl font-bold",
-                      summary.averageConfidence >= 70 ? "text-emerald-400" :
-                      summary.averageConfidence >= 40 ? "text-amber-400" : "text-red-400"
-                    )}>
-                      {summary.averageConfidence?.toFixed(0) ?? "N/A"}%
-                    </p>
+                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        bar.pct >= 80 ? "bg-emerald-500" :
+                        bar.pct >= 50 ? "bg-amber-500" : "bg-red-500"
+                      )}
+                      style={{ width: `${bar.pct}%` }}
+                    />
                   </div>
                 </div>
-              )}
-              {fieldBars.map((bar) => {
-                const pct = bar.total > 0 ? Math.round((bar.value / bar.total) * 100) : 0;
-                return (
-                  <div key={bar.label} className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-400">{bar.label}</span>
-                      <span className="text-slate-300">
-                        {bar.value} / {bar.total} ({pct}%)
-                      </span>
-                    </div>
-                    <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                      <div
-                        className={cn(
-                          "h-full rounded-full transition-all",
-                          pct >= 80 ? "bg-emerald-500" :
-                          pct >= 50 ? "bg-amber-500" : "bg-red-500"
-                        )}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+              ))}
             </div>
           )}
         </CardContent>
@@ -149,26 +124,26 @@ export default function Quality() {
                 <thead>
                   <tr className="bg-slate-700/50">
                     <th className="text-left px-3 py-2 text-slate-300 font-medium">Service</th>
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Category</th>
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Issues</th>
+                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Severity</th>
+                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Missing Fields</th>
                     <th className="text-left px-3 py-2 text-slate-300 font-medium w-20">Score</th>
                     <th className="w-10" />
                   </tr>
                 </thead>
                 <tbody>
                   {issuesData.issues.map((issue) => (
-                    <tr key={issue.id} className="border-t border-slate-700 hover:bg-slate-700/30">
-                      <td className="px-3 py-2 text-white max-w-[200px] truncate">{issue.name}</td>
+                    <tr key={issue.service.id} className="border-t border-slate-700 hover:bg-slate-700/30">
+                      <td className="px-3 py-2 text-white max-w-[200px] truncate">{issue.service.name}</td>
                       <td className="px-3 py-2">
-                        <Badge className="bg-indigo-600/20 text-indigo-400 border-indigo-700 text-[10px]">
-                          {issue.category}
+                        <Badge className={cn("text-[10px]", SEVERITY_COLORS[issue.severity] || SEVERITY_COLORS.low)}>
+                          {issue.severity}
                         </Badge>
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex gap-1 flex-wrap">
-                          {issue.issues.map((iss, i) => (
+                          {issue.missingFields.map((field, i) => (
                             <Badge key={i} className="bg-red-600/10 text-red-400 border-red-800 text-[10px]">
-                              {iss}
+                              {FIELD_LABELS[field] || field}
                             </Badge>
                           ))}
                         </div>
@@ -176,14 +151,14 @@ export default function Quality() {
                       <td className="px-3 py-2">
                         <span className={cn(
                           "text-xs font-mono",
-                          (issue.confidenceScore ?? 0) >= 70 ? "text-emerald-400" :
-                          (issue.confidenceScore ?? 0) >= 40 ? "text-amber-400" : "text-red-400"
+                          (issue.service.confidenceScore ?? 0) >= 70 ? "text-emerald-400" :
+                          (issue.service.confidenceScore ?? 0) >= 40 ? "text-amber-400" : "text-red-400"
                         )}>
-                          {issue.confidenceScore ?? "N/A"}
+                          {issue.service.confidenceScore ?? "N/A"}
                         </span>
                       </td>
                       <td className="px-3 py-2">
-                        <Link href={`/admin/services?selected=${issue.id}`}>
+                        <Link href={`/admin/services?selected=${issue.service.id}`}>
                           <ExternalLink className="h-3.5 w-3.5 text-slate-500 hover:text-white cursor-pointer" />
                         </Link>
                       </td>
