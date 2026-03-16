@@ -121,10 +121,10 @@ def test_pipeline_summary_output():
 
     pipeline.run(dry_run=True)
 
-    # Verify log.info was called with summary
+    # Verify log.info was called with the summary somewhere in its calls
     log.info.assert_called()
-    summary_call = log.info.call_args[0][0]
-    assert "Scraper Run Summary" in summary_call
+    all_log_calls = [call[0][0] for call in log.info.call_args_list if call[0]]
+    assert any("Scraper Run Summary" in msg for msg in all_log_calls)
 
 
 def test_all_real_sources_instantiate():

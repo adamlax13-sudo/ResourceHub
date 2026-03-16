@@ -5,6 +5,7 @@ Phase 1: Discover — scrape source directories (no AI)
 Phase 2: Enrich — AI-powered extraction of process steps, eligibility, etc.
 Phase 3: Finalize — embeddings, normalization, dedup, view refresh
 """
+import json
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -59,15 +60,19 @@ Duration:           {self.duration_seconds / 60:.0f} minutes"""
 
 
 class Pipeline:
-    def __init__(self, session, log, budget: float = None, backend=None):
+    def __init__(self, session, log, budget: float = None, backend=None, review_mode: bool = True):
         self.session = session
         self.log = log
         self.budget = budget
         self._backend = backend
+        self.review_mode = review_mode
+        self.batch_id = f"scraper-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}"
         self.stats = PipelineStats()
         self.sources: list[Source] = []
         self.enrichment_engine: EnrichmentEngine = None
         self._consecutive_errors = 0
+        self._phases_run: list[str] = []
+        self._run_config: dict = {}
 
     def register_source(self, source: Source):
         if self._backend:
@@ -76,18 +81,31 @@ class Pipeline:
 
     def run(self, phase: str = None, dry_run=False, full=False, source_name: str = None):
         start = datetime.now()
+        self._phases_run = []
+        self._run_config = {
+            "phase": phase,
+            "dry_run": dry_run,
+            "full": full,
+            "source_name": source_name,
+            "review_mode": self.review_mode,
+            "batch_id": self.batch_id,
+        }
         try:
             if phase is None or phase == "discover":
                 self.run_discover(dry_run=dry_run, source_name=source_name)
+                self._phases_run.append("discover")
             if phase is None or phase == "enrich":
                 self.run_enrich(dry_run=dry_run, full=full, source_name=source_name)
+                self._phases_run.append("enrich")
             if phase is None or phase == "finalize":
                 self.run_finalize(dry_run=dry_run)
+                self._phases_run.append("finalize")
         finally:
             if self._backend:
                 self._backend.close()
             self.stats.duration_seconds = (datetime.now() - start).total_seconds()
             self.log.info(self.stats.summary())
+            self._write_scraper_log(start=start)
 
     def run_discover(self, dry_run=False, source_name=None):
         for source in self.sources:
@@ -102,7 +120,12 @@ class Pipeline:
             self.stats.services_found += len(raw_services)
             self.stats.sources_scraped += 1
             for i, raw in enumerate(raw_services):
-                result = upsert_service(self.session, self.log, raw, source.name, dry_run=dry_run)
+                result = upsert_service(
+                    self.session, self.log, raw, source.name,
+                    dry_run=dry_run,
+                    review_mode=self.review_mode,
+                    batch_id=self.batch_id,
+                )
                 if result == "created":
                     self.stats.new_services += 1
                 elif result == "enriched":
@@ -121,6 +144,60 @@ class Pipeline:
                 self.session.commit()
                 invalidate_service_cache()
                 self.log.info(f"Committed {len(raw_services)} services from {source.name}")
+
+    def _write_scraper_log(self, start: datetime):
+        """Upsert a scraper_logs row with run stats and metadata."""
+        try:
+            from sqlalchemy import text
+
+            # Build per-source breakdown from stats
+            source_results = {
+                "total_found": self.stats.services_found,
+                "new": self.stats.new_services,
+                "updated": self.stats.updated_services,
+                "skipped": self.stats.skipped_unchanged,
+                "sources_scraped": self.stats.sources_scraped,
+            }
+
+            sql = text("""
+                INSERT INTO scraper_logs
+                    (run_id, started_at, completed_at, status,
+                     services_checked, services_created, services_updated,
+                     source_results, phases_run, config)
+                VALUES
+                    (:run_id, :started_at, :completed_at, :status,
+                     :services_checked, :services_created, :services_updated,
+                     :source_results::jsonb, :phases_run::jsonb, :config::jsonb)
+                ON CONFLICT (run_id) DO UPDATE SET
+                    completed_at      = EXCLUDED.completed_at,
+                    status            = EXCLUDED.status,
+                    services_checked  = EXCLUDED.services_checked,
+                    services_created  = EXCLUDED.services_created,
+                    services_updated  = EXCLUDED.services_updated,
+                    source_results    = EXCLUDED.source_results,
+                    phases_run        = EXCLUDED.phases_run,
+                    config            = EXCLUDED.config
+            """)
+            self.session.execute(sql, {
+                "run_id": self.batch_id,
+                "started_at": start,
+                "completed_at": datetime.now(),
+                "status": "completed",
+                "services_checked": self.stats.services_found,
+                "services_created": self.stats.new_services,
+                "services_updated": self.stats.updated_services,
+                "source_results": json.dumps(source_results),
+                "phases_run": json.dumps(self._phases_run),
+                "config": json.dumps(self._run_config),
+            })
+            self.session.commit()
+            self.log.info(f"Scraper log written for batch {self.batch_id}")
+        except Exception as e:
+            self.log.warning(f"Could not write scraper log: {e}")
+            try:
+                self.session.rollback()
+            except Exception:
+                pass
 
     def _is_data_rich(self, svc) -> bool:
         """Check if a service has enough data to be useful for users.

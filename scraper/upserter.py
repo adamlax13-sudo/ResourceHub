@@ -5,6 +5,7 @@ Extracted from BaseDirectoryScraper to be usable by the pipeline
 without requiring the full scraper class hierarchy.
 """
 import hashlib
+import json
 import logging
 import re
 from datetime import datetime
@@ -158,6 +159,80 @@ def invalidate_service_cache():
         del _get_active_services_cache._cache
 
 
+def _raw_service_to_dict(raw: RawService) -> dict:
+    """Serialize a RawService dataclass to a plain dict for JSON storage."""
+    return {
+        "name": raw.name,
+        "category": raw.category,
+        "source_url": raw.source_url,
+        "location": raw.location,
+        "phone": raw.phone,
+        "email": raw.email,
+        "address": raw.address,
+        "website_url": raw.website_url,
+        "hours": raw.hours,
+        "description": raw.description,
+        "eligibility": raw.eligibility,
+        "tags": raw.tags,
+        "contact": raw.contact,
+        "extra": raw.extra,
+    }
+
+
+def _service_to_dict(service) -> dict:
+    """Serialize an ORM Service object's current values to a plain dict."""
+    fields = [
+        "id", "service_id", "name", "category", "description", "location",
+        "contact", "eligibility", "phone", "email", "address",
+        "hours_of_operation", "website_url", "tags", "confidence_score",
+        "source_urls", "is_active", "gender_restriction", "is_24_7",
+        "process_steps", "required_docs", "wait_times",
+    ]
+    result = {}
+    for f in fields:
+        val = getattr(service, f, None)
+        # Ensure datetimes and other non-serializable types are strings
+        if hasattr(val, "isoformat"):
+            val = val.isoformat()
+        result[f] = val
+    return result
+
+
+def _insert_change_request(
+    session,
+    service_id_int: Optional[int],
+    change_type: str,
+    raw: RawService,
+    source_name: str,
+    previous_values: Optional[dict],
+    batch_id: Optional[str],
+    status: str = "pending",
+):
+    """Insert a row into service_change_requests using raw SQL."""
+    from sqlalchemy import text
+
+    proposed = _raw_service_to_dict(raw)
+    sql = text("""
+        INSERT INTO service_change_requests
+            (service_id, change_type, proposed_changes, previous_values,
+             source, source_plugin, source_url, status, batch_id)
+        VALUES
+            (:service_id, :change_type, :proposed_changes::jsonb, :previous_values::jsonb,
+             :source, :source_plugin, :source_url, :status, :batch_id)
+    """)
+    session.execute(sql, {
+        "service_id": service_id_int,
+        "change_type": change_type,
+        "proposed_changes": json.dumps(proposed),
+        "previous_values": json.dumps(previous_values) if previous_values is not None else None,
+        "source": source_name,
+        "source_plugin": source_name,
+        "source_url": raw.source_url,
+        "status": status,
+        "batch_id": batch_id,
+    })
+
+
 def upsert_service(
     session,
     log,
@@ -165,6 +240,8 @@ def upsert_service(
     source_name: str,
     page_content: Optional[str] = None,
     dry_run: bool = False,
+    review_mode: bool = True,
+    batch_id: Optional[str] = None,
 ) -> str:
     """Upsert a single service. Returns 'created', 'enriched', or 'skipped'.
 
@@ -175,6 +252,11 @@ def upsert_service(
         source_name:  Identifier for the scraper/source.
         page_content: Raw HTML/text of the source page (for hash-based skip).
         dry_run:      If True, don't write to the DB.
+        review_mode:  If True (default), write to service_change_requests
+                      instead of directly to services. Admin must approve.
+                      If False, write directly to services (legacy behavior)
+                      and also create an 'approved' audit record.
+        batch_id:     Batch identifier for grouping change requests.
 
     Logic:
         1. If page_content given and existing service has the same hash -> 'skipped'
@@ -209,14 +291,72 @@ def upsert_service(
         new_hash = compute_page_hash(page_content)
         if getattr(existing, "source_page_hash", None) == new_hash:
             return "skipped"
-        # Update hash for next run
-        if not dry_run:
+        # Update hash for next run (only when writing directly)
+        if not dry_run and not review_mode:
             existing.source_page_hash = new_hash
 
-    # --- enrich or create ---
+    # --- determine outcome: enrich or create ---
     if existing:
-        changed = _enrich_existing(existing, raw, source_name, log, dry_run)
-        return "enriched" if changed else "skipped"
+        # Check whether there is anything to enrich
+        changed = _enrich_existing(existing, raw, source_name, log, dry_run=True)
+        if not changed:
+            return "skipped"
+
+        outcome = "enriched"
+        if review_mode:
+            if not dry_run:
+                previous = _service_to_dict(existing)
+                _insert_change_request(
+                    session,
+                    service_id_int=existing.id,
+                    change_type="update",
+                    raw=raw,
+                    source_name=source_name,
+                    previous_values=previous,
+                    batch_id=batch_id,
+                    status="pending",
+                )
+        else:
+            # Direct write — apply changes and create audit record
+            _enrich_existing(existing, raw, source_name, log, dry_run=dry_run)
+            if not dry_run:
+                _insert_change_request(
+                    session,
+                    service_id_int=existing.id,
+                    change_type="update",
+                    raw=raw,
+                    source_name=source_name,
+                    previous_values=_service_to_dict(existing),
+                    batch_id=batch_id,
+                    status="approved",
+                )
     else:
-        _create_new(session, log, raw, source_name, dry_run)
-        return "created"
+        outcome = "created"
+        if review_mode:
+            if not dry_run:
+                _insert_change_request(
+                    session,
+                    service_id_int=None,
+                    change_type="create",
+                    raw=raw,
+                    source_name=source_name,
+                    previous_values=None,
+                    batch_id=batch_id,
+                    status="pending",
+                )
+        else:
+            # Direct write — create service and audit record
+            _create_new(session, log, raw, source_name, dry_run)
+            if not dry_run:
+                _insert_change_request(
+                    session,
+                    service_id_int=None,
+                    change_type="create",
+                    raw=raw,
+                    source_name=source_name,
+                    previous_values=None,
+                    batch_id=batch_id,
+                    status="approved",
+                )
+
+    return outcome

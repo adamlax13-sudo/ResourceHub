@@ -182,6 +182,8 @@ def parse_args():
                         help="Re-enrich all services, not just new/stale")
     parser.add_argument("--dry-run", action="store_true",
                         help="Preview changes without saving")
+    parser.add_argument("--skip-review", action="store_true",
+                        help="Write directly to services table (bypasses admin review queue)")
     parser.add_argument("--enrich-service", type=str,
                         help="Enrich a single service by name (for testing)")
     parser.add_argument("--no-js", action="store_true",
@@ -235,7 +237,8 @@ def main_v2():
 
     # Build pipeline — Pipeline expects a standard Python logger
     log = logging.getLogger("pipeline")
-    pipeline = Pipeline(session=session, log=log, budget=args.budget, backend=backend)
+    review_mode = not getattr(args, "skip_review", False)
+    pipeline = Pipeline(session=session, log=log, budget=args.budget, backend=backend, review_mode=review_mode)
 
     # Register all sources
     pipeline.register_source(AB211DirectSource())
