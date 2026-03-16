@@ -20,7 +20,6 @@ BASE_URL = "https://www.albertahealthservices.ca/findhealth"
 FACILITY_SEARCH_URL = f"{BASE_URL}/search.aspx?type=facility"
 SERVICE_SEARCH_URL = f"{BASE_URL}/search.aspx?type=service"
 
-USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
 TIMEOUT_SECONDS = 15
 
 CATEGORY_MAP = {
@@ -45,7 +44,6 @@ class AHSFindHealthSource(Source):
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
         http = requests.Session()
-        http.headers.update({"User-Agent": USER_AGENT})
         try:
             self._http = http
             results = []
@@ -59,14 +57,17 @@ class AHSFindHealthSource(Source):
             self._http = None
 
     def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
-        """Fetch a URL and return parsed HTML."""
-        try:
-            resp = self._http.get(url, timeout=TIMEOUT_SECONDS)
-            resp.raise_for_status()
-            return BeautifulSoup(resp.content, "html.parser")
-        except requests.RequestException as e:
-            logger.error(f"[AHS] Failed to fetch {url}: {e}")
+        """Fetch a URL via CrawlBackend for initial page load (returns parsed HTML)."""
+        from backends.interface import CrawlConfig
+
+        page = self.backend.fetch_page(url, CrawlConfig(
+            js_rendering=False,
+            timeout_seconds=TIMEOUT_SECONDS,
+        ))
+        if page.error:
+            logger.error(f"[AHS] Failed to fetch {url}: {page.error}")
             return None
+        return BeautifulSoup(page.html, "html.parser")
 
     def _scrape_search(self, url: str, search_type: str) -> List[RawService]:
         """Scrape all results from a search page by iterating dropdown options."""
