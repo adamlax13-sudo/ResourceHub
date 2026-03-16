@@ -1147,6 +1147,11 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bpsychologist\b/i,
       /\bmental health support\b/i,
     ],
+    'mental_health.depression': [
+      /\bdepression\b/i,
+      /\bdepressed\b/i,
+      /\bfeeling (?:hopeless|worthless|empty)\b/i,
+    ],
     'mental_health.psychiatry': [
       /\bpsychiatry\b/i,
       /\bpsychiatrist\b/i,

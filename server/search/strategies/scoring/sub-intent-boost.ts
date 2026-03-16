@@ -59,6 +59,7 @@ const SUB_INTENT_TEXT_PATTERNS: Record<string, RegExp> = {
   'healthcare_access.vision_care':  /\b(?:eye exam|optometrist|glasses|eyeglasses|vision care|optical|optician)\b/i,
   'healthcare_access.sexual_health': /\b(?:sti|std|hiv|sexual health|birth control|contracept|prep|pep|sex clinic|gonorrhea|chlamydia|syphilis|herpes)\b/i,
   'healthcare_access.chronic_pain': /\b(?:chronic pain|pain management|pain clinic|pain program|fibromyalgia)\b/i,
+  'mental_health.depression': /\b(?:depression|depressed|depressive|mood disorder|low mood)\b/i,
   'substance_abuse.peer_recovery': /\b(?:aa meeting|na meeting|recovery meeting|sober communit|peer.*recovery|12.step|sponsor|recovery group|recovery support)\b/i,
   'housing_urgent.supportive_housing': /\b(?:sober living|sober house|recovery house|supportive housing|supported housing)\b/i,
   'disability_support.fasd': /\b(?:fasd|fetal alcohol|foetal alcohol)\b/i,

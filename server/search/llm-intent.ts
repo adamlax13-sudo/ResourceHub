@@ -110,7 +110,7 @@ Return a JSON object with these fields:
    - housing_urgent: emergency_shelter, eviction_defense, transitional_housing, affordable_housing, youth_housing, supportive_housing
    - substance_abuse: detox, residential_treatment, harm_reduction, outpatient, gambling, cannabis, peer_recovery
    - healthcare_access: dental, walk_in_clinic, hospital_er, prescription_coverage, disability_equipment, sexual_health, chronic_pain
-   - mental_health: counselling, psychiatry, eating_disorder, trauma, anger_management, postpartum
+   - mental_health: counselling, psychiatry, eating_disorder, trauma, anger_management, postpartum, depression
    - indigenous_services: residential_school_survivor, nihb_coverage, cultural_healing, language_preservation, status_card
    - newcomer_services: esl_language, credential_recognition, settlement, refugee, interpretation
    - legal_aid: family_court, eviction_defense, restraining_order, immigration_law, criminal_court

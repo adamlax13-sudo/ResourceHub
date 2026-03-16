@@ -33,7 +33,7 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'food': ['meal', 'nutrition', 'hungry', 'groceries', 'foodbank'],
   'employment': ['job', 'work', 'career', 'training'],
   'anxiety': ['anxious', 'worry', 'panic', 'stress'],
-  'depression': ['depressed', 'sad', 'mood', 'hopeless'],
+  'depression': ['depressed', 'sad', 'mood', 'hopeless', 'counselling', 'therapy'],
   'trauma': ['ptsd', 'abuse', 'violence', 'assault'],
   'recovery': ['rehabilitation', 'rehab', 'treatment', 'sober'],
   'harm': ['reduction', 'needle', 'injection', 'naloxone'],
@@ -64,10 +64,12 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'anger': ['anger management', 'aggression', 'rage'],
   'gambling': ['gaming', 'betting'],
   'grief': ['bereavement', 'loss', 'mourning'],
+  'dementia': ['alzheimer', 'caregiver', 'memory care', 'respite', 'cognitive'],
+  'caregiver': ['respite', 'caring for', 'burnout', 'family support'],
   'dental': ['dentist', 'teeth', 'tooth', 'oral health', 'dental clinic'],
   'hospital': ['emergency room', 'ER', 'urgent care', 'emergency department'],
   'prescription': ['medication', 'pharmacare', 'drug coverage', 'pharmacy'],
-  'wheelchair': ['mobility', 'accessibility', 'assistive device', 'walker'],
+  'wheelchair': ['mobility', 'accessibility', 'assistive device', 'walker', 'disability'],
   // Indigenous health benefit program
   'nihb': ['indigenous', 'first nations', 'health', 'benefit', 'coverage'],
   // English as a Second/Additional Language
