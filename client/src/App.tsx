@@ -12,6 +12,8 @@ import './lib/i18n';
 
 const Home = lazy(() => import("@/pages/Home"));
 const NotFound = lazy(() => import("@/pages/not-found"));
+const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
+const AdminLogin = lazy(() => import("@/pages/admin/Login"));
 
 function PageLoader() {
   return (
@@ -27,6 +29,8 @@ function Router() {
       <Suspense fallback={<PageLoader />}>
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/admin/login" component={AdminLogin} />
+          <Route path="/admin/:rest*" component={AdminLayout} />
           <Route component={NotFound} />
         </Switch>
       </Suspense>
