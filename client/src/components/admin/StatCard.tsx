@@ -13,21 +13,21 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, icon: Icon, trend, className }: StatCardProps) {
   return (
-    <Card className={cn("bg-slate-800 border-slate-700", className)}>
+    <Card className={cn("bg-white border-gray-100 shadow-sm rounded-xl", className)}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm text-slate-400">{title}</p>
-            <p className="text-2xl font-bold text-white">{value}</p>
-            {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+            <p className="text-xs uppercase tracking-wide text-gray-500">{title}</p>
+            <p className="text-2xl font-bold text-gray-900">{value}</p>
+            {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
             {trend && (
-              <p className={cn("text-xs", trend.value >= 0 ? "text-emerald-400" : "text-red-400")}>
-                {trend.value >= 0 ? "+" : ""}{trend.value}% {trend.label}
+              <p className={cn("text-xs font-medium flex items-center gap-1", trend.value >= 0 ? "text-emerald-500" : "text-red-500")}>
+                {trend.value >= 0 ? "\u2191" : "\u2193"} {trend.value >= 0 ? "+" : ""}{trend.value}% {trend.label}
               </p>
             )}
           </div>
-          <div className="rounded-lg bg-slate-700/50 p-2.5">
-            <Icon className="h-5 w-5 text-indigo-400" />
+          <div className="rounded-lg bg-teal-50 p-2.5">
+            <Icon className="h-5 w-5 text-teal-600" />
           </div>
         </div>
       </CardContent>

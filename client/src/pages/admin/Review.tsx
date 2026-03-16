@@ -179,12 +179,12 @@ export default function Review() {
   const list = (
     <div className="flex flex-col h-full">
       {/* Filters */}
-      <div className="p-3 border-b border-slate-700 space-y-2">
+      <div className="p-3 border-b border-gray-200 space-y-2">
         <div className="flex gap-2">
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
-            className="h-8 rounded-md border border-slate-600 bg-slate-800 px-2 text-xs text-white"
+            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
           >
             <option value="">All Sources</option>
             <option value="scraper">Scraper</option>
@@ -194,7 +194,7 @@ export default function Review() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="h-8 rounded-md border border-slate-600 bg-slate-800 px-2 text-xs text-white"
+            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
           >
             <option value="">All Types</option>
             <option value="create">Create</option>
@@ -207,7 +207,7 @@ export default function Review() {
             size="sm"
             onClick={() => bulkApproveMutation.mutate(Array.from(selectedIds))}
             disabled={bulkApproveMutation.isPending}
-            className="w-full"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white"
           >
             {bulkApproveMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
             Approve Selected ({selectedIds.size})
@@ -218,11 +218,11 @@ export default function Review() {
       {/* List */}
       {listLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : !listData?.changeRequests?.length ? (
-        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-          <CheckCircle className="h-8 w-8 mb-2 text-emerald-400/50" />
+        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+          <CheckCircle className="h-8 w-8 mb-2 text-emerald-300" />
           <p className="text-sm">All caught up! No pending reviews.</p>
         </div>
       ) : (
@@ -231,8 +231,8 @@ export default function Review() {
             <div
               key={cr.id}
               className={cn(
-                "flex items-center gap-2 px-3 py-2.5 border-b border-slate-700/50 cursor-pointer transition-colors",
-                selectedId === cr.id ? "bg-slate-700/50" : "hover:bg-slate-800/50"
+                "flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 cursor-pointer transition-colors",
+                selectedId === cr.id ? "bg-teal-50" : "hover:bg-gray-50"
               )}
             >
               <input
@@ -245,11 +245,11 @@ export default function Review() {
               <div className="min-w-0 flex-1" onClick={() => { setSelectedId(cr.id); setEditMode(false); }}>
                 <div className="flex items-center gap-2">
                   <ChangeTypeBadge type={cr.changeType} />
-                  <p className="text-sm text-white truncate">
+                  <p className="text-sm text-gray-900 truncate">
                     {cr.serviceName || (cr.proposedChanges as any)?.name || `#${cr.serviceId || cr.id}`}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-500">
+                <div className="flex items-center gap-2 mt-1 text-[10px] text-gray-400">
                   {cr.source && <span>{cr.source}</span>}
                   <span>{formatRelativeTime(cr.createdAt)}</span>
                 </div>
@@ -265,7 +265,7 @@ export default function Review() {
     <div className="p-4">
       {detailLoading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : request ? (
         <div className="space-y-4">
@@ -274,11 +274,11 @@ export default function Review() {
             <div>
               <div className="flex items-center gap-2">
                 <ChangeTypeBadge type={request.changeType} />
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-gray-900">
                   {request.serviceName || (request.proposedChanges as any)?.name || `Change Request #${request.id}`}
                 </h3>
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 {request.source} -- {new Date(request.createdAt).toLocaleString()}
               </p>
             </div>
@@ -286,9 +286,9 @@ export default function Review() {
 
           {/* Duplicate Warning */}
           {detailData?.duplicateWarning && (
-            <div className="flex items-center gap-2 p-3 rounded-md bg-amber-900/20 border border-amber-800">
-              <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
-              <p className="text-sm text-amber-300">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+              <p className="text-sm text-amber-700">
                 Possible duplicate: {detailData.duplicateWarning.serviceName}
                 (ID: {detailData.duplicateWarning.serviceId}, matched by {detailData.duplicateWarning.matchType})
               </p>
@@ -309,12 +309,12 @@ export default function Review() {
             <DiffView changes={diffChanges} />
           ) : request.changeType === "create" && request.proposedChanges ? (
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-slate-300">Proposed Service</h4>
+              <h4 className="text-sm font-medium text-gray-700">Proposed Service</h4>
               <div className="space-y-1">
                 {Object.entries(request.proposedChanges).map(([key, val]) => (
                   <div key={key} className="flex gap-2 py-1">
-                    <span className="text-xs text-slate-500 w-32 flex-shrink-0">{key}</span>
-                    <span className="text-sm text-slate-300 break-words">
+                    <span className="text-xs text-gray-400 w-32 flex-shrink-0">{key}</span>
+                    <span className="text-sm text-gray-700 break-words">
                       {val == null ? "(empty)" : typeof val === "object" ? JSON.stringify(val) : String(val)}
                     </span>
                   </div>
@@ -323,17 +323,17 @@ export default function Review() {
             </div>
           ) : request.changeType === "deactivate" ? (
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-slate-300">Deactivation Request</h4>
+              <h4 className="text-sm font-medium text-gray-700">Deactivation Request</h4>
               {request.reason && (
-                <p className="text-sm text-slate-400">Reason: {request.reason}</p>
+                <p className="text-sm text-gray-500">Reason: {request.reason}</p>
               )}
               {request.currentData && (
                 <div className="space-y-1 mt-3">
-                  <h5 className="text-xs text-slate-500">Current service data:</h5>
+                  <h5 className="text-xs text-gray-400">Current service data:</h5>
                   {Object.entries(request.currentData).map(([key, val]) => (
                     <div key={key} className="flex gap-2 py-0.5">
-                      <span className="text-xs text-slate-500 w-32 flex-shrink-0">{key}</span>
-                      <span className="text-sm text-slate-400 break-words">
+                      <span className="text-xs text-gray-400 w-32 flex-shrink-0">{key}</span>
+                      <span className="text-sm text-gray-500 break-words">
                         {val == null ? "(empty)" : typeof val === "object" ? JSON.stringify(val) : String(val)}
                       </span>
                     </div>
@@ -342,16 +342,16 @@ export default function Review() {
               )}
             </div>
           ) : (
-            <p className="text-sm text-slate-500">No details available.</p>
+            <p className="text-sm text-gray-400">No details available.</p>
           )}
 
           {/* Action Buttons */}
           {!editMode && (
-            <div className="flex gap-2 pt-4 border-t border-slate-700">
+            <div className="flex gap-2 pt-4 border-t border-gray-200">
               <Button
                 onClick={() => approveMutation.mutate(request.id)}
                 disabled={approveMutation.isPending}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                 <CheckCircle className="h-4 w-4 mr-1" />
@@ -360,7 +360,7 @@ export default function Review() {
               <Button
                 variant="outline"
                 onClick={() => setEditMode(true)}
-                className="border-slate-600"
+                className="border-gray-300"
               >
                 <Edit2 className="h-4 w-4 mr-1" />
                 Edit & Approve
@@ -368,7 +368,7 @@ export default function Review() {
               <Button
                 variant="outline"
                 onClick={() => setRejectDialogOpen(true)}
-                className="border-red-700 text-red-400 hover:bg-red-900/20"
+                className="border-red-300 text-red-500 hover:bg-red-50"
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Reject
@@ -378,24 +378,24 @@ export default function Review() {
 
           {/* Post-approval toast prompt */}
           {approveMutation.isSuccess && (
-            <div className="flex items-center gap-2 p-3 rounded-md bg-indigo-900/20 border border-indigo-800">
-              <RefreshCw className="h-4 w-4 text-indigo-400 flex-shrink-0" />
-              <p className="text-sm text-indigo-300">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-teal-50 border border-teal-200">
+              <RefreshCw className="h-4 w-4 text-teal-600 flex-shrink-0" />
+              <p className="text-sm text-teal-700">
                 Consider refreshing the search view (System page) for changes to appear in search results.
               </p>
             </div>
           )}
         </div>
       ) : (
-        <p className="text-sm text-slate-500 text-center py-8">Change request not found</p>
+        <p className="text-sm text-gray-400 text-center py-8">Change request not found</p>
       )}
 
       {/* Reject Dialog */}
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white">Reject Change Request</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-gray-900">Reject Change Request</DialogTitle>
+            <DialogDescription className="text-gray-500">
               Provide a reason for rejecting this change.
             </DialogDescription>
           </DialogHeader>
@@ -403,10 +403,10 @@ export default function Review() {
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
             placeholder="Reason for rejection..."
-            className="bg-slate-900 border-slate-600 text-white"
+            className="bg-white border-gray-300 text-gray-900"
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-slate-600">
+            <Button variant="outline" onClick={() => setRejectDialogOpen(false)} className="border-gray-300">
               Cancel
             </Button>
             <Button
@@ -434,15 +434,15 @@ export default function Review() {
 
 function ChangeTypeBadge({ type }: { type: string }) {
   if (type === "create") {
-    return <Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-700 text-xs">NEW</Badge>;
+    return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">NEW</Badge>;
   }
   if (type === "update") {
-    return <Badge className="bg-amber-600/20 text-amber-400 border-amber-700 text-xs">UPDATE</Badge>;
+    return <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs">UPDATE</Badge>;
   }
   if (type === "deactivate") {
-    return <Badge className="bg-red-600/20 text-red-400 border-red-700 text-xs">REMOVE</Badge>;
+    return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">REMOVE</Badge>;
   }
-  return <Badge className="bg-slate-600/20 text-slate-400 border-slate-600 text-xs">{type}</Badge>;
+  return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{type}</Badge>;
 }
 
 function formatRelativeTime(dateStr: string): string {

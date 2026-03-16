@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect } from "react";
 import { Switch, Route, useLocation, Link } from "wouter";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload } from "lucide-react";
+import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,17 +23,19 @@ interface NavItem {
   icon: typeof LayoutDashboard;
   /** If true, matches only exact path */
   exact?: boolean;
+  /** Section group label */
+  section?: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", path: "/admin", icon: LayoutDashboard, exact: true },
-  { label: "Services", path: "/admin/services", icon: Database },
-  { label: "Review", path: "/admin/review", icon: ClipboardCheck },
-  { label: "Quality", path: "/admin/quality", icon: BarChart3 },
-  { label: "Analytics", path: "/admin/analytics", icon: Activity },
-  { label: "Scraper", path: "/admin/scraper", icon: Bot },
-  { label: "Search Test", path: "/admin/search-test", icon: Search },
-  { label: "System", path: "/admin/system", icon: Settings },
+  { label: "Dashboard", path: "/admin", icon: LayoutDashboard, exact: true, section: "GENERAL" },
+  { label: "Services", path: "/admin/services", icon: Database, section: "GENERAL" },
+  { label: "Review", path: "/admin/review", icon: ClipboardCheck, section: "GENERAL" },
+  { label: "Quality", path: "/admin/quality", icon: BarChart3, section: "DATA" },
+  { label: "Analytics", path: "/admin/analytics", icon: Activity, section: "DATA" },
+  { label: "Scraper", path: "/admin/scraper", icon: Bot, section: "DATA" },
+  { label: "Search Test", path: "/admin/search-test", icon: Search, section: "TOOLS" },
+  { label: "System", path: "/admin/system", icon: Settings, section: "TOOLS" },
 ];
 
 function Sidebar({ onLogout }: { onLogout: () => void }) {
@@ -44,59 +46,83 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
     return location.startsWith(item.path);
   };
 
+  // Group nav items by section
+  const sections: Record<string, NavItem[]> = {};
+  for (const item of NAV_ITEMS) {
+    const sec = item.section || "OTHER";
+    if (!sections[sec]) sections[sec] = [];
+    sections[sec].push(item);
+  }
+
   return (
-    <aside className="w-56 bg-slate-900 border-r border-slate-800 flex flex-col min-h-screen fixed left-0 top-0 z-40">
+    <aside className="w-56 bg-white border-r border-gray-200 flex flex-col min-h-screen fixed left-0 top-0 z-40">
       {/* Brand */}
-      <div className="px-4 py-4 border-b border-slate-800">
-        <h1 className="text-lg font-bold text-white">ResourceHub</h1>
-        <p className="text-xs text-slate-500">Admin Panel</p>
+      <div className="px-4 py-5 border-b border-gray-100">
+        <h1 className="text-lg font-bold text-teal-600">ResourceHub</h1>
+        <p className="text-xs text-gray-400 mt-0.5">Admin Panel</p>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-        {NAV_ITEMS.map((item) => {
-          const active = isActive(item);
-          return (
-            <Link key={item.path} href={item.path}>
-              <div
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm cursor-pointer transition-colors",
-                  active
-                    ? "bg-slate-800 text-white border-l-2 border-indigo-400 -ml-[1px]"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                )}
-              >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
-                {item.label}
-              </div>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 py-2 px-2 overflow-y-auto">
+        {Object.entries(sections).map(([sectionName, items]) => (
+          <div key={sectionName}>
+            <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium px-3 mt-4 mb-2">
+              {sectionName}
+            </p>
+            <div className="space-y-0.5">
+              {items.map((item) => {
+                const active = isActive(item);
+                return (
+                  <Link key={item.path} href={item.path}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors",
+                        active
+                          ? "bg-teal-50 text-teal-700 font-medium"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      )}
+                    >
+                      {active && (
+                        <span className="absolute left-0 w-1 h-6 bg-teal-500 rounded-r-full" />
+                      )}
+                      <item.icon className={cn("h-4 w-4 flex-shrink-0", active ? "text-teal-600" : "text-gray-400")} />
+                      {item.label}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Quick Actions */}
-      <div className="px-2 py-2 border-t border-slate-800 space-y-1">
+      <div className="px-2 py-2 border-t border-gray-100 space-y-0.5">
         <Link href="/admin/services/new">
-          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 hover:text-slate-300 cursor-pointer">
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
             <Plus className="h-3 w-3" />
             New Service
           </div>
         </Link>
         <Link href="/admin/services/import">
-          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 hover:text-slate-300 cursor-pointer">
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
             <Upload className="h-3 w-3" />
             Import
           </div>
         </Link>
       </div>
 
-      {/* Logout */}
-      <div className="p-2 border-t border-slate-800">
+      {/* Bottom section */}
+      <div className="p-2 border-t border-gray-100 space-y-0.5">
+        <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400">
+          <HelpCircle className="h-3 w-3" />
+          Help
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={onLogout}
-          className="w-full justify-start text-slate-400 hover:text-white hover:bg-slate-800"
+          className="w-full justify-start text-gray-400 hover:text-gray-700 hover:bg-gray-50"
         >
           <LogOut className="h-4 w-4 mr-2" />
           Logout
@@ -109,7 +135,7 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
 function AdminPageLoader() {
   return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="h-6 w-6 animate-spin text-indigo-400" />
+      <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
     </div>
   );
 }
@@ -126,8 +152,8 @@ export default function AdminLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
       </div>
     );
   }
@@ -140,7 +166,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar onLogout={handleLogout} />
       <main className="ml-56">
         <Suspense fallback={<AdminPageLoader />}>
@@ -156,7 +182,7 @@ export default function AdminLayout() {
             <Route path="/admin/search-test" component={SearchTest} />
             <Route path="/admin/system" component={System} />
             <Route>
-              <div className="flex items-center justify-center h-64 text-slate-500">
+              <div className="flex items-center justify-center h-64 text-gray-400">
                 Page not found
               </div>
             </Route>

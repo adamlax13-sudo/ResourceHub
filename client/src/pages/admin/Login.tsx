@@ -38,21 +38,21 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-      <Card className="w-full max-w-sm bg-slate-900 border-slate-700">
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-2 rounded-full bg-indigo-500/10 p-3 w-fit">
-            <Shield className="h-6 w-6 text-indigo-400" />
+          <div className="mx-auto mb-2 rounded-full bg-teal-50 p-3 w-fit">
+            <Shield className="h-6 w-6 text-teal-600" />
           </div>
-          <CardTitle className="text-white">Admin Login</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className="text-gray-900">Admin Login</CardTitle>
+          <CardDescription className="text-gray-500">
             Enter your API key to access the admin panel
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="apiKey" className="text-slate-300">
+              <Label htmlFor="apiKey" className="text-gray-700">
                 API Key
               </Label>
               <Input
@@ -61,15 +61,15 @@ export default function AdminLogin() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="Enter admin API key"
-                className="mt-1 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                 required
                 autoFocus
               />
             </div>
             {error && (
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-500">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={isPending || !apiKey}>
+            <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white" disabled={isPending || !apiKey}>
               {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Sign In
             </Button>

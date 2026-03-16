@@ -90,22 +90,22 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     <form onSubmit={handleSubmit} className="space-y-4 p-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <Label className="text-slate-300">Name *</Label>
+          <Label className="text-gray-700">Name *</Label>
           <Input
             required
             value={form.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
           />
         </div>
 
         <div>
-          <Label className="text-slate-300">Category *</Label>
+          <Label className="text-gray-700">Category *</Label>
           <select
             required
             value={form.category}
             onChange={(e) => handleChange("category", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-white"
+            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
           >
             <option value="">Select...</option>
             {CATEGORY_OPTIONS.map((cat) => (
@@ -115,98 +115,98 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
 
         <div>
-          <Label className="text-slate-300">Location</Label>
+          <Label className="text-gray-700">Location</Label>
           <Input
             value={form.location ?? ""}
             onChange={(e) => handleChange("location", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
             placeholder="City or region"
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-slate-300">Description</Label>
+        <Label className="text-gray-700">Description</Label>
         <Textarea
           value={form.description ?? ""}
           onChange={(e) => handleChange("description", e.target.value)}
-          className="mt-1 bg-slate-800 border-slate-600 text-white min-h-[100px]"
+          className="mt-1 bg-white border-gray-300 text-gray-900 min-h-[100px]"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-slate-300">Phone</Label>
+          <Label className="text-gray-700">Phone</Label>
           <Input
             value={form.phone ?? ""}
             onChange={(e) => handleChange("phone", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
           />
         </div>
         <div>
-          <Label className="text-slate-300">Email</Label>
+          <Label className="text-gray-700">Email</Label>
           <Input
             value={form.email ?? ""}
             onChange={(e) => handleChange("email", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-slate-300">Address</Label>
+        <Label className="text-gray-700">Address</Label>
         <Input
           value={form.address ?? ""}
           onChange={(e) => handleChange("address", e.target.value)}
-          className="mt-1 bg-slate-800 border-slate-600 text-white"
+          className="mt-1 bg-white border-gray-300 text-gray-900"
         />
       </div>
 
       <div>
-        <Label className="text-slate-300">Website URL</Label>
+        <Label className="text-gray-700">Website URL</Label>
         <Input
           value={form.websiteUrl ?? ""}
           onChange={(e) => handleChange("websiteUrl", e.target.value)}
-          className="mt-1 bg-slate-800 border-slate-600 text-white"
+          className="mt-1 bg-white border-gray-300 text-gray-900"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-slate-300">Hours of Operation</Label>
+          <Label className="text-gray-700">Hours of Operation</Label>
           <Input
             value={form.hoursOfOperation ?? ""}
             onChange={(e) => handleChange("hoursOfOperation", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
           />
         </div>
         <div>
-          <Label className="text-slate-300">Eligibility</Label>
+          <Label className="text-gray-700">Eligibility</Label>
           <Input
             value={form.eligibility ?? ""}
             onChange={(e) => handleChange("eligibility", e.target.value)}
-            className="mt-1 bg-slate-800 border-slate-600 text-white"
+            className="mt-1 bg-white border-gray-300 text-gray-900"
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-slate-300">Tags (comma-separated)</Label>
+        <Label className="text-gray-700">Tags (comma-separated)</Label>
         <Input
           value={tagsInput}
           onChange={(e) => setTagsInput(e.target.value)}
-          className="mt-1 bg-slate-800 border-slate-600 text-white"
+          className="mt-1 bg-white border-gray-300 text-gray-900"
           placeholder="e.g. free, walk-in, virtual"
         />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <Label className="text-slate-300">Gender Restriction</Label>
+          <Label className="text-gray-700">Gender Restriction</Label>
           <select
             value={form.genderRestriction ?? ""}
             onChange={(e) => handleChange("genderRestriction", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-white"
+            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
           >
             <option value="">None (all genders)</option>
             <option value="male">Male</option>
@@ -214,11 +214,11 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           </select>
         </div>
         <div>
-          <Label className="text-slate-300">Age Group</Label>
+          <Label className="text-gray-700">Age Group</Label>
           <select
             value={form.ageGroup ?? ""}
             onChange={(e) => handleChange("ageGroup", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-white"
+            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
           >
             <option value="">All ages</option>
             <option value="youth">Youth</option>
@@ -229,7 +229,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       <div className="flex gap-6 pt-2">
-        <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
           <input
             type="checkbox"
             checked={form.isFaithBased ?? false}
@@ -238,7 +238,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           />
           Faith-based
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
           <input
             type="checkbox"
             checked={form.is12Step ?? false}
@@ -247,7 +247,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           />
           12-Step
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
           <input
             type="checkbox"
             checked={form.is24_7 ?? false}
@@ -259,7 +259,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       <div className="pt-4 flex justify-end">
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending} className="bg-teal-600 hover:bg-teal-700 text-white">
           {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {submitLabel}
         </Button>

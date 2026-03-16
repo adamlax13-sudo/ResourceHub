@@ -125,18 +125,18 @@ export default function System() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-white">System</h2>
+      <h2 className="text-xl font-semibold text-gray-900">System</h2>
 
       {/* System Status */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white text-base">System Status</CardTitle>
+            <CardTitle className="text-gray-900 text-base">System Status</CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => refetchStatus()}
-              className="text-slate-400 hover:text-white h-7"
+              className="text-gray-400 hover:text-gray-900 h-7"
             >
               <RefreshCw className="h-3.5 w-3.5" />
             </Button>
@@ -145,45 +145,45 @@ export default function System() {
         <CardContent>
           {statusLoading ? (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* DB Health */}
               <div className="space-y-1">
-                <p className="text-xs text-slate-500">Database</p>
+                <p className="text-xs text-gray-400">Database</p>
                 <div className="flex items-center gap-2">
                   <div className={cn(
                     "h-2 w-2 rounded-full",
                     db?.connected ? "bg-emerald-400" : "bg-red-400"
                   )} />
-                  <span className="text-sm text-white">
+                  <span className="text-sm text-gray-900">
                     {db?.connected ? "Connected" : "Disconnected"}
                   </span>
                 </div>
                 {db?.pingMs != null && (
-                  <p className="text-xs text-slate-500">{db.pingMs}ms ping</p>
+                  <p className="text-xs text-gray-400">{db.pingMs}ms ping</p>
                 )}
               </div>
 
               {/* Service Counts */}
               <div className="space-y-1">
-                <p className="text-xs text-slate-500">Services</p>
-                <p className="text-sm text-white">{svcs?.activeServices ?? 0} active</p>
-                <p className="text-xs text-slate-500">{svcs?.inactiveServices ?? 0} inactive</p>
+                <p className="text-xs text-gray-400">Services</p>
+                <p className="text-sm text-gray-900">{svcs?.activeServices ?? 0} active</p>
+                <p className="text-xs text-gray-400">{svcs?.inactiveServices ?? 0} inactive</p>
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs text-slate-500">Embeddings</p>
-                <p className="text-sm text-white">{svcs?.servicesWithEmbedding ?? 0}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-400">Embeddings</p>
+                <p className="text-sm text-gray-900">{svcs?.servicesWithEmbedding ?? 0}</p>
+                <p className="text-xs text-gray-400">
                   of {svcs?.totalServices ?? 0} total
                 </p>
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs text-slate-500">Cache</p>
-                <p className="text-sm text-white">{status?.cache?.cachedQueries ?? 0} queries</p>
+                <p className="text-xs text-gray-400">Cache</p>
+                <p className="text-sm text-gray-900">{status?.cache?.cachedQueries ?? 0} queries</p>
               </div>
             </div>
           )}
@@ -191,9 +191,9 @@ export default function System() {
       </Card>
 
       {/* Maintenance Jobs */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-white text-base">Maintenance</CardTitle>
+          <CardTitle className="text-gray-900 text-base">Maintenance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Refresh Search View */}
@@ -206,6 +206,7 @@ export default function System() {
                 size="sm"
                 onClick={() => refreshSearchMutation.mutate()}
                 disabled={refreshSearchMutation.isPending}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {refreshSearchMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Refresh
@@ -223,6 +224,7 @@ export default function System() {
                 size="sm"
                 onClick={() => persistEnrichmentsMutation.mutate()}
                 disabled={persistEnrichmentsMutation.isPending}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {persistEnrichmentsMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Persist
@@ -240,6 +242,7 @@ export default function System() {
                 size="sm"
                 onClick={() => recomputeAffinitiesMutation.mutate()}
                 disabled={recomputeAffinitiesMutation.isPending}
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {recomputeAffinitiesMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Recompute
@@ -248,14 +251,14 @@ export default function System() {
           />
 
           {/* Purge Analytics */}
-          <div className="flex items-start justify-between gap-4 py-3 border-t border-slate-700">
+          <div className="flex items-start justify-between gap-4 py-3 border-t border-gray-200">
             <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-slate-700/50 p-2 mt-0.5">
-                <Trash2 className="h-4 w-4 text-red-400" />
+              <div className="rounded-lg bg-red-50 p-2 mt-0.5">
+                <Trash2 className="h-4 w-4 text-red-500" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Purge Analytics</p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-sm font-medium text-gray-900">Purge Analytics</p>
+                <p className="text-xs text-gray-400 mt-0.5">
                   Delete old search analytics data.
                 </p>
               </div>
@@ -264,7 +267,7 @@ export default function System() {
               <select
                 value={purgeDays}
                 onChange={(e) => setPurgeDays(Number(e.target.value))}
-                className="h-8 rounded-md border border-slate-600 bg-slate-800 px-2 text-xs text-white"
+                className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
               >
                 <option value={30}>30 days</option>
                 <option value={90}>90 days</option>
@@ -276,7 +279,7 @@ export default function System() {
                 variant="outline"
                 onClick={() => purgePreviewMutation.mutate()}
                 disabled={purgePreviewMutation.isPending}
-                className="border-slate-600 text-xs"
+                className="border-gray-300 text-xs"
               >
                 Preview
               </Button>
@@ -309,14 +312,14 @@ function JobRow({
   action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-3 border-t border-slate-700 first:border-0 first:pt-0">
+    <div className="flex items-start justify-between gap-4 py-3 border-t border-gray-200 first:border-0 first:pt-0">
       <div className="flex items-start gap-3">
-        <div className="rounded-lg bg-slate-700/50 p-2 mt-0.5">
-          <Icon className="h-4 w-4 text-indigo-400" />
+        <div className="rounded-lg bg-teal-50 p-2 mt-0.5">
+          <Icon className="h-4 w-4 text-teal-600" />
         </div>
         <div>
-          <p className="text-sm font-medium text-white">{title}</p>
-          <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+          <p className="text-sm font-medium text-gray-900">{title}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{description}</p>
         </div>
       </div>
       {action}

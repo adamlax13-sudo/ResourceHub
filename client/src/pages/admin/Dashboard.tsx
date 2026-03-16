@@ -4,7 +4,9 @@ import { StatCard } from "@/components/admin/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Database, ClipboardCheck, Search, BarChart3, Loader2 } from "lucide-react";
+import { Database, ClipboardCheck, Search, BarChart3, Loader2, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 interface DashboardStats {
   success: boolean;
@@ -43,23 +45,37 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-white">Dashboard</h2>
+      {/* Hero Card */}
+      <div className="bg-gradient-to-r from-teal-600 to-teal-800 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-teal-100 text-sm font-medium">Active Services</p>
+            <p className="text-4xl font-bold mt-1">
+              {statsLoading ? "..." : (stats?.activeServices ?? 0).toLocaleString()}
+            </p>
+            <p className="text-teal-200 text-sm mt-2">Alberta social services directory</p>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/admin/services">
+              <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
+                View All
+                <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {statsLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="bg-slate-800 border-slate-700 animate-pulse h-[100px]">
+          Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="bg-white border-gray-100 shadow-sm rounded-xl animate-pulse h-[100px]">
               <CardContent className="p-5" />
             </Card>
           ))
         ) : (
           <>
-            <StatCard
-              title="Active Services"
-              value={stats?.activeServices ?? 0}
-              icon={Database}
-            />
             <StatCard
               title="Pending Reviews"
               value={stats?.pendingReviews ?? 0}
@@ -80,37 +96,37 @@ export default function Dashboard() {
       </div>
 
       {/* Activity Feed */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-white text-base">Recent Activity</CardTitle>
+          <CardTitle className="text-gray-900 text-base">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
           {activityLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
           ) : !activityData?.activity?.length ? (
-            <p className="text-sm text-slate-500 py-4 text-center">No recent activity</p>
+            <p className="text-sm text-gray-400 py-4 text-center">No recent activity</p>
           ) : (
             <ScrollArea className="h-[400px]">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {activityData.activity.map((entry, i) => (
                   <div
                     key={entry.id || i}
-                    className="flex items-center justify-between py-2.5 px-3 rounded-md hover:bg-slate-700/50 transition-colors"
+                    className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <ChangeTypeBadge type={entry.changeType} />
                       <div className="min-w-0">
-                        <p className="text-sm text-white truncate">
+                        <p className="text-sm text-gray-900 truncate">
                           {entry.serviceName || "Unknown service"}
                         </p>
                         {entry.source && (
-                          <p className="text-xs text-slate-500">{entry.source}</p>
+                          <p className="text-xs text-gray-400">{entry.source}</p>
                         )}
                       </div>
                     </div>
-                    <span className="text-xs text-slate-500 flex-shrink-0 ml-3">
+                    <span className="text-xs text-gray-400 flex-shrink-0 ml-3">
                       {formatRelativeTime(entry.changedAt)}
                     </span>
                   </div>
@@ -127,15 +143,15 @@ export default function Dashboard() {
 function ChangeTypeBadge({ type }: { type: string }) {
   const lower = type?.toLowerCase();
   if (lower === "create" || lower === "created") {
-    return <Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-700 text-xs">NEW</Badge>;
+    return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">NEW</Badge>;
   }
   if (lower === "update" || lower === "updated") {
-    return <Badge className="bg-amber-600/20 text-amber-400 border-amber-700 text-xs">UPD</Badge>;
+    return <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs">UPD</Badge>;
   }
   if (lower === "deactivate" || lower === "deactivated" || lower === "delete") {
-    return <Badge className="bg-red-600/20 text-red-400 border-red-700 text-xs">DEL</Badge>;
+    return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">DEL</Badge>;
   }
-  return <Badge className="bg-slate-600/20 text-slate-400 border-slate-600 text-xs">{type || "?"}</Badge>;
+  return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{type || "?"}</Badge>;
 }
 
 function formatRelativeTime(dateStr: string): string {

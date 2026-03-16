@@ -74,23 +74,23 @@ export default function SearchTest() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-white">Search Test</h2>
+      <h2 className="text-xl font-semibold text-gray-900">Search Test</h2>
 
       {/* Search Input */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardContent className="p-4">
           <form onSubmit={handleSubmit} className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter a search query to diagnose..."
-                className="pl-9 bg-slate-900 border-slate-600 text-white"
+                className="pl-9 bg-white border-gray-300 text-gray-900"
                 autoFocus
               />
             </div>
-            <Button type="submit" disabled={!query.trim() || testMutation.isPending}>
+            <Button type="submit" disabled={!query.trim() || testMutation.isPending} className="bg-teal-600 hover:bg-teal-700 text-white">
               {testMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Test
             </Button>
@@ -119,10 +119,10 @@ export default function SearchTest() {
                 </div>
                 {result.analysis.subIntents && result.analysis.subIntents.length > 0 && (
                   <div>
-                    <span className="text-xs text-slate-500">Sub-intents:</span>
+                    <span className="text-xs text-gray-400">Sub-intents:</span>
                     <div className="flex gap-1 mt-1">
                       {result.analysis.subIntents.map((si) => (
-                        <Badge key={si} className="bg-indigo-600/20 text-indigo-400 border-indigo-700 text-xs">
+                        <Badge key={si} className="bg-teal-50 text-teal-700 border-teal-200 text-xs">
                           {si}
                         </Badge>
                       ))}
@@ -131,15 +131,15 @@ export default function SearchTest() {
                 )}
                 {result.analysis.attributes && Object.keys(result.analysis.attributes).length > 0 && (
                   <div>
-                    <span className="text-xs text-slate-500">Attributes:</span>
-                    <pre className="mt-1 text-xs text-slate-400 bg-slate-900 p-2 rounded-md overflow-auto">
+                    <span className="text-xs text-gray-400">Attributes:</span>
+                    <pre className="mt-1 text-xs text-gray-500 bg-gray-50 p-2 rounded-lg overflow-auto">
                       {JSON.stringify(result.analysis.attributes, null, 2)}
                     </pre>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-slate-500">No analysis data.</p>
+              <p className="text-sm text-gray-400">No analysis data.</p>
             )}
           </CollapsibleSection>
 
@@ -154,8 +154,8 @@ export default function SearchTest() {
               <div className="flex gap-4 flex-wrap">
                 {Object.entries(result.timings).map(([key, val]) => (
                   <div key={key}>
-                    <span className="text-xs text-slate-500">{key}</span>
-                    <p className="text-sm text-white font-mono">{val}ms</p>
+                    <span className="text-xs text-gray-400">{key}</span>
+                    <p className="text-sm text-gray-900 font-mono">{val}ms</p>
                   </div>
                 ))}
               </div>
@@ -170,36 +170,36 @@ export default function SearchTest() {
             onToggle={() => toggleSection("results")}
           >
             {!result.results?.length ? (
-              <p className="text-sm text-slate-500">No results returned.</p>
+              <p className="text-sm text-gray-400">No results returned.</p>
             ) : (
-              <div className="border border-slate-700 rounded-md overflow-hidden">
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-700/50">
-                      <th className="text-left px-3 py-2 text-slate-300 font-medium w-10">#</th>
-                      <th className="text-left px-3 py-2 text-slate-300 font-medium">Service</th>
-                      <th className="text-left px-3 py-2 text-slate-300 font-medium w-28">Category</th>
-                      <th className="text-right px-3 py-2 text-slate-300 font-medium w-20">Score</th>
+                    <tr className="bg-gray-50">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-10">#</th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-28">Category</th>
+                      <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">Score</th>
                     </tr>
                   </thead>
                   <tbody>
                     {result.results.map((r, i) => (
-                      <tr key={r.id} className="border-t border-slate-700 hover:bg-slate-700/30">
-                        <td className="px-3 py-2 text-slate-500">{i + 1}</td>
+                      <tr key={r.id} className="border-t border-gray-200 hover:bg-gray-50">
+                        <td className="px-3 py-2 text-gray-400">{i + 1}</td>
                         <td className="px-3 py-2">
-                          <p className="text-white truncate max-w-[350px]">{r.name}</p>
+                          <p className="text-gray-900 truncate max-w-[350px]">{r.name}</p>
                           {r.description && (
-                            <p className="text-xs text-slate-500 truncate max-w-[350px] mt-0.5">
+                            <p className="text-xs text-gray-400 truncate max-w-[350px] mt-0.5">
                               {r.description}
                             </p>
                           )}
                         </td>
                         <td className="px-3 py-2">
-                          <Badge className="bg-indigo-600/20 text-indigo-400 border-indigo-700 text-[10px]">
+                          <Badge className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
                             {r.category}
                           </Badge>
                         </td>
-                        <td className="px-3 py-2 text-right font-mono text-slate-300">
+                        <td className="px-3 py-2 text-right font-mono text-gray-700">
                           {r.rrfScore?.toFixed(3) ?? "N/A"}
                         </td>
                       </tr>
@@ -218,8 +218,8 @@ export default function SearchTest() {
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
-      <span className="text-xs text-slate-500">{label}</span>
-      <p className="text-sm text-white">{value || "--"}</p>
+      <span className="text-xs text-gray-400">{label}</span>
+      <p className="text-sm text-gray-900">{value || "--"}</p>
     </div>
   );
 }
@@ -238,16 +238,16 @@ function CollapsibleSection({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
       <CardHeader
         className="pb-0 cursor-pointer"
         onClick={onToggle}
       >
-        <CardTitle className="text-white text-base flex items-center gap-2">
+        <CardTitle className="text-gray-900 text-base flex items-center gap-2">
           {expanded ? (
-            <ChevronDown className="h-4 w-4 text-slate-400" />
+            <ChevronDown className="h-4 w-4 text-gray-400" />
           ) : (
-            <ChevronRight className="h-4 w-4 text-slate-400" />
+            <ChevronRight className="h-4 w-4 text-gray-400" />
           )}
           {title}
         </CardTitle>

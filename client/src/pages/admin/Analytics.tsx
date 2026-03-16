@@ -83,10 +83,10 @@ export default function Analytics() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">Analytics</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Analytics</h2>
 
         {/* Time Range */}
-        <div className="flex gap-1 bg-slate-800 rounded-md p-0.5">
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
           {([7, 30, 90] as TimeRange[]).map((d) => (
             <Button
               key={d}
@@ -95,7 +95,7 @@ export default function Analytics() {
               onClick={() => setDays(d)}
               className={cn(
                 "h-7 px-3 text-xs",
-                days === d ? "bg-slate-700 text-white" : "text-slate-400"
+                days === d ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
               )}
             >
               {d}d
@@ -105,14 +105,14 @@ export default function Analytics() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-800 rounded-md p-0.5 w-fit">
+      <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5 w-fit">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setTab("search")}
           className={cn(
             "h-8 px-4 text-sm",
-            tab === "search" ? "bg-slate-700 text-white" : "text-slate-400"
+            tab === "search" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
           )}
         >
           Search
@@ -123,7 +123,7 @@ export default function Analytics() {
           onClick={() => setTab("services")}
           className={cn(
             "h-8 px-4 text-sm",
-            tab === "services" ? "bg-slate-700 text-white" : "text-slate-400"
+            tab === "services" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
           )}
         >
           Services
@@ -134,35 +134,35 @@ export default function Analytics() {
       {tab === "search" && (
         <>
           {/* Chart */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-base">Search Volume (Top Queries)</CardTitle>
+              <CardTitle className="text-gray-900 text-base">Search Volume (Top Queries)</CardTitle>
             </CardHeader>
             <CardContent>
               {searchLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 </div>
               ) : searchChartData.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-8">No search data for this period.</p>
+                <p className="text-sm text-gray-400 text-center py-8">No search data for this period.</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={searchChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="name"
-                      tick={{ fill: "#94a3b8", fontSize: 10 }}
+                      tick={{ fill: "#6b7280", fontSize: 10 }}
                       angle={-45}
                       textAnchor="end"
                       height={80}
                     />
-                    <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                    <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px" }}
-                      labelStyle={{ color: "#fff" }}
-                      itemStyle={{ color: "#94a3b8" }}
+                      contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "8px" }}
+                      labelStyle={{ color: "#111827" }}
+                      itemStyle={{ color: "#6b7280" }}
                     />
-                    <Line type="monotone" dataKey="searches" stroke="#818cf8" strokeWidth={2} dot={{ fill: "#818cf8" }} />
+                    <Line type="monotone" dataKey="searches" stroke="#0d9488" strokeWidth={2} dot={{ fill: "#0d9488" }} />
                     <Line type="monotone" dataKey="clicks" stroke="#34d399" strokeWidth={2} dot={{ fill: "#34d399" }} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -171,22 +171,22 @@ export default function Analytics() {
           </Card>
 
           {/* Table */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-base">Top Queries</CardTitle>
+              <CardTitle className="text-gray-900 text-base">Top Queries</CardTitle>
             </CardHeader>
             <CardContent>
               {searchLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-slate-400 mx-auto" />
+                <Loader2 className="h-5 w-5 animate-spin text-gray-400 mx-auto" />
               ) : (
-                <div className="border border-slate-700 rounded-md overflow-hidden">
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-slate-700/50">
-                        <th className="text-left px-3 py-2 text-slate-300 font-medium">Query</th>
-                        <th className="text-right px-3 py-2 text-slate-300 font-medium w-24">Searches</th>
-                        <th className="text-right px-3 py-2 text-slate-300 font-medium w-24">Clicks</th>
-                        <th className="text-right px-3 py-2 text-slate-300 font-medium w-24">CTR</th>
+                      <tr className="bg-gray-50">
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Query</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-24">Searches</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-24">Clicks</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-24">CTR</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -195,11 +195,11 @@ export default function Analytics() {
                           ? ((s.clickCount / s.searchCount) * 100).toFixed(1)
                           : "0.0";
                         return (
-                          <tr key={i} className="border-t border-slate-700 hover:bg-slate-700/30">
-                            <td className="px-3 py-2 text-white truncate max-w-[300px]">{s.query || "(empty)"}</td>
-                            <td className="px-3 py-2 text-right text-slate-300">{s.searchCount}</td>
-                            <td className="px-3 py-2 text-right text-slate-300">{s.clickCount}</td>
-                            <td className="px-3 py-2 text-right text-slate-400">{ctr}%</td>
+                          <tr key={i} className="border-t border-gray-200 hover:bg-gray-50">
+                            <td className="px-3 py-2 text-gray-900 truncate max-w-[300px]">{s.query || "(empty)"}</td>
+                            <td className="px-3 py-2 text-right text-gray-700">{s.searchCount}</td>
+                            <td className="px-3 py-2 text-right text-gray-700">{s.clickCount}</td>
+                            <td className="px-3 py-2 text-right text-gray-500">{ctr}%</td>
                           </tr>
                         );
                       })}
@@ -216,35 +216,35 @@ export default function Analytics() {
       {tab === "services" && (
         <>
           {/* Chart */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-base">Most Clicked Services</CardTitle>
+              <CardTitle className="text-gray-900 text-base">Most Clicked Services</CardTitle>
             </CardHeader>
             <CardContent>
               {serviceLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 </div>
               ) : serviceChartData.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-8">No service click data for this period.</p>
+                <p className="text-sm text-gray-400 text-center py-8">No service click data for this period.</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={serviceChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="name"
-                      tick={{ fill: "#94a3b8", fontSize: 10 }}
+                      tick={{ fill: "#6b7280", fontSize: 10 }}
                       angle={-45}
                       textAnchor="end"
                       height={80}
                     />
-                    <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                    <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px" }}
-                      labelStyle={{ color: "#fff" }}
-                      itemStyle={{ color: "#94a3b8" }}
+                      contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "8px" }}
+                      labelStyle={{ color: "#111827" }}
+                      itemStyle={{ color: "#6b7280" }}
                     />
-                    <Line type="monotone" dataKey="clicks" stroke="#818cf8" strokeWidth={2} dot={{ fill: "#818cf8" }} />
+                    <Line type="monotone" dataKey="clicks" stroke="#0d9488" strokeWidth={2} dot={{ fill: "#0d9488" }} />
                   </LineChart>
                 </ResponsiveContainer>
               )}
@@ -252,31 +252,31 @@ export default function Analytics() {
           </Card>
 
           {/* Table */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-base">Most Clicked Services</CardTitle>
+              <CardTitle className="text-gray-900 text-base">Most Clicked Services</CardTitle>
             </CardHeader>
             <CardContent>
               {serviceLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-slate-400 mx-auto" />
+                <Loader2 className="h-5 w-5 animate-spin text-gray-400 mx-auto" />
               ) : (
-                <div className="border border-slate-700 rounded-md overflow-hidden">
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-slate-700/50">
-                        <th className="text-left px-3 py-2 text-slate-300 font-medium">Service</th>
-                        <th className="text-right px-3 py-2 text-slate-300 font-medium w-24">Clicks</th>
-                        <th className="text-right px-3 py-2 text-slate-300 font-medium w-36">Last Clicked</th>
+                      <tr className="bg-gray-50">
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-24">Clicks</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-36">Last Clicked</th>
                       </tr>
                     </thead>
                     <tbody>
                       {serviceData?.services?.map((s, i) => (
-                        <tr key={i} className="border-t border-slate-700 hover:bg-slate-700/30">
-                          <td className="px-3 py-2 text-white truncate max-w-[300px]">
+                        <tr key={i} className="border-t border-gray-200 hover:bg-gray-50">
+                          <td className="px-3 py-2 text-gray-900 truncate max-w-[300px]">
                             {s.serviceName || `Service ${s.serviceId}`}
                           </td>
-                          <td className="px-3 py-2 text-right text-slate-300">{s.clickCount}</td>
-                          <td className="px-3 py-2 text-right text-slate-400 text-xs">
+                          <td className="px-3 py-2 text-right text-gray-700">{s.clickCount}</td>
+                          <td className="px-3 py-2 text-right text-gray-500 text-xs">
                             {s.lastClicked ? new Date(s.lastClicked).toLocaleDateString() : "N/A"}
                           </td>
                         </tr>

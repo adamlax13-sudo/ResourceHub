@@ -25,10 +25,10 @@ export default function ServiceCreate() {
 
   return (
     <div className="p-6 max-w-3xl">
-      <h2 className="text-xl font-semibold text-white mb-4">Create New Service</h2>
-      <Card className="bg-slate-800 border-slate-700">
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New Service</h2>
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-2">
-          <CardTitle className="text-white text-base">Service Details</CardTitle>
+          <CardTitle className="text-gray-900 text-base">Service Details</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <ServiceForm

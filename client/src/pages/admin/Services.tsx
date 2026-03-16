@@ -203,15 +203,15 @@ export default function Services() {
   const list = (
     <div className="flex flex-col h-full">
       {/* Search + Filters */}
-      <div className="p-3 border-b border-slate-700 space-y-2">
+      <div className="p-3 border-b border-gray-200 space-y-2">
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search services..."
-              className="pl-8 bg-slate-800 border-slate-600 text-white text-sm h-9"
+              className="pl-8 bg-white border-gray-300 text-gray-900 text-sm h-9"
             />
           </div>
         </form>
@@ -219,7 +219,7 @@ export default function Services() {
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-8 rounded-md border border-slate-600 bg-slate-800 px-2 text-xs text-white"
+            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -228,7 +228,7 @@ export default function Services() {
           <select
             value={categoryFilter}
             onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-            className="h-8 rounded-md border border-slate-600 bg-slate-800 px-2 text-xs text-white flex-1"
+            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900 flex-1"
           >
             <option value="">All Categories</option>
             <option value="Addiction Services">Addiction Services</option>
@@ -245,7 +245,7 @@ export default function Services() {
       {/* List */}
       {listLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : (
         <>
@@ -255,29 +255,29 @@ export default function Services() {
                 key={svc.id}
                 onClick={() => { setSelectedId(svc.id); setShowHistory(false); }}
                 className={cn(
-                  "px-3 py-2.5 border-b border-slate-700/50 cursor-pointer transition-colors",
+                  "px-3 py-2.5 border-b border-gray-100 cursor-pointer transition-colors",
                   selectedId === svc.id
-                    ? "bg-slate-700/50"
-                    : "hover:bg-slate-800/50"
+                    ? "bg-teal-50"
+                    : "hover:bg-gray-50"
                 )}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm text-white truncate">{svc.name}</p>
+                    <p className="text-sm text-gray-900 truncate">{svc.name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge className="bg-indigo-600/20 text-indigo-400 border-indigo-700 text-[10px] px-1.5">
+                      <Badge className="bg-teal-50 text-teal-700 border-teal-200 text-[10px] px-1.5">
                         {svc.category}
                       </Badge>
                       {svc.location && (
-                        <span className="text-[10px] text-slate-500 truncate">{svc.location}</span>
+                        <span className="text-[10px] text-gray-400 truncate">{svc.location}</span>
                       )}
                     </div>
                   </div>
                   {svc.confidenceScore != null && (
                     <span className={cn(
                       "text-xs font-mono flex-shrink-0",
-                      svc.confidenceScore >= 70 ? "text-emerald-400" :
-                      svc.confidenceScore >= 40 ? "text-amber-400" : "text-red-400"
+                      svc.confidenceScore >= 70 ? "text-emerald-500" :
+                      svc.confidenceScore >= 40 ? "text-amber-500" : "text-red-500"
                     )}>
                       {svc.confidenceScore}
                     </span>
@@ -286,13 +286,13 @@ export default function Services() {
               </div>
             ))}
             {listData?.services?.length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-8">No services found</p>
+              <p className="text-sm text-gray-400 text-center py-8">No services found</p>
             )}
           </div>
 
           {/* Pagination */}
           {listData && listData.totalPages > 1 && (
-            <div className="flex items-center justify-between px-3 py-2 border-t border-slate-700 text-xs text-slate-500">
+            <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 text-xs text-gray-400">
               <span>
                 Page {listData.page} of {listData.totalPages} ({listData.total} total)
               </span>
@@ -302,7 +302,7 @@ export default function Services() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="h-7 px-2 text-slate-400"
+                  className="h-7 px-2 text-gray-500"
                 >
                   <ChevronLeft className="h-3 w-3" />
                 </Button>
@@ -311,7 +311,7 @@ export default function Services() {
                   size="sm"
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page >= (listData.totalPages || 1)}
-                  className="h-7 px-2 text-slate-400"
+                  className="h-7 px-2 text-gray-500"
                 >
                   <ChevronRight className="h-3 w-3" />
                 </Button>
@@ -327,22 +327,22 @@ export default function Services() {
     <div className="p-4">
       {detailLoading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : service ? (
         <div className="space-y-4">
           {/* Header with action buttons */}
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-white">{service.name}</h3>
-              <p className="text-sm text-slate-400">ID: {service.id} {service.serviceId ? `/ ${service.serviceId}` : ""}</p>
+              <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
+              <p className="text-sm text-gray-500">ID: {service.id} {service.serviceId ? `/ ${service.serviceId}` : ""}</p>
             </div>
             <div className="flex gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowHistory(!showHistory)}
-                className="text-slate-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <History className="h-4 w-4 mr-1" />
                 History
@@ -352,7 +352,7 @@ export default function Services() {
                 size="sm"
                 onClick={() => regenEmbeddingMutation.mutate()}
                 disabled={regenEmbeddingMutation.isPending}
-                className="text-slate-400 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <RefreshCw className={cn("h-4 w-4 mr-1", regenEmbeddingMutation.isPending && "animate-spin")} />
                 Regen
@@ -363,7 +363,7 @@ export default function Services() {
                   size="sm"
                   onClick={() => deactivateMutation.mutate()}
                   disabled={deactivateMutation.isPending}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-500 hover:text-red-700"
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
                   Deactivate
@@ -374,7 +374,7 @@ export default function Services() {
                   size="sm"
                   onClick={() => restoreMutation.mutate()}
                   disabled={restoreMutation.isPending}
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-emerald-500 hover:text-emerald-700"
                 >
                   <RotateCcw className="h-4 w-4 mr-1" />
                   Restore
@@ -385,9 +385,9 @@ export default function Services() {
 
           {/* Stale embedding warning */}
           {hasStaleEmbedding && (
-            <div className="flex items-center gap-2 p-3 rounded-md bg-amber-900/20 border border-amber-800">
-              <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
-              <p className="text-sm text-amber-300">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+              <p className="text-sm text-amber-700">
                 Embedding is stale. Service was updated after the last embedding generation.
               </p>
             </div>
@@ -396,31 +396,31 @@ export default function Services() {
           {/* History or Edit Form */}
           {showHistory ? (
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-slate-300">Change History</h4>
+              <h4 className="text-sm font-medium text-gray-700">Change History</h4>
               {historyLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
               ) : !historyData?.history?.length ? (
-                <p className="text-sm text-slate-500">No history found</p>
+                <p className="text-sm text-gray-400">No history found</p>
               ) : (
                 <div className="space-y-2">
                   {historyData.history.map((entry) => (
-                    <div key={entry.id} className="p-3 rounded-md bg-slate-800 border border-slate-700">
+                    <div key={entry.id} className="p-3 rounded-lg bg-white border border-gray-200">
                       <div className="flex items-center justify-between">
                         <Badge className={cn(
                           "text-[10px]",
-                          entry.changeType === "created" ? "bg-emerald-600/20 text-emerald-400 border-emerald-700" :
-                          entry.changeType === "deactivated" ? "bg-red-600/20 text-red-400 border-red-700" :
-                          "bg-amber-600/20 text-amber-400 border-amber-700"
+                          entry.changeType === "created" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                          entry.changeType === "deactivated" ? "bg-red-50 text-red-700 border-red-200" :
+                          "bg-amber-50 text-amber-700 border-amber-200"
                         )}>
                           {entry.changeType}
                         </Badge>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-gray-400">
                           {new Date(entry.changedAt).toLocaleString()}
                         </span>
                       </div>
-                      {entry.source && <p className="text-xs text-slate-500 mt-1">Source: {entry.source}</p>}
+                      {entry.source && <p className="text-xs text-gray-400 mt-1">Source: {entry.source}</p>}
                       {entry.changedFields && (
-                        <pre className="mt-2 text-xs text-slate-400 overflow-auto max-h-32">
+                        <pre className="mt-2 text-xs text-gray-500 overflow-auto max-h-32">
                           {JSON.stringify(entry.changedFields, null, 2)}
                         </pre>
                       )}
@@ -439,7 +439,7 @@ export default function Services() {
           )}
         </div>
       ) : (
-        <p className="text-sm text-slate-500 text-center py-8">Service not found</p>
+        <p className="text-sm text-gray-400 text-center py-8">Service not found</p>
       )}
     </div>
   ) : null;

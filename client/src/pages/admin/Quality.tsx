@@ -20,10 +20,10 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: "bg-red-600/20 text-red-400 border-red-800",
-  high: "bg-orange-600/20 text-orange-400 border-orange-800",
-  medium: "bg-amber-600/20 text-amber-400 border-amber-800",
-  low: "bg-slate-600/20 text-slate-400 border-slate-600",
+  critical: "bg-red-50 text-red-700 border-red-200",
+  high: "bg-orange-50 text-orange-700 border-orange-200",
+  medium: "bg-amber-50 text-amber-700 border-amber-200",
+  low: "bg-gray-50 text-gray-500 border-gray-200",
 };
 
 export default function Quality() {
@@ -67,27 +67,27 @@ export default function Quality() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-white">Data Quality</h2>
+      <h2 className="text-xl font-semibold text-gray-900">Data Quality</h2>
 
       {/* Scorecard */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-white text-base">Field Coverage</CardTitle>
+          <CardTitle className="text-gray-900 text-base">Field Coverage</CardTitle>
         </CardHeader>
         <CardContent>
           {summaryLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
           ) : (
             <div className="space-y-3">
               {fieldBars.map((bar) => (
                 <div key={bar.label} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">{bar.label}</span>
-                    <span className="text-slate-300">{bar.pct}%</span>
+                    <span className="text-gray-500">{bar.label}</span>
+                    <span className="text-gray-700">{bar.pct}%</span>
                   </div>
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={cn(
                         "h-full rounded-full transition-all",
@@ -105,35 +105,35 @@ export default function Quality() {
       </Card>
 
       {/* Issue Queue */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-white text-base">
+          <CardTitle className="text-gray-900 text-base">
             Issues {issuesData?.total ? `(${issuesData.total})` : ""}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {issuesLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
           ) : !issuesData?.issues?.length ? (
-            <p className="text-sm text-slate-500 text-center py-4">No quality issues found.</p>
+            <p className="text-sm text-gray-400 text-center py-4">No quality issues found.</p>
           ) : (
-            <div className="border border-slate-700 rounded-md overflow-hidden">
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-700/50">
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Service</th>
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Severity</th>
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium">Missing Fields</th>
-                    <th className="text-left px-3 py-2 text-slate-300 font-medium w-20">Score</th>
+                  <tr className="bg-gray-50">
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Severity</th>
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Missing Fields</th>
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">Score</th>
                     <th className="w-10" />
                   </tr>
                 </thead>
                 <tbody>
                   {issuesData.issues.map((issue) => (
-                    <tr key={issue.service.id} className="border-t border-slate-700 hover:bg-slate-700/30">
-                      <td className="px-3 py-2 text-white max-w-[200px] truncate">{issue.service.name}</td>
+                    <tr key={issue.service.id} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-3 py-2 text-gray-900 max-w-[200px] truncate">{issue.service.name}</td>
                       <td className="px-3 py-2">
                         <Badge className={cn("text-[10px]", SEVERITY_COLORS[issue.severity] || SEVERITY_COLORS.low)}>
                           {issue.severity}
@@ -142,7 +142,7 @@ export default function Quality() {
                       <td className="px-3 py-2">
                         <div className="flex gap-1 flex-wrap">
                           {issue.missingFields.map((field, i) => (
-                            <Badge key={i} className="bg-red-600/10 text-red-400 border-red-800 text-[10px]">
+                            <Badge key={i} className="bg-red-50 text-red-600 border-red-200 text-[10px]">
                               {FIELD_LABELS[field] || field}
                             </Badge>
                           ))}
@@ -151,15 +151,15 @@ export default function Quality() {
                       <td className="px-3 py-2">
                         <span className={cn(
                           "text-xs font-mono",
-                          (issue.service.confidenceScore ?? 0) >= 70 ? "text-emerald-400" :
-                          (issue.service.confidenceScore ?? 0) >= 40 ? "text-amber-400" : "text-red-400"
+                          (issue.service.confidenceScore ?? 0) >= 70 ? "text-emerald-500" :
+                          (issue.service.confidenceScore ?? 0) >= 40 ? "text-amber-500" : "text-red-500"
                         )}>
                           {issue.service.confidenceScore ?? "N/A"}
                         </span>
                       </td>
                       <td className="px-3 py-2">
                         <Link href={`/admin/services?selected=${issue.service.id}`}>
-                          <ExternalLink className="h-3.5 w-3.5 text-slate-500 hover:text-white cursor-pointer" />
+                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
                         </Link>
                       </td>
                     </tr>

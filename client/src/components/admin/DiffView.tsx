@@ -17,7 +17,7 @@ export function DiffView({ changes, className }: DiffViewProps) {
   const fields = Object.keys(changes);
 
   if (fields.length === 0) {
-    return <p className="text-sm text-slate-500">No changes detected.</p>;
+    return <p className="text-sm text-gray-400">No changes detected.</p>;
   }
 
   return (
@@ -25,20 +25,20 @@ export function DiffView({ changes, className }: DiffViewProps) {
       {fields.map((field) => {
         const { old: oldVal, new: newVal } = changes[field];
         return (
-          <div key={field} className="rounded-md border border-slate-700 overflow-hidden">
-            <div className="bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 border-b border-slate-700">
+          <div key={field} className="rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 border-b border-gray-200">
               {field}
             </div>
-            <div className="divide-y divide-slate-700">
-              <div className="px-3 py-2 bg-red-950/30">
-                <span className="text-xs text-red-400 mr-2 font-mono">-</span>
-                <span className="text-sm text-red-300 whitespace-pre-wrap break-words">
+            <div className="divide-y divide-gray-200">
+              <div className="px-3 py-2 bg-red-50/50">
+                <span className="text-xs text-red-500 mr-2 font-mono">-</span>
+                <span className="text-sm text-red-700 whitespace-pre-wrap break-words">
                   {formatValue(oldVal)}
                 </span>
               </div>
-              <div className="px-3 py-2 bg-emerald-950/30">
-                <span className="text-xs text-emerald-400 mr-2 font-mono">+</span>
-                <span className="text-sm text-emerald-300 whitespace-pre-wrap break-words">
+              <div className="px-3 py-2 bg-emerald-50/50">
+                <span className="text-xs text-emerald-500 mr-2 font-mono">+</span>
+                <span className="text-sm text-emerald-700 whitespace-pre-wrap break-words">
                   {formatValue(newVal)}
                 </span>
               </div>
