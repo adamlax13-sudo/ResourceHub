@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect } from "react";
 import { Switch, Route, useLocation, Link } from "wouter";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload, HelpCircle } from "lucide-react";
+import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload, HelpCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,7 @@ const Analytics = lazy(() => import("./Analytics"));
 const Scraper = lazy(() => import("./Scraper"));
 const SearchTest = lazy(() => import("./SearchTest"));
 const System = lazy(() => import("./System"));
+const Feedback = lazy(() => import("./Feedback"));
 
 interface NavItem {
   label: string;
@@ -31,6 +32,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard, exact: true, section: "GENERAL" },
   { label: "Services", path: "/admin/services", icon: Database, section: "GENERAL" },
   { label: "Review", path: "/admin/review", icon: ClipboardCheck, section: "GENERAL" },
+  { label: "Feedback", path: "/admin/feedback", icon: MessageSquare, section: "GENERAL" },
   { label: "Quality", path: "/admin/quality", icon: BarChart3, section: "DATA" },
   { label: "Analytics", path: "/admin/analytics", icon: Activity, section: "DATA" },
   { label: "Scraper", path: "/admin/scraper", icon: Bot, section: "DATA" },
@@ -176,6 +178,7 @@ export default function AdminLayout() {
             <Route path="/admin/services/import" component={ServiceImport} />
             <Route path="/admin/services" component={Services} />
             <Route path="/admin/review" component={Review} />
+            <Route path="/admin/feedback" component={Feedback} />
             <Route path="/admin/quality" component={Quality} />
             <Route path="/admin/analytics" component={Analytics} />
             <Route path="/admin/scraper" component={Scraper} />

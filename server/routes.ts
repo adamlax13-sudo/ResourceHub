@@ -19,6 +19,7 @@ import { registerAdminAnalyticsRoutes } from "./routes/admin-analytics";
 import { registerAdminScraperRoutes } from "./routes/admin-scraper";
 import { registerAdminSearchTestRoutes } from "./routes/admin-search-test";
 import { registerAdminSystemRoutes } from "./routes/admin-system";
+import { registerAdminFeedbackRoutes } from "./routes/admin-feedback";
 import { registerAdminRoutes } from "./routes/admin";
 import { registerLocationRoutes } from "./routes/location";
 
@@ -40,6 +41,7 @@ export async function registerRoutes(
   registerAdminScraperRoutes(app);
   registerAdminSearchTestRoutes(app);
   registerAdminSystemRoutes(app);
+  registerAdminFeedbackRoutes(app);
 
   registerAdminRoutes(app);
   registerLocationRoutes(app);
