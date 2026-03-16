@@ -184,7 +184,16 @@ def parse_args():
                         help="Preview changes without saving")
     parser.add_argument("--enrich-service", type=str,
                         help="Enrich a single service by name (for testing)")
-    return parser.parse_args()
+    parser.add_argument("--no-js", action="store_true",
+                        help="Disable JS rendering (faster, for static sites)")
+    parser.add_argument("--seed-url", type=str,
+                        help="Autonomous discover from a seed URL")
+    parser.add_argument("--seed-name", type=str,
+                        help="Organization name for seed URL discovery")
+    args = parser.parse_args()
+    if args.seed_url and not args.seed_name:
+        parser.error("--seed-url requires --seed-name")
+    return args
 
 
 def main_v2():
@@ -211,9 +220,22 @@ def main_v2():
     session.add(scraper_log)
     session.commit()
 
+    # Initialize Crawl4AI backend with graceful degradation
+    backend = None
+    try:
+        from backends.crawl4ai_backend import Crawl4AIBackend
+        from backends.interface import CrawlConfig
+        backend = Crawl4AIBackend(default_config=CrawlConfig(
+            js_rendering=not getattr(args, 'no_js', False),
+            request_delay_seconds=2.0,
+        ))
+        logger.info("Crawl4AI backend initialized")
+    except ImportError:
+        logger.warning("crawl4ai not installed — sources will use their own HTTP fetching")
+
     # Build pipeline — Pipeline expects a standard Python logger
     log = logging.getLogger("pipeline")
-    pipeline = Pipeline(session=session, log=log, budget=args.budget)
+    pipeline = Pipeline(session=session, log=log, budget=args.budget, backend=backend)
 
     # Register all sources
     pipeline.register_source(AB211DirectSource())
@@ -223,6 +245,25 @@ def main_v2():
     pipeline.register_source(VeteransAffairsSource())
     pipeline.register_source(CRACharitiesSource())
     pipeline.register_source(UniversityWellnessSource())
+
+    # Register config-driven sources
+    try:
+        from sources.config_source import load_config_sources
+        for src in load_config_sources():
+            pipeline.register_source(src)
+            logger.info(f"Registered config source: {src.name}")
+    except ImportError:
+        pass
+
+    # Register autonomous source if seed URL provided
+    if args.seed_url:
+        try:
+            from sources.autonomous_source import AutonomousSource, SeedConfig
+            seed = SeedConfig(url=args.seed_url, organization_name=args.seed_name or "Unknown")
+            pipeline.register_source(AutonomousSource([seed]))
+            logger.info(f"Registered autonomous source: {args.seed_url}")
+        except ImportError:
+            logger.warning("autonomous_source not yet implemented")
 
     # Set up enrichment engine
     claude_client = None
