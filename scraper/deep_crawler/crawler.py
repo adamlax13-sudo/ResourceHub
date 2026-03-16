@@ -1,4 +1,8 @@
 """
+DEPRECATED: This module is superseded by Crawl4AIBackend in backends/crawl4ai_backend.py.
+Kept for reference. The page classification patterns from page_classifier.py are still
+used by the new backend.
+
 Deep website crawler for extracting detailed service information.
 
 Crawls service provider websites 2-3 levels deep, identifying key pages

@@ -1,4 +1,8 @@
 """
+DEPRECATED: This module is superseded by Crawl4AIBackend in backends/crawl4ai_backend.py.
+Kept for reference. The page classification patterns from page_classifier.py are still
+used by the new backend.
+
 Intelligent link discovery and prioritization.
 
 Identifies links most likely to contain valuable intake, eligibility,
