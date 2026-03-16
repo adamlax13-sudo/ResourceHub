@@ -143,8 +143,9 @@ class Pipeline:
         return field_count >= 2
 
     def run_enrich(self, dry_run=False, full=False, source_name=None):
-        # TODO: wire self._backend into EnrichmentEngine once EnrichmentEngine.__init__
-        # accepts a backend= kwarg (modify enrichment.py to support crawl-backed fetching)
+        # Wire backend into enrichment engine if both are available
+        if self.enrichment_engine and self._backend and not self.enrichment_engine.backend:
+            self.enrichment_engine.backend = self._backend
         if not self.enrichment_engine:
             self.log.info("No enrichment engine configured (missing Claude API key). Skipping.")
             return

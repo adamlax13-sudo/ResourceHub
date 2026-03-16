@@ -79,9 +79,10 @@ class EnrichmentEngine:
     - Caps inferred confidence at 49
     """
 
-    def __init__(self, claude_client, budget_limit: float = None):
+    def __init__(self, claude_client, budget_limit: float = None, backend=None):
         self.claude = claude_client
         self.budget_limit = budget_limit
+        self.backend = backend
         self.total_cost = 0.0
         self.stats = {"found": 0, "verified": 0, "inferred": 0, "skipped": 0}
 

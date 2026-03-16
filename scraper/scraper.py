@@ -272,7 +272,8 @@ def main_v2():
     if claude_client:
         pipeline.enrichment_engine = EnrichmentEngine(
             claude_client=claude_client,
-            budget_limit=args.budget
+            budget_limit=args.budget,
+            backend=backend,
         )
 
     # Handle single-service enrichment

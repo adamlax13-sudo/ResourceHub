@@ -405,7 +405,7 @@ def get_similar_services(
 # ---------------------------------------------------------------------------
 
 
-def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]:
+def tier1_website_crawl(service: Dict, crawler, claude_client, backend=None) -> Optional[Dict]:
     """Tier 1: Deep crawl the service website and extract all fields with Claude."""
     if not service.get("website_url"):
         return None
@@ -414,20 +414,30 @@ def tier1_website_crawl(service: Dict, crawler, claude_client) -> Optional[Dict]
         logger.warning(f"Refusing to crawl unsafe URL: {service['website_url']!r}")
         return None
 
-    crawl_result = crawler.crawl_website(service["website_url"])
-    if crawl_result.total_pages_crawled == 0:
-        return None
-
-    best_pages = crawl_result.get_all_valuable_pages()
-    if not best_pages:
-        best_pages = list(crawl_result.pages.values())[:5]
-
-    combined_content = ""
-    source_urls = []
-    for page in best_pages[:5]:
-        if page.text_content:
-            combined_content += f"\n\n=== FROM {page.url} ===\n{page.text_content[:3000]}"
-            source_urls.append(page.url)
+    if backend:
+        from backends.interface import CrawlConfig
+        crawl_result = backend.crawl_site(service["website_url"], CrawlConfig(
+            js_rendering=True, max_depth=2, max_pages=10,
+            request_delay_seconds=2.0,
+        ))
+        combined_content = crawl_result.get_all_markdown(max_pages=5, max_chars=15000)
+        source_urls = [p.url for p in crawl_result.get_valuable_pages()[:5]]
+        if not source_urls:
+            source_urls = list(crawl_result.pages.keys())[:3]
+    else:
+        # Legacy DeepCrawler path
+        crawl_result = crawler.crawl_website(service["website_url"])
+        if crawl_result.total_pages_crawled == 0:
+            return None
+        best_pages = crawl_result.get_all_valuable_pages()
+        if not best_pages:
+            best_pages = list(crawl_result.pages.values())[:5]
+        combined_content = ""
+        source_urls = []
+        for page in best_pages[:5]:
+            if page.text_content:
+                combined_content += f"\n\n=== FROM {page.url} ===\n{page.text_content[:3000]}"
+                source_urls.append(page.url)
 
     if not combined_content:
         return None
@@ -478,7 +488,7 @@ def _build_enrichment_from_extraction(extraction: Dict, source_urls: List[str]) 
     }
 
 
-def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
+def tier2_web_search(service: Dict, searcher, claude_client, backend=None) -> Optional[Dict]:
     """Tier 2: Use Claude's built-in web search to find service data.
 
     Claude searches the web server-side (no CAPTCHA issues), reads the pages,
@@ -529,16 +539,26 @@ def tier2_web_search(service: Dict, searcher, claude_client) -> Optional[Dict]:
         if search_results:
             combined_content = ""
             source_urls = []
-            for sr in search_results[:3]:
-                url = sr["url"]
-                if not _is_safe_url(url):
-                    logger.debug(f"Skipping unsafe search result URL: {url!r}")
-                    continue
-                content = fetch_page_content(url)
-                if content and len(content) > 200:
-                    combined_content += f"\n\n=== FROM {url} ===\n{content[:4000]}"
-                    source_urls.append(url)
-                    time.sleep(WEB_REQUEST_DELAY)
+
+            if backend:
+                from backends.interface import CrawlConfig
+                safe_urls = [sr["url"] for sr in search_results[:3] if _is_safe_url(sr["url"])]
+                pages = backend.fetch_pages(safe_urls, CrawlConfig(js_rendering=False, timeout_seconds=15))
+                for page in pages:
+                    if page.markdown and len(page.markdown) > 200:
+                        combined_content += f"\n\n=== FROM {page.url} ===\n{page.markdown[:4000]}"
+                        source_urls.append(page.url)
+            else:
+                for sr in search_results[:3]:
+                    url = sr["url"]
+                    if not _is_safe_url(url):
+                        logger.debug(f"Skipping unsafe search result URL: {url!r}")
+                        continue
+                    content = fetch_page_content(url)
+                    if content and len(content) > 200:
+                        combined_content += f"\n\n=== FROM {url} ===\n{content[:4000]}"
+                        source_urls.append(url)
+                        time.sleep(WEB_REQUEST_DELAY)
 
             if combined_content:
                 extraction = claude_client.extract_full_service(
@@ -696,6 +716,7 @@ def run_enrich_process_steps(
     limit: int = 100,
     dry_run: bool = False,
     include_generic: bool = True,
+    backend=None,
 ) -> Dict[str, int]:
     """Main orchestrator — runs three-tier waterfall for each candidate service."""
     enabled_tiers = set(tiers or [1, 2, 3])
@@ -721,13 +742,16 @@ def run_enrich_process_steps(
     # Lazy-init tier resources
     crawler = None
     if 1 in enabled_tiers:
-        try:
-            from deep_crawler import DeepCrawler
+        if backend:
+            crawler = backend  # CrawlBackend provides crawl_site()
+        else:
+            try:
+                from deep_crawler import DeepCrawler
 
-            crawler = DeepCrawler(max_depth=2, max_pages=10, request_delay=2.0)
-        except ImportError:
-            logger.warning("DeepCrawler not available — skipping Tier 1")
-            enabled_tiers.discard(1)
+                crawler = DeepCrawler(max_depth=2, max_pages=10, request_delay=2.0)
+            except ImportError:
+                logger.warning("DeepCrawler not available — skipping Tier 1")
+                enabled_tiers.discard(1)
 
     searcher = None
     if 2 in enabled_tiers:
@@ -740,7 +764,7 @@ def run_enrich_process_steps(
         # --- Tier 1: Website Crawl ---
         if 1 in enabled_tiers and svc.get("website_url") and crawler:
             try:
-                result = tier1_website_crawl(svc, crawler, claude_client)
+                result = tier1_website_crawl(svc, crawler, claude_client, backend=backend)
                 if result:
                     if apply_enrichment(
                         session, svc["service_id"], result, tier=1, dry_run=dry_run
@@ -760,7 +784,7 @@ def run_enrich_process_steps(
         # --- Tier 2: Web Search ---
         if not enriched and 2 in enabled_tiers:
             try:
-                result = tier2_web_search(svc, searcher, claude_client)
+                result = tier2_web_search(svc, searcher, claude_client, backend=backend)
                 if result:
                     if apply_enrichment(
                         session, svc["service_id"], result, tier=2, dry_run=dry_run
