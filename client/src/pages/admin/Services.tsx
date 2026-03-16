@@ -18,6 +18,7 @@ import {
   Trash2,
   RotateCcw,
   RefreshCw,
+  MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
@@ -183,10 +184,26 @@ export default function Services() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Embedding regeneration started" });
+      toast({ title: "Embedding regenerated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services", selectedId] });
     },
     onError: (err) => {
       toast({ title: "Embedding regen failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  // Geocode mutation
+  const geocodeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/admin/services/${selectedId}/geocode`);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Geocoded successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services", selectedId] });
+    },
+    onError: (err) => {
+      toast({ title: "Geocoding failed", description: err.message, variant: "destructive" });
     },
   });
 
@@ -348,16 +365,6 @@ export default function Services() {
                 <History className="h-4 w-4 mr-1" />
                 History
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => regenEmbeddingMutation.mutate()}
-                disabled={regenEmbeddingMutation.isPending}
-                className="text-gray-500 hover:text-gray-900"
-              >
-                <RefreshCw className={cn("h-4 w-4 mr-1", regenEmbeddingMutation.isPending && "animate-spin")} />
-                Regen
-              </Button>
               {service.isActive ? (
                 <Button
                   variant="ghost"
@@ -393,6 +400,40 @@ export default function Services() {
               </p>
             </div>
           )}
+
+          {/* Actions */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700">Actions</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => geocodeMutation.mutate()}
+                disabled={geocodeMutation.isPending || !service.address}
+                className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+                title={!service.address ? "Service has no address" : undefined}
+              >
+                {geocodeMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
+                  : <MapPin className="h-4 w-4 mr-1.5 text-teal-600" />
+                }
+                Geocode
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => regenEmbeddingMutation.mutate()}
+                disabled={regenEmbeddingMutation.isPending}
+                className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                {regenEmbeddingMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
+                  : <RefreshCw className="h-4 w-4 mr-1.5 text-teal-600" />
+                }
+                Regenerate Embedding
+              </Button>
+            </div>
+          </div>
 
           {/* History or Edit Form */}
           {showHistory ? (

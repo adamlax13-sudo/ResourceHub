@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 export interface ServiceFormData {
   name: string;
@@ -71,7 +71,25 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     }
   }, [initialData]);
 
-  const [tagsInput, setTagsInput] = useState((initialData?.tags ?? []).join(", "));
+  const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
+
+  // Sync tags when initialData changes
+  useEffect(() => {
+    if (initialData?.tags !== undefined) {
+      setTags(initialData.tags ?? []);
+    }
+  }, [initialData]);
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      setTags((prev) => [...prev, trimmed]);
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setTags((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -79,10 +97,6 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
     onSubmit({ ...form, tags });
   };
 
@@ -190,14 +204,38 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
       </div>
 
-      <div>
-        <Label className="text-gray-700">Tags (comma-separated)</Label>
-        <Input
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          className="mt-1 bg-white border-gray-300 text-gray-900"
-          placeholder="e.g. free, walk-in, virtual"
-        />
+      <div className="space-y-1">
+        <Label className="text-gray-700">Tags</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+          {tags.map((tag, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200"
+            >
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(i)}
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          <input
+            type="text"
+            placeholder={tags.length === 0 ? "Add tag..." : "Add more..."}
+            className="flex-1 min-w-[80px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                e.preventDefault();
+                addTag(e.currentTarget.value.trim());
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+        </div>
+        <p className="text-xs text-gray-400">Press Enter to add a tag</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
