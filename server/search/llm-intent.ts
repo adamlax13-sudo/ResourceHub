@@ -39,7 +39,8 @@ const VALID_INTENTS: QueryIntent[] = [
   'newcomer_services', 'family_addiction_support', 'financial_support',
   'caregiver_support', 'lgbtq_services', 'indigenous_services',
   'veteran_services', 'student_services', 'parenting_support',
-  'community_social', 'healthcare_access', 'basic_needs', 'general',
+  'community_social', 'healthcare_access', 'basic_needs', 'criminal_justice',
+  'general',
 ];
 
 const VALID_FORMATS = new Set([
@@ -64,7 +65,7 @@ Return a JSON object with these fields:
    mental_health, disability_support, grief_support, senior_services, legal_aid, employment_support,
    youth_services, newcomer_services, family_addiction_support, financial_support, caregiver_support,
    lgbtq_services, indigenous_services, veteran_services, student_services, parenting_support,
-   community_social, healthcare_access, basic_needs, general
+   community_social, healthcare_access, basic_needs, criminal_justice, general
 
    DISAMBIGUATION RULES:
    - family_addiction_support: ONLY for family members affected by someone's ADDICTION (Al-Anon, Nar-Anon).
@@ -78,6 +79,9 @@ Return a JSON object with these fields:
      secondary (for helpline pinning) but make mental_health or youth_services the primary intent.
    - healthcare_access: Use for dental, medical, hospital, prescription, clinic queries.
      "dental services" = healthcare_access, NOT general.
+   - criminal_justice: Use for reintegration, parole, probation, halfway house, criminal record,
+     drug treatment court, restorative justice. "just got out of jail" = criminal_justice.
+     If housing/employment is also mentioned, include as secondary intent.
 
 2. "formats": Array of service format preferences detected in the query. Only include if EXPLICITLY mentioned.
    Values: "free", "low_cost", "walk_in", "virtual", "phone", "in_person", "24_7", "no_waitlist"
@@ -103,25 +107,26 @@ Return a JSON object with these fields:
 
 7. subIntents: array of namespaced sub-intent strings that apply to this query.
    Only include sub-intents from this list. Use exactly these strings:
-   - housing_urgent: emergency_shelter, eviction_defense, transitional_housing, affordable_housing, youth_housing
-   - substance_abuse: detox, residential_treatment, harm_reduction, outpatient, gambling, cannabis
-   - healthcare_access: dental, walk_in_clinic, hospital_er, prescription_coverage, disability_equipment
+   - housing_urgent: emergency_shelter, eviction_defense, transitional_housing, affordable_housing, youth_housing, supportive_housing
+   - substance_abuse: detox, residential_treatment, harm_reduction, outpatient, gambling, cannabis, peer_recovery
+   - healthcare_access: dental, walk_in_clinic, hospital_er, prescription_coverage, disability_equipment, sexual_health, chronic_pain
    - mental_health: counselling, psychiatry, eating_disorder, trauma, anger_management, postpartum
-   - indigenous_services: residential_school_survivor, nihb_coverage, cultural_healing, language_preservation
+   - indigenous_services: residential_school_survivor, nihb_coverage, cultural_healing, language_preservation, status_card
    - newcomer_services: esl_language, credential_recognition, settlement, refugee, interpretation
    - legal_aid: family_court, eviction_defense, restraining_order, immigration_law, criminal_court
    - employment_support: job_search, resume_help, credential_recognition, barrier_employment, apprenticeship
    - veteran_services: ptsd_trauma, military_family, transition_support, benefits_navigation
-   - disability_support: aish_application, mobility_aids, autism_support, acquired_brain_injury
+   - disability_support: aish_application, mobility_aids, autism_support, acquired_brain_injury, fasd
    - domestic_violence: sexual_assault, stalking, human_trafficking, coercive_control, safety_planning
    - financial_support: debt_counselling, utility_arrears, income_support, tax_clinic
-   - grief_support: violent_loss, pet_loss, pregnancy_loss, suicide_loss
+   - grief_support: violent_loss, pet_loss, pregnancy_loss, suicide_loss, palliative_hospice
    - senior_services: home_care, dementia, elder_abuse, meals_delivery
    - community_social: social_connection, recreation, volunteering, adaptive_sports
    - youth_services: runaway, youth_mental_health, youth_addiction, aging_out_of_care
-   - parenting_support: prenatal, postpartum, childcare, teen_parent
+   - parenting_support: prenatal, postpartum, childcare, teen_parent, kinship_care
+   - criminal_justice: reentry, drug_court, restorative_justice, record_suspension
    - food_insecurity: food_bank, free_meals, hamper_program
-   - basic_needs: clothing, furniture, hygiene, emergency_financial
+   - basic_needs: clothing, furniture, hygiene, emergency_financial, transportation, pet_support
    - student_services: campus_counselling, financial_aid, student_housing
    - lgbtq_services: trans_healthcare, coming_out, lgbtq_youth
    - caregiver_support: respite, caregiver_burnout, dementia_caregiver

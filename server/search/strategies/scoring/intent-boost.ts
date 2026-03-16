@@ -84,7 +84,11 @@ export const INTENT_SERVICE_MAP: Partial<Record<QueryIntent, {
   },
   'legal_aid': {
     serviceTypes: ['legal_aid', 'legal_services'],
-    categoryPatterns: /legal|lawyer|attorney|court|custody|divorce|immigration|family law|tenant|housing rights|pro bono|john howard|elizabeth fry|reintegration|halfway house|parole|probation|criminal record/i,
+    categoryPatterns: /legal|lawyer|attorney|court|custody|divorce|immigration|family law|tenant|housing rights|pro bono/i,
+  },
+  'criminal_justice': {
+    serviceTypes: ['criminal_justice', 'reintegration'],
+    categoryPatterns: /reintegration|halfway house|parole|probation|criminal record|john howard|elizabeth fry|st\.? leonard|drug treatment court|restorative justice|diversion|ex-?offender|re-?entry/i,
   },
   'employment_support': {
     serviceTypes: ['employment', 'job_training', 'career'],
@@ -162,7 +166,7 @@ const EXCLUSIVE_CATEGORY_INTENTS: Readonly<Record<string, QueryIntent[]>> = {
   'residential treatment':              ['substance_abuse'],
   'harm reduction':                     ['substance_abuse'],
   'legal aid':                          ['legal_aid'],
-  'criminal justice reintegration':     ['legal_aid'],
+  'criminal justice reintegration':     ['legal_aid', 'criminal_justice'],
   'food banks & meals':                 ['food_insecurity', 'basic_needs'],
   'domestic violence support':          ['domestic_violence', 'crisis'],
   'human trafficking support':          ['domestic_violence'],

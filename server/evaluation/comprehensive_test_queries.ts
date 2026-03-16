@@ -815,6 +815,109 @@ export const COMPREHENSIVE_QUERIES: TestQuery[] = [
     description: "Specific youth crisis service lookup",
     expectedPatterns: ["Kids Help Phone"],
   },
+
+  // ===========================================
+  // CRIMINAL JUSTICE (new intent)
+  // ===========================================
+  {
+    query: "just got out of jail need help",
+    intent: "criminal_justice",
+    description: "Post-release reentry support",
+    expectedPatterns: ["reintegration", "John Howard", "Elizabeth Fry"],
+  },
+  {
+    query: "parole support services",
+    intent: "criminal_justice",
+    description: "Parole-specific support",
+    expectedPatterns: ["reintegration", "parole"],
+  },
+  {
+    query: "how to get a record suspension",
+    intent: "criminal_justice",
+    description: "Criminal record pardon/suspension",
+    expectedPatterns: ["record", "criminal"],
+  },
+  {
+    query: "drug treatment court Calgary",
+    intent: "criminal_justice",
+    description: "Drug court diversion program",
+    expectedPatterns: ["drug treatment court", "diversion"],
+  },
+
+  // ===========================================
+  // NEW SUB-INTENTS
+  // ===========================================
+
+  // healthcare_access.sexual_health
+  {
+    query: "STI testing clinic",
+    intent: "healthcare_access",
+    description: "Sexual health - STI testing",
+    expectedPatterns: ["sexual health", "STI", "clinic"],
+  },
+  // healthcare_access.chronic_pain
+  {
+    query: "chronic pain management program",
+    intent: "healthcare_access",
+    description: "Chronic pain services",
+    expectedPatterns: ["pain", "chronic"],
+  },
+  // substance_abuse.peer_recovery
+  {
+    query: "AA meetings near me",
+    intent: "substance_abuse",
+    description: "Peer recovery - AA meetings",
+    expectedPatterns: ["AA", "recovery", "meeting", "alcohol"],
+  },
+  // housing_urgent.supportive_housing
+  {
+    query: "sober living house",
+    intent: "housing_urgent",
+    description: "Supportive housing for recovery",
+    expectedPatterns: ["sober", "housing", "recovery"],
+  },
+  // disability_support.fasd
+  {
+    query: "FASD support services",
+    intent: "disability_support",
+    description: "Fetal alcohol spectrum disorder support",
+    expectedPatterns: ["FASD", "fetal alcohol"],
+  },
+  // grief_support.palliative_hospice
+  {
+    query: "hospice care for my mother",
+    intent: "grief_support",
+    description: "End-of-life hospice care",
+    expectedPatterns: ["hospice", "palliative"],
+  },
+  // basic_needs.transportation
+  {
+    query: "low income bus pass",
+    intent: "basic_needs",
+    description: "Transportation assistance - transit pass",
+    expectedPatterns: ["transit", "bus", "transportation"],
+  },
+  // basic_needs.pet_support
+  {
+    query: "pet food bank",
+    intent: "basic_needs",
+    description: "Pet support - food bank for animals",
+    expectedPatterns: ["pet", "animal"],
+  },
+  // indigenous_services.status_card
+  {
+    query: "i need a status card",
+    intent: "indigenous_services",
+    description: "Indigenous status card services",
+    expectedPatterns: ["indigenous", "status"],
+  },
+  // parenting_support.kinship_care
+  {
+    query: "raising my grandchild support",
+    intent: "parenting_support",
+    description: "Kinship care - grandparent caregivers",
+    expectedPatterns: ["kinship", "grandparent", "parenting"],
+  },
 ];
 
 // Category distribution check

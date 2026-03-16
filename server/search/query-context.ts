@@ -33,10 +33,13 @@ const SELF_SEARCHER = /\b(?:I |I'm |I am |me |my |myself)\b/i;
 
 // Implied needs mapping
 const IMPLIED_NEEDS: Array<{ pattern: RegExp; needs: string[] }> = [
-  { pattern: /\b(?:out of|released from|leaving|left)\s+(?:jail|prison|custody|incarcerat)/i, needs: ['housing', 'employment', 'reintegration'] },
-  { pattern: /\b(?:fleeing|leaving|escaping)\s+(?:abuse|abuser|violence|violent)/i, needs: ['housing', 'safety_planning', 'crisis_support'] },
-  { pattern: /\b(?:just|recently)\s+(?:arrived|immigrated|came to|moved to)\s+(?:canada|alberta|calgary|edmonton)/i, needs: ['settlement', 'language', 'employment'] },
-  { pattern: /\b(?:aging out|aged out|leaving care|former foster|former ward)/i, needs: ['housing', 'employment', 'life_skills'] },
+  { pattern: /\b(?:out of|released from|leaving|left)\s+(?:jail|prison|custody|incarcerat)/i, needs: ['housing', 'employment', 'reintegration', 'criminal_justice', 'financial_support'] },
+  { pattern: /\b(?:on parole|on probation|parole officer|probation officer)/i, needs: ['criminal_justice', 'housing', 'employment'] },
+  { pattern: /\b(?:fleeing|leaving|escaping)\s+(?:abuse|abuser|violence|violent)/i, needs: ['housing', 'safety_planning', 'crisis_support', 'pet_support', 'financial_support', 'legal_aid'] },
+  { pattern: /\b(?:just|recently)\s+(?:arrived|immigrated|came to|moved to)\s+(?:canada|alberta|calgary|edmonton)/i, needs: ['settlement', 'language', 'employment', 'healthcare_access', 'financial_support'] },
+  { pattern: /\b(?:aging out|aged out|leaving care|former foster|former ward)/i, needs: ['housing', 'employment', 'life_skills', 'financial_support', 'mental_health'] },
+  { pattern: /\b(?:senior|elderly|older adult).*\b(?:alone|isolated|lonely|live alone|living alone)/i, needs: ['transportation', 'food_insecurity', 'community_social'] },
+  { pattern: /\b(?:fasd|fetal alcohol)\b/i, needs: ['employment_support', 'housing', 'financial_support'] },
 ];
 
 /**

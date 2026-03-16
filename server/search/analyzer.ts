@@ -295,6 +295,7 @@ const INDICATOR_TO_INTENT: Record<string, { intent: QueryIntent; requiresDistres
   veteran: { intent: 'veteran_services', requiresDistress: false },
   basic_needs: { intent: 'basic_needs', requiresDistress: false },
   transportation: { intent: 'basic_needs', requiresDistress: false },
+  criminal_justice: { intent: 'criminal_justice', requiresDistress: false },
 };
 
 /**
