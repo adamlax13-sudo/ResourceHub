@@ -1,14 +1,15 @@
 """211 Alberta direct directory scraper.
 
-Uses Playwright to browse ab.211.ca directly, bypassing Cloudflare Turnstile
-CAPTCHA that blocks standard HTTP requests.
+Uses CrawlBackend with JS rendering to browse ab.211.ca, bypassing
+Cloudflare Turnstile CAPTCHA that blocks standard HTTP requests.
 
 Source: https://ab.211.ca/
 """
 import logging
 import re
-import time
 from typing import Dict, List, Optional
+
+from bs4 import BeautifulSoup
 
 from sources.plugin import Source, RawService
 
@@ -38,110 +39,100 @@ class AB211DirectSource(Source):
     }
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
-        """Scrape 211 Alberta using Playwright browser."""
-        try:
-            from playwright.sync_api import sync_playwright
-        except ImportError:
-            logger.error(
-                "[211Direct] Playwright not installed. Run: pip install playwright && playwright install chromium"
-            )
-            return []
+        """Scrape 211 Alberta using CrawlBackend with JS rendering."""
+        from backends.interface import CrawlConfig
+
+        config = CrawlConfig(
+            js_rendering=True,
+            timeout_seconds=30,
+            request_delay_seconds=3.0,
+            wait_for_selector=".result-item, .listing-item, .service-result",
+        )
 
         results = []
 
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            )
-            page = context.new_page()
+        logger.info("[211Direct] Navigating to ab.211.ca topics page...")
+        topics_page = self.backend.fetch_page(AB211_TOPICS_URL, CrawlConfig(
+            js_rendering=True,
+            timeout_seconds=30,
+        ))
+        if topics_page.error:
+            logger.error(f"[211Direct] Failed to fetch topics page: {topics_page.error}")
+            return []
 
+        topic_urls = self._extract_topic_links(topics_page.html)
+        logger.info(f"[211Direct] Found {len(topic_urls)} topic categories")
+
+        for topic_url, topic_name in topic_urls:
             try:
-                logger.info("[211Direct] Navigating to ab.211.ca...")
-                page.goto(AB211_URL, wait_until="networkidle", timeout=30000)
-                page.wait_for_timeout(5000)
+                logger.info(f"[211Direct] Browsing topic: {topic_name}")
+                full_url = topic_url if topic_url.startswith("http") else AB211_URL.rstrip("/") + topic_url
 
-                page.goto(AB211_TOPICS_URL, wait_until="networkidle", timeout=30000)
-                page.wait_for_timeout(3000)
+                page = self.backend.fetch_page(full_url, config)
+                if page.error:
+                    logger.error(f"[211Direct] Error fetching {topic_name}: {page.error}")
+                    continue
 
-                topic_links = page.query_selector_all("a[onclick*='getSubTopics']")
-                topic_urls = []
-
-                for link in topic_links:
-                    href = link.get_attribute("href")
-                    text = link.inner_text().strip()
-                    if href:
-                        topic_urls.append((href, text))
-
-                logger.info(f"[211Direct] Found {len(topic_urls)} topic categories")
-
-                for topic_url, topic_name in topic_urls:
-                    try:
-                        logger.info(f"[211Direct] Browsing topic: {topic_name}")
-                        full_url = topic_url if topic_url.startswith("http") else AB211_URL.rstrip("/") + topic_url
-                        page.goto(full_url, wait_until="networkidle", timeout=20000)
-                        page.wait_for_timeout(2000)
-
-                        listings = self._extract_page_listings(page)
-                        for listing in listings:
-                            listing["category"] = topic_name
-                            normalized = self._normalize_listing(listing)
-                            results.append(normalized)
-
-                        time.sleep(self.RATE_LIMIT_SECONDS)
-
-                    except Exception as e:
-                        logger.error(f"[211Direct] Error browsing {topic_name}: {e}")
+                listings = self._extract_page_listings(page.html)
+                for listing in listings:
+                    listing["category"] = topic_name
+                    normalized = self._normalize_listing(listing)
+                    results.append(normalized)
 
             except Exception as e:
-                logger.error(f"[211Direct] Browser error: {e}")
-            finally:
-                browser.close()
+                logger.error(f"[211Direct] Error browsing {topic_name}: {e}")
 
         logger.info(f"[211Direct] Total new services found: {len(results)}")
         return results
 
-    def _extract_page_listings(self, page) -> List[Dict]:
-        """Extract service listings from the current page."""
+    def _extract_topic_links(self, html: str) -> List[tuple]:
+        """Extract topic links from the how-we-help page."""
+        soup = BeautifulSoup(html, "html.parser")
+        topic_urls = []
+        for link in soup.find_all("a", onclick=re.compile(r"getSubTopics")):
+            href = link.get("href")
+            text = link.get_text(strip=True)
+            if href:
+                topic_urls.append((href, text))
+        return topic_urls
+
+    def _extract_page_listings(self, html: str) -> List[Dict]:
+        """Extract service listings from HTML."""
         listings = []
+        soup = BeautifulSoup(html, "html.parser")
 
-        try:
-            results_elements = page.query_selector_all(".result-item, .listing-item, .service-result")
+        results_elements = soup.select(".result-item, .listing-item, .service-result")
+        if not results_elements:
+            return listings
 
-            if not results_elements:
-                return listings
+        for elem in results_elements:
+            try:
+                name_el = elem.find(["h3", "h4"]) or elem.select_one(".title, .name")
+                name = name_el.get_text(strip=True) if name_el else ""
 
-            for elem in results_elements:
-                try:
-                    name_el = elem.query_selector("h3, h4, .title, .name")
-                    name = name_el.inner_text().strip() if name_el else ""
+                desc_el = elem.select_one(".description, .summary") or elem.find("p")
+                description = desc_el.get_text(strip=True) if desc_el else ""
 
-                    desc_el = elem.query_selector(".description, .summary, p")
-                    description = desc_el.inner_text().strip() if desc_el else ""
+                phone_el = elem.find("a", href=re.compile(r"^tel:")) or elem.select_one(".phone")
+                phone = phone_el.get_text(strip=True) if phone_el else ""
 
-                    phone_el = elem.query_selector("a[href^='tel:'], .phone")
-                    phone = phone_el.inner_text().strip() if phone_el else ""
+                addr_el = elem.select_one(".address, .location")
+                address = addr_el.get_text(strip=True) if addr_el else ""
 
-                    addr_el = elem.query_selector(".address, .location")
-                    address = addr_el.inner_text().strip() if addr_el else ""
+                link_el = elem.find("a", href=True)
+                website = link_el["href"] if link_el else ""
 
-                    link_el = elem.query_selector("a[href]")
-                    website = link_el.get_attribute("href") if link_el else ""
-
-                    if name:
-                        listings.append({
-                            "name": name,
-                            "description": description,
-                            "phone": phone,
-                            "address": address,
-                            "website": website,
-                            "category": "",
-                        })
-                except Exception:
-                    continue
-
-        except Exception as e:
-            logger.error(f"[211Direct] Error extracting listings: {e}")
+                if name:
+                    listings.append({
+                        "name": name,
+                        "description": description,
+                        "phone": phone,
+                        "address": address,
+                        "website": website,
+                        "category": "",
+                    })
+            except Exception:
+                continue
 
         return listings
 
