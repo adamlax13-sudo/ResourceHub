@@ -10,8 +10,16 @@ import type { Server } from "http";
 import { registerSearchRoutes } from "./routes/search";
 import { registerFeedbackRoutes } from "./routes/feedback";
 import { registerAnalyticsRoutes } from "./routes/analytics";
-import { registerAdminRoutes } from "./routes/admin";
 import { registerAdminAuthRoutes } from "./routes/admin-auth";
+import { registerAdminDashboardRoutes } from "./routes/admin-dashboard";
+import { registerAdminServiceRoutes } from "./routes/admin-services";
+import { registerAdminReviewRoutes } from "./routes/admin-review";
+import { registerAdminQualityRoutes } from "./routes/admin-quality";
+import { registerAdminAnalyticsRoutes } from "./routes/admin-analytics";
+import { registerAdminScraperRoutes } from "./routes/admin-scraper";
+import { registerAdminSearchTestRoutes } from "./routes/admin-search-test";
+import { registerAdminSystemRoutes } from "./routes/admin-system";
+import { registerAdminRoutes } from "./routes/admin";
 import { registerLocationRoutes } from "./routes/location";
 
 export async function registerRoutes(
@@ -22,6 +30,17 @@ export async function registerRoutes(
   registerFeedbackRoutes(app);
   registerAnalyticsRoutes(app);
   registerAdminAuthRoutes(app);
+
+  // Admin API routes — registered after auth, before legacy admin routes
+  registerAdminDashboardRoutes(app);
+  registerAdminServiceRoutes(app);
+  registerAdminReviewRoutes(app);
+  registerAdminQualityRoutes(app);
+  registerAdminAnalyticsRoutes(app);
+  registerAdminScraperRoutes(app);
+  registerAdminSearchTestRoutes(app);
+  registerAdminSystemRoutes(app);
+
   registerAdminRoutes(app);
   registerLocationRoutes(app);
 
