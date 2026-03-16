@@ -33,6 +33,7 @@ class PipelineStats:
     enriched_inferred: int = 0
     embeddings_generated: int = 0
     deduped: int = 0
+    pages_crawled: int = 0
     api_cost: float = 0.0
     duration_seconds: float = 0.0
 
@@ -43,6 +44,7 @@ Services found:     {self.services_found}
 New services:       {self.new_services}
 Updated services:   {self.updated_services}
 Skipped (unchanged): {self.skipped_unchanged}
+Pages crawled:      {self.pages_crawled}
 
 Enrichment:
   Found w/ source:  {self.enriched_found}
@@ -57,28 +59,35 @@ Duration:           {self.duration_seconds / 60:.0f} minutes"""
 
 
 class Pipeline:
-    def __init__(self, session, log, budget: float = None):
+    def __init__(self, session, log, budget: float = None, backend=None):
         self.session = session
         self.log = log
         self.budget = budget
+        self._backend = backend
         self.stats = PipelineStats()
         self.sources: list[Source] = []
         self.enrichment_engine: EnrichmentEngine = None
         self._consecutive_errors = 0
 
     def register_source(self, source: Source):
+        if self._backend:
+            source.backend = self._backend
         self.sources.append(source)
 
     def run(self, phase: str = None, dry_run=False, full=False, source_name: str = None):
         start = datetime.now()
-        if phase is None or phase == "discover":
-            self.run_discover(dry_run=dry_run, source_name=source_name)
-        if phase is None or phase == "enrich":
-            self.run_enrich(dry_run=dry_run, full=full, source_name=source_name)
-        if phase is None or phase == "finalize":
-            self.run_finalize(dry_run=dry_run)
-        self.stats.duration_seconds = (datetime.now() - start).total_seconds()
-        self.log.info(self.stats.summary())
+        try:
+            if phase is None or phase == "discover":
+                self.run_discover(dry_run=dry_run, source_name=source_name)
+            if phase is None or phase == "enrich":
+                self.run_enrich(dry_run=dry_run, full=full, source_name=source_name)
+            if phase is None or phase == "finalize":
+                self.run_finalize(dry_run=dry_run)
+        finally:
+            if self._backend:
+                self._backend.close()
+            self.stats.duration_seconds = (datetime.now() - start).total_seconds()
+            self.log.info(self.stats.summary())
 
     def run_discover(self, dry_run=False, source_name=None):
         for source in self.sources:
@@ -134,6 +143,8 @@ class Pipeline:
         return field_count >= 2
 
     def run_enrich(self, dry_run=False, full=False, source_name=None):
+        # TODO: wire self._backend into EnrichmentEngine once EnrichmentEngine.__init__
+        # accepts a backend= kwarg (modify enrichment.py to support crawl-backed fetching)
         if not self.enrichment_engine:
             self.log.info("No enrichment engine configured (missing Claude API key). Skipping.")
             return
