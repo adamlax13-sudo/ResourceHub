@@ -19,6 +19,7 @@ import {
   RotateCcw,
   RefreshCw,
   MapPin,
+  Flag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
@@ -74,17 +75,26 @@ export default function Services() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("active");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("lastUpdated-desc");
+  const [pageSize, setPageSize] = useState<number>(25);
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [flagReason, setFlagReason] = useState<string>("");
+  const [showFlagDialog, setShowFlagDialog] = useState(false);
+
+  // Parse sortBy into sort and order params
+  const [sortCol, sortDir] = sortBy.split("-") as [string, string];
 
   // Build query string
   const queryParams = new URLSearchParams();
   if (searchQuery) queryParams.set("q", searchQuery);
   if (statusFilter) queryParams.set("status", statusFilter);
   if (categoryFilter) queryParams.set("category", categoryFilter);
+  queryParams.set("sort", sortCol);
+  queryParams.set("order", sortDir);
   queryParams.set("page", String(page));
-  queryParams.set("limit", "25");
+  queryParams.set("limit", String(pageSize));
 
   // Fetch service list
   const { data: listData, isPending: listLoading } = useQuery<{
@@ -207,6 +217,23 @@ export default function Services() {
     },
   });
 
+  // Flag for review mutation
+  const flagReviewMutation = useMutation({
+    mutationFn: async (reason: string) => {
+      const res = await apiRequest("POST", `/api/admin/services/${selectedId}/flag-review`, { reason });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Service flagged for review" });
+      setShowFlagDialog(false);
+      setFlagReason("");
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+    },
+    onError: (err) => {
+      toast({ title: "Flag failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
@@ -258,6 +285,21 @@ export default function Services() {
             <option value="Hospital & Emergency">Hospital & Emergency</option>
           </select>
         </div>
+        <select
+          value={sortBy}
+          onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+          className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 w-full"
+        >
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="confidence-asc">Quality Score ↑</option>
+          <option value="confidence-desc">Quality Score ↓</option>
+          <option value="lastUpdated-desc">Recently Updated</option>
+          <option value="lastUpdated-asc">Oldest Updated</option>
+          <option value="category-asc">Category (A-Z)</option>
+          <option value="clickCount-desc">Most Clicked</option>
+          <option value="location-asc">Location (A-Z)</option>
+        </select>
       </div>
 
       {/* List */}
@@ -309,30 +351,48 @@ export default function Services() {
           </div>
 
           {/* Pagination */}
-          {listData && listData.totalPages > 1 && (
-            <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 text-xs text-gray-400">
-              <span>
-                Page {listData.page} of {listData.totalPages} ({listData.total} total)
-              </span>
-              <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                  className="h-7 px-2 text-gray-500"
+          {listData && (
+            <div className="border-t border-gray-200 px-3 py-2 space-y-1.5">
+              <div className="flex items-center justify-between text-xs text-gray-400">
+                <span>
+                  {listData.total > 0
+                    ? `Page ${listData.page} of ${listData.totalPages} (${listData.total} total)`
+                    : "No results"}
+                </span>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                    className="h-7 px-2 text-gray-500"
+                  >
+                    <ChevronLeft className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page >= (listData.totalPages || 1)}
+                    className="h-7 px-2 text-gray-500"
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span>Show</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+                  className="border border-gray-200 rounded px-1.5 py-0.5 text-xs bg-white text-gray-700"
                 >
-                  <ChevronLeft className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setPage((p) => p + 1)}
-                  disabled={page >= (listData.totalPages || 1)}
-                  className="h-7 px-2 text-gray-500"
-                >
-                  <ChevronRight className="h-3 w-3" />
-                </Button>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span>per page</span>
               </div>
             </div>
           )}
@@ -432,7 +492,54 @@ export default function Services() {
                 }
                 Regenerate Embedding
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFlagDialog(!showFlagDialog)}
+                disabled={flagReviewMutation.isPending}
+                className="flex-1 border-amber-200 text-amber-700 hover:bg-amber-50"
+              >
+                {flagReviewMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                  : <Flag className="h-4 w-4 mr-1.5" />
+                }
+                Flag for Review
+              </Button>
             </div>
+            {showFlagDialog && (
+              <div className="p-3 rounded-lg border border-amber-200 bg-amber-50 space-y-2">
+                <p className="text-xs font-medium text-amber-700">Reason for flagging (optional)</p>
+                <input
+                  type="text"
+                  value={flagReason}
+                  onChange={(e) => setFlagReason(e.target.value)}
+                  placeholder="e.g. Phone number may be outdated"
+                  className="w-full text-sm border border-amber-200 rounded px-2 py-1.5 bg-white text-gray-900 placeholder-gray-400"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") flagReviewMutation.mutate(flagReason);
+                    if (e.key === "Escape") { setShowFlagDialog(false); setFlagReason(""); }
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => flagReviewMutation.mutate(flagReason)}
+                    disabled={flagReviewMutation.isPending}
+                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                  >
+                    Confirm Flag
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setShowFlagDialog(false); setFlagReason(""); }}
+                    className="flex-1 text-gray-500"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* History or Edit Form */}

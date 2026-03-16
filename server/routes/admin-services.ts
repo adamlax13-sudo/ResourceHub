@@ -144,7 +144,7 @@ export function registerAdminServiceRoutes(app: Express): void {
         hasGeocoding: req.query.hasGeocoding === 'true' ? true : req.query.hasGeocoding === 'false' ? false : undefined,
         page: req.query.page ? Number(req.query.page) : undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
-        sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | undefined,
+        sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | undefined,
         order: req.query.order as 'asc' | 'desc' | undefined,
       };
 
@@ -484,6 +484,40 @@ export function registerAdminServiceRoutes(app: Express): void {
       console.error("Geocode service error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
       res.status(500).json(createErrorResponse("Failed to geocode service", errorMessage));
+    }
+  });
+
+  // ============= FLAG FOR REVIEW =============
+  app.post("/api/admin/services/:id/flag-review", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const idSchema = z.coerce.number().int().min(1);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+
+      const service = await storage.getAdminServiceDetail(parseResult.data);
+      if (!service) {
+        return res.status(404).json(createErrorResponse("Service not found"));
+      }
+
+      const { reason } = (req.body as { reason?: string }) || {};
+
+      await storage.createChangeRequest({
+        serviceId: parseResult.data,
+        changeType: 'update',
+        proposedChanges: service as any,
+        previousValues: service as any,
+        source: 'admin',
+        status: 'pending',
+        reviewNotes: reason || 'Flagged for review by admin',
+      });
+
+      res.json({ success: true, message: "Service flagged for review" });
+    } catch (err) {
+      console.error("Flag for review error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to flag service for review", errorMessage));
     }
   });
 

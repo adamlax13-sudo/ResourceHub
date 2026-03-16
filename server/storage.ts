@@ -1413,7 +1413,7 @@ export class DatabaseStorage implements IStorage {
     hasGeocoding?: boolean;
     page?: number;
     limit?: number;
-    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated';
+    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location';
     order?: 'asc' | 'desc';
   }): Promise<{ services: Service[]; total: number }> {
     const page = params.page ?? 1;
@@ -1484,6 +1484,12 @@ export class DatabaseStorage implements IStorage {
         break;
       case 'lastUpdated':
         orderExpr = sortDir(services.lastUpdated);
+        break;
+      case 'clickCount':
+        orderExpr = sortDir(services.clickCount);
+        break;
+      case 'location':
+        orderExpr = sortDir(services.location);
         break;
       default:
         orderExpr = desc(services.lastUpdated);
