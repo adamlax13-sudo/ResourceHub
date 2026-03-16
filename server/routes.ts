@@ -11,6 +11,7 @@ import { registerSearchRoutes } from "./routes/search";
 import { registerFeedbackRoutes } from "./routes/feedback";
 import { registerAnalyticsRoutes } from "./routes/analytics";
 import { registerAdminRoutes } from "./routes/admin";
+import { registerAdminAuthRoutes } from "./routes/admin-auth";
 import { registerLocationRoutes } from "./routes/location";
 
 export async function registerRoutes(
@@ -20,6 +21,7 @@ export async function registerRoutes(
   registerSearchRoutes(app);
   registerFeedbackRoutes(app);
   registerAnalyticsRoutes(app);
+  registerAdminAuthRoutes(app);
   registerAdminRoutes(app);
   registerLocationRoutes(app);
 

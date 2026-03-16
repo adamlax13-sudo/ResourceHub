@@ -3,6 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import helmet from "helmet";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { randomUUID } from "crypto";
 import { registerRoutes } from "./routes";
 
@@ -70,6 +71,7 @@ app.use(cors({
 
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Validate Content-Type for POST/PUT/PATCH requests
 app.use('/api', (req, res, next) => {

@@ -1,12 +1,16 @@
 import type { Request, Response, NextFunction } from 'express';
 import { timingSafeEqual, createHash } from 'crypto';
+import rateLimit from 'express-rate-limit';
+import { verifyToken } from '../routes/admin-auth';
 
 /**
- * Admin authentication middleware
- * Validates API key for admin endpoints
+ * Admin authentication middleware.
  *
- * Usage: Add ADMIN_API_KEY to your .env file
- * Clients must send: Authorization: Bearer <ADMIN_API_KEY>
+ * Accepts auth via two mechanisms (checked in order):
+ *   1. Authorization: Bearer <ADMIN_API_KEY>  (backward compat for CLI scripts)
+ *   2. admin_session HTTP-only cookie         (used by the admin UI)
+ *
+ * Usage: Add ADMIN_API_KEY to your .env file.
  */
 export function adminAuth(req: Request, res: Response, next: NextFunction) {
   const adminApiKey = process.env.ADMIN_API_KEY;
@@ -17,23 +21,29 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
     return res.status(404).json({ message: 'Not found' });
   }
 
-  // Extract token from Authorization header
+  // --- Method 1: Authorization header (Bearer token) ---
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7); // Remove 'Bearer ' prefix
+    if (constantTimeCompare(token, adminApiKey)) {
+      console.log(`[AdminAuth] Admin access granted (header) — ${req.method} ${req.path} from ${req.ip}`);
+      return next();
+    }
+    // Header present but invalid — fail immediately (don't fall through to cookie)
+    console.warn(`[AdminAuth] Invalid Bearer token from ${req.ip}`);
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
-  const token = authHeader.slice(7); // Remove 'Bearer ' prefix
-
-  // Constant-time comparison to prevent timing attacks
-  if (!constantTimeCompare(token, adminApiKey)) {
-    console.warn(`[AdminAuth] Invalid admin API key attempt from ${req.ip}`);
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  // --- Method 2: Signed cookie ---
+  const cookieValue = req.cookies?.admin_session as string | undefined;
+  if (cookieValue && verifyToken(cookieValue)) {
+    console.log(`[AdminAuth] Admin access granted (cookie) — ${req.method} ${req.path} from ${req.ip}`);
+    return next();
   }
 
-  // Log successful admin access
-  console.log(`[AdminAuth] Admin access granted — ${req.method} ${req.path} from ${req.ip}`);
-  next();
+  // Neither header nor cookie passed
+  console.warn(`[AdminAuth] Unauthorized access attempt — ${req.method} ${req.path} from ${req.ip}`);
+  return res.status(401).json({ success: false, message: 'Unauthorized' });
 }
 
 /**
@@ -47,14 +57,29 @@ function constantTimeCompare(a: string, b: string): boolean {
 }
 
 /**
- * Admin rate limiter - stricter than regular endpoints
+ * Rate limiter for read (GET) admin endpoints — more permissive.
  */
-import rateLimit from 'express-rate-limit';
-
-export const adminLimiter = rateLimit({
+export const adminReadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 admin requests per window
+  max: 200,
   message: 'Too many admin requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+/**
+ * Rate limiter for write (POST/PATCH) admin endpoints — stricter.
+ */
+export const adminWriteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: 'Too many admin requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Backward-compatible alias for adminWriteLimiter.
+ * Existing routes that use adminLimiter continue to work unchanged.
+ */
+export const adminLimiter = adminWriteLimiter;
