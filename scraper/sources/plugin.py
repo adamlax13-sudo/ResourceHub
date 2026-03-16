@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backends.interface import CrawlBackend
 
 
 @dataclass
@@ -26,6 +29,7 @@ class Source(ABC):
     """Base class for all source plugins. Subclasses implement discover()."""
     name: str = "unknown"
     url: str = ""
+    backend: Optional['CrawlBackend'] = None  # Injected by Pipeline
 
     @abstractmethod
     def discover(self, session, log, dry_run=False) -> list[RawService]:

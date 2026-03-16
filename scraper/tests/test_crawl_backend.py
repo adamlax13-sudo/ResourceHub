@@ -126,3 +126,40 @@ class TestMockBackend:
         assert len(pages) == 2
         assert pages[0].error is None
         assert pages[1].error is not None
+
+
+from unittest.mock import MagicMock, AsyncMock, patch
+from backends.crawl4ai_backend import Crawl4AIBackend, SKIP_URL_PATTERNS, SERVICE_KEYWORDS
+
+
+class TestCrawl4AIBackendSSRF:
+    def test_fetch_page_ssrf_blocked(self):
+        """Private IPs return error CrawlPage without starting browser."""
+        with patch("backends.crawl4ai_backend.is_safe_url", return_value=False), \
+             patch.object(Crawl4AIBackend, "_ensure_started"):
+            backend = Crawl4AIBackend()
+            page = backend.fetch_page("http://169.254.169.254/metadata")
+        assert page.error is not None
+        assert "SSRF" in page.error
+
+    def test_crawl_site_ssrf_blocked(self):
+        with patch("backends.crawl4ai_backend.is_safe_url", return_value=False), \
+             patch.object(Crawl4AIBackend, "_ensure_started"):
+            backend = Crawl4AIBackend()
+            result = backend.crawl_site("http://10.0.0.1/")
+        assert result.total_pages == 0
+        assert len(result.errors) == 1
+
+
+class TestSkipPatterns:
+    def test_donate_pattern_matches(self):
+        """SKIP_URL_PATTERNS are valid glob patterns."""
+        from fnmatch import fnmatch
+        assert fnmatch("https://example.com/donate/now", "*/donate*")
+        assert fnmatch("https://example.com/report.pdf", "*.pdf")
+        assert fnmatch("https://facebook.com/page", "*facebook.com*")
+
+    def test_service_keywords_present(self):
+        assert "intake" in SERVICE_KEYWORDS
+        assert "eligibility" in SERVICE_KEYWORDS
+        assert "services" in SERVICE_KEYWORDS
