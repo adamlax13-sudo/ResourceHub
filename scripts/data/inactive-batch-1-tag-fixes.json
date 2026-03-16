@@ -1,0 +1,154 @@
+[
+  {
+    "id": 2768,
+    "name": "Calgary Seniors Resource Society",
+    "fields": {
+      "tags": ["calgary", "senior", "free", "in-person", "mobile", "family", "support services", "community support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'addiction', 'crisis', 'housing', 'trauma', 'online'. Added 'free', 'in-person', 'community support'."
+  },
+  {
+    "id": 2516,
+    "name": "The Altview Foundation",
+    "fields": {
+      "tags": ["edmonton", "alberta", "lgbtq+", "youth", "family", "education", "peer support", "support group", "drop-in", "free", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'education', 'drop-in', 'free'."
+  },
+  {
+    "id": 2588,
+    "name": "The Immigrant Education Society (TIES)",
+    "fields": {
+      "tags": ["calgary", "newcomer", "employment", "education", "free", "in-person", "family", "mental health", "counselling", "adult", "youth", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'employment', 'education', 'free', 'in-person', 'adult', 'youth'."
+  },
+  {
+    "id": 2873,
+    "name": "Unison Society",
+    "fields": {
+      "tags": ["calgary", "medicine hat", "senior", "in-person", "drop-in", "free", "family", "support group", "community support", "basic-needs", "education", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'crisis', 'shelter', 'trauma', 'online', 'outpatient'. Added 'education', 'community support'."
+  },
+  {
+    "id": 2664,
+    "name": "Independent Living Resource Centre of Calgary",
+    "fields": {
+      "tags": ["calgary", "disability", "in-person", "peer support", "education", "youth", "adult", "support group", "free", "drop-in", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'in-person', 'education', 'youth', 'adult', 'free', 'drop-in'."
+  },
+  {
+    "id": 2561,
+    "name": "Big Brothers Big Sisters Calgary",
+    "fields": {
+      "tags": ["calgary", "youth", "family", "in-person", "free", "community support", "support services", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'disability'. Added 'in-person', 'free', 'community support'."
+  },
+  {
+    "id": 2560,
+    "name": "Robin Hood Association",
+    "fields": {
+      "tags": ["disability", "in-person", "residential", "family", "youth", "adult", "employment", "community support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'housing'. Location tag not needed (Sherwood Park in location field). Added 'residential', 'employment', 'community support'."
+  },
+  {
+    "id": 2718,
+    "name": "CanLearn Society",
+    "fields": {
+      "tags": ["calgary", "disability", "in-person", "family", "youth", "adult", "education", "counselling", "mental health", "free", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'in-person', 'education', 'free'."
+  },
+  {
+    "id": 3012,
+    "name": "Sage Seniors Association",
+    "fields": {
+      "tags": ["edmonton", "senior", "in-person", "free", "legal", "support group", "community support", "support services", "drop-in", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'shelter', 'mobile', 'newcomer'. Added 'in-person', 'free', 'legal', 'community support', 'drop-in'."
+  },
+  {
+    "id": 2633,
+    "name": "Urban Society for Aboriginal Youth (USAY)",
+    "fields": {
+      "tags": ["calgary", "indigenous", "youth", "in-person", "free", "drop-in", "education", "community support", "peer support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'in-person', 'free', 'drop-in', 'education', 'community support', 'peer support'."
+  },
+  {
+    "id": 2751,
+    "name": "Influence Mentoring Society",
+    "fields": {
+      "tags": ["calgary", "indigenous", "in-person", "free", "education", "employment", "adult", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'senior', 'support group'. Added 'in-person', 'free', 'education', 'employment', 'adult'."
+  },
+  {
+    "id": 2630,
+    "name": "Crystal Kids Youth Centre",
+    "fields": {
+      "tags": ["edmonton", "youth", "in-person", "free", "drop-in", "basic-needs", "family", "education", "community support", "indigenous", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'senior', 'addiction', 'online', 'trauma', 'harm reduction'. Added 'free', 'drop-in', 'education', 'community support'."
+  },
+  {
+    "id": 2746,
+    "name": "Mental Health Copilots",
+    "fields": {
+      "tags": ["alberta", "province-wide", "mental health", "counselling", "free", "virtual", "support services", "adult", "youth", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'senior'. Added 'province-wide', 'free', 'virtual', 'adult', 'youth'."
+  },
+  {
+    "id": 3109,
+    "name": "Freedom's Path Recovery Society",
+    "fields": {
+      "tags": ["calgary", "addiction", "recovery", "counselling", "free", "in-person", "peer support", "support group", "family", "adult", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'recovery', 'free', 'in-person', 'adult'."
+  },
+  {
+    "id": 2992,
+    "name": "HAEEDS",
+    "fields": {
+      "tags": ["edmonton", "newcomer", "employment", "education", "in-person", "family", "youth", "adult", "community support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'housing', 'mental health', 'mental-health'. Added 'employment', 'education', 'in-person', 'community support'."
+  },
+  {
+    "id": 2939,
+    "name": "Lethbridge Senior Citizens Organization",
+    "fields": {
+      "tags": ["lethbridge", "senior", "in-person", "free", "drop-in", "counselling", "basic-needs", "community support", "education", "support group", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'crisis', 'housing'. Added 'lethbridge', 'senior', 'in-person', 'free', 'drop-in', 'counselling', 'education', 'community support'."
+  },
+  {
+    "id": 2895,
+    "name": "Tourette OCD Alberta Network",
+    "fields": {
+      "tags": ["calgary", "alberta", "province-wide", "mental health", "family", "youth", "adult", "education", "free", "support services", "peer support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men', 'housing', 'shelter'. Added 'province-wide', 'youth', 'adult', 'education', 'free'."
+  },
+  {
+    "id": 2608,
+    "name": "Shepherd's Care Foundation",
+    "fields": {
+      "tags": ["edmonton", "calgary", "senior", "residential", "in-person", "support services", "registered-charity"]
+    },
+    "reason": "Tag cleanup: accurate minimal tags for senior residential care provider."
+  },
+  {
+    "id": 3100,
+    "name": "Kids With Cancer Society",
+    "fields": {
+      "tags": ["edmonton", "alberta", "youth", "family", "free", "in-person", "support services", "community support", "registered-charity"]
+    },
+    "reason": "Tag cleanup: removed false 'men'. Added 'free', 'in-person', 'community support'."
+  }
+]

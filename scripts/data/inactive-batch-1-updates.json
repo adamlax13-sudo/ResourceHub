@@ -1,0 +1,326 @@
+[
+  {
+    "id": 2768,
+    "name": "Calgary Seniors Resource Society",
+    "fields": {
+      "phone": "(403) 266-6200",
+      "email": "info@calgaryseniors.org",
+      "hours_of_operation": "Mon - Fri, 8:30am - 4:30pm",
+      "address": "3639 26th St NE, Calgary, AB T1Y 5E1",
+      "website_url": "https://calgaryseniors.org",
+      "description": "Calgary Seniors Resource Society provides personalized outreach-style support services empowering older adults to navigate their aging journey. Services include 11 volunteer-delivered programs: Friendly Visiting, Friendly Check-In, Essential Transportation, Caring Companion, Shopping Companion, KIND Drivers, Pet Assist, Holiday Helpers, Cheer Mail, Practical Kindness, and Volunteer Drop Offs. Their Social Work Department delivers community-based support through SeniorConnect, In Place, and Outreach programs, connecting isolated seniors to resources and helping them age in place.",
+      "eligibility": "Older adults (55+) in Calgary. As a partner of The Way In Network, referrals can also be made through 403-SENIORS (403-736-4677).",
+      "process_steps": ["Call 403-SENIORS (403-736-4677) to complete an intake", "An Outreach Worker will be assigned to assess your needs", "You will be connected to appropriate programs and services", "For emergencies, call Distress Centre at 403-266-HELP (403-266-4357)"],
+      "source_urls": ["https://calgaryseniors.org", "https://calgaryseniors.org/programs", "https://calgaryseniors.org/find-help"],
+      "confidence_score": 90,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 5/5 key fields + process_steps."
+  },
+  {
+    "id": 2516,
+    "name": "The Altview Foundation",
+    "fields": {
+      "phone": "(780) 666-5428",
+      "email": "info@altview.ca",
+      "address": "Edmonton, AB T5J 1C4",
+      "website_url": "https://www.altview.ca",
+      "description": "The altView Foundation provides support for LGBTQ2S+ people across Alberta, with a focus on smaller cities and rural communities. Programs include HangOUT (youth space/activity group), Thought Out (all-ages discussion group), altView Writes (course for queer and trans authors), altView Presents (LGBTQ-themed presentations), drop-in services, GSA (Gay-Straight Alliance) support for schools, and community presentations on creating safer spaces. They also provide resources for parents of gender-diverse children.",
+      "eligibility": "LGBTQ2S+ youth, families, and service providers in Alberta, with focus on rural communities and Strathcona County",
+      "process_steps": ["Contact altView via email at info@altview.ca or phone at 780-666-LGBT", "Ask about current drop-in programs and community presentations", "Attend a drop-in session (HangOUT, Thought Out) or request a GSA presentation for your school"],
+      "source_urls": ["https://www.altview.ca", "https://www.altview.ca/contact-us", "https://prideedmonton.ca/listing/altview-foundation/"],
+      "confidence_score": 82,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Phone found via Pride Edmonton directory. 3/5 key fields + process_steps."
+  },
+  {
+    "id": 2588,
+    "name": "The Immigrant Education Society (TIES)",
+    "fields": {
+      "phone": "(403) 235-3666",
+      "email": "reception@immigrant-education.ca",
+      "hours_of_operation": "Mon-Thu: 8:00 AM - 9:00 PM, Fri: 8:00 AM - 2:00 PM, Sat: 8:15 AM - 3:45 PM",
+      "website_url": "https://www.immigrant-education.ca",
+      "description": "The Immigrant Education Society (TIES) helps newcomers and new Canadians settle in Calgary. Services include English language classes (LINC, in-class and online), employment skills building for the Canadian job market, settlement support, mental health services, digital skills training, childcare, and free tax filing assistance. TIES operates three locations: Forest Lawn (SE), Whitehorn (NE), and Westwinds (NE).",
+      "eligibility": "Newcomers, immigrants, and new Canadians in Calgary",
+      "process_steps": ["Visit the TIES website or call (403) 235-3666 (Forest Lawn), (403) 291-0002 (Whitehorn), or (587) 392-4177 (Westwinds)", "Identify the service you need: Learn English, Build Employment Skills, Get Settled, Access Mental Health Support, Develop Digital Skills, or Find Childcare", "Visit your nearest TIES location or chat online at www.immigrant-education.ca for assistance"],
+      "source_urls": ["https://www.immigrant-education.ca", "https://www.immigrant-education.ca/contact-us"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Phone, email, hours all found. 5/5 key fields + process_steps."
+  },
+  {
+    "id": 2873,
+    "name": "Unison Society",
+    "fields": {
+      "phone": "(403) 265-0661",
+      "email": "program@unisonalberta.com",
+      "hours_of_operation": "Mon - Fri, 8:00am - 4:00pm (closed Sat, Sun, and holidays)",
+      "address": "1133 7 Avenue SW, Calgary, AB",
+      "website_url": "https://unisonalberta.com",
+      "description": "Unison (formerly Kerby Centre) offers programs and services for older adults in Calgary and Medicine Hat. Services include courses and workshops, food services, elder abuse support through the Elder Abuse Resource Line (EARL) at 403-705-3250, travel programs, fitness activities, adult day programs, seniors supports, and social events. Their Adult Day Program runs Mon-Fri 9am-3pm for those receiving Home Care through AHS.",
+      "eligibility": "Adults 50+ in Calgary and Medicine Hat. Adult Day Program requires current Home Care through Alberta Health Services and medical stability.",
+      "process_steps": ["Call (403) 265-0661 for general inquiries or visit unisonalberta.com", "For Seniors Supports, call (403) 705-3246 or email SeniorSupports@UnisonAlberta.com to book an appointment", "For Adult Day Program, screening and referral is done through Alberta Health Services Home Care", "For elder abuse concerns, call the Elder Abuse Resource Line (EARL) at (403) 705-3250"],
+      "source_urls": ["https://unisonalberta.com", "https://unisonalberta.com/services", "https://unisonalberta.com/contact"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 5/5 key fields + process_steps."
+  },
+  {
+    "id": 2664,
+    "name": "Independent Living Resource Centre of Calgary",
+    "fields": {
+      "phone": "(403) 263-6880",
+      "email": "info@ilrcc.ab.ca",
+      "address": "Unit 134, Parma Centre, 3359 27 Street NE, Calgary, AB T1Y 5E4",
+      "website_url": "https://www.ilrcc.ab.ca",
+      "description": "The Independent Living Resource Centre of Calgary (ILRCC) provides vital services and support to people with disabilities through life-long education, workshops, referrals, information resources, and general support. Core programs include LEARN (Lifelong Education and Awareness of Recreational Needs) offering skills building and social opportunities, Personal Empowerment Program (PEP) assisting adults with disabilities in achieving independence, peer support, youth mentorship, and barrier-free volunteer opportunities.",
+      "eligibility": "Adults with professionally identified or self-identified disabilities in Calgary",
+      "hours_of_operation": "Contact for current hours. Friday Mix and Mingle drop-in: 10:00 AM - 2:00 PM",
+      "process_steps": ["Call (403) 263-6880 or email info@ilrcc.ab.ca to inquire about programs", "Discuss your needs with staff to identify the best program fit (LEARN, PEP, peer support, or volunteer program)", "Register for programs or attend drop-in sessions"],
+      "source_urls": ["https://www.ilrcc.ab.ca", "https://ab.211.ca/record/1031501/"],
+      "confidence_score": 82,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Email found via 211 Alberta. 4/5 key fields + process_steps."
+  },
+  {
+    "id": 2561,
+    "name": "Big Brothers Big Sisters Calgary",
+    "fields": {
+      "phone": "(403) 777-3535",
+      "email": "intake.calgary@bigbrothersbigsisters.ca",
+      "website_url": "https://bbbscalgary.ca",
+      "description": "Big Brothers Big Sisters of Calgary and Area provides mentoring programs that match adult volunteers with young people. Programs include one-to-one mentoring, Big Couple mentoring, group mentoring, and school-based mentoring to help young people realize their full potential through supportive relationships with caring mentors.",
+      "eligibility": "Youth in Calgary and surrounding area facing adversity. Adult volunteers (18+) welcome to apply as mentors with a 1-year, 2-5 hours/week commitment.",
+      "process_steps": ["Fill out an inquiry form at bbbscalgary.ca or call (403) 777-3534", "An Enrolment Coordinator will contact you within 2-5 business days", "Gather references, complete paperwork, and undergo two background checks", "Attend a group training session", "Complete the enrollment process with an interview to build your mentoring profile", "Get matched with a young person (enrollment process takes a few months)"],
+      "source_urls": ["https://bbbscalgary.ca", "https://bbbscalgary.ca/get-involved/become-a-mentor/"],
+      "confidence_score": 85,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Intake email found. 3/5 key fields + detailed process_steps."
+  },
+  {
+    "id": 2560,
+    "name": "Robin Hood Association",
+    "fields": {
+      "phone": "(780) 467-7140",
+      "email": "info@robinhoodassoc.com",
+      "address": "141 Broadway Boulevard, Sherwood Park, AB T8H 2A4",
+      "hours_of_operation": "Mon - Fri, 8:30 AM - 4:00 PM (Learning Center)",
+      "website_url": "https://www.robinhoodassoc.com",
+      "description": "Robin Hood Association, formed in 1963, is the primary provider of services to children and adults with developmental disabilities in Sherwood Park, Fort Saskatchewan, and surrounding areas. They operate four major facilities: the Learning Centre, Children and Youth Community Centre, Aspen Village, and Adult Learning Centre in Fort Saskatchewan. They also own and operate 41 residential group homes (36 in Sherwood Park, 5 in Fort Saskatchewan). Services include adult day programs, transportation, food/basic needs support, and mental health counselling.",
+      "eligibility": "Children and adults with developmental and multiple disabilities in Sherwood Park, Fort Saskatchewan, and surrounding areas",
+      "process_steps": ["Contact Robin Hood Association at (780) 467-7140 or info@robinhoodassoc.com", "Discuss your needs and the appropriate program (children/youth, adult day, residential, or community)", "Complete intake assessment to determine eligibility and placement"],
+      "source_urls": ["https://www.robinhoodassoc.com", "https://ab.211.ca/record/1088159/"],
+      "confidence_score": 85,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Hours found via web search. 5/5 key fields + process_steps."
+  },
+  {
+    "id": 2718,
+    "name": "CanLearn Society",
+    "fields": {
+      "phone": "(403) 686-9300",
+      "email": "info@canlearnsociety.ca",
+      "address": "1117 Macleod Trail SE, Calgary, AB T2G 2M8",
+      "hours_of_operation": "Mon - Fri, 8:30 AM - 4:30 PM",
+      "website_url": "https://www.canlearnsociety.ca",
+      "description": "Since 1979, CanLearn Society has been changing the lives of children, youth, and adults living with literacy, learning difficulties, attention, and related mental health challenges in Calgary. Services include psychoeducational assessments for learning disabilities, ADHD, ASD and giftedness, consultation, counselling, family literacy programs, educational advocacy, and interventions. They are transit-accessible from all corners of Calgary.",
+      "eligibility": "Children, youth, and adults with learning disabilities, ADHD, ASD, or attention difficulties in Calgary and surrounding area. No referral required.",
+      "process_steps": ["Call the intake coordinator for a free 15-minute consultation at (403) 456-0465 x102", "The coordinator will connect you with the service that best suits your needs", "Book an assessment or intervention session (no waiting period for referral)"],
+      "source_urls": ["https://www.canlearnsociety.ca", "https://informalberta.ca/public/organization/orgProfileStyled.do?organizationQueryId=264"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Hours + intake phone found. 5/5 key fields + process_steps."
+  },
+  {
+    "id": 3012,
+    "name": "Sage Seniors Association",
+    "fields": {
+      "phone": "(780) 423-5510",
+      "address": "15 Sir Winston Churchill Square, Edmonton, AB T5J 2E5",
+      "hours_of_operation": "Mon - Thu, 9:00 AM - 3:00 PM (staff work off-site on Fridays)",
+      "website_url": "https://www.mysage.ca",
+      "description": "Sage Seniors Association has been providing programs and services for seniors in Edmonton since 1970. Services include legal information, elder abuse resources through the Seniors Safe House, financial and estate planning, scam/fraud prevention, housing options, recreation programming, social work support, and a comprehensive seniors directory. Sage strives to provide programs accessible to seniors regardless of physical, financial, educational, geographic, language, or other barriers.",
+      "eligibility": "Older adults in Edmonton. Programs are accessible regardless of physical, financial, educational, geographic, or language barriers.",
+      "process_steps": ["Visit Sage's front desk at 15 Sir Winston Churchill Square, Edmonton", "Or call (780) 423-5510 ext. 323 or (587) 773-1764 to leave a voicemail for a social worker", "A social worker will return your call within 2 business days", "Home visits can also be arranged for those unable to visit in person"],
+      "source_urls": ["https://www.mysage.ca", "https://www.mysage.ca/about-us/hours-of-operation", "https://www.mysage.ca/help/information-support/assessment"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 4/5 key fields + process_steps."
+  },
+  {
+    "id": 2633,
+    "name": "Urban Society for Aboriginal Youth (USAY)",
+    "fields": {
+      "phone": "(403) 233-8225",
+      "email": "info@usay.ca",
+      "address": "1715 36 Street SE, Calgary, AB T2A 1C7",
+      "website_url": "https://usay.ca",
+      "description": "The Urban Society for Aboriginal Youth (USAY) has been enriching the lives of Indigenous youth in Calgary since 2001. USAY co-creates programming with Indigenous youth, partners, and Elders, combining social innovation and traditional Indigenous culture. Programs include the Indigenous Inclusion Program (after-school engagement), Early Dismissal program, USAY Youth Centre (Calgary's first Indigenous youth centre), cultural programs (Blackfoot language resources), mental health supports, New Tribe Magazine, educational escape rooms, and the Changemaker Awards.",
+      "eligibility": "Indigenous youth ages 12-29 in Calgary",
+      "process_steps": ["Visit the USAY Youth Centre at 1715 36 Street SE, Calgary", "Or contact USAY at (403) 233-8225 or info@usay.ca", "Most youth first connect through the Indigenous Inclusion Program (IIP) after-school sessions", "Attend after-school programs to access culture camps, elders, and support services"],
+      "source_urls": ["https://usay.ca", "https://usay.ca/programs", "https://usay.ca/usay-youth-centre/"],
+      "confidence_score": 85,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Phone, email, address all found via web search. 4/5 key fields + process_steps."
+  },
+  {
+    "id": 2751,
+    "name": "Influence Mentoring Society",
+    "fields": {
+      "phone": "(403) 221-8300",
+      "email": "info@influencementoring.com",
+      "address": "P.O. Box 42252 Southland, Calgary, AB T2J 7A6",
+      "website_url": "https://www.influencementoring.com",
+      "description": "Influence Mentoring Society creates better opportunities for Indigenous post-secondary students in Calgary by building capacity, talent, and career opportunities. The program matches Indigenous students with mentors who share their field of study, fostering personal and professional development, cultural identity, and community engagement through approximately one year of weekly meetings.",
+      "eligibility": "Must be Indigenous (First Nations, Métis, Inuit, or Non-Status descent) and enrolled in post-secondary education during the program period",
+      "process_steps": ["Fill out the online protégé application form at influencementoring.com detailing your school and field of study", "You will be matched with a suitable mentor who shares your field of work", "Commit to meeting your mentor once per week for approximately one year", "Build a personal and professional relationship while learning from each other"],
+      "source_urls": ["https://www.influencementoring.com", "https://www.influencementoring.com/The_program/become-mentor", "https://www.influencementoring.com/The_program/faq"],
+      "confidence_score": 83,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Detailed eligibility and process from web search. 3/5 key fields + process_steps."
+  },
+  {
+    "id": 2630,
+    "name": "Crystal Kids Youth Centre",
+    "fields": {
+      "phone": "(780) 479-5283",
+      "email": "info@crystalkids.org",
+      "address": "8718 118 Avenue NW, Edmonton, AB T5B 0T1",
+      "hours_of_operation": "Mon - Fri, 3:00 PM - 8:00 PM (extended hours during school breaks with additional meals)",
+      "website_url": "https://crystalkids.org",
+      "description": "Crystal Kids Youth Centre mentors, leads, and supports Edmonton's inner-city children in the pursuit of healthy life choices and life skills. Programs include nutritional support (one meal and two snacks daily during school year, extended during breaks), Critical Mentoring Program addressing root causes of issues facing youth, Youth Transition to Adulthood Program (starting grade 7 through post-secondary/employment), homework help, recreational activities, and community building in one of Edmonton's most underserved neighbourhoods.",
+      "eligibility": "Edmonton inner-city children and youth affected by situational or generational poverty, including those experiencing malnutrition, housing insecurity, family violence, or lack of safe spaces",
+      "process_steps": ["Visit Crystal Kids Youth Centre at 8718 118 Avenue NW, Edmonton after school hours", "Or call (780) 479-5283 or email info@crystalkids.org for information", "Youth can drop in during program hours (Mon-Fri 3-8 PM) to participate in activities and receive meals", "Youth Transition to Adulthood Program begins in grade 7 with intentional mentoring"],
+      "source_urls": ["https://crystalkids.org", "https://crystalkids.org/adult-portal/about-us/what-we-do", "https://ab.211.ca/record/1080560/"],
+      "confidence_score": 90,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 5/5 key fields + process_steps."
+  },
+  {
+    "id": 2746,
+    "name": "Mental Health Copilots",
+    "fields": {
+      "email": "info@mentalhealthcopilots.org",
+      "website_url": "https://www.mentalhealthcopilots.org",
+      "description": "Mental Health Copilots provides free mental health navigation support across Alberta. Their volunteer Client Copilots help individuals find, understand, choose, and contact qualified mental health providers. Services include virtual or phone intake appointments, personalized resource matching, follow-up sessions, and a forthcoming mental health provider database for Alberta.",
+      "eligibility": "Anyone in Alberta seeking help finding mental health support or navigating the mental health care system. Free service.",
+      "process_steps": ["Complete the online intake form at mentalhealthcopilots.org", "A volunteer Client Copilot will contact you within 2-4 business days", "Meet virtually or by phone to discuss what you're looking for in a mental health provider", "Receive personalized recommendations and referrals to qualified professionals", "Follow-up sessions available to ensure you've connected with the right provider"],
+      "source_urls": ["https://www.mentalhealthcopilots.org", "https://www.mentalhealthcopilots.org/intake-form", "https://ab.211.ca/record/1131117/"],
+      "confidence_score": 78,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Detailed process steps from web search. 2/5 key fields + process_steps."
+  },
+  {
+    "id": 3109,
+    "name": "Freedom's Path Recovery Society",
+    "fields": {
+      "phone": "(403) 701-6416",
+      "email": "info@freedomspathrecoverysociety.ca",
+      "website_url": "http://www.freedomspathrecoverysociety.ca",
+      "description": "Freedom's Path Recovery Society provides free addiction counselling, treatment, rehabilitation, and advocacy services in Calgary. With over 20 years of experience in non-profit rehabilitation, they offer free one-on-one addictions counselling and the Pathway to Freedom Workshop, which addresses causes, symptoms, and solutions for addiction through 12-step recovery principles. Services cover both chemical addictions (drugs, alcohol) and behavioral addictions. Open groups are held at Wild Rose United Church, with alternative locations available.",
+      "eligibility": "Individuals and family members dealing with behavioral or chemical addictions in Calgary. All services are free of charge.",
+      "process_steps": ["Call (403) 701-6416 or visit freedomspathrecoverysociety.ca to inquire", "Choose between one-on-one counselling or group Pathway to Freedom Workshop", "Attend sessions at Wild Rose United Church in Calgary or request an alternate location", "Workshops can be tailored to meet specific needs and accommodate various time schedules"],
+      "source_urls": ["http://www.freedomspathrecoverysociety.ca", "https://informalberta.ca/public/service/serviceProfileStyled.do?serviceQueryId=1076654"],
+      "confidence_score": 83,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 3/5 key fields + process_steps."
+  },
+  {
+    "id": 2992,
+    "name": "HAEEDS",
+    "fields": {
+      "phone": "(587) 523-0715",
+      "email": "info@haeeds.org",
+      "address": "11435 107 Ave NW, Edmonton, AB T5H 0Y6",
+      "website_url": "https://www.haeeds.org",
+      "description": "HAEEDS (Horn of Africa Educational and Economic Development Society) has been operating in Edmonton since 2017, supporting newcomers from the Horn of Africa region. Services include advisory support, mentorship, skills training, access to job markets, settlement assistance, integration into Canadian culture, and coordination with local educational institutions for training and skill development. While clients are usually of East African descent, they help anyone seeking assistance.",
+      "eligibility": "Primarily newcomers from the Horn of Africa region in Edmonton, but open to anyone seeking help with settlement and integration",
+      "process_steps": ["Contact HAEEDS at (587) 523-0715 or info@haeeds.org", "Visit their office at 11435 107 Ave NW, Edmonton", "Discuss your needs: career planning, settlement support, skills training, or educational coordination", "Get connected with mentorship, training programs, or partner organizations"],
+      "source_urls": ["https://www.haeeds.org", "https://haeeds.org/about-us/"],
+      "confidence_score": 75,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). 3/5 key fields + process_steps."
+  },
+  {
+    "id": 2939,
+    "name": "Lethbridge Senior Citizens Organization",
+    "fields": {
+      "phone": "(403) 320-2222",
+      "email": "inquiries@lethseniors.com",
+      "address": "500 11 Street South, Lethbridge, AB T1J 4G7",
+      "website_url": "https://lethseniors.com",
+      "description": "The Lethbridge Senior Citizens Organization (LSCO) is one of the largest seniors organizations in Canada, operating a 56,200 square foot senior centre in Lethbridge since 1975. Services include over 80 fitness and wellness programs, Meals on Wheels, the Lethbridge Elder Abuse Response Network, free single-session counselling (1.5 hour sessions), free eyeglasses adjustments and hearing screenings, free tax assistance (March-April for modest income), and social activities. Their Welcome Policy provides reduced-cost access based on income.",
+      "eligibility": "Older adults in Lethbridge and surrounding area. Welcome Policy allows lower-cost access based on income (verified through prior year tax return).",
+      "process_steps": ["Call (403) 320-2222 for general inquiries or (403) 329-1544 for intake services", "Visit the centre at 500 11 Street South, Lethbridge", "Become a member (Welcome Policy available for reduced fees based on income)", "Register for programs online through MyActiveCenter (MAC) or in person"],
+      "source_urls": ["https://lethseniors.com", "https://lethseniors.com/about", "https://lethseniors.com/support-services/"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Address + intake phone found. 4/5 key fields + process_steps."
+  },
+  {
+    "id": 2895,
+    "name": "Tourette OCD Alberta Network",
+    "fields": {
+      "phone": "(403) 220-5865",
+      "email": "julian.fletcher@ucalgary.ca",
+      "website_url": "https://cumming.ucalgary.ca/resource/tourette-ocd/tourette-ocd",
+      "description": "The Tourette OCD Alberta Network, based at the University of Calgary's Cumming School of Medicine, increases capacity and improves access to patient and family centered care for children and youth with Tourette syndrome and OCD across Alberta. Services include psychoeducation and peer support, connection with appropriate health care providers, educational outreach to schools and workplaces, a comprehensive directory of health professionals in Alberta, and information on urgent and non-urgent mental health services.",
+      "eligibility": "All Canadians living with Tourette syndrome or OCD, their parents, educators, and healthcare professionals. All services are free.",
+      "process_steps": ["Contact Program Coordinator Julian Fletcher at (403) 220-5865 or julian.fletcher@ucalgary.ca", "Describe your needs: specific resources, referral information, school in-services, or healthcare professional information", "Get connected with appropriate health care providers through the Alberta directory", "Access psychoeducation and peer support resources for patients and families"],
+      "source_urls": ["https://cumming.ucalgary.ca/resource/tourette-ocd/about-us", "https://cumming.ucalgary.ca/resource/tourette-ocd/contact-2", "https://cumming.ucalgary.ca/resource/tourette-ocd/directory-health-professionals/alberta-directory"],
+      "confidence_score": 82,
+      "is_active": true
+    },
+    "reason": "Enriched from web search (March 2026). Phone + email found via UCalgary contact page. 3/5 key fields + process_steps."
+  },
+  {
+    "id": 2608,
+    "name": "Shepherd's Care Foundation",
+    "fields": {
+      "phone": "(587) 756-3000",
+      "address": "12601 135 Avenue NW, Edmonton, AB T5L 5B2",
+      "website_url": "https://www.shepherdscare.org",
+      "description": "Shepherd's Care Foundation is a faith-based, not-for-profit organization providing quality care and accommodations to more than 1,000 residents across six locations in Calgary, Edmonton, and Barrhead since 1970. They offer a full spectrum of care: Independent Living, Continuing Care Home Type B (formerly supportive living), Continuing Care Home Type B Secure (memory care), Continuing Care Home Type A (long-term and complex care), and Home and Community Care Type 2. Services include pastoral care, recreation programming, fitness activities, and chaplaincy support.",
+      "eligibility": "Seniors and individuals requiring residential care or independent living in Calgary, Edmonton, or Barrhead. Clients are assessed during intake for appropriate placement.",
+      "process_steps": ["Call Shepherd's Care Foundation at (587) 756-3000 for information", "Request information about the location and care level that suits your needs", "Complete an accommodation and financial assessment at your chosen facility", "Intake assessment determines placement in the most appropriate care setting"],
+      "source_urls": ["https://www.shepherdscare.org", "https://www.shepherdscare.org/about-us", "https://www.shepherdscare.org/contact-us/"],
+      "confidence_score": 85,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Corporate address found. 2/5 key fields + process_steps."
+  },
+  {
+    "id": 3100,
+    "name": "Kids With Cancer Society",
+    "fields": {
+      "phone": "(780) 496-2459",
+      "email": "info@kidswithcancer.ca",
+      "address": "11135 84 Avenue NW, Edmonton, AB",
+      "hours_of_operation": "Mon - Fri, 8:30 AM - 4:30 PM",
+      "website_url": "https://www.kidswithcancer.ca",
+      "description": "Kids With Cancer Society of Northern Alberta supports children with cancer and their families through more than 50 diverse programs and services addressing emotional, educational, accommodation, financial, and survivorship needs. Programs include Papa Ken's House (accommodations at 587-341-1740), family support from time of diagnosis, recreational and therapeutic activities, and survivorship programs. All programs are provided free of charge.",
+      "eligibility": "Children and teens ages 0-17 who reside in Northern Alberta or the Northwest Territories and are currently or have been treated for childhood cancer, regardless of when diagnosed",
+      "process_steps": ["When a child is diagnosed, the Society receives a referral from the hospital", "A support worker meets the family at the time of diagnosis", "Support is customized to meet the family's individual needs", "For program registration, call (780) 496-2459 Mon-Fri 8:30am-4:30pm", "For Papa Ken's House accommodations, call (587) 341-1740"],
+      "source_urls": ["https://www.kidswithcancer.ca", "https://www.kidswithcancer.ca/what-we-do/", "https://www.kidswithcancer.ca/for-families/"],
+      "confidence_score": 88,
+      "is_active": true
+    },
+    "reason": "Enriched from website crawl + web search (March 2026). Hours + detailed eligibility found. 5/5 key fields + process_steps."
+  }
+]
