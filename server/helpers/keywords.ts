@@ -79,6 +79,13 @@ export const KEYWORD_EXPANSIONS: Record<string, string[]> = {
   'postpartum': ['mental health', 'counselling', 'perinatal', 'maternal'],
   // Alberta disability benefit
   'aish': ['disability', 'benefit', 'income', 'support'],
+  // Physiotherapy / rehabilitation
+  'physiotherapy': ['physio', 'physical therapy', 'rehabilitation', 'rehab'],
+  'physio': ['physiotherapy', 'physical therapy', 'rehabilitation'],
+  // Vision care
+  'optometrist': ['eye exam', 'vision', 'glasses', 'optical'],
+  'glasses': ['eyeglasses', 'vision', 'optical', 'eye exam'],
+  'eye exam': ['optometrist', 'vision', 'optical', 'glasses'],
 };
 
 // Common misspellings mapped to correct terms

@@ -462,10 +462,6 @@ export const SEARCH_CONFIG = {
       /(?:ex|partner|husband|wife|spouse).*(?:won'?t|will not|refuse|denied|keeping).*(?:see|visit|access|take).*(?:kids?|children|son|daughter)\b/i,
       /(?:won'?t|can'?t|not allowed).*(?:see|visit|access).*(?:my\s+)?(?:kids?|children|son|daughter)\b/i,
       /\b(?:custody|access|visitation|parenting time|parenting order|custody battle|custody dispute)\b/i,
-      // Criminal justice reintegration
-      /\b(?:just|recently).*(?:released|out of|left).*(?:prison|jail|custody|penitentiary)\b/i,
-      /\b(?:halfway house|reintegration|re-?entry|parole|probation)\b.*(?:help|support|services?)/i,
-      /\b(?:john howard|elizabeth fry|criminal record)\b/i,
     ],
     // Employment and job support
     employment_support: [
@@ -581,6 +577,8 @@ export const SEARCH_CONFIG = {
       /\b(?:hospital|emergency room|emergency department|ER|urgent care)\b/i,
       /\b(?:AADL|aids to daily living|wheelchair|mobility aid|home modification)\b/i,
       /\b(?:RAMP|SHARP|seniors? benefit|drug coverage|pharmacare)\b/i,
+      /\b(?:physiotherapy|physio(?:therapist)?|physical therapy|occupational therapy|rehab(?:ilitation)?)\b/i,
+      /\b(?:eye exam|optometrist|optician|glasses|eyeglasses|vision care|optical)\b/i,
     ],
     // Basic needs & material aid (clothing, furniture, supplies)
     basic_needs: [
@@ -589,6 +587,19 @@ export const SEARCH_CONFIG = {
       /\b(?:hygiene|toiletries|personal care).*(?:products|supplies|kits)\b/i,
       /\b(?:clothing bank|clothing room|thrift|donation centre|furniture bank)\b/i,
       /\b(?:utility|rent|bill).*(?:help|assistance|arrears|subsidy|supplement)\b/i,
+    ],
+    // Criminal justice reintegration and reentry
+    criminal_justice: [
+      /\b(?:just|recently).*(?:released|out of|left|got out of).*(?:prison|jail|custody|penitentiary|incarcerat)/i,
+      /\b(?:halfway house|reintegration|re-?entry|reentry)\b/i,
+      /\b(?:parole|probation)\b.*(?:help|support|officer|services?)/i,
+      /\b(?:on parole|on probation)\b/i,
+      /\b(?:criminal record|record suspension|pardon)\b/i,
+      /\b(?:john howard|elizabeth fry|st\.? leonard)/i,
+      /\b(?:drug treatment court|drug court|diversion program)\b/i,
+      /\b(?:restorative justice|victim.offender mediation)\b/i,
+      /\b(?:ex-?offender|former offender|incarcerated|formerly incarcerated)\b/i,
+      /\b(?:after prison|after jail|post-?release|post-?incarcerat)\b/i,
     ],
     // Community & social connection, recreation, hobbies
     community_social: [
@@ -763,6 +774,13 @@ export const SEARCH_CONFIG = {
       /\b(custody|divorce|separation|child.*support|family.*court)\b/i,
       /\b(immigration|visa|refugee|asylum|deporta)\b/i,
       /\b(halfway house|parole|probation|reintegration|ex-?offender|criminal record)\b/i,
+    ],
+    // Criminal justice / reintegration terms
+    criminal_justice: [
+      /\b(jail|prison|penitentiary|incarcerat|convict|offend|inmate)\b/i,
+      /\b(parole|probation|halfway house|reintegration|reentry|re-?entry)\b/i,
+      /\b(criminal record|record suspension|pardon|drug court|diversion)\b/i,
+      /\b(john howard|elizabeth fry|st\.? leonard|restorative justice)\b/i,
     ],
     // Healthcare terms
     healthcare: [
@@ -954,7 +972,7 @@ export const SEARCH_CONFIG = {
 
 // Type exports for type safety
 export type SearchType = 'sql' | 'sql+enrichment' | 'sql+semantic' | 'semantic' | 'openai' | 'cache';
-export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'community_social' | 'healthcare_access' | 'basic_needs' | 'general';
+export type QueryIntent = 'crisis' | 'alias' | 'location_only' | 'domestic_violence' | 'food_insecurity' | 'housing_urgent' | 'substance_abuse' | 'mental_health' | 'disability_support' | 'grief_support' | 'senior_services' | 'legal_aid' | 'employment_support' | 'youth_services' | 'newcomer_services' | 'family_addiction_support' | 'financial_support' | 'caregiver_support' | 'lgbtq_services' | 'indigenous_services' | 'veteran_services' | 'student_services' | 'parenting_support' | 'community_social' | 'healthcare_access' | 'basic_needs' | 'criminal_justice' | 'general';
 export type SubstanceType = 'alcohol' | 'opioid' | 'stimulant' | 'cannabis' | 'gambling' | 'general' | null;
 
 // Re-export the config type
@@ -1005,6 +1023,11 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bcouch surfing\b/i,
       /\byoung (?:adult|person).*hous/i,
     ],
+    'housing_urgent.supportive_housing': [
+      /\b(?:sober living|sober house|recovery house)\b/i,
+      /\b(?:supportive housing|supported housing)\b/i,
+      /\b(?:permanent supportive)\b/i,
+    ],
   },
 
   substance_abuse: {
@@ -1046,6 +1069,13 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bmarijuana (problem|addiction)\b/i,
       /\bweed.*problem\b/i,
     ],
+    'substance_abuse.peer_recovery': [
+      /\b(?:AA|NA|CA) meeting/i,
+      /\b(?:recovery meeting|recovery group|recovery support)\b/i,
+      /\b(?:sober communit|sober.*group|sober.*support)\b/i,
+      /\b(?:peer.*recovery|peer support.*addict)/i,
+      /\b(?:12[- ]?step meeting|twelve[- ]?step meeting)\b/i,
+    ],
   },
 
   healthcare_access: {
@@ -1079,6 +1109,33 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bwalker\b/i,
       /\bAADL\b/,
       /\bRGP\b/,
+    ],
+    'healthcare_access.physiotherapy': [
+      /\bphysiotherapy\b/i,
+      /\bphysio(?:therapist)?\b/i,
+      /\bphysical therapy\b/i,
+      /\boccupational therapy\b/i,
+      /\brehabilitation\b/i,
+    ],
+    'healthcare_access.vision_care': [
+      /\beye exam\b/i,
+      /\boptometrist\b/i,
+      /\bglasses\b/i,
+      /\beyeglasses\b/i,
+      /\bvision care\b/i,
+      /\boptical\b/i,
+      /\boptician\b/i,
+    ],
+    'healthcare_access.sexual_health': [
+      /\b(?:sti|std|sexually transmitted|sexual health)\b/i,
+      /\b(?:hiv|aids).*(?:test|clinic|support|help)\b/i,
+      /\b(?:prep|pep)\b.*(?:hiv|clinic|prescri)/i,
+      /\b(?:birth control|contracept|family planning)\b/i,
+      /\b(?:gonorrhea|chlamydia|syphilis|herpes|hepatitis)\b.*(?:test|clinic|treat)/i,
+    ],
+    'healthcare_access.chronic_pain': [
+      /\b(?:chronic pain|pain management|pain clinic|pain program|pain centre|pain center)\b/i,
+      /\b(?:fibromyalgia|neuropathic pain)\b/i,
     ],
   },
 
@@ -1152,6 +1209,10 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\b(?:Cree|Blackfoot|Dene|Nakoda|Michif|Stoney) (?:language|class|program)\b/i,
       /\bIndigenous language\b/i,
       /\blanguage (?:revitalization|preservation|nest)\b/i,
+    ],
+    'indigenous_services.status_card': [
+      /\b(?:status card|treaty card|indian status)\b/i,
+      /\b(?:certificate of indian status|band membership)\b/i,
     ],
   },
 
@@ -1318,6 +1379,10 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bTBI\b/,
       /\bstroke (?:recovery|rehabilitation|support)\b/i,
     ],
+    'disability_support.fasd': [
+      /\b(?:FASD|fetal alcohol|foetal alcohol|FAS)\b/i,
+      /\b(?:fetal alcohol spectrum)\b/i,
+    ],
   },
 
   domestic_violence: {
@@ -1403,6 +1468,11 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\b(?:lost|loss).*(?:to|by) suicide\b/i,
       /\bsuicide (?:bereavement|survivor|loss|grief)\b/i,
       /\b(?:friend|family|parent|child|sibling).*(?:took|ended).*(?:own|their) life\b/i,
+    ],
+    'grief_support.palliative_hospice': [
+      /\b(?:hospice|palliative)\b/i,
+      /\b(?:end of life|dying|terminal)\b.*(?:support|care|help)/i,
+      /\b(?:comfort care)\b/i,
     ],
   },
 
@@ -1505,6 +1575,11 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bteen (?:mom|parent|pregnancy|pregnant)\b/i,
       /\byoung (?:mom|parent|mother|father)\b/i,
     ],
+    'parenting_support.kinship_care': [
+      /\b(?:kinship care|kinship)\b/i,
+      /\b(?:grandparent|grandmother|grandfather).*(?:raising|rais)\b/i,
+      /\b(?:relative.*raising|raising.*grandchild)\b/i,
+    ],
   },
 
   food_insecurity: {
@@ -1553,6 +1628,18 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bemergency (?:financial|funds?|money|cash|assistance)\b/i,
       /\bone[- ]time (?:financial|emergency|assistance)\b/i,
       /\beviction prevention\b/i,
+    ],
+    'basic_needs.transportation': [
+      /\b(?:bus pass|transit pass|low[- ]income transit)\b/i,
+      /\b(?:DATS|handibus|paratransit|wheelchair transport)\b/i,
+      /\b(?:ride to|need a ride|transportation help|transportation assist)\b/i,
+      /\b(?:medical transport|volunteer driver|volunteer ride)\b/i,
+    ],
+    'basic_needs.pet_support': [
+      /\b(?:pet food|pet.*bank|pet.*pantry)\b/i,
+      /\b(?:pet.*safe|safe.*pet|pet.*shelter|pet.*boarding)\b/i,
+      /\b(?:afford.*vet|low[- ]cost.*vet|vet.*help|vet.*assist)\b/i,
+      /\b(?:animal.*help|animal.*support|pet.*support)\b/i,
     ],
   },
 
@@ -1624,6 +1711,28 @@ export const SUB_INTENT_PATTERNS: Record<string, Record<string, RegExp[]>> = {
       /\bal[- ]?anon\b/i,
     ],
   },
+
+  // ─── NEW: criminal_justice sub-intents ───
+  criminal_justice: {
+    'criminal_justice.reentry': [
+      /\b(?:just|recently).*(?:released|out of|left|got out of).*(?:prison|jail|custody|penitentiary)\b/i,
+      /\b(?:reintegration|re-?entry|reentry|post-?release|after (?:prison|jail))\b/i,
+      /\b(?:ex-?offender|formerly incarcerated)\b/i,
+    ],
+    'criminal_justice.drug_court': [
+      /\b(?:drug treatment court|drug court|DTC)\b/i,
+      /\b(?:diversion program|alternative.*(?:sentencing|incarcerat))\b/i,
+    ],
+    'criminal_justice.restorative_justice': [
+      /\b(?:restorative justice|victim.offender mediation)\b/i,
+      /\b(?:circle sentencing|healing circle|peacemaking)\b/i,
+    ],
+    'criminal_justice.record_suspension': [
+      /\b(?:criminal record|record suspension|pardon)\b/i,
+      /\b(?:background check|police check|vulnerable sector)\b/i,
+    ],
+  },
+
 };
 
 /**

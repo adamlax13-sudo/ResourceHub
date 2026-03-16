@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v153';
+const CACHE_VERSION = 'v156';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -552,6 +552,7 @@ const INTENT_CATEGORY_NAMES: Partial<Record<QueryIntent, Set<string>>> = {
   basic_needs: new Set(['Basic Needs & Material Aid', 'Food Banks & Meals', 'Transportation Assistance']),
   family_addiction_support: new Set(['Family & Parenting Support', 'Recovery & Peer Support']),
   caregiver_support: new Set(['Family & Parenting Support', 'Senior Services']),
+  criminal_justice: new Set(['Criminal Justice Reintegration']),
 };
 
 // Map implied needs to categories for rescue
@@ -559,12 +560,21 @@ const NEED_CATEGORY_MAP: Record<string, string[]> = {
   'housing': ['Emergency Shelter', 'Affordable Housing', 'Transitional Housing', 'Supportive Housing'],
   'employment': ['Employment Services'],
   'reintegration': ['Criminal Justice Reintegration'],
+  'criminal_justice': ['Criminal Justice Reintegration'],
   'family_support': ['Family & Parenting Support', 'Recovery & Peer Support'],
   'settlement': ['Newcomer & Settlement'],
   'language': ['Newcomer & Settlement'],
   'crisis_support': ['Crisis Services', 'Crisis Lines'],
   'safety_planning': ['Domestic Violence Support'],
   'life_skills': ['Community & Social Connection'],
+  'pet_support': ['Basic Needs & Material Aid'],
+  'financial_support': ['Financial Counselling & Debt Help'],
+  'legal_aid': ['Legal Aid'],
+  'healthcare_access': ['Healthcare Access'],
+  'transportation': ['Transportation Assistance'],
+  'food_insecurity': ['Food Banks & Meals'],
+  'community_social': ['Community & Social Connection'],
+  'mental_health': ['Mental Health & Counselling'],
 };
 
 function trimToRelevant(services: LiteService[], intent?: QueryIntent, secondaryIntent?: QueryIntent, subIntents?: string[], impliedNeeds?: string[]): LiteService[] {
