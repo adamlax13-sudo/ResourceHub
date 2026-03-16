@@ -35,6 +35,9 @@ class ACDSSource(Source):
     CATEGORY = "Disability Support Services"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
+        if not self.backend:
+            log.error(f"[{self.name}] No CrawlBackend available, skipping")
+            return []
         from backends.interface import CrawlConfig
 
         page = self.backend.fetch_page(ACDS_MEMBERS_URL, CrawlConfig(

@@ -39,6 +39,9 @@ class HomelessHubSource(Source):
     CATEGORY = "Housing & Homelessness"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
+        if not self.backend:
+            log.error(f"[{self.name}] No CrawlBackend available, skipping")
+            return []
         from backends.interface import CrawlConfig
 
         http = requests.Session()

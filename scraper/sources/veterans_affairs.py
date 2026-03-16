@@ -24,6 +24,9 @@ class VeteransAffairsSource(Source):
     CATEGORY = "Veterans Services"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
+        if not self.backend:
+            log.error(f"[{self.name}] No CrawlBackend available, skipping")
+            return []
         from backends.interface import CrawlConfig
 
         page = self.backend.fetch_page(VAC_CONTACT_URL, CrawlConfig(

@@ -43,6 +43,9 @@ class AHSFindHealthSource(Source):
     RATE_LIMIT_SECONDS = 2
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
+        if not self.backend:
+            log.error(f"[{self.name}] No CrawlBackend available, skipping")
+            return []
         http = requests.Session()
         try:
             self._http = http

@@ -40,6 +40,9 @@ class AB211DirectSource(Source):
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
         """Scrape 211 Alberta using CrawlBackend with JS rendering."""
+        if not self.backend:
+            log.error(f"[{self.name}] No CrawlBackend available, skipping")
+            return []
         from backends.interface import CrawlConfig
 
         config = CrawlConfig(
