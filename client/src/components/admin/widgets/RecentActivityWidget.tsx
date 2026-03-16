@@ -7,10 +7,12 @@ import { Loader2 } from "lucide-react";
 
 interface ActivityEntry {
   id: number;
-  serviceName: string;
+  name: string;
+  serviceId: string;
   changeType: string;
-  changedAt: string;
-  source?: string;
+  recordedAt: string;
+  category?: string;
+  changedFields?: any;
 }
 
 export function RecentActivityWidget() {
@@ -47,15 +49,15 @@ export function RecentActivityWidget() {
                     <ChangeTypeBadge type={entry.changeType} />
                     <div className="min-w-0">
                       <p className="text-sm text-gray-900 truncate">
-                        {entry.serviceName || "Unknown service"}
+                        {entry.name || "Unknown service"}
                       </p>
-                      {entry.source && (
-                        <p className="text-xs text-gray-400">{entry.source}</p>
+                      {entry.category && (
+                        <p className="text-xs text-gray-400">{entry.category}</p>
                       )}
                     </div>
                   </div>
                   <span className="text-xs text-gray-400 flex-shrink-0 ml-3">
-                    {formatRelativeTime(entry.changedAt)}
+                    {formatRelativeTime(entry.recordedAt)}
                   </span>
                 </div>
               ))}
