@@ -7,7 +7,6 @@ Source: https://www.homelesshub.ca/
 import json
 import logging
 import re
-import time
 from typing import Dict, List, Optional
 
 import requests
@@ -20,7 +19,6 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://www.homelesshub.ca"
 COMMUNITY_PROFILE_URL = BASE_URL + "/community_profile/{city}/"
 
-USER_AGENT = "ResourceHubBot/2.0 (+https://resourcehub.ca)"
 TIMEOUT_SECONDS = 15
 
 ALBERTA_CITIES = [
@@ -41,22 +39,22 @@ class HomelessHubSource(Source):
     CATEGORY = "Housing & Homelessness"
 
     def discover(self, session, log, dry_run=False) -> list[RawService]:
+        from backends.interface import CrawlConfig
+
         http = requests.Session()
-        http.headers.update({"User-Agent": USER_AGENT})
         try:
             self._http = http
             results = []
 
-            # Part A: Community profiles
+            # Part A: Community profiles — use CrawlBackend
             for city_slug in ALBERTA_CITIES:
                 url = COMMUNITY_PROFILE_URL.format(city=city_slug)
                 soup = self._fetch_page(url)
                 if soup:
                     city_name = CITY_DISPLAY.get(city_slug, city_slug.title())
                     results.extend(self.parse_community_profile(soup, city_name))
-                    time.sleep(2)
 
-            # Part B: Algolia resource library
+            # Part B: Algolia resource library — keeps requests for API call
             algolia_results = self._query_algolia()
             if algolia_results:
                 results.extend(self.parse_algolia_results(algolia_results))
@@ -67,14 +65,17 @@ class HomelessHubSource(Source):
             self._http = None
 
     def _fetch_page(self, url: str) -> Optional[BeautifulSoup]:
-        """Fetch a URL and return parsed HTML."""
-        try:
-            resp = self._http.get(url, timeout=TIMEOUT_SECONDS)
-            resp.raise_for_status()
-            return BeautifulSoup(resp.content, "html.parser")
-        except requests.RequestException as e:
-            logger.error(f"[HomelessHub] Failed to fetch {url}: {e}")
+        """Fetch a URL and return parsed HTML via CrawlBackend."""
+        from backends.interface import CrawlConfig
+
+        page = self.backend.fetch_page(url, CrawlConfig(
+            js_rendering=False,
+            timeout_seconds=TIMEOUT_SECONDS,
+        ))
+        if page.error:
+            logger.error(f"[HomelessHub] Failed to fetch {url}: {page.error}")
             return None
+        return BeautifulSoup(page.html, "html.parser")
 
     def parse_community_profile(self, soup: BeautifulSoup, city: str) -> List[RawService]:
         """Extract organization links from a community profile page."""
