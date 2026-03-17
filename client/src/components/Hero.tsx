@@ -37,6 +37,7 @@ const ALBERTA_LOCATIONS = [
 interface HeroProps {
   onSearch: (query: string, locations: string[], hp?: string) => void;
   isLoading: boolean;
+  hasResults?: boolean;
   initialQuery?: string;
   locations: string[];
   onLocationChange: (location: string) => void;
@@ -325,7 +326,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback }: HeroProps) {
+export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -358,7 +359,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
   };
 
   return (
-    <div className="relative w-screen max-w-full overflow-hidden bg-[#D6001C] text-white pt-16 pb-14 md:pt-20 md:pb-24 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl">
+    <div className={`relative w-screen max-w-full overflow-hidden bg-[#D6001C] text-white pt-16 ${hasResults ? 'pb-10' : 'pb-14'} md:pt-20 md:pb-24 rounded-b-[3rem] md:rounded-b-[4rem] shadow-xl`}>
       {/* Flowing wave background — red/orange/pink layers inspired by UCalgary */}
       <div className="absolute inset-0">
         <svg className="w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -737,7 +738,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span>Searching for resources...</span>
               </motion.div>
-            ) : (
+            ) : !hasResults ? (
               <>
                 <p id="search-hint" className="text-sm text-white/70 font-medium">
                   {t('app.searchHint')}
@@ -753,7 +754,7 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
                   Not sure what to search for? Let us guide you →
                 </button>
               </>
-            )}
+            ) : null}
           </div>
         </motion.form>
       </div>

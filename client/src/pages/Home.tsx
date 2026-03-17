@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, SlidersHorizontal, X, Heart, Share2, LayoutList, Map as MapIcon } from "lucide-react";
+import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -274,16 +274,6 @@ export default function Home() {
     [searchState.filters, handleFiltersChange]
   );
 
-  const handleShare = useCallback(async () => {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({ title: "Link copied!", description: "Share this link to show the same search results." });
-    } catch {
-      toast({ title: "Copy this link", description: url });
-    }
-  }, [toast]);
-
   const filterChips = buildFilterChips(searchState.filters);
 
   return (
@@ -294,6 +284,7 @@ export default function Home() {
       <Hero
         onSearch={handleSearch}
         isLoading={isPending}
+        hasResults={!!(displayServices || isPending || error)}
         initialQuery={searchState.query}
         locations={searchState.locations}
         onLocationChange={handleLocationChange}
@@ -365,7 +356,7 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <ServiceCardSkeleton key={index} index={index} />
                 ))}
@@ -388,64 +379,64 @@ export default function Home() {
                     type="button"
                     role="radio"
                     aria-checked={viewMode === 'list'}
+                    aria-label="List view"
                     onClick={() => setViewMode('list')}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 sm:gap-1.5 sm:px-3.5 rounded-md text-sm font-medium transition-all ${
                       viewMode === 'list'
                         ? 'bg-white text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <LayoutList className="w-4 h-4" aria-hidden="true" />
-                    List
+                    <span className="hidden sm:inline">List</span>
                   </button>
                   <button
                     type="button"
                     role="radio"
                     aria-checked={viewMode === 'map'}
+                    aria-label="Map view"
                     onClick={() => setViewMode('map')}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 sm:gap-1.5 sm:px-3.5 rounded-md text-sm font-medium transition-all ${
                       viewMode === 'map'
                         ? 'bg-white text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <MapIcon className="w-4 h-4" aria-hidden="true" />
-                    Map
+                    <span className="hidden sm:inline">Map</span>
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
-                {favoriteCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setShortlistOpen(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                    aria-label={`Open shortlist, ${favoriteCount} saved`}
-                  >
-                    <Heart className="w-4 h-4 text-red-500 fill-current" aria-hidden="true" />
-                    Shortlist ({favoriteCount})
-                  </button>
-                )}
+                <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
                   type="button"
-                  onClick={handleShare}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                  aria-label="Share search results"
+                  onClick={() => setShortlistOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 sm:gap-2 sm:px-4 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                  aria-label={favoriteCount > 0 ? `Open shortlist, ${favoriteCount} saved` : "Open shortlist"}
                 >
-                  <Share2 className="w-4 h-4" />
-                  Share
+                  <Heart
+                    className={`w-4 h-4 ${favoriteCount > 0 ? 'text-red-500 fill-current' : 'text-muted-foreground'}`}
+                    aria-hidden="true"
+                  />
+                  <span className="hidden sm:inline">Shortlist</span>
+                  {favoriteCount > 0 && (
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">
+                      {favoriteCount}
+                    </span>
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setRefinePanelOpen((prev) => !prev)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors relative"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 sm:gap-2 sm:px-4 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors relative"
+                  aria-label="Refine filters"
                   aria-expanded={refinePanelOpen}
                   aria-controls="refine-panel"
                 >
                   <SlidersHorizontal className="w-4 h-4" />
-                  Refine
+                  <span className="hidden sm:inline">Refine</span>
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold">
+                    <span className="ml-0.5 sm:ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold">
                       {activeFilterCount}
                     </span>
                   )}
@@ -483,7 +474,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                 >
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {displayServices.map((service, index) => (
                   <ServiceCard
                     key={service.id}

@@ -3,6 +3,7 @@ import Map, { Marker, Popup, NavigationControl, Source, Layer } from "react-map-
 import type { MapRef } from "react-map-gl/mapbox";
 import type { LayerProps } from "react-map-gl/mapbox";
 import { MapPin, MousePointerClick } from "lucide-react";
+import { formatDistance } from "@/lib/utils";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 // Red accent overrides for Mapbox navigation controls
@@ -93,12 +94,6 @@ const albertaOutlineLayer: LayerProps = {
   },
 };
 
-
-function formatDistance(km: number): string {
-  if (km < 1) return `${Math.round(km * 1000)} m`;
-  if (km < 10) return `${km.toFixed(1)} km`;
-  return `${Math.round(km)} km`;
-}
 
 export default function MapView({ services, userLocation, onSelectService }: MapViewProps) {
   const mapRef = useRef<MapRef>(null);

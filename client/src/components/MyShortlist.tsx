@@ -437,7 +437,7 @@ export function MyShortlist({ isOpen, onClose, onSelectService }: MyShortlistPro
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed inset-y-0 right-0 w-80 bg-card shadow-2xl z-50 flex flex-col"
+            className="fixed inset-y-0 right-0 w-full sm:w-80 bg-card shadow-2xl z-50 flex flex-col"
             role="dialog"
             aria-modal="true"
             aria-label="My Shortlist"

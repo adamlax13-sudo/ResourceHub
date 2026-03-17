@@ -5,6 +5,7 @@ import { type ServiceSummary } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
+import { formatDistance } from "@/lib/utils";
 
 /** Maps AA service names to their regional meeting-finder URL */
 function getAAMeetingUrl(serviceName: string): string | null {
@@ -93,7 +94,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
       aria-label={`View details for ${service.name} - ${service.category}`}
       data-testid={`card-service-${service.id}`}
     >
-      <div className="glass-card h-full p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
+      <div className="glass-card h-full p-4 sm:p-6 flex flex-col relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300">
         {/* Favorite (heart) button — top-right corner */}
         {onToggleFavorite && (
           <button
@@ -131,21 +132,21 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
           {service.name}
         </h3>
 
-        <p className="text-muted-foreground mb-6 flex-grow min-w-0 break-words whitespace-normal overflow-wrap-anywhere">
+        <p className="text-muted-foreground mb-4 sm:mb-6 flex-grow min-w-0 break-words whitespace-normal overflow-wrap-anywhere line-clamp-3 sm:line-clamp-4">
           {service.description}
         </p>
 
-        <div className="space-y-3 mt-auto">
+        <div className="space-y-2 sm:space-y-3 mt-auto">
           <div className="flex items-start text-sm text-slate-600">
             <MapPin className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
-            <span className="break-words"><span className="sr-only">Location: </span>{service.location}</span>
+            <span className="break-words">
+              <span className="sr-only">Location: </span>
+              {service.location}
+              {service.distanceKm != null && (
+                <span className="text-muted-foreground"> · {formatDistance(service.distanceKm)}</span>
+              )}
+            </span>
           </div>
-          {service.distanceKm != null && (
-            <div className="flex items-center text-sm text-muted-foreground gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
-              <span>{service.distanceKm < 1 ? `${Math.round(service.distanceKm * 1000)} m` : service.distanceKm < 10 ? `${service.distanceKm.toFixed(1)} km` : `${Math.round(service.distanceKm)} km`} away</span>
-            </div>
-          )}
           <div className="flex items-start text-sm text-slate-600">
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
             <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || "Contact service provider for wait time"}</span>
@@ -181,7 +182,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
           })()}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
+        <div className="mt-4 sm:mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-primary font-medium text-sm">
           <span>View Details</span>
           <div className="flex items-center gap-0.5">
             <button
