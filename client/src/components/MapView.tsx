@@ -387,7 +387,7 @@ export default function MapView({ services, userLocation, onSelectService }: Map
             onClose={() => setSelectedId(null)}
             className="map-popup"
           >
-            <div className="p-2 max-w-[220px]">
+            <div className="p-2 pr-5 max-w-[260px]">
               <p className="font-medium text-sm text-foreground leading-tight">
                 {selectedService.name}
               </p>
