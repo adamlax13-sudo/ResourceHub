@@ -15,23 +15,30 @@ export function registerFeedbackRoutes(app: Express): void {
         name: z.string().max(255).optional(),
         email: z.string().email().max(255).optional().or(z.literal('')),
         message: z.string().min(1, "Message is required").max(2000, "Message is too long"),
-        hp: z.string().max(0).optional(),
+        type: z.enum(["incorrect_info", "service_closed", "missing_service", "bad_search", "general"]).default("general"),
+        serviceId: z.string().max(255).optional(),
+        serviceName: z.string().max(255).optional(),
+        searchQuery: z.string().max(500).optional(),
+        hp: z.string().optional(),
       });
 
       const validatedData = feedbackSchema.parse(req.body);
 
-      // Honeypot check
+      // Honeypot — silent fake success so bots can't distinguish rejection
       if (validatedData.hp) {
         return res.json({ success: true, id: 0 });
       }
 
-      const feedbackData = {
-        name: validatedData.name || null,
-        email: validatedData.email || null,
-        message: validatedData.message,
-      };
+      const newFeedback = await storage.createFeedback({
+        name: validatedData.name?.trim() || null,
+        email: validatedData.email?.trim() || null,
+        message: validatedData.message.trim(),
+        type: validatedData.type,
+        serviceId: validatedData.serviceId || null,
+        serviceName: validatedData.serviceName?.trim() || null,
+        searchQuery: validatedData.searchQuery?.trim() || null,
+      });
 
-      const newFeedback = await storage.createFeedback(feedbackData);
       res.json({ success: true, id: newFeedback.id });
     } catch (err) {
       console.error("Feedback error:", err);
