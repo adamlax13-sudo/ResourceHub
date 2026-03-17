@@ -1,14 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink } from "lucide-react";
 
 interface ActivityEntry {
   id: number;
   name: string;
   serviceId: string;
+  numericServiceId?: number;
   changeType: string;
   recordedAt: string;
   category?: string;
@@ -40,27 +42,43 @@ export function RecentActivityWidget() {
         ) : (
           <ScrollArea className="h-[400px]">
             <div className="space-y-1">
-              {data.activity.map((entry, i) => (
-                <div
-                  key={entry.id || i}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <ChangeTypeBadge type={entry.changeType} />
-                    <div className="min-w-0">
-                      <p className="text-sm text-gray-900 truncate">
-                        {entry.name || "Unknown service"}
-                      </p>
-                      {entry.category && (
-                        <p className="text-xs text-gray-400">{entry.category}</p>
+              {data.activity.map((entry, i) => {
+                const href = entry.numericServiceId
+                  ? `/admin/services?selected=${entry.numericServiceId}`
+                  : null;
+
+                const content = (
+                  <div className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <ChangeTypeBadge type={entry.changeType} />
+                      <div className="min-w-0">
+                        <p className="text-sm text-gray-900 truncate group-hover:text-teal-700 transition-colors">
+                          {entry.name || "Unknown service"}
+                        </p>
+                        {entry.category && (
+                          <p className="text-xs text-gray-400">{entry.category}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                      <span className="text-xs text-gray-400">
+                        {formatRelativeTime(entry.recordedAt)}
+                      </span>
+                      {href && (
+                        <ExternalLink className="h-3 w-3 text-gray-300 group-hover:text-teal-500 transition-colors" />
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0 ml-3">
-                    {formatRelativeTime(entry.recordedAt)}
-                  </span>
-                </div>
-              ))}
+                );
+
+                return href ? (
+                  <Link key={entry.id || i} href={href}>
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={entry.id || i}>{content}</div>
+                );
+              })}
             </div>
           </ScrollArea>
         )}

@@ -31,15 +31,23 @@ const serviceCreateSchema = z.object({
   email: z.string().max(255).optional(),
   address: z.string().max(2000).optional(),
   hoursOfOperation: z.string().max(500).optional(),
+  waitTimes: z.string().max(500).optional(),
   languagesSupported: z.array(z.string()).optional(),
   serviceFormat: z.string().max(100).optional(),
   websiteUrl: z.string().max(2000).optional(),
   tags: z.array(z.string()).optional(),
+  processSteps: z.array(z.object({
+    step: z.number(),
+    action: z.string(),
+    details: z.string().nullable().optional(),
+  })).optional(),
+  requiredDocs: z.array(z.union([z.string(), z.object({ name: z.string() })])).optional(),
   genderRestriction: z.string().max(50).optional(),
   ageGroup: z.string().max(20).optional(),
   isFaithBased: z.boolean().optional(),
   is12Step: z.boolean().optional(),
   is24_7: z.boolean().optional(),
+  confidenceScore: z.number().int().min(0).max(100).optional(),
 });
 
 const serviceUpdateSchema = serviceCreateSchema.partial();

@@ -1864,8 +1864,21 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async getRecentActivity(limit: number = 20): Promise<ServiceHistory[]> {
-    return await db.select().from(serviceHistory)
+  async getRecentActivity(limit: number = 20): Promise<any[]> {
+    return await db
+      .select({
+        id: serviceHistory.id,
+        serviceId: serviceHistory.serviceId,
+        name: serviceHistory.name,
+        category: serviceHistory.category,
+        changeType: serviceHistory.changeType,
+        changedFields: serviceHistory.changedFields,
+        recordedAt: serviceHistory.recordedAt,
+        confidenceScore: serviceHistory.confidenceScore,
+        numericServiceId: services.id,
+      })
+      .from(serviceHistory)
+      .leftJoin(services, eq(serviceHistory.serviceId, services.serviceId))
       .orderBy(desc(serviceHistory.recordedAt))
       .limit(limit);
   }
