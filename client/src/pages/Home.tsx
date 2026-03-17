@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, MessageSquare, SlidersHorizontal, X, Heart, Share2, LayoutList, Map as MapIcon } from "lucide-react";
+import { Info, SlidersHorizontal, X, Heart, Share2, LayoutList, Map as MapIcon } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -97,7 +97,10 @@ export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
   const { searchState, setSearchResults, setLocations, setFilters, clearFilters, activeFilterCount, setUserCoords } = useSearchContext();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackContext, setFeedbackContext] = useState<{
+    serviceId?: string;
+    serviceName?: string;
+  } | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [refinePanelOpen, setRefinePanelOpen] = useState(false);
   const [shortlistOpen, setShortlistOpen] = useState(false);
@@ -301,6 +304,7 @@ export default function Home() {
         userCoords={searchState.userCoords}
         onNearMe={handleNearMe}
         isLocating={isLocating}
+        openFeedback={() => setFeedbackContext({})}
       />
 
       <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-20' : ''}`}>
@@ -527,6 +531,7 @@ export default function Home() {
           onClose={() => setSelectedServiceId(null)}
           isFavorite={selectedServiceId ? isFavorite(selectedServiceId) : false}
           onToggleFavorite={toggleFavorite}
+          openFeedback={(id, name) => setFeedbackContext({ serviceId: id, serviceName: name })}
         />
       </Suspense>
 
@@ -549,18 +554,16 @@ export default function Home() {
           <p className="text-muted-foreground text-sm mb-4">
             {t('app.footer')}
           </p>
-          <button
-            onClick={() => setFeedbackOpen(true)}
-            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
-            data-testid="button-open-feedback"
-          >
-            <MessageSquare className="w-4 h-4" />
-            {t('feedback.link')}
-          </button>
         </div>
       </footer>
 
-      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <FeedbackModal
+        open={!!feedbackContext}
+        onClose={() => setFeedbackContext(null)}
+        serviceId={feedbackContext?.serviceId}
+        serviceName={feedbackContext?.serviceName}
+        searchQuery={searchState.query}
+      />
 
       <IntakeWizard
         isOpen={wizardOpen}
