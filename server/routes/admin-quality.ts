@@ -32,7 +32,7 @@ export function registerAdminQualityRoutes(app: Express): void {
         : 1;
       const limit = limitSchema.safeParse(req.query.limit).success
         ? limitSchema.parse(req.query.limit)
-        : 20;
+        : 50;
 
       const result = await storage.getQualityIssues({ page, limit });
       res.json({ success: true, ...result });

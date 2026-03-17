@@ -161,6 +161,8 @@ export default function Quality() {
   const [severityFilter, setSeverityFilter] = useState("");
   const [hideComplete, setHideComplete] = useState(false);
   const [issueSearch, setIssueSearch] = useState("");
+  const [issuePage, setIssuePage] = useState(1);
+  const [issuesPerPage, setIssuesPerPage] = useState(50);
 
   // ---------- Queries ----------
 
@@ -181,9 +183,9 @@ export default function Quality() {
     issues: IssueEntry[];
     total: number;
   }>({
-    queryKey: ["/api/admin/quality/issues"],
+    queryKey: ["/api/admin/quality/issues", issuePage, issuesPerPage],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/quality/issues?limit=200");
+      const res = await apiRequest("GET", `/api/admin/quality/issues?page=${issuePage}&limit=${issuesPerPage}`);
       return res.json();
     },
     staleTime: 60_000,
@@ -631,11 +633,48 @@ export default function Quality() {
                 </table>
               </div>
 
-              {searchedIssues.length > 0 && (
-                <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
-                  {searchedIssues.length} {searchedIssues.length === 1 ? "service" : "services"}
-                  {issueSearch || fieldFilter || severityFilter ? " matching filters" : " total"}
-                </p>
+              {/* Pagination controls */}
+              {issuesData && (
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <p className="text-xs text-gray-400">
+                      {Math.min((issuePage - 1) * issuesPerPage + 1, issuesData.total)}–{Math.min(issuePage * issuesPerPage, issuesData.total)} of {issuesData.total} services
+                    </p>
+                    <select
+                      value={issuesPerPage}
+                      onChange={(e) => { setIssuesPerPage(Number(e.target.value)); setIssuePage(1); }}
+                      className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 bg-white"
+                    >
+                      <option value={25}>25 per page</option>
+                      <option value={50}>50 per page</option>
+                      <option value={100}>100 per page</option>
+                      <option value={200}>200 per page</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      disabled={issuePage <= 1}
+                      onClick={() => setIssuePage((p) => p - 1)}
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </Button>
+                    <span className="text-xs text-gray-500 px-2 tabular-nums">
+                      {issuePage} / {Math.ceil(issuesData.total / issuesPerPage)}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      disabled={issuePage >= Math.ceil(issuesData.total / issuesPerPage)}
+                      onClick={() => setIssuePage((p) => p + 1)}
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
               )}
             </>
           )}
