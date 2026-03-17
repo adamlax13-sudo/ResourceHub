@@ -185,7 +185,27 @@ export function registerAdminReviewRoutes(app: Express): void {
         }
       }
 
-      res.json({ success: true, request, duplicateWarning });
+      // For review-flagged items, include current service data for editing
+      let currentServiceData: Record<string, any> | null = null;
+      if (request.changeType === 'review' && request.serviceId) {
+        const [svc] = await db.select().from(services).where(eq(services.id, request.serviceId)).limit(1);
+        if (svc) {
+          currentServiceData = svc as Record<string, any>;
+        }
+      }
+
+      // Add serviceName from join
+      let serviceName: string | null = null;
+      if (request.serviceId) {
+        const [svc] = await db.select({ name: services.name }).from(services).where(eq(services.id, request.serviceId)).limit(1);
+        serviceName = svc?.name ?? null;
+      }
+
+      res.json({
+        success: true,
+        request: { ...request, serviceName, createdAt: request.submittedAt, currentServiceData },
+        duplicateWarning,
+      });
     } catch (err) {
       console.error("Review detail error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);

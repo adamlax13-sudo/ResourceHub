@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +39,8 @@ interface ServiceFormProps {
   submitLabel?: string;
   onDirtyChange?: (dirty: boolean) => void;
   onNameChange?: (name: string) => void;
+  /** Field keys to highlight as needing attention (e.g. missing data) */
+  highlightFields?: string[];
 }
 
 /** Normalize requiredDocs — DB may store string[] or {name: string}[] */
@@ -50,7 +53,9 @@ function normalizeRequiredDocs(raw: unknown): string[] {
   });
 }
 
-export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, highlightFields }: ServiceFormProps) {
+  const highlightSet = new Set(highlightFields ?? []);
+  const hl = (field: string) => highlightSet.has(field) ? "ring-2 ring-amber-300 bg-amber-50/50" : "";
   const [form, setForm] = useState<ServiceFormData>({
     name: "",
     category: "",
@@ -251,7 +256,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         <Textarea
           value={form.description ?? ""}
           onChange={(e) => handleChange("description", e.target.value)}
-          className="mt-1 bg-white border-gray-300 text-gray-900 min-h-[100px]"
+          className={cn("mt-1 bg-white border-gray-300 text-gray-900 min-h-[100px]", hl("description"))}
         />
       </div>
 
@@ -261,7 +266,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <Input
             value={form.phone ?? ""}
             onChange={(e) => handleChange("phone", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("phone"))}
           />
         </div>
         <div>
@@ -269,7 +274,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <Input
             value={form.email ?? ""}
             onChange={(e) => handleChange("email", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("email"))}
           />
         </div>
       </div>
@@ -279,7 +284,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         <Input
           value={form.address ?? ""}
           onChange={(e) => handleChange("address", e.target.value)}
-          className="mt-1 bg-white border-gray-300 text-gray-900"
+          className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("address"))}
         />
       </div>
 
@@ -288,7 +293,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         <Input
           value={form.websiteUrl ?? ""}
           onChange={(e) => handleChange("websiteUrl", e.target.value)}
-          className="mt-1 bg-white border-gray-300 text-gray-900"
+          className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("websiteUrl"))}
         />
       </div>
 
@@ -298,7 +303,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <Input
             value={form.hoursOfOperation ?? ""}
             onChange={(e) => handleChange("hoursOfOperation", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("hoursOfOperation"))}
           />
         </div>
         <div>
@@ -306,7 +311,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <Input
             value={form.eligibility ?? ""}
             onChange={(e) => handleChange("eligibility", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("eligibility"))}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -33,8 +33,18 @@ interface ChangeRequest {
 }
 
 interface ChangeRequestDetail extends ChangeRequest {
+  currentServiceData?: Record<string, unknown>;
   reviewNotes?: string;
 }
+
+const FIELD_LABELS: Record<string, string> = {
+  phone: "Phone", email: "Email", websiteUrl: "Website", address: "Address",
+  description: "Description", hoursOfOperation: "Hours", eligibility: "Eligibility",
+  waitTimes: "Wait Times", serviceFormat: "Service Format", processSteps: "Process Steps",
+  requiredDocs: "Required Docs", languagesSupported: "Languages", latitude: "Geocoding",
+  tags: "Tags", embedding: "Embedding", embeddingFresh: "Stale Embedding",
+  geocodingFresh: "Stale Geocoding", staleEmbedding: "Stale Embedding", staleGeocoding: "Stale Geocoding",
+};
 
 export default function Review() {
   const queryClient = useQueryClient();
@@ -81,6 +91,17 @@ export default function Review() {
     enabled: !!selectedId,
     staleTime: 10_000,
   });
+
+  // Auto-open edit mode for review-flagged items
+  const request = detailData?.request;
+  const isReviewFlag = request?.changeType === "review";
+  const missingFields = isReviewFlag ? ((request?.proposedChanges as any)?.missingFields as string[] ?? []) : [];
+
+  useEffect(() => {
+    if (isReviewFlag && request) {
+      setEditMode(true);
+    }
+  }, [isReviewFlag, request?.id]);
 
   // Approve
   const approveMutation = useMutation({
@@ -162,8 +183,6 @@ export default function Review() {
       return next;
     });
   };
-
-  const request = detailData?.request;
 
   // Build diff for updates
   const diffChanges: Record<string, { old: unknown; new: unknown }> = {};
@@ -299,15 +318,29 @@ export default function Review() {
             </div>
           )}
 
+          {/* Missing fields banner for review-flagged items */}
+          {isReviewFlag && missingFields.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+              <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
+              {missingFields.map((f) => (
+                <Badge key={f} className="bg-amber-100 text-amber-700 border-amber-300 text-[10px]">
+                  {FIELD_LABELS[f] || f}
+                </Badge>
+              ))}
+            </div>
+          )}
+
           {/* Content based on type */}
           {editMode ? (
             <ServiceForm
-              initialData={request.proposedChanges as any}
+              initialData={isReviewFlag ? (request.currentServiceData as any) : (request.proposedChanges as any)}
               onSubmit={(data) =>
                 editApproveMutation.mutate({ id: request.id, data })
               }
               isPending={editApproveMutation.isPending}
               submitLabel="Save & Approve"
+              highlightFields={missingFields}
             />
           ) : request.changeType === "update" && Object.keys(diffChanges).length > 0 ? (
             <DiffView changes={diffChanges} />
