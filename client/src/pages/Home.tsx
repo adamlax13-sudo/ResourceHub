@@ -298,7 +298,7 @@ export default function Home() {
         openFeedback={() => setFeedbackContext({})}
       />
 
-      <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-20' : ''}`}>
+      <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-6 sm:-mt-20' : ''}`}>
         {/* Active filter chips — shown below Hero when there are active filters */}
         <AnimatePresence>
           {filterChips.length > 0 && !refinePanelOpen && (
