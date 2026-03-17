@@ -1,11 +1,27 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, MousePointerClick, Search, Building2, ArrowDown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
+import { InfoTip } from "@/components/admin/InfoTip";
+import {
+  AnalyticsLayout,
+  loadAnalyticsLayout,
+  saveAnalyticsLayout,
+  getDefaultAnalyticsLayout,
+  getAnalyticsWidgetDef,
+  ANALYTICS_WIDGETS,
+} from "@/lib/analytics-widgets";
 import {
   AreaChart,
   Area,
@@ -66,6 +82,22 @@ interface ServiceEntry {
   lastClicked: string;
 }
 
+interface DeviceEntry {
+  device_type: string;
+  clicks: number;
+}
+
+interface NoClickEntry {
+  query: string;
+  resultCount: number;
+  searchCount: number;
+}
+
+interface SessionEntry {
+  sessionDepth: number;
+  sessionCount: number;
+}
+
 // ---------- Helpers ----------
 
 function formatNumber(n: number): string {
@@ -85,7 +117,7 @@ function EmptyState({ message }: { message: string }) {
   return <p className="text-sm text-gray-400 text-center py-8">{message}</p>;
 }
 
-// Shared tooltip style
+// Shared recharts tooltip style
 const tooltipStyle = {
   contentStyle: {
     backgroundColor: "#ffffff",
@@ -97,12 +129,892 @@ const tooltipStyle = {
   itemStyle: { color: "#6b7280" },
 };
 
-// ---------- Component ----------
+// ---------- Widget Section Components ----------
+
+function OverviewWidget({ overview, loading }: { overview?: OverviewData; loading: boolean }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <AnalyticsStatCard
+        icon={<MousePointerClick className="h-4 w-4" />}
+        label="Total Clicks"
+        value={overview ? formatNumber(overview.totalClicks) : "--"}
+        loading={loading}
+      />
+      <AnalyticsStatCard
+        icon={<Search className="h-4 w-4" />}
+        label="Unique Queries"
+        value={overview ? formatNumber(overview.uniqueQueries) : "--"}
+        loading={loading}
+      />
+      <AnalyticsStatCard
+        icon={<Building2 className="h-4 w-4" />}
+        label="Services Clicked"
+        value={overview ? formatNumber(overview.uniqueServicesClicked) : "--"}
+        loading={loading}
+      />
+      <AnalyticsStatCard
+        icon={<ArrowDown className="h-4 w-4" />}
+        label={<>Avg Click Position <InfoTip text="The average position in search results where users click. Lower = users find what they need near the top." /></>}
+        value={overview?.avgClickPosition != null ? overview.avgClickPosition.toFixed(1) : "--"}
+        loading={loading}
+      />
+    </div>
+  );
+}
+
+function DailyTrendWidget({ trends, loading }: { trends: TrendEntry[]; loading: boolean }) {
+  const trendChart = trends.map((t) => ({
+    ...t,
+    label: new Date(t.date + "T00:00:00").toLocaleDateString("en-CA", {
+      month: "short",
+      day: "numeric",
+    }),
+  }));
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Daily Click Trend
+          <InfoTip text="Click and query volume over the selected time period." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : trendChart.length === 0 ? (
+          <EmptyState message="No trend data for this period." />
+        ) : (
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={trendChart}>
+              <defs>
+                <linearGradient id="tealGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
+              />
+              <YAxis
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Area
+                type="monotone"
+                dataKey="clicks"
+                stroke="#14b8a6"
+                strokeWidth={2}
+                fill="url(#tealGradient)"
+                name="Clicks"
+              />
+              <Area
+                type="monotone"
+                dataKey="uniqueQueries"
+                stroke="#94a3b8"
+                strokeWidth={1.5}
+                fill="none"
+                strokeDasharray="4 4"
+                name="Unique Queries"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function CategoriesWidget({ categories, loading }: { categories: CategoryEntry[]; loading: boolean }) {
+  const maxCategoryClicks = categories.length > 0 ? categories[0].clicks : 1;
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Category Distribution
+          <InfoTip text="Which service categories users click on most in search results." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : categories.length === 0 ? (
+          <EmptyState message="No category data for this period." />
+        ) : (
+          <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+            {categories.map((cat) => {
+              const pct = Math.round((cat.clicks / maxCategoryClicks) * 100);
+              const colorClasses = getCategoryColor(cat.category);
+              const textColor = colorClasses.split(" ").find((c) => c.startsWith("text-")) ?? "text-gray-600";
+              const bgColor = colorClasses.split(" ").find((c) => c.startsWith("bg-")) ?? "bg-gray-100";
+              return (
+                <div key={cat.category} className="group">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className={cn("text-xs font-medium truncate max-w-[200px]", textColor)}>
+                      {cat.category}
+                    </span>
+                    <span className="text-xs text-gray-400 ml-2 tabular-nums">
+                      {cat.clicks}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-50 rounded-full h-2">
+                    <div
+                      className={cn("h-2 rounded-full transition-all", bgColor)}
+                      style={{ width: `${Math.max(pct, 2)}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PeakHoursWidget({ hoursData, loading }: { hoursData: HourEntry[]; loading: boolean }) {
+  const hoursMap = new Map(hoursData.map((h) => [h.hour, h.clicks]));
+  const hours = Array.from({ length: 24 }, (_, i) => ({
+    hour: i,
+    label: `${i.toString().padStart(2, "0")}:00`,
+    clicks: hoursMap.get(i) ?? 0,
+  }));
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Peak Hours
+          <InfoTip text="Hour of day (24h format) when users are most active searching." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart data={hours}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "#9ca3af", fontSize: 10 }}
+                tickLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
+                interval={2}
+              />
+              <YAxis
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={35}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="clicks" fill="#14b8a6" radius={[3, 3, 0, 0]} name="Clicks" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function TopQueriesWidget({ searches, loading }: { searches: SearchEntry[]; loading: boolean }) {
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Top Search Queries
+          <InfoTip text="Most popular search queries with click rates." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : searches.length === 0 ? (
+          <EmptyState message="No search data for this period." />
+        ) : (
+          <div className="border border-gray-100 rounded-lg overflow-hidden">
+            <div className="max-h-[360px] overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50">
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                      Query
+                    </th>
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      Searches
+                    </th>
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      Clicks
+                    </th>
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-16">
+                      CTR
+                      <InfoTip text="Click-Through Rate -- percentage of searches for this query that resulted in a click." />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {searches.map((s, i) => {
+                    const ctr =
+                      s.searchCount > 0
+                        ? ((s.clickCount / s.searchCount) * 100).toFixed(1)
+                        : "0.0";
+                    return (
+                      <tr
+                        key={i}
+                        className="border-t border-gray-100 hover:bg-gray-50/50"
+                      >
+                        <td className="px-3 py-2 text-gray-900 truncate max-w-[220px]">
+                          {s.query || "(empty)"}
+                        </td>
+                        <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                          {s.searchCount}
+                        </td>
+                        <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                          {s.clickCount}
+                        </td>
+                        <td className="px-3 py-2 text-right text-gray-400 tabular-nums">
+                          {ctr}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ClickPositionsWidget({ positions, loading }: { positions: PositionEntry[]; loading: boolean }) {
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Click Position Distribution
+          <InfoTip text="Shows which result position users click on most. Position 1 means the first result shown." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : positions.length === 0 ? (
+          <EmptyState message="No click position data for this period." />
+        ) : (
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart data={positions.slice(0, 20)}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis
+                dataKey="position"
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
+                label={{
+                  value: "Result Position",
+                  position: "insideBottom",
+                  offset: -5,
+                  fill: "#9ca3af",
+                  fontSize: 11,
+                }}
+              />
+              <YAxis
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={35}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="clicks" fill="#0d9488" radius={[3, 3, 0, 0]} name="Clicks" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MostClickedWidget({ services, loading }: { services: ServiceEntry[]; loading: boolean }) {
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Most Clicked Services
+          <InfoTip text="Services that get the most clicks from search results." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : services.length === 0 ? (
+          <EmptyState message="No service click data for this period." />
+        ) : (
+          <ServiceTable services={services.slice(0, 25)} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LeastClickedWidget({ services, loading }: { services: ServiceEntry[]; loading: boolean }) {
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Least Clicked Services
+          <InfoTip text="Active services that rarely get clicked -- may need better categorization." />
+        </CardTitle>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Active services with fewest clicks
+        </p>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : services.length === 0 ? (
+          <EmptyState message="No service data for this period." />
+        ) : (
+          <ServiceTable services={[...services].reverse().slice(0, 25)} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DevicesWidget({ days }: { days: number }) {
+  const { data, isPending } = useQuery<{
+    success: boolean;
+    devices: DeviceEntry[];
+  }>({
+    queryKey: ["/api/admin/analytics/devices", days],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/analytics/devices?days=${days}`);
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const devices = data?.devices ?? [];
+  const total = devices.reduce((sum, d) => sum + d.clicks, 0) || 1;
+
+  const DEVICE_COLORS: Record<string, string> = {
+    Desktop: "bg-teal-500",
+    Mobile: "bg-violet-500",
+    Tablet: "bg-amber-500",
+  };
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Device Breakdown
+          <InfoTip text="Mobile vs desktop vs tablet usage based on user-agent strings." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isPending ? (
+          <Spinner />
+        ) : devices.length === 0 ? (
+          <EmptyState message="No device data for this period." />
+        ) : (
+          <div className="space-y-4">
+            {/* Stacked bar */}
+            <div className="h-6 rounded-full overflow-hidden flex">
+              {devices.map((d) => (
+                <div
+                  key={d.device_type}
+                  className={cn("h-full transition-all", DEVICE_COLORS[d.device_type] ?? "bg-gray-400")}
+                  style={{ width: `${Math.max((d.clicks / total) * 100, 1)}%` }}
+                />
+              ))}
+            </div>
+            {/* Legend */}
+            <div className="space-y-2">
+              {devices.map((d) => {
+                const pct = ((d.clicks / total) * 100).toFixed(1);
+                return (
+                  <div key={d.device_type} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-3 h-3 rounded-sm", DEVICE_COLORS[d.device_type] ?? "bg-gray-400")} />
+                      <span className="text-sm text-gray-700">{d.device_type}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-500 tabular-nums">{d.clicks}</span>
+                      <span className="text-sm font-medium text-gray-700 tabular-nums w-14 text-right">{pct}%</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function NoClicksWidget({ days }: { days: number }) {
+  const { data, isPending } = useQuery<{
+    success: boolean;
+    noClicks: NoClickEntry[];
+  }>({
+    queryKey: ["/api/admin/analytics/no-clicks", days],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/analytics/no-clicks?days=${days}`);
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const noClicks = data?.noClicks ?? [];
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Unmet Search Needs
+          <InfoTip text="Searches where users found results but did not click -- signals content gaps or poor ranking." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isPending ? (
+          <Spinner />
+        ) : noClicks.length === 0 ? (
+          <EmptyState message="No unmet-need data for this period." />
+        ) : (
+          <div className="border border-gray-100 rounded-lg overflow-hidden">
+            <div className="max-h-[360px] overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50">
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                      Query
+                    </th>
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      Searches
+                    </th>
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      Results
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {noClicks.map((entry, i) => (
+                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50/50">
+                      <td className="px-3 py-2 text-gray-900 truncate max-w-[220px]">
+                        {entry.query || "(empty)"}
+                      </td>
+                      <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                        {entry.searchCount}
+                      </td>
+                      <td className="px-3 py-2 text-right text-gray-400 tabular-nums">
+                        {entry.resultCount}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function SessionsWidget({ days }: { days: number }) {
+  const { data, isPending } = useQuery<{
+    success: boolean;
+    sessions: SessionEntry[];
+  }>({
+    queryKey: ["/api/admin/analytics/sessions", days],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/analytics/sessions?days=${days}`);
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const sessions = data?.sessions ?? [];
+
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-gray-900">
+          Session Depth
+          <InfoTip text="How many searches users do per session. More 1-search sessions means users find answers quickly." />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isPending ? (
+          <Spinner />
+        ) : sessions.length === 0 ? (
+          <EmptyState message="No session data for this period." />
+        ) : (
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={sessions}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis
+                dataKey="sessionDepth"
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
+                label={{
+                  value: "Searches per session",
+                  position: "insideBottom",
+                  offset: -5,
+                  fill: "#9ca3af",
+                  fontSize: 11,
+                }}
+              />
+              <YAxis
+                tick={{ fill: "#9ca3af", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="sessionCount" fill="#8b5cf6" radius={[3, 3, 0, 0]} name="Sessions" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Shared sub-components ----------
+
+function ServiceTable({ services }: { services: ServiceEntry[] }) {
+  return (
+    <div className="border border-gray-100 rounded-lg overflow-hidden">
+      <div className="max-h-[360px] overflow-y-auto">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-gray-50">
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                Service
+              </th>
+              <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
+                Category
+              </th>
+              <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                Clicks
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {services.map((s, i) => (
+              <tr
+                key={i}
+                className="border-t border-gray-100 hover:bg-gray-50/50"
+              >
+                <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
+                  {s.serviceName || `Service ${s.serviceId}`}
+                </td>
+                <td className="px-3 py-2">
+                  {s.category ? (
+                    <span
+                      className={cn(
+                        "inline-block px-2 py-0.5 text-[10px] font-medium rounded-full border truncate max-w-[120px]",
+                        getCategoryColor(s.category)
+                      )}
+                    >
+                      {s.category}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-300">--</span>
+                  )}
+                </td>
+                <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                  {s.clickCount}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsStatCard({
+  icon,
+  label,
+  value,
+  loading,
+}: {
+  icon: React.ReactNode;
+  label: React.ReactNode;
+  value: string;
+  loading: boolean;
+}) {
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="text-teal-500">{icon}</div>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            {label}
+          </span>
+        </div>
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin text-gray-300" />
+        ) : (
+          <p className="text-2xl font-semibold text-gray-900 tabular-nums">{value}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Customize Dialog ----------
+
+function CustomizeAnalytics({
+  open,
+  onOpenChange,
+  layout,
+  onLayoutChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  layout: AnalyticsLayout;
+  onLayoutChange: (layout: AnalyticsLayout) => void;
+}) {
+  const toggleWidget = useCallback(
+    (id: string) => {
+      const next: AnalyticsLayout = {
+        widgets: layout.widgets.map((w) =>
+          w.id === id ? { ...w, visible: !w.visible } : w,
+        ),
+      };
+      onLayoutChange(next);
+    },
+    [layout, onLayoutChange],
+  );
+
+  const moveWidget = useCallback(
+    (id: string, direction: "up" | "down") => {
+      const idx = layout.widgets.findIndex((w) => w.id === id);
+      if (idx < 0) return;
+      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= layout.widgets.length) return;
+
+      const next = [...layout.widgets];
+      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      onLayoutChange({ widgets: next });
+    },
+    [layout, onLayoutChange],
+  );
+
+  const resetToDefault = useCallback(() => {
+    onLayoutChange(getDefaultAnalyticsLayout());
+  }, [onLayoutChange]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Customize Analytics</DialogTitle>
+          <DialogDescription>
+            Toggle widgets on or off, and reorder them with the arrow buttons.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-1 mt-2">
+          {layout.widgets.map((item, index) => {
+            const def = getAnalyticsWidgetDef(item.id);
+            if (!def) return null;
+
+            const isFirst = index === 0;
+            const isLast = index === layout.widgets.length - 1;
+
+            return (
+              <div
+                key={item.id}
+                className="flex items-center gap-2 py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                {/* Reorder buttons */}
+                <div className="flex flex-col gap-0.5 w-6">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 text-gray-400 hover:text-gray-700"
+                    onClick={() => moveWidget(item.id, "up")}
+                    disabled={isFirst}
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 text-gray-400 hover:text-gray-700"
+                    onClick={() => moveWidget(item.id, "down")}
+                    disabled={isLast}
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </div>
+
+                {/* Label + description */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900">{def.label}</p>
+                  <p className="text-xs text-gray-400 truncate">{def.description}</p>
+                </div>
+
+                {/* Toggle */}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={item.visible}
+                  onClick={() => toggleWidget(item.id)}
+                  className={`
+                    relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full
+                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1
+                    ${item.visible ? "bg-teal-600" : "bg-gray-200"}
+                  `}
+                >
+                  <span
+                    className={`
+                      pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0
+                      transition duration-200 ease-in-out mt-0.5
+                      ${item.visible ? "translate-x-4 ml-0.5" : "translate-x-0 ml-0.5"}
+                    `}
+                  />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Reset button */}
+        <div className="pt-3 border-t border-gray-100">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-gray-700"
+            onClick={resetToDefault}
+          >
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+            Reset to Default
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------- Widget Grid ----------
+
+function AnalyticsWidgetGrid({
+  layout,
+  days,
+  overviewData,
+  overviewLoading,
+  trendsData,
+  trendsLoading,
+  categoriesData,
+  categoriesLoading,
+  hoursData,
+  hoursLoading,
+  positionsData,
+  positionsLoading,
+  searchData,
+  searchLoading,
+  serviceData,
+  serviceLoading,
+}: {
+  layout: AnalyticsLayout;
+  days: number;
+  overviewData?: OverviewData;
+  overviewLoading: boolean;
+  trendsData: TrendEntry[];
+  trendsLoading: boolean;
+  categoriesData: CategoryEntry[];
+  categoriesLoading: boolean;
+  hoursData: HourEntry[];
+  hoursLoading: boolean;
+  positionsData: PositionEntry[];
+  positionsLoading: boolean;
+  searchData: SearchEntry[];
+  searchLoading: boolean;
+  serviceData: ServiceEntry[];
+  serviceLoading: boolean;
+}) {
+  const WIDGET_MAP: Record<string, React.ReactNode> = {
+    overview: <OverviewWidget overview={overviewData} loading={overviewLoading} />,
+    "daily-trend": <DailyTrendWidget trends={trendsData} loading={trendsLoading} />,
+    categories: <CategoriesWidget categories={categoriesData} loading={categoriesLoading} />,
+    "peak-hours": <PeakHoursWidget hoursData={hoursData} loading={hoursLoading} />,
+    "top-queries": <TopQueriesWidget searches={searchData} loading={searchLoading} />,
+    "click-positions": <ClickPositionsWidget positions={positionsData} loading={positionsLoading} />,
+    "most-clicked": <MostClickedWidget services={serviceData} loading={serviceLoading} />,
+    "least-clicked": <LeastClickedWidget services={serviceData} loading={serviceLoading} />,
+    devices: <DevicesWidget days={days} />,
+    "no-clicks": <NoClicksWidget days={days} />,
+    sessions: <SessionsWidget days={days} />,
+  };
+
+  const visible = layout.widgets.filter((w) => w.visible);
+  const elements: React.ReactNode[] = [];
+  let halfBuffer: { id: string }[] = [];
+
+  const flushHalves = () => {
+    if (halfBuffer.length === 0) return;
+    elements.push(
+      <div key={`half-row-${halfBuffer.map((h) => h.id).join("-")}`} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {halfBuffer.map((h) => (
+          <div key={h.id}>{WIDGET_MAP[h.id]}</div>
+        ))}
+      </div>,
+    );
+    halfBuffer = [];
+  };
+
+  for (const item of visible) {
+    const def = getAnalyticsWidgetDef(item.id);
+    if (!def) continue;
+
+    if (def.size === "full") {
+      flushHalves();
+      elements.push(<div key={item.id}>{WIDGET_MAP[item.id]}</div>);
+    } else {
+      halfBuffer.push(item);
+      if (halfBuffer.length === 2) {
+        flushHalves();
+      }
+    }
+  }
+
+  flushHalves();
+
+  return <>{elements}</>;
+}
+
+// ---------- Main Component ----------
 
 export default function Analytics() {
   const [days, setDays] = useState<TimeRange>(30);
+  const [layout, setLayout] = useState<AnalyticsLayout>(loadAnalyticsLayout);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
 
-  // Fetch all data independently
+  const handleLayoutChange = useCallback((next: AnalyticsLayout) => {
+    setLayout(next);
+    saveAnalyticsLayout(next);
+  }, []);
+
+  // Fetch all core data independently
   const { data: overviewData, isPending: overviewLoading } = useQuery<{
     success: boolean;
     overview: OverviewData;
@@ -187,509 +1099,69 @@ export default function Analytics() {
     staleTime: 60_000,
   });
 
-  // Derived data
-  const overview = overviewData?.overview;
-  const trends = trendsData?.trends ?? [];
-  const categories = categoriesData?.categories ?? [];
-  const maxCategoryClicks = categories.length > 0 ? categories[0].clicks : 1;
-
-  // Fill missing hours (0-23) with 0 clicks
-  const hoursRaw = hoursData?.hours ?? [];
-  const hoursMap = new Map(hoursRaw.map((h) => [h.hour, h.clicks]));
-  const hours = Array.from({ length: 24 }, (_, i) => ({
-    hour: i,
-    label: `${i.toString().padStart(2, "0")}:00`,
-    clicks: hoursMap.get(i) ?? 0,
-  }));
-
-  const positions = positionsData?.positions ?? [];
-  const searches = searchData?.searches ?? [];
-  const services = serviceData?.services ?? [];
-
-  // Format trend dates for display
-  const trendChart = trends.map((t) => ({
-    ...t,
-    label: new Date(t.date + "T00:00:00").toLocaleDateString("en-CA", {
-      month: "short",
-      day: "numeric",
-    }),
-  }));
-
   return (
     <div className="p-6 space-y-6 max-w-[1400px]">
-      {/* Header + Time Range */}
+      {/* Header + Time Range + Customize */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Analytics</h2>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
-          {([7, 30, 90] as TimeRange[]).map((d) => (
-            <Button
-              key={d}
-              variant="ghost"
-              size="sm"
-              onClick={() => setDays(d)}
-              className={cn(
-                "h-7 px-3 text-xs font-medium",
-                days === d
-                  ? "bg-teal-500 text-white shadow-sm hover:bg-teal-600 hover:text-white"
-                  : "text-gray-500 hover:text-gray-700"
-              )}
-            >
-              {d}d
-            </Button>
-          ))}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+            {([7, 30, 90] as TimeRange[]).map((d) => (
+              <Button
+                key={d}
+                variant="ghost"
+                size="sm"
+                onClick={() => setDays(d)}
+                className={cn(
+                  "h-7 px-3 text-xs font-medium",
+                  days === d
+                    ? "bg-teal-500 text-white shadow-sm hover:bg-teal-600 hover:text-white"
+                    : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                {d}d
+              </Button>
+            ))}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-gray-700"
+            onClick={() => setCustomizeOpen(true)}
+          >
+            <Settings className="h-4 w-4 mr-1.5" />
+            Customize
+          </Button>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          icon={<MousePointerClick className="h-4 w-4" />}
-          label="Total Clicks"
-          value={overview ? formatNumber(overview.totalClicks) : "--"}
-          loading={overviewLoading}
-        />
-        <StatCard
-          icon={<Search className="h-4 w-4" />}
-          label="Unique Queries"
-          value={overview ? formatNumber(overview.uniqueQueries) : "--"}
-          loading={overviewLoading}
-        />
-        <StatCard
-          icon={<Building2 className="h-4 w-4" />}
-          label="Services Clicked"
-          value={overview ? formatNumber(overview.uniqueServicesClicked) : "--"}
-          loading={overviewLoading}
-        />
-        <StatCard
-          icon={<ArrowDown className="h-4 w-4" />}
-          label="Avg Click Position"
-          value={overview?.avgClickPosition != null ? overview.avgClickPosition.toFixed(1) : "--"}
-          loading={overviewLoading}
-        />
-      </div>
+      {/* Render widgets via grid */}
+      <AnalyticsWidgetGrid
+        layout={layout}
+        days={days}
+        overviewData={overviewData?.overview}
+        overviewLoading={overviewLoading}
+        trendsData={trendsData?.trends ?? []}
+        trendsLoading={trendsLoading}
+        categoriesData={categoriesData?.categories ?? []}
+        categoriesLoading={categoriesLoading}
+        hoursData={hoursData?.hours ?? []}
+        hoursLoading={hoursLoading}
+        positionsData={positionsData?.positions ?? []}
+        positionsLoading={positionsLoading}
+        searchData={searchData?.searches ?? []}
+        searchLoading={searchLoading}
+        serviceData={serviceData?.services ?? []}
+        serviceLoading={serviceLoading}
+      />
 
-      {/* Daily Trend */}
-      <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium text-gray-900">
-            Daily Click Trend
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {trendsLoading ? (
-            <Spinner />
-          ) : trendChart.length === 0 ? (
-            <EmptyState message="No trend data for this period." />
-          ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={trendChart}>
-                <defs>
-                  <linearGradient id="tealGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis
-                  dataKey="label"
-                  tick={{ fill: "#9ca3af", fontSize: 11 }}
-                  tickLine={false}
-                  axisLine={{ stroke: "#e5e7eb" }}
-                />
-                <YAxis
-                  tick={{ fill: "#9ca3af", fontSize: 11 }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                />
-                <Tooltip {...tooltipStyle} />
-                <Area
-                  type="monotone"
-                  dataKey="clicks"
-                  stroke="#14b8a6"
-                  strokeWidth={2}
-                  fill="url(#tealGradient)"
-                  name="Clicks"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="uniqueQueries"
-                  stroke="#94a3b8"
-                  strokeWidth={1.5}
-                  fill="none"
-                  strokeDasharray="4 4"
-                  name="Unique Queries"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Two-column row: Category Distribution + Peak Hours */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Distribution */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Category Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {categoriesLoading ? (
-              <Spinner />
-            ) : categories.length === 0 ? (
-              <EmptyState message="No category data for this period." />
-            ) : (
-              <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
-                {categories.map((cat) => {
-                  const pct = Math.round((cat.clicks / maxCategoryClicks) * 100);
-                  const colorClasses = getCategoryColor(cat.category);
-                  // Extract text color for the bar
-                  const textColor = colorClasses.split(" ").find((c) => c.startsWith("text-")) ?? "text-gray-600";
-                  const bgColor = colorClasses.split(" ").find((c) => c.startsWith("bg-")) ?? "bg-gray-100";
-                  return (
-                    <div key={cat.category} className="group">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className={cn("text-xs font-medium truncate max-w-[200px]", textColor)}>
-                          {cat.category}
-                        </span>
-                        <span className="text-xs text-gray-400 ml-2 tabular-nums">
-                          {cat.clicks}
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-50 rounded-full h-2">
-                        <div
-                          className={cn("h-2 rounded-full transition-all", bgColor)}
-                          style={{ width: `${Math.max(pct, 2)}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Peak Hours */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Peak Hours
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {hoursLoading ? (
-              <Spinner />
-            ) : (
-              <ResponsiveContainer width="100%" height={360}>
-                <BarChart data={hours}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fill: "#9ca3af", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e5e7eb" }}
-                    interval={2}
-                  />
-                  <YAxis
-                    tick={{ fill: "#9ca3af", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    width={35}
-                  />
-                  <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="clicks" fill="#14b8a6" radius={[3, 3, 0, 0]} name="Clicks" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Two-column row: Top Queries + Click Position */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top Search Queries */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Top Search Queries
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {searchLoading ? (
-              <Spinner />
-            ) : searches.length === 0 ? (
-              <EmptyState message="No search data for this period." />
-            ) : (
-              <div className="border border-gray-100 rounded-lg overflow-hidden">
-                <div className="max-h-[360px] overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 z-10">
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
-                          Query
-                        </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
-                          Searches
-                        </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
-                          Clicks
-                        </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-16">
-                          CTR
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {searches.map((s, i) => {
-                        const ctr =
-                          s.searchCount > 0
-                            ? ((s.clickCount / s.searchCount) * 100).toFixed(1)
-                            : "0.0";
-                        return (
-                          <tr
-                            key={i}
-                            className="border-t border-gray-100 hover:bg-gray-50/50"
-                          >
-                            <td className="px-3 py-2 text-gray-900 truncate max-w-[220px]">
-                              {s.query || "(empty)"}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
-                              {s.searchCount}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
-                              {s.clickCount}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-400 tabular-nums">
-                              {ctr}%
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Click Position Distribution */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Click Position Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {positionsLoading ? (
-              <Spinner />
-            ) : positions.length === 0 ? (
-              <EmptyState message="No click position data for this period." />
-            ) : (
-              <ResponsiveContainer width="100%" height={360}>
-                <BarChart data={positions.slice(0, 20)}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                  <XAxis
-                    dataKey="position"
-                    tick={{ fill: "#9ca3af", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e5e7eb" }}
-                    label={{
-                      value: "Result Position",
-                      position: "insideBottom",
-                      offset: -5,
-                      fill: "#9ca3af",
-                      fontSize: 11,
-                    }}
-                  />
-                  <YAxis
-                    tick={{ fill: "#9ca3af", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    width={35}
-                  />
-                  <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="clicks" fill="#0d9488" radius={[3, 3, 0, 0]} name="Clicks" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Two-column row: Most Clicked Services + Least Clicked */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Most Clicked Services */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Most Clicked Services
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {serviceLoading ? (
-              <Spinner />
-            ) : services.length === 0 ? (
-              <EmptyState message="No service click data for this period." />
-            ) : (
-              <div className="border border-gray-100 rounded-lg overflow-hidden">
-                <div className="max-h-[360px] overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 z-10">
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
-                          Service
-                        </th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
-                          Category
-                        </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
-                          Clicks
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {services.slice(0, 25).map((s, i) => (
-                        <tr
-                          key={i}
-                          className="border-t border-gray-100 hover:bg-gray-50/50"
-                        >
-                          <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
-                            {s.serviceName || `Service ${s.serviceId}`}
-                          </td>
-                          <td className="px-3 py-2">
-                            {s.category ? (
-                              <span
-                                className={cn(
-                                  "inline-block px-2 py-0.5 text-[10px] font-medium rounded-full border truncate max-w-[120px]",
-                                  getCategoryColor(s.category)
-                                )}
-                              >
-                                {s.category}
-                              </span>
-                            ) : (
-                              <span className="text-xs text-gray-300">--</span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
-                            {s.clickCount}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Least Clicked Services (bottom of the list, 1-2 clicks) */}
-        <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-gray-900">
-              Least Clicked Services
-            </CardTitle>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Active services with fewest clicks — may need better categorization
-            </p>
-          </CardHeader>
-          <CardContent>
-            {serviceLoading ? (
-              <Spinner />
-            ) : services.length === 0 ? (
-              <EmptyState message="No service data for this period." />
-            ) : (
-              <div className="border border-gray-100 rounded-lg overflow-hidden">
-                <div className="max-h-[360px] overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 z-10">
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
-                          Service
-                        </th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
-                          Category
-                        </th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
-                          Clicks
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...services]
-                        .reverse()
-                        .slice(0, 25)
-                        .map((s, i) => (
-                          <tr
-                            key={i}
-                            className="border-t border-gray-100 hover:bg-gray-50/50"
-                          >
-                            <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
-                              {s.serviceName || `Service ${s.serviceId}`}
-                            </td>
-                            <td className="px-3 py-2">
-                              {s.category ? (
-                                <span
-                                  className={cn(
-                                    "inline-block px-2 py-0.5 text-[10px] font-medium rounded-full border truncate max-w-[120px]",
-                                    getCategoryColor(s.category)
-                                  )}
-                                >
-                                  {s.category}
-                                </span>
-                              ) : (
-                                <span className="text-xs text-gray-300">--</span>
-                              )}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
-                              {s.clickCount}
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Customize dialog */}
+      <CustomizeAnalytics
+        open={customizeOpen}
+        onOpenChange={setCustomizeOpen}
+        layout={layout}
+        onLayoutChange={handleLayoutChange}
+      />
     </div>
-  );
-}
-
-// ---------- Stat Card sub-component ----------
-
-function StatCard({
-  icon,
-  label,
-  value,
-  loading,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  loading: boolean;
-}) {
-  return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="text-teal-500">{icon}</div>
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-            {label}
-          </span>
-        </div>
-        {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-gray-300" />
-        ) : (
-          <p className="text-2xl font-semibold text-gray-900 tabular-nums">{value}</p>
-        )}
-      </CardContent>
-    </Card>
   );
 }

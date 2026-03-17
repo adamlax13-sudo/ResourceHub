@@ -16,7 +16,7 @@ import { createErrorResponse } from "../helpers/errors";
 import { getOpenAI } from "../helpers/openai";
 import { db } from "../db";
 import { eq, sql } from "drizzle-orm";
-import { aiServiceEnrichments } from "@shared/schema";
+import { aiServiceEnrichments, services } from "@shared/schema";
 
 // ============= ZOD SCHEMAS =============
 
@@ -48,6 +48,7 @@ const serviceCreateSchema = z.object({
   is12Step: z.boolean().optional(),
   is24_7: z.boolean().optional(),
   confidenceScore: z.number().int().min(0).max(100).optional(),
+  duplicateOf: z.number().int().nullable().optional(),
 });
 
 const serviceUpdateSchema = serviceCreateSchema.partial();
@@ -369,6 +370,34 @@ export function registerAdminServiceRoutes(app: Express): void {
       console.error("Service enrichment error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
       res.status(500).json(createErrorResponse("Failed to fetch enrichment data", errorMessage));
+    }
+  });
+
+  // ============= MARK DUPLICATE (named sub-route — before :id) =============
+  app.post("/api/admin/services/:id/mark-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+      const { duplicateOf } = z.object({ duplicateOf: z.number().int() }).parse(req.body);
+
+      const service = await storage.updateService(id, { duplicateOf } as any);
+      res.json({ success: true, service });
+    } catch (err) {
+      console.error("Mark duplicate error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to mark service as duplicate", errorMessage));
+    }
+  });
+
+  // ============= CLEAR DUPLICATE (named sub-route — before :id) =============
+  app.post("/api/admin/services/:id/clear-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+      await db.update(services).set({ duplicateOf: null as any }).where(eq(services.id, id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Clear duplicate error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to clear duplicate flag", errorMessage));
     }
   });
 

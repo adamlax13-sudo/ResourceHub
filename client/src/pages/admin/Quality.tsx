@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { InfoTip } from "@/components/admin/InfoTip";
 
 const FIELD_LABELS: Record<string, string> = {
   phone: "Phone",
@@ -135,7 +136,15 @@ export default function Quality() {
                   onClick={() => setFieldFilter(fieldFilter === bar.key ? "" : bar.key)}
                 >
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">{bar.label}</span>
+                    <span className="text-gray-500">
+                      {bar.label}
+                      {bar.key === "embeddingFresh" && (
+                        <InfoTip text="Percentage of embedded services whose embedding is up-to-date (generated after last data update)." />
+                      )}
+                      {bar.key === "geocodingFresh" && (
+                        <InfoTip text="Percentage of geocoded services whose coordinates were set after the last data update." />
+                      )}
+                    </span>
                     <span className="text-gray-700">{bar.pct}%</span>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -202,7 +211,10 @@ export default function Quality() {
                     <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
                     <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Severity</th>
                     <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Missing Fields</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20" title="Source confidence score (data accuracy, not completeness)">Confidence</th>
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      Confidence
+                      <InfoTip text="Source confidence score — how reliable the data source is, not how complete the data is." />
+                    </th>
                     <th className="w-10" />
                   </tr>
                 </thead>

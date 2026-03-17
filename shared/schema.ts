@@ -60,6 +60,7 @@ export const services = pgTable("services", {
   geocodeSource: varchar("geocode_source", { length: 50 }),
   geocodedAt: timestamp("geocoded_at"),
   embeddingUpdatedAt: timestamp("embedding_updated_at"),
+  duplicateOf: integer("duplicate_of"),
 });
 
 // Service history — change log for every modification (created by scraper/init_db.sql)

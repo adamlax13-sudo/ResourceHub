@@ -9,15 +9,16 @@ interface StatCardProps {
   icon: LucideIcon;
   trend?: { value: number; label: string };
   className?: string;
+  titleExtra?: React.ReactNode;
 }
 
-export function StatCard({ title, value, subtitle, icon: Icon, trend, className }: StatCardProps) {
+export function StatCard({ title, value, subtitle, icon: Icon, trend, className, titleExtra }: StatCardProps) {
   return (
     <Card className={cn("bg-white border-gray-100 shadow-sm rounded-xl", className)}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-gray-500">{title}</p>
+            <p className="text-xs uppercase tracking-wide text-gray-500">{title}{titleExtra}</p>
             <p className="text-2xl font-bold text-gray-900">{value}</p>
             {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
             {trend && (

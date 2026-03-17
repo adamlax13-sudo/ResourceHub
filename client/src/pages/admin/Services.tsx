@@ -66,6 +66,7 @@ interface ServiceDetail {
   lastUpdated?: string;
   enrichmentSource?: string;
   enrichmentDate?: string;
+  duplicateOf?: number | null;
 }
 
 interface AiEnrichmentRecord {
@@ -349,6 +350,38 @@ export default function Services() {
     },
   });
 
+  // Mark as duplicate mutation
+  const markDuplicateMutation = useMutation({
+    mutationFn: async (duplicateOfId: number) => {
+      const res = await apiRequest("POST", `/api/admin/services/${selectedId}/mark-duplicate`, {
+        duplicateOf: duplicateOfId,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Marked as duplicate" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+    },
+    onError: (err) => {
+      toast({ title: "Mark duplicate failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  // Clear duplicate mutation
+  const clearDuplicateMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/admin/services/${selectedId}/clear-duplicate`);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Duplicate flag cleared" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+    },
+    onError: (err) => {
+      toast({ title: "Clear duplicate failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   // Reset duplicates when selecting a different service
   useEffect(() => {
     setShowDuplicates(false);
@@ -363,6 +396,20 @@ export default function Services() {
   const totalPages = listData?.total ? Math.ceil(listData.total / pageSize) : 1;
 
   const service = detailData?.service;
+
+  // Fetch duplicate-of service name when needed
+  const { data: duplicateOfData } = useQuery<{
+    success: boolean;
+    service: { id: number; name: string };
+  }>({
+    queryKey: ["/api/admin/services", service?.duplicateOf],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/services/${service!.duplicateOf}`);
+      return res.json();
+    },
+    enabled: !!service?.duplicateOf,
+    staleTime: 60_000,
+  });
 
   // Check stale embedding
   const hasStaleEmbedding = service?.embeddingUpdatedAt && service?.lastUpdated &&
@@ -601,6 +648,30 @@ export default function Services() {
             </div>
           </div>
 
+          {/* Duplicate banner */}
+          {service.duplicateOf && (
+            <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
+              <div className="flex items-center gap-2">
+                <GitCompare className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                <p className="text-sm text-orange-700">
+                  This service is marked as a duplicate of{" "}
+                  <span className="font-medium">
+                    {duplicateOfData?.service?.name ?? `#${service.duplicateOf}`}
+                  </span>
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => clearDuplicateMutation.mutate()}
+                disabled={clearDuplicateMutation.isPending}
+                className="text-orange-600 hover:text-orange-800 hover:bg-orange-100 flex-shrink-0"
+              >
+                {clearDuplicateMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Clear"}
+              </Button>
+            </div>
+          )}
+
           {/* Stale embedding warning */}
           {hasStaleEmbedding && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
@@ -726,9 +797,20 @@ export default function Services() {
                             {!dup.is_active && <Badge className="bg-gray-100 text-gray-500 text-[10px]">Inactive</Badge>}
                           </div>
                         </div>
-                        <Link href={`/admin/services?selected=${dup.id}`}>
-                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900" />
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-[10px] h-6 px-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+                            onClick={() => markDuplicateMutation.mutate(dup.id)}
+                            disabled={markDuplicateMutation.isPending}
+                          >
+                            Mark as Duplicate
+                          </Button>
+                          <Link href={`/admin/services?selected=${dup.id}`}>
+                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900" />
+                          </Link>
+                        </div>
                       </div>
                     ))
                   )}

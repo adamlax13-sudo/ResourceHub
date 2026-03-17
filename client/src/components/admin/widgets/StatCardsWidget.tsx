@@ -3,6 +3,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { StatCard } from "@/components/admin/StatCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { ClipboardCheck, Search, BarChart3 } from "lucide-react";
+import { InfoTip } from "@/components/admin/InfoTip";
 
 interface DashboardStats {
   success: boolean;
@@ -45,6 +46,7 @@ export function StatCardsWidget() {
         title="Quality Score"
         value={stats?.qualityScore != null ? `${stats.qualityScore}%` : "N/A"}
         icon={BarChart3}
+        titleExtra={<InfoTip text="Percentage of services that have at least a phone number, email, or website." />}
       />
     </div>
   );

@@ -1855,6 +1855,7 @@ export class DatabaseStorage implements IStorage {
         geocodeSource: row.geocode_source,
         geocodedAt: row.geocoded_at,
         embeddingUpdatedAt: row.embedding_updated_at,
+        duplicateOf: row.duplicate_of ?? null,
       };
 
       return {
