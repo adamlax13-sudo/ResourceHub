@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { type ServiceDetail } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { ProcessTimeline } from "./ProcessTimeline";
-import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart } from "lucide-react";
+import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ interface ServiceModalProps {
   onClose: () => void;
   isFavorite?: boolean;
   onToggleFavorite?: (service: FavoriteCandidate) => void;
+  openFeedback?: (serviceId: string, serviceName: string) => void;
 }
 
 // ============= CONTACT PARSING =============
@@ -123,7 +124,7 @@ function ServiceModalSkeleton() {
 
 // ============= COMPONENT =============
 
-export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, onToggleFavorite }: ServiceModalProps) {
+export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, onToggleFavorite, openFeedback }: ServiceModalProps) {
   const { t } = useTranslation();
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -440,6 +441,16 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
                       <p className="text-center text-xs text-muted-foreground mt-3">
                         {t('service.externalLink')}
                       </p>
+                    )}
+                    {openFeedback && service && (
+                      <button
+                        onClick={() => openFeedback(service.id, service.name)}
+                        className="flex items-center justify-center gap-1.5 w-full mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        data-testid="button-report-issue"
+                      >
+                        <Flag className="w-3.5 h-3.5" />
+                        {t('feedback.reportIssue')}
+                      </button>
                     )}
                   </div>
                 </div>
