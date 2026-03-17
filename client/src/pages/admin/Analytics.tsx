@@ -3,14 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw, Lock, Download } from "lucide-react";
+import { Loader2, MousePointerClick, Search, Building2, ArrowDown, RotateCcw, Download, GripVertical, EyeOff, Eye, Pencil, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
@@ -20,7 +13,6 @@ import {
   saveAnalyticsLayout,
   getDefaultAnalyticsLayout,
   getAnalyticsWidgetDef,
-  ANALYTICS_WIDGETS,
 } from "@/lib/analytics-widgets";
 import {
   AreaChart,
@@ -33,6 +25,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 type TimeRange = 7 | 30 | 90;
 
@@ -800,133 +795,57 @@ function AnalyticsStatCard({
   );
 }
 
-// ---------- Customize Dialog ----------
+// ---------- Sortable Widget Wrapper ----------
 
-function CustomizeAnalytics({
-  open,
-  onOpenChange,
-  layout,
-  onLayoutChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  layout: AnalyticsLayout;
-  onLayoutChange: (layout: AnalyticsLayout) => void;
+function SortableWidget({ id, children, isEditing, size, onResize, onHide, sizeLocked }: {
+  id: string;
+  children: React.ReactNode;
+  isEditing: boolean;
+  size: 'small' | 'medium' | 'large';
+  onResize: (size: 'small' | 'medium' | 'large') => void;
+  onHide: () => void;
+  sizeLocked?: boolean;
 }) {
-  const toggleWidget = useCallback(
-    (id: string) => {
-      const next: AnalyticsLayout = {
-        widgets: layout.widgets.map((w) =>
-          w.id === id ? { ...w, visible: !w.visible } : w,
-        ),
-      };
-      onLayoutChange(next);
-    },
-    [layout, onLayoutChange],
-  );
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
-  const updateWidgetSize = useCallback(
-    (id: string, size: 'small' | 'medium' | 'large') => {
-      const def = getAnalyticsWidgetDef(id);
-      if (def?.sizeLocked) return;
-      const next: AnalyticsLayout = {
-        widgets: layout.widgets.map((w) =>
-          w.id === id ? { ...w, size } : w,
-        ),
-      };
-      onLayoutChange(next);
-    },
-    [layout, onLayoutChange],
-  );
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-  const moveWidget = useCallback(
-    (id: string, direction: "up" | "down") => {
-      const idx = layout.widgets.findIndex((w) => w.id === id);
-      if (idx < 0) return;
-      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (swapIdx < 0 || swapIdx >= layout.widgets.length) return;
-
-      const next = [...layout.widgets];
-      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
-      onLayoutChange({ widgets: next });
-    },
-    [layout, onLayoutChange],
-  );
-
-  const resetToDefault = useCallback(() => {
-    onLayoutChange(getDefaultAnalyticsLayout());
-  }, [onLayoutChange]);
+  const colSpan = size === 'large' ? 'col-span-6'
+    : size === 'medium' ? 'col-span-6 lg:col-span-3'
+    : 'col-span-6 sm:col-span-3 lg:col-span-2';
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Customize Analytics</DialogTitle>
-          <DialogDescription>
-            Toggle widgets on or off, resize them (S/M/L), and reorder with the arrow buttons.
-          </DialogDescription>
-        </DialogHeader>
+    <div ref={setNodeRef} style={style} className={colSpan}>
+      <div className="relative">
+        {isEditing && (
+          <>
+            {/* Edit overlay border */}
+            <div className="absolute inset-0 z-10 border-2 border-dashed border-teal-300 rounded-xl pointer-events-none" />
 
-        <div className="space-y-1 mt-2">
-          {layout.widgets.map((item, index) => {
-            const def = getAnalyticsWidgetDef(item.id);
-            if (!def) return null;
+            {/* Top bar with controls */}
+            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-2 py-1.5 bg-white/90 backdrop-blur-sm rounded-t-xl border-b border-teal-200">
+              {/* Drag handle */}
+              <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600">
+                <GripVertical className="h-4 w-4" />
+              </button>
 
-            const isFirst = index === 0;
-            const isLast = index === layout.widgets.length - 1;
-            const currentSize = item.size;
-
-            return (
-              <div
-                key={item.id}
-                className="flex items-center gap-2 py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                {/* Reorder buttons */}
-                <div className="flex flex-col gap-0.5 w-6 flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 text-gray-400 hover:text-gray-700"
-                    onClick={() => moveWidget(item.id, "up")}
-                    disabled={isFirst}
-                  >
-                    <ChevronUp className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 text-gray-400 hover:text-gray-700"
-                    onClick={() => moveWidget(item.id, "down")}
-                    disabled={isLast}
-                  >
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
-                </div>
-
-                {/* Label + description */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">{def.label}</p>
-                  <p className="text-xs text-gray-400 truncate">{def.description}</p>
-                </div>
-
-                {/* Size selector */}
-                {def.sizeLocked ? (
-                  <div className="flex items-center gap-1 text-gray-300 flex-shrink-0">
-                    <Lock className="h-3 w-3" />
-                    <span className="text-[10px] font-medium">L</span>
-                  </div>
-                ) : (
-                  <div className="flex gap-1 flex-shrink-0">
-                    {(['small', 'medium', 'large'] as const).map((s) => (
+              <div className="flex items-center gap-1.5">
+                {/* Size buttons */}
+                {!sizeLocked && (
+                  <div className="flex gap-0.5 bg-gray-100 rounded-md p-0.5">
+                    {(['small', 'medium', 'large'] as const).map(s => (
                       <button
                         key={s}
-                        type="button"
-                        onClick={() => updateWidgetSize(item.id, s)}
+                        onClick={() => onResize(s)}
                         className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-medium border transition-colors",
-                          currentSize === s
-                            ? "bg-teal-50 text-teal-700 border-teal-200"
-                            : "bg-white text-gray-400 border-gray-200 hover:text-gray-600"
+                          "px-2 py-0.5 rounded text-[10px] font-semibold transition-colors",
+                          size === s
+                            ? "bg-teal-500 text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
                         )}
                       >
                         {s === 'small' ? 'S' : s === 'medium' ? 'M' : 'L'}
@@ -935,52 +854,30 @@ function CustomizeAnalytics({
                   </div>
                 )}
 
-                {/* Toggle */}
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={item.visible}
-                  onClick={() => toggleWidget(item.id)}
-                  className={`
-                    relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full
-                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1
-                    ${item.visible ? "bg-teal-600" : "bg-gray-200"}
-                  `}
-                >
-                  <span
-                    className={`
-                      pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0
-                      transition duration-200 ease-in-out mt-0.5
-                      ${item.visible ? "translate-x-4 ml-0.5" : "translate-x-0 ml-0.5"}
-                    `}
-                  />
-                </button>
+                {/* Hide button */}
+                {!sizeLocked && (
+                  <button onClick={onHide} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                    <EyeOff className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          </>
+        )}
 
-        {/* Reset button */}
-        <div className="pt-3 border-t border-gray-100">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-gray-500 hover:text-gray-700"
-            onClick={resetToDefault}
-          >
-            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-            Reset to Default
-          </Button>
+        <div className={isEditing ? "pt-8" : ""}>
+          {children}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
 
-// ---------- Widget Grid ----------
+// ---------- Widget Grid with DnD ----------
 
 function AnalyticsWidgetGrid({
   layout,
+  editMode,
   days,
   overviewData,
   overviewLoading,
@@ -996,8 +893,13 @@ function AnalyticsWidgetGrid({
   searchLoading,
   serviceData,
   serviceLoading,
+  onResize,
+  onHide,
+  onRestore,
+  onDragEnd,
 }: {
   layout: AnalyticsLayout;
+  editMode: boolean;
   days: number;
   overviewData?: OverviewData;
   overviewLoading: boolean;
@@ -1013,8 +915,17 @@ function AnalyticsWidgetGrid({
   searchLoading: boolean;
   serviceData: ServiceEntry[];
   serviceLoading: boolean;
+  onResize: (id: string, size: 'small' | 'medium' | 'large') => void;
+  onHide: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDragEnd: (event: DragEndEvent) => void;
 }) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
   const visibleWidgets = layout.widgets.filter((w) => w.visible);
+  const hiddenWidgets = layout.widgets.filter((w) => !w.visible);
 
   const renderWidget = (id: string, compact: boolean) => {
     switch (id) {
@@ -1046,20 +957,50 @@ function AnalyticsWidgetGrid({
   };
 
   return (
-    <div className="grid grid-cols-6 gap-4">
-      {visibleWidgets.map((w) => {
-        const colSpan =
-          w.size === 'large' ? 'col-span-6'
-          : w.size === 'medium' ? 'col-span-6 lg:col-span-3'
-          : 'col-span-6 sm:col-span-3 lg:col-span-2';
-        const isCompact = w.size === 'small';
-        return (
-          <div key={w.id} className={colSpan}>
-            {renderWidget(w.id, isCompact)}
+    <>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
+          <div className="grid grid-cols-6 gap-4">
+            {visibleWidgets.map((w) => {
+              const def = getAnalyticsWidgetDef(w.id);
+              const isCompact = w.size === 'small';
+              return (
+                <SortableWidget
+                  key={w.id}
+                  id={w.id}
+                  isEditing={editMode}
+                  size={w.size}
+                  sizeLocked={def?.sizeLocked}
+                  onResize={(s) => onResize(w.id, s)}
+                  onHide={() => onHide(w.id)}
+                >
+                  {renderWidget(w.id, isCompact)}
+                </SortableWidget>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
+        </SortableContext>
+      </DndContext>
+
+      {/* Hidden widgets bar (edit mode only) */}
+      {editMode && hiddenWidgets.length > 0 && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+          <p className="text-xs font-medium text-gray-500 mb-2">Hidden Widgets</p>
+          <div className="flex flex-wrap gap-2">
+            {hiddenWidgets.map(w => (
+              <button
+                key={w.id}
+                onClick={() => onRestore(w.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors"
+              >
+                <Eye className="h-3 w-3" />
+                {getAnalyticsWidgetDef(w.id)?.label || w.id}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1068,12 +1009,55 @@ function AnalyticsWidgetGrid({
 export default function Analytics() {
   const [days, setDays] = useState<TimeRange>(30);
   const [layout, setLayout] = useState<AnalyticsLayout>(loadAnalyticsLayout);
-  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const handleLayoutChange = useCallback((next: AnalyticsLayout) => {
     setLayout(next);
     saveAnalyticsLayout(next);
   }, []);
+
+  const handleResize = useCallback((id: string, size: 'small' | 'medium' | 'large') => {
+    const def = getAnalyticsWidgetDef(id);
+    if (def?.sizeLocked) return;
+    const next: AnalyticsLayout = {
+      widgets: layout.widgets.map((w) =>
+        w.id === id ? { ...w, size } : w,
+      ),
+    };
+    handleLayoutChange(next);
+  }, [layout, handleLayoutChange]);
+
+  const handleHide = useCallback((id: string) => {
+    const next: AnalyticsLayout = {
+      widgets: layout.widgets.map((w) =>
+        w.id === id ? { ...w, visible: false } : w,
+      ),
+    };
+    handleLayoutChange(next);
+  }, [layout, handleLayoutChange]);
+
+  const handleRestore = useCallback((id: string) => {
+    const next: AnalyticsLayout = {
+      widgets: layout.widgets.map((w) =>
+        w.id === id ? { ...w, visible: true } : w,
+      ),
+    };
+    handleLayoutChange(next);
+  }, [layout, handleLayoutChange]);
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = layout.widgets.findIndex(w => w.id === active.id);
+      const newIndex = layout.widgets.findIndex(w => w.id === over.id);
+      const newWidgets = arrayMove(layout.widgets, oldIndex, newIndex);
+      handleLayoutChange({ widgets: newWidgets });
+    }
+  }, [layout, handleLayoutChange]);
+
+  const handleResetLayout = useCallback(() => {
+    handleLayoutChange(getDefaultAnalyticsLayout());
+  }, [handleLayoutChange]);
 
   // Fetch all core data independently
   const { data: overviewData, isPending: overviewLoading } = useQuery<{
@@ -1203,7 +1187,7 @@ export default function Analytics() {
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px]">
-      {/* Header + Time Range + Customize */}
+      {/* Header + Time Range + Edit Layout */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Analytics</h2>
         <div className="flex items-center gap-3">
@@ -1235,21 +1219,45 @@ export default function Analytics() {
             <Download className="h-4 w-4 mr-1.5" />
             Export CSV
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-gray-500 hover:text-gray-700"
-            onClick={() => setCustomizeOpen(true)}
-          >
-            <Settings className="h-4 w-4 mr-1.5" />
-            Customize
-          </Button>
+          {editMode ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-500 hover:text-gray-700"
+                onClick={handleResetLayout}
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                Reset
+              </Button>
+              <Button onClick={() => setEditMode(false)} className="bg-teal-600 hover:bg-teal-700 text-white" size="sm">
+                <Check className="h-4 w-4 mr-1.5" />
+                Done
+              </Button>
+            </div>
+          ) : (
+            <Button variant="ghost" onClick={() => setEditMode(true)} className="text-gray-500 hover:text-gray-700" size="sm">
+              <Pencil className="h-4 w-4 mr-1.5" />
+              Edit Layout
+            </Button>
+          )}
         </div>
       </div>
+
+      {/* Edit mode banner */}
+      {editMode && (
+        <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-2 flex items-center gap-2">
+          <Pencil className="h-4 w-4 text-teal-600 flex-shrink-0" />
+          <span className="text-sm text-teal-700">
+            Drag widgets to reorder &bull; Resize with S/M/L &bull; Click <EyeOff className="h-3 w-3 inline" /> to hide
+          </span>
+        </div>
+      )}
 
       {/* Render widgets via grid */}
       <AnalyticsWidgetGrid
         layout={layout}
+        editMode={editMode}
         days={days}
         overviewData={overviewData?.overview}
         overviewLoading={overviewLoading}
@@ -1265,14 +1273,10 @@ export default function Analytics() {
         searchLoading={searchLoading}
         serviceData={serviceData?.services ?? []}
         serviceLoading={serviceLoading}
-      />
-
-      {/* Customize dialog */}
-      <CustomizeAnalytics
-        open={customizeOpen}
-        onOpenChange={setCustomizeOpen}
-        layout={layout}
-        onLayoutChange={handleLayoutChange}
+        onResize={handleResize}
+        onHide={handleHide}
+        onRestore={handleRestore}
+        onDragEnd={handleDragEnd}
       />
     </div>
   );
