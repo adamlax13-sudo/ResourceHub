@@ -1,15 +1,31 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Settings } from "lucide-react";
+import { GripVertical, EyeOff, Eye, Pencil, Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DashboardLayout,
   loadDashboardLayout,
   saveDashboardLayout,
+  getDefaultDashboardLayout,
   getWidgetDef,
 } from "@/lib/dashboard-widgets";
-import { CustomizeDashboard } from "@/components/admin/CustomizeDashboard";
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 // Widget components
 import { HeroStatsWidget } from "@/components/admin/widgets/HeroStatsWidget";
@@ -29,9 +45,184 @@ const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   "scraper-status": ScraperStatusWidget,
 };
 
+// ---------- Sortable Widget Wrapper ----------
+
+function SortableWidget({
+  id,
+  children,
+  isEditing,
+  size,
+  onResize,
+  onHide,
+  sizeLocked,
+}: {
+  id: string;
+  children: React.ReactNode;
+  isEditing: boolean;
+  size: "small" | "medium" | "large";
+  onResize: (size: "small" | "medium" | "large") => void;
+  onHide: () => void;
+  sizeLocked?: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const colSpan =
+    size === "large"
+      ? "col-span-6"
+      : size === "medium"
+        ? "col-span-6 lg:col-span-3"
+        : "col-span-6 sm:col-span-3 lg:col-span-2";
+
+  return (
+    <div ref={setNodeRef} style={style} className={colSpan}>
+      <div className="relative">
+        {isEditing && (
+          <>
+            {/* Edit overlay border */}
+            <div className="absolute inset-0 z-10 border-2 border-dashed border-teal-300 rounded-xl pointer-events-none" />
+
+            {/* Top bar with controls */}
+            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-2 py-1.5 bg-white/90 backdrop-blur-sm rounded-t-xl border-b border-teal-200">
+              {/* Drag handle */}
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                {/* Size buttons */}
+                {!sizeLocked && (
+                  <div className="flex gap-0.5 bg-gray-100 rounded-md p-0.5">
+                    {(["small", "medium", "large"] as const).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => onResize(s)}
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-semibold transition-colors",
+                          size === s
+                            ? "bg-teal-500 text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-700",
+                        )}
+                      >
+                        {s === "small" ? "S" : s === "medium" ? "M" : "L"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Hide button */}
+                {!sizeLocked && (
+                  <button
+                    onClick={onHide}
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <EyeOff className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className={isEditing ? "pt-9" : ""}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Widget Grid with DnD ----------
+
+function DashboardWidgetGrid({
+  layout,
+  editMode,
+  onResize,
+  onHide,
+  onRestore,
+  onDragEnd,
+}: {
+  layout: DashboardLayout;
+  editMode: boolean;
+  onResize: (id: string, size: "small" | "medium" | "large") => void;
+  onHide: (id: string) => void;
+  onRestore: (id: string) => void;
+  onDragEnd: (event: DragEndEvent) => void;
+}) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  );
+
+  const visibleWidgets = layout.widgets.filter((w) => w.visible);
+  const hiddenWidgets = layout.widgets.filter((w) => !w.visible);
+
+  return (
+    <>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext
+          items={visibleWidgets.map((w) => w.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="grid grid-cols-6 gap-4">
+            {visibleWidgets.map((w) => {
+              const def = getWidgetDef(w.id);
+              const Comp = WIDGET_COMPONENTS[w.id];
+              if (!Comp) return null;
+              return (
+                <SortableWidget
+                  key={w.id}
+                  id={w.id}
+                  isEditing={editMode}
+                  size={w.size}
+                  sizeLocked={def?.sizeLocked}
+                  onResize={(s) => onResize(w.id, s)}
+                  onHide={() => onHide(w.id)}
+                >
+                  <Comp />
+                </SortableWidget>
+              );
+            })}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {/* Hidden widgets bar (edit mode only) */}
+      {editMode && hiddenWidgets.length > 0 && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+          <p className="text-xs font-medium text-gray-500 mb-2">Hidden Widgets</p>
+          <div className="flex flex-wrap gap-2">
+            {hiddenWidgets.map((w) => (
+              <button
+                key={w.id}
+                onClick={() => onRestore(w.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors"
+              >
+                <Eye className="h-3 w-3" />
+                {getWidgetDef(w.id)?.label || w.id}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---------- Main Component ----------
+
 export default function Dashboard() {
   const [layout, setLayout] = useState<DashboardLayout>(loadDashboardLayout);
-  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   // Lightweight ping to get a shared dataUpdatedAt timestamp for the "Last updated" display
   const { dataUpdatedAt } = useQuery<unknown>({
@@ -43,17 +234,70 @@ export default function Dashboard() {
     staleTime: 60_000,
   });
 
-  const handleLayoutChange = useCallback((next: DashboardLayout) => {
-    setLayout(next);
-    saveDashboardLayout(next);
-  }, []);
+  const handleLayoutChange = useCallback(
+    (next: DashboardLayout) => {
+      setLayout(next);
+      saveDashboardLayout(next);
+    },
+    [],
+  );
 
-  // Separate visible widgets into full-width and half-width for layout
-  const visibleWidgets = layout.widgets.filter((w) => w.visible);
+  const handleResize = useCallback(
+    (id: string, size: "small" | "medium" | "large") => {
+      const def = getWidgetDef(id);
+      if (def?.sizeLocked) return;
+      const next: DashboardLayout = {
+        widgets: layout.widgets.map((w) => (w.id === id ? { ...w, size } : w)),
+      };
+      handleLayoutChange(next);
+    },
+    [layout, handleLayoutChange],
+  );
+
+  const handleHide = useCallback(
+    (id: string) => {
+      const next: DashboardLayout = {
+        widgets: layout.widgets.map((w) =>
+          w.id === id ? { ...w, visible: false } : w,
+        ),
+      };
+      handleLayoutChange(next);
+    },
+    [layout, handleLayoutChange],
+  );
+
+  const handleRestore = useCallback(
+    (id: string) => {
+      const next: DashboardLayout = {
+        widgets: layout.widgets.map((w) =>
+          w.id === id ? { ...w, visible: true } : w,
+        ),
+      };
+      handleLayoutChange(next);
+    },
+    [layout, handleLayoutChange],
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (over && active.id !== over.id) {
+        const oldIndex = layout.widgets.findIndex((w) => w.id === active.id);
+        const newIndex = layout.widgets.findIndex((w) => w.id === over.id);
+        const newWidgets = arrayMove(layout.widgets, oldIndex, newIndex);
+        handleLayoutChange({ widgets: newWidgets });
+      }
+    },
+    [layout, handleLayoutChange],
+  );
+
+  const handleReset = useCallback(() => {
+    handleLayoutChange(getDefaultDashboardLayout());
+  }, [handleLayoutChange]);
 
   return (
     <div className="p-6 space-y-6">
-      {/* Page header with customize button */}
+      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
@@ -63,73 +307,55 @@ export default function Dashboard() {
             </p>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-gray-500 hover:text-gray-700"
-          onClick={() => setCustomizeOpen(true)}
-        >
-          <Settings className="h-4 w-4 mr-1.5" />
-          Customize
-        </Button>
+        <div className="flex items-center gap-2">
+          {editMode && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReset}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset
+            </Button>
+          )}
+          {editMode ? (
+            <Button
+              size="sm"
+              onClick={() => setEditMode(false)}
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+            >
+              <Check className="h-4 w-4 mr-1.5" /> Done
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditMode(true)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <Pencil className="h-4 w-4 mr-1.5" /> Edit Layout
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Render widgets */}
-      <WidgetGrid widgets={visibleWidgets} />
+      {/* Edit mode banner */}
+      {editMode && (
+        <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-2 flex items-center gap-2 text-sm text-teal-700">
+          <Pencil className="h-4 w-4 text-teal-600 flex-shrink-0" />
+          Drag widgets to reorder — Resize with S/M/L — Click eye icon to hide
+        </div>
+      )}
 
-      {/* Customize dialog */}
-      <CustomizeDashboard
-        open={customizeOpen}
-        onOpenChange={setCustomizeOpen}
+      {/* Render widgets */}
+      <DashboardWidgetGrid
         layout={layout}
-        onLayoutChange={handleLayoutChange}
+        editMode={editMode}
+        onResize={handleResize}
+        onHide={handleHide}
+        onRestore={handleRestore}
+        onDragEnd={handleDragEnd}
       />
     </div>
   );
-}
-
-/**
- * Renders visible widgets in order.
- * Full-width widgets take the whole row.
- * Half-width widgets are paired into a 2-column grid row.
- */
-function WidgetGrid({ widgets }: { widgets: { id: string; visible: boolean }[] }) {
-  const elements: React.ReactNode[] = [];
-  let halfBuffer: { id: string }[] = [];
-
-  const flushHalves = () => {
-    if (halfBuffer.length === 0) return;
-    elements.push(
-      <div key={`half-row-${halfBuffer.map((h) => h.id).join("-")}`} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {halfBuffer.map((h) => {
-          const Comp = WIDGET_COMPONENTS[h.id];
-          return Comp ? <Comp key={h.id} /> : null;
-        })}
-      </div>,
-    );
-    halfBuffer = [];
-  };
-
-  for (const item of widgets) {
-    const def = getWidgetDef(item.id);
-    if (!def) continue;
-
-    const Comp = WIDGET_COMPONENTS[item.id];
-    if (!Comp) continue;
-
-    if (def.size === "full") {
-      flushHalves();
-      elements.push(<Comp key={item.id} />);
-    } else {
-      halfBuffer.push(item);
-      if (halfBuffer.length === 2) {
-        flushHalves();
-      }
-    }
-  }
-
-  // Flush any remaining single half-width widget
-  flushHalves();
-
-  return <>{elements}</>;
 }

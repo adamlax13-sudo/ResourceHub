@@ -2,7 +2,7 @@
  * Dashboard widget registry and layout persistence.
  *
  * Each widget is a self-contained card rendered on the admin dashboard.
- * Users can show/hide and reorder widgets via the Customize panel;
+ * Users can show/hide, reorder, and resize widgets via inline edit mode;
  * the layout is persisted in localStorage.
  */
 
@@ -14,8 +14,9 @@ export interface DashboardWidget {
   /** HeroStats is not removable */
   removable: boolean;
   defaultOrder: number;
-  /** Half-width widgets sit side by side, full-width take the whole row */
-  size: "full" | "half";
+  size: 'small' | 'medium' | 'large';
+  /** If true, size is locked and cannot be changed by the user */
+  sizeLocked?: boolean;
 }
 
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
@@ -26,7 +27,8 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: false,
     defaultOrder: 0,
-    size: "full",
+    size: "large",
+    sizeLocked: true,
   },
   {
     id: "stat-cards",
@@ -35,7 +37,8 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: true,
     defaultOrder: 1,
-    size: "full",
+    size: "large",
+    sizeLocked: true,
   },
   {
     id: "recent-activity",
@@ -44,7 +47,7 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: true,
     defaultOrder: 2,
-    size: "half",
+    size: "medium",
   },
   {
     id: "quality-overview",
@@ -53,7 +56,7 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: true,
     defaultOrder: 3,
-    size: "half",
+    size: "medium",
   },
   {
     id: "top-searches",
@@ -62,7 +65,7 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: true,
     defaultOrder: 4,
-    size: "half",
+    size: "medium",
   },
   {
     id: "scraper-status",
@@ -71,14 +74,14 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     defaultVisible: true,
     removable: true,
     defaultOrder: 5,
-    size: "half",
+    size: "medium",
   },
 ];
 
 // ---- Layout persistence ----
 
 export interface DashboardLayout {
-  widgets: { id: string; visible: boolean }[];
+  widgets: { id: string; visible: boolean; size: 'small' | 'medium' | 'large' }[];
 }
 
 const STORAGE_KEY = "admin-dashboard-layout";
@@ -92,26 +95,40 @@ export function loadDashboardLayout(): DashboardLayout {
       const knownIds = new Set(parsed.widgets.map((w) => w.id));
       for (const widget of DASHBOARD_WIDGETS) {
         if (!knownIds.has(widget.id)) {
-          parsed.widgets.push({ id: widget.id, visible: widget.defaultVisible });
+          parsed.widgets.push({ id: widget.id, visible: widget.defaultVisible, size: widget.size });
         }
       }
+      // Backfill size for older saved layouts that didn't have it
+      parsed.widgets = parsed.widgets.map((w) => {
+        if (!w.size) {
+          const def = DASHBOARD_WIDGETS.find((d) => d.id === w.id);
+          return { ...w, size: def?.size ?? 'medium' };
+        }
+        // Enforce sizeLocked widgets always use their default size
+        const def = DASHBOARD_WIDGETS.find((d) => d.id === w.id);
+        if (def?.sizeLocked) {
+          return { ...w, size: def.size };
+        }
+        return w;
+      });
       return parsed;
     }
   } catch {
     // ignore corrupt storage
   }
-  return getDefaultLayout();
+  return getDefaultDashboardLayout();
 }
 
 export function saveDashboardLayout(layout: DashboardLayout): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
 }
 
-export function getDefaultLayout(): DashboardLayout {
+export function getDefaultDashboardLayout(): DashboardLayout {
   return {
     widgets: DASHBOARD_WIDGETS.map((w) => ({
       id: w.id,
       visible: w.defaultVisible,
+      size: w.size,
     })),
   };
 }
