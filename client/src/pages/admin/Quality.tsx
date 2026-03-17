@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Loader2,
+  ExternalLink,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangle,
+  CheckCircle,
+  AlertCircle,
+  Shield,
+  BarChart3,
+} from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
+
+// ---------- Constants ----------
 
 const FIELD_LABELS: Record<string, string> = {
   phone: "Phone",
@@ -38,7 +54,12 @@ const SEVERITY_COLORS: Record<string, string> = {
   low: "bg-gray-50 text-gray-500 border-gray-200",
 };
 
-// All filterable field options for the issues table
+const SEVERITY_BAR_COLORS: Record<string, string> = {
+  critical: "bg-red-500",
+  high: "bg-orange-500",
+  medium: "bg-amber-400",
+};
+
 const FIELD_FILTER_OPTIONS = [
   { value: "", label: "All Fields" },
   { value: "phone", label: "Phone" },
@@ -61,9 +82,94 @@ const FIELD_FILTER_OPTIONS = [
   { value: "staleGeocoding", label: "Stale Geocoding" },
 ];
 
+const ISSUES_PER_PAGE = 25;
+
+// ---------- Types ----------
+
+interface IssueEntry {
+  service: { id: number; name: string; category: string; confidenceScore: number | null };
+  severity: string;
+  missingFields: string[];
+}
+
+// ---------- Helpers ----------
+
+function barColor(pct: number): string {
+  if (pct >= 95) return "bg-teal-500";
+  if (pct >= 80) return "bg-emerald-500";
+  if (pct >= 50) return "bg-amber-500";
+  return "bg-red-500";
+}
+
+function barTextColor(pct: number): string {
+  if (pct >= 95) return "text-teal-700";
+  if (pct >= 80) return "text-emerald-700";
+  if (pct >= 50) return "text-amber-700";
+  return "text-red-700";
+}
+
+// ---------- Stat Card ----------
+
+function StatCard({
+  icon,
+  label,
+  value,
+  subtitle,
+  loading,
+  color = "teal",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  subtitle?: string;
+  loading: boolean;
+  color?: "teal" | "red" | "amber" | "emerald";
+}) {
+  const iconColors: Record<string, string> = {
+    teal: "text-teal-500",
+    red: "text-red-500",
+    amber: "text-amber-500",
+    emerald: "text-emerald-500",
+  };
+  return (
+    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className={iconColors[color]}>{icon}</div>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            {label}
+          </span>
+        </div>
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin text-gray-300" />
+        ) : (
+          <>
+            <p className="text-2xl font-semibold text-gray-900 tabular-nums">{value}</p>
+            {subtitle && (
+              <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Main Component ----------
+
 export default function Quality() {
   const [fieldFilter, setFieldFilter] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
+  const [hideComplete, setHideComplete] = useState(false);
+  const [issueSearch, setIssueSearch] = useState("");
+  const [issuePage, setIssuePage] = useState(1);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setIssuePage(1);
+  }, [fieldFilter, severityFilter, issueSearch]);
+
+  // ---------- Queries ----------
 
   const { data: summaryData, isPending: summaryLoading, dataUpdatedAt } = useQuery<{
     success: boolean;
@@ -79,11 +185,7 @@ export default function Quality() {
 
   const { data: issuesData, isPending: issuesLoading } = useQuery<{
     success: boolean;
-    issues: Array<{
-      service: { id: number; name: string; category: string; confidenceScore: number | null };
-      severity: string;
-      missingFields: string[];
-    }>;
+    issues: IssueEntry[];
     total: number;
   }>({
     queryKey: ["/api/admin/quality/issues"],
@@ -94,8 +196,12 @@ export default function Quality() {
     staleTime: 60_000,
   });
 
-  const summary = summaryData?.summary;
+  // ---------- Derived data ----------
 
+  const summary = summaryData?.summary;
+  const allIssues = issuesData?.issues ?? [];
+
+  // Field coverage bars
   const fieldBars = summary
     ? Object.entries(summary)
         .filter(([key]) => FIELD_LABELS[key])
@@ -103,101 +209,328 @@ export default function Quality() {
         .sort((a, b) => a.pct - b.pct)
     : [];
 
-  // Apply client-side filters to issues
-  const filteredIssues = (issuesData?.issues ?? []).filter((issue) => {
+  const displayBars = hideComplete
+    ? fieldBars.filter((b) => b.pct < 100)
+    : fieldBars;
+
+  // Overall score (weighted average of field coverages)
+  const overallScore = fieldBars.length > 0
+    ? Math.round(fieldBars.reduce((sum, b) => sum + b.pct, 0) / fieldBars.length)
+    : 0;
+
+  // Fields below 90%
+  const fieldsBelowThreshold = fieldBars.filter((b) => b.pct < 90).length;
+
+  // Severity counts
+  const severityCounts = { critical: 0, high: 0, medium: 0 };
+  for (const issue of allIssues) {
+    if (issue.severity in severityCounts) {
+      severityCounts[issue.severity as keyof typeof severityCounts]++;
+    }
+  }
+  const totalSeverity = severityCounts.critical + severityCounts.high + severityCounts.medium;
+
+  // Field issue counts (how many services are missing each field)
+  const fieldIssueCounts: Record<string, number> = {};
+  for (const issue of allIssues) {
+    for (const field of issue.missingFields) {
+      fieldIssueCounts[field] = (fieldIssueCounts[field] ?? 0) + 1;
+    }
+  }
+
+  // Category quality breakdown
+  const categoryIssues: Record<string, number> = {};
+  for (const issue of allIssues) {
+    const cat = issue.service.category;
+    categoryIssues[cat] = (categoryIssues[cat] ?? 0) + 1;
+  }
+  const categoryBreakdown = Object.entries(categoryIssues)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 15);
+  const maxCategoryIssues = categoryBreakdown.length > 0 ? categoryBreakdown[0][1] : 1;
+
+  // Filtered + searched issues
+  const filteredIssues = allIssues.filter((issue) => {
     if (fieldFilter && !issue.missingFields.includes(fieldFilter)) return false;
     if (severityFilter && issue.severity !== severityFilter) return false;
     return true;
   });
 
+  const searchedIssues = filteredIssues.filter((issue) =>
+    !issueSearch || issue.service.name.toLowerCase().includes(issueSearch.toLowerCase())
+  );
+
+  // Pagination
+  const totalIssuePages = Math.ceil(searchedIssues.length / ISSUES_PER_PAGE);
+  const paginatedIssues = searchedIssues.slice(
+    (issuePage - 1) * ISSUES_PER_PAGE,
+    issuePage * ISSUES_PER_PAGE
+  );
+
+  // ---------- Handlers ----------
+
+  const handleFieldClick = (fieldKey: string) => {
+    setFieldFilter(fieldFilter === fieldKey ? "" : fieldKey);
+    setTimeout(() => {
+      document.getElementById("issues-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
+  const handleSeverityClick = (severity: string) => {
+    setSeverityFilter(severityFilter === severity ? "" : severity);
+    setTimeout(() => {
+      document.getElementById("issues-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
+  // ---------- Render ----------
+
+  const loading = summaryLoading || issuesLoading;
+
   return (
     <div className="p-6 space-y-6">
+      {/* Page header */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900">Data Quality</h2>
         {dataUpdatedAt > 0 && (
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 mt-0.5">
             Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
           </p>
         )}
       </div>
 
-      {/* Scorecard */}
+      {/* 1. Summary Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          icon={<Shield className="h-4 w-4" />}
+          label="Overall Score"
+          value={loading ? "--" : `${overallScore}%`}
+          subtitle={loading ? undefined : overallScore >= 90 ? "Good" : overallScore >= 70 ? "Needs attention" : "Poor"}
+          loading={loading}
+          color={overallScore >= 90 ? "emerald" : overallScore >= 70 ? "amber" : "red"}
+        />
+        <StatCard
+          icon={<AlertCircle className="h-4 w-4" />}
+          label="Critical Issues"
+          value={loading ? "--" : String(severityCounts.critical)}
+          subtitle={loading ? undefined : severityCounts.critical === 0 ? "None" : "Needs fixing"}
+          loading={loading}
+          color={severityCounts.critical > 0 ? "red" : "emerald"}
+        />
+        <StatCard
+          icon={<AlertTriangle className="h-4 w-4" />}
+          label="Services with Issues"
+          value={loading ? "--" : String(issuesData?.total ?? allIssues.length)}
+          loading={loading}
+          color="amber"
+        />
+        <StatCard
+          icon={<BarChart3 className="h-4 w-4" />}
+          label="Fields Below 90%"
+          value={loading ? "--" : String(fieldsBelowThreshold)}
+          subtitle={loading ? undefined : `of ${fieldBars.length} tracked`}
+          loading={loading}
+          color={fieldsBelowThreshold > 3 ? "red" : fieldsBelowThreshold > 0 ? "amber" : "emerald"}
+        />
+      </div>
+
+      {/* 2. Field Coverage */}
       <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-gray-900 text-base">Field Coverage</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-gray-900 text-base">Field Coverage</CardTitle>
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={hideComplete}
+                onChange={(e) => setHideComplete(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              Hide complete fields
+            </label>
+          </div>
         </CardHeader>
         <CardContent>
           {summaryLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
+          ) : displayBars.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-4">
+              {hideComplete ? "All fields at 100% coverage." : "No field data available."}
+            </p>
           ) : (
             <div className="space-y-3">
-              {fieldBars.map((bar) => (
-                <div
-                  key={bar.key}
-                  className={cn(
-                    "space-y-1 cursor-pointer rounded px-2 py-1 -mx-2 transition-colors",
-                    fieldFilter === bar.key ? "bg-teal-50" : "hover:bg-gray-50"
-                  )}
-                  onClick={() => setFieldFilter(fieldFilter === bar.key ? "" : bar.key)}
-                >
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">
-                      {bar.label}
-                      {bar.key === "embeddingFresh" && (
-                        <InfoTip text="Percentage of embedded services whose embedding is up-to-date (generated after last data update)." />
-                      )}
-                      {bar.key === "geocodingFresh" && (
-                        <InfoTip text="Percentage of geocoded services whose coordinates were set after the last data update." />
-                      )}
-                    </span>
-                    <span className="text-gray-700">{bar.pct}%</span>
+              {displayBars.map((bar) => {
+                const issueCount = fieldIssueCounts[bar.key] ?? 0;
+                return (
+                  <div
+                    key={bar.key}
+                    className={cn(
+                      "space-y-1 cursor-pointer rounded px-2 py-1.5 -mx-2 transition-colors",
+                      fieldFilter === bar.key ? "bg-teal-50 ring-1 ring-teal-200" : "hover:bg-gray-50"
+                    )}
+                    onClick={() => handleFieldClick(bar.key)}
+                  >
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 font-medium">
+                        {bar.label}
+                        {bar.key === "embeddingFresh" && (
+                          <InfoTip text="Percentage of embedded services whose embedding is up-to-date (generated after last data update)." />
+                        )}
+                        {bar.key === "geocodingFresh" && (
+                          <InfoTip text="Percentage of geocoded services whose coordinates were set after the last data update." />
+                        )}
+                        {issueCount > 0 && (
+                          <span className="ml-2 text-xs text-gray-400 font-normal">
+                            {issueCount} {issueCount === 1 ? "service" : "services"}
+                          </span>
+                        )}
+                      </span>
+                      <span className={cn("font-semibold tabular-nums", barTextColor(bar.pct))}>
+                        {bar.pct}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full transition-all", barColor(bar.pct))}
+                        style={{ width: `${bar.pct}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-all",
-                        bar.pct >= 80 ? "bg-emerald-500" :
-                        bar.pct >= 50 ? "bg-amber-500" : "bg-red-500"
-                      )}
-                      style={{ width: `${bar.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Issue Queue */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      {/* 3. Severity Breakdown */}
+      {totalSeverity > 0 && (
+        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900 text-base">Severity Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Severity labels */}
+            <div className="flex items-center gap-4 mb-3 flex-wrap">
+              {(["critical", "high", "medium"] as const).map((severity) => {
+                const count = severityCounts[severity];
+                if (count === 0) return null;
+                return (
+                  <button
+                    key={severity}
+                    className={cn(
+                      "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded transition-colors cursor-pointer",
+                      severityFilter === severity
+                        ? SEVERITY_COLORS[severity] + " ring-1 ring-offset-1"
+                        : "text-gray-600 hover:bg-gray-50"
+                    )}
+                    onClick={() => handleSeverityClick(severity)}
+                  >
+                    <span
+                      className={cn("w-2.5 h-2.5 rounded-sm", SEVERITY_BAR_COLORS[severity])}
+                    />
+                    <span className="capitalize">{severity}</span>
+                    <span className="text-gray-400">({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Stacked bar */}
+            <div className="h-4 bg-gray-100 rounded-full overflow-hidden flex">
+              {(["critical", "high", "medium"] as const).map((severity) => {
+                const count = severityCounts[severity];
+                if (count === 0) return null;
+                const pct = (count / totalSeverity) * 100;
+                return (
+                  <div
+                    key={severity}
+                    className={cn(
+                      "h-full transition-all cursor-pointer hover:opacity-80",
+                      SEVERITY_BAR_COLORS[severity],
+                      severityFilter === severity && "ring-2 ring-offset-1 ring-gray-400"
+                    )}
+                    style={{ width: `${pct}%` }}
+                    onClick={() => handleSeverityClick(severity)}
+                    title={`${severity}: ${count} issues (${Math.round(pct)}%)`}
+                  />
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 4. Issues Table */}
+      <Card id="issues-section" className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-gray-900 text-base">
-              Issues {filteredIssues.length > 0 ? `(${filteredIssues.length}${fieldFilter || severityFilter ? ` of ${issuesData?.total ?? 0}` : ""})` : ""}
+              Issues{" "}
+              {searchedIssues.length > 0 && (
+                <span className="text-gray-400 font-normal">
+                  ({searchedIssues.length}
+                  {(fieldFilter || severityFilter || issueSearch) ? ` of ${issuesData?.total ?? allIssues.length}` : ""})
+                </span>
+              )}
             </CardTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Input
+                  placeholder="Search services..."
+                  value={issueSearch}
+                  onChange={(e) => setIssueSearch(e.target.value)}
+                  className="h-7 pl-7 pr-2 w-44 text-xs border-gray-300"
+                />
+              </div>
+
+              {/* Field filter */}
               <select
                 value={fieldFilter}
                 onChange={(e) => setFieldFilter(e.target.value)}
                 className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
               >
-                {FIELD_FILTER_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
+                {FIELD_FILTER_OPTIONS.map((opt) => {
+                  const count = opt.value ? fieldIssueCounts[opt.value] ?? 0 : 0;
+                  return (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}{opt.value && count > 0 ? ` (${count})` : ""}
+                    </option>
+                  );
+                })}
               </select>
+
+              {/* Severity filter */}
               <select
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value)}
                 className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
               >
                 <option value="">All Severity</option>
-                <option value="critical">Critical</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
+                <option value="critical">Critical ({severityCounts.critical})</option>
+                <option value="high">High ({severityCounts.high})</option>
+                <option value="medium">Medium ({severityCounts.medium})</option>
               </select>
+
+              {/* Clear filters */}
+              {(fieldFilter || severityFilter || issueSearch) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-gray-500"
+                  onClick={() => {
+                    setFieldFilter("");
+                    setSeverityFilter("");
+                    setIssueSearch("");
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -206,74 +539,193 @@ export default function Quality() {
             <div className="flex justify-center py-8">
               <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
-          ) : !filteredIssues.length ? (
+          ) : !searchedIssues.length ? (
             <p className="text-sm text-gray-400 text-center py-4">
-              {fieldFilter || severityFilter ? "No issues match the selected filters." : "No quality issues found."}
+              {fieldFilter || severityFilter || issueSearch
+                ? "No issues match the selected filters."
+                : "No quality issues found."}
             </p>
           ) : (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Severity</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Missing Fields</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
-                      Confidence
-                      <InfoTip text="Source confidence score — how reliable the data source is, not how complete the data is." />
-                    </th>
-                    <th className="w-10" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredIssues.map((issue) => (
-                    <tr key={issue.service.id} className="border-t border-gray-200 hover:bg-gray-50">
-                      <td className="px-3 py-2 text-gray-900 max-w-[200px] truncate">{issue.service.name}</td>
-                      <td className="px-3 py-2">
-                        <Badge className={cn("text-[10px]", SEVERITY_COLORS[issue.severity] || SEVERITY_COLORS.low)}>
-                          {issue.severity}
-                        </Badge>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex gap-1 flex-wrap">
-                          {issue.missingFields.map((field, i) => (
-                            <Badge
-                              key={i}
-                              className={cn(
-                                "text-[10px] cursor-pointer",
-                                fieldFilter === field
-                                  ? "bg-teal-50 text-teal-700 border-teal-200"
-                                  : "bg-red-50 text-red-600 border-red-200"
-                              )}
-                              onClick={() => setFieldFilter(fieldFilter === field ? "" : field)}
-                            >
-                              {FIELD_LABELS[field] || field}
-                            </Badge>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2">
-                        <span className={cn(
-                          "text-xs font-mono",
-                          (issue.service.confidenceScore ?? 0) >= 70 ? "text-emerald-500" :
-                          (issue.service.confidenceScore ?? 0) >= 40 ? "text-amber-500" : "text-red-500"
-                        )}>
-                          {issue.service.confidenceScore ?? "N/A"}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2">
-                        <Link href={`/admin/services?selected=${issue.service.id}`}>
-                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
-                        </Link>
-                      </td>
+            <>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                        Service
+                      </th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                        Category
+                      </th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                        Severity
+                      </th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                        Missing Fields
+                      </th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                        Confidence
+                        <InfoTip text="Source confidence score -- how reliable the data source is, not how complete the data is." />
+                      </th>
+                      <th className="w-10" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedIssues.map((issue) => (
+                      <tr
+                        key={issue.service.id}
+                        className="border-t border-gray-200 hover:bg-gray-50"
+                      >
+                        <td className="px-3 py-2 text-gray-900 max-w-[180px] truncate" title={issue.service.name}>
+                          {issue.service.name}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge
+                            className={cn(
+                              "text-[10px] whitespace-nowrap",
+                              getCategoryColor(issue.service.category)
+                            )}
+                          >
+                            {issue.service.category}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge
+                            className={cn(
+                              "text-[10px]",
+                              SEVERITY_COLORS[issue.severity] || SEVERITY_COLORS.low
+                            )}
+                          >
+                            {issue.severity}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex gap-1 flex-wrap">
+                            {issue.missingFields.map((field, i) => (
+                              <Badge
+                                key={i}
+                                className={cn(
+                                  "text-[10px] cursor-pointer",
+                                  fieldFilter === field
+                                    ? "bg-teal-50 text-teal-700 border-teal-200"
+                                    : "bg-red-50 text-red-600 border-red-200"
+                                )}
+                                onClick={() => handleFieldClick(field)}
+                              >
+                                {FIELD_LABELS[field] || field}
+                              </Badge>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={cn(
+                              "text-xs font-mono",
+                              (issue.service.confidenceScore ?? 0) >= 70
+                                ? "text-emerald-500"
+                                : (issue.service.confidenceScore ?? 0) >= 40
+                                  ? "text-amber-500"
+                                  : "text-red-500"
+                            )}
+                          >
+                            {issue.service.confidenceScore ?? "N/A"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Link href={`/admin/services?selected=${issue.service.id}`}>
+                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalIssuePages > 1 && (
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">
+                    Showing {(issuePage - 1) * ISSUES_PER_PAGE + 1}--
+                    {Math.min(issuePage * ISSUES_PER_PAGE, searchedIssues.length)} of{" "}
+                    {searchedIssues.length}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      disabled={issuePage <= 1}
+                      onClick={() => setIssuePage((p) => Math.max(1, p - 1))}
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </Button>
+                    <span className="text-xs text-gray-500 px-2 tabular-nums">
+                      {issuePage} / {totalIssuePages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      disabled={issuePage >= totalIssuePages}
+                      onClick={() => setIssuePage((p) => Math.min(totalIssuePages, p + 1))}
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
+
+      {/* 5. Category Quality Breakdown */}
+      {categoryBreakdown.length > 0 && (
+        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900 text-base">
+              Quality by Category
+              <InfoTip text="Categories sorted by number of data quality issues. Categories with more issues may need enrichment or manual review." />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2.5">
+              {categoryBreakdown.map(([category, count]) => {
+                const barWidth = Math.round((count / maxCategoryIssues) * 100);
+                return (
+                  <div key={category} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Badge
+                          className={cn(
+                            "text-[10px] whitespace-nowrap shrink-0",
+                            getCategoryColor(category)
+                          )}
+                        >
+                          {category}
+                        </Badge>
+                      </div>
+                      <span className="text-xs text-gray-400 shrink-0 ml-2 tabular-nums">
+                        {count} {count === 1 ? "issue" : "issues"}
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all",
+                          count <= 2 ? "bg-emerald-400" : count <= 5 ? "bg-amber-400" : "bg-red-400"
+                        )}
+                        style={{ width: `${barWidth}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
