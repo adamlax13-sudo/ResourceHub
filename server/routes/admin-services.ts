@@ -372,6 +372,59 @@ export function registerAdminServiceRoutes(app: Express): void {
     }
   });
 
+  // ============= CHECK DUPLICATES (named sub-route — before :id) =============
+  app.get("/api/admin/services/:id/duplicates", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const idSchema = z.coerce.number().int().min(1);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+
+      const id = parseResult.data;
+      const service = await storage.getAdminServiceDetail(id);
+      if (!service) {
+        return res.status(404).json(createErrorResponse("Service not found"));
+      }
+
+      // Build name prefix for ILIKE matching (first 3 significant words before em-dash)
+      const namePrefix = (service.name || '').split('\u2014')[0].trim().split(' ').slice(0, 3).join(' ');
+
+      const duplicates = await db.execute(sql`
+        SELECT id, service_id, name, category, phone, email, address, location,
+               is_active, confidence_score,
+               CASE
+                 WHEN phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'} THEN 'phone'
+                 WHEN email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}) THEN 'email'
+                 WHEN address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'} THEN 'address'
+                 ELSE 'name'
+               END AS match_type
+        FROM services
+        WHERE id != ${id}
+          AND (
+            (phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'})
+            OR (email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}))
+            OR (address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'})
+            OR (LOWER(name) ILIKE ${`%${namePrefix.toLowerCase()}%`})
+          )
+        ORDER BY
+          CASE WHEN is_active THEN 0 ELSE 1 END,
+          confidence_score DESC
+        LIMIT 20
+      `);
+
+      res.json({
+        success: true,
+        duplicates: duplicates.rows,
+        sourceService: { id: service.id, name: service.name },
+      });
+    } catch (err) {
+      console.error("Check duplicates error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to check duplicates", errorMessage));
+    }
+  });
+
   // ============= GET SERVICE DETAIL (parameterized :id) =============
   app.get("/api/admin/services/:id", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
     try {

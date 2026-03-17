@@ -37,6 +37,7 @@ interface ServiceFormProps {
   isPending?: boolean;
   submitLabel?: string;
   onDirtyChange?: (dirty: boolean) => void;
+  onNameChange?: (name: string) => void;
 }
 
 /** Normalize requiredDocs — DB may store string[] or {name: string}[] */
@@ -49,7 +50,7 @@ function normalizeRequiredDocs(raw: unknown): string[] {
   });
 }
 
-export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange }: ServiceFormProps) {
   const [form, setForm] = useState<ServiceFormData>({
     name: "",
     category: "",
@@ -192,6 +193,9 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     onDirtyChange?.(true);
+    if (field === 'name' && typeof value === 'string') {
+      onNameChange?.(value);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

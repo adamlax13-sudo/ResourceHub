@@ -1702,14 +1702,18 @@ export class DatabaseStorage implements IStorage {
         COUNT(*) FILTER (WHERE languages_supported IS NOT NULL AND languages_supported::text != '[]' AND languages_supported::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS "languagesSupported",
         COUNT(*) FILTER (WHERE latitude IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS latitude,
         COUNT(*) FILTER (WHERE tags IS NOT NULL AND tags::text != '[]' AND tags::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS tags,
-        COUNT(*) FILTER (WHERE embedding IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS embedding
+        COUNT(*) FILTER (WHERE embedding IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS embedding,
+        -- % of services with embeddings that are up-to-date (embedding_updated_at >= last_updated)
+        COUNT(*) FILTER (WHERE embedding IS NOT NULL AND (embedding_updated_at IS NULL OR embedding_updated_at >= last_updated)) * 100.0 / NULLIF(COUNT(*) FILTER (WHERE embedding IS NOT NULL), 0) AS "embeddingFresh",
+        -- % of geocoded services that are up-to-date
+        COUNT(*) FILTER (WHERE latitude IS NOT NULL AND (geocoded_at IS NULL OR geocoded_at >= last_updated)) * 100.0 / NULLIF(COUNT(*) FILTER (WHERE latitude IS NOT NULL), 0) AS "geocodingFresh"
       FROM services
       WHERE is_active = true
     `);
 
     const row = result.rows[0] as any;
     const summary: Record<string, number> = {};
-    for (const field of ['phone', 'email', 'websiteUrl', 'address', 'description', 'hoursOfOperation', 'eligibility', 'waitTimes', 'serviceFormat', 'processSteps', 'requiredDocs', 'languagesSupported', 'latitude', 'tags', 'embedding']) {
+    for (const field of ['phone', 'email', 'websiteUrl', 'address', 'description', 'hoursOfOperation', 'eligibility', 'waitTimes', 'serviceFormat', 'processSteps', 'requiredDocs', 'languagesSupported', 'latitude', 'tags', 'embedding', 'embeddingFresh', 'geocodingFresh']) {
       summary[field] = Math.round(Number(row?.[field] ?? 0) * 10) / 10;
     }
     return summary;
@@ -1748,6 +1752,9 @@ export class DatabaseStorage implements IStorage {
           OR (process_steps IS NULL OR process_steps::text = '[]' OR process_steps::text = 'null')
           OR (required_docs IS NULL OR required_docs::text = '[]' OR required_docs::text = 'null')
           OR (languages_supported IS NULL OR languages_supported::text = '[]' OR languages_supported::text = 'null')
+          -- Stale embedding or geocoding
+          OR (embedding IS NOT NULL AND embedding_updated_at IS NOT NULL AND last_updated > embedding_updated_at)
+          OR (latitude IS NOT NULL AND geocoded_at IS NOT NULL AND last_updated > geocoded_at)
         )
       ORDER BY
         CASE
@@ -1776,6 +1783,8 @@ export class DatabaseStorage implements IStorage {
           OR (process_steps IS NULL OR process_steps::text = '[]' OR process_steps::text = 'null')
           OR (required_docs IS NULL OR required_docs::text = '[]' OR required_docs::text = 'null')
           OR (languages_supported IS NULL OR languages_supported::text = '[]' OR languages_supported::text = 'null')
+          OR (embedding IS NOT NULL AND embedding_updated_at IS NOT NULL AND last_updated > embedding_updated_at)
+          OR (latitude IS NOT NULL AND geocoded_at IS NOT NULL AND last_updated > geocoded_at)
         )
     `);
 
@@ -1797,6 +1806,14 @@ export class DatabaseStorage implements IStorage {
       if (!rd || (typeof rd === 'string' ? rd === '[]' || rd === 'null' : Array.isArray(rd) && rd.length === 0)) missingFields.push('requiredDocs');
       const ls = row.languages_supported;
       if (!ls || (typeof ls === 'string' ? ls === '[]' || ls === 'null' : Array.isArray(ls) && ls.length === 0)) missingFields.push('languagesSupported');
+      if (row.embedding && row.embedding_updated_at && row.last_updated &&
+          new Date(row.embedding_updated_at) < new Date(row.last_updated)) {
+        missingFields.push('staleEmbedding');
+      }
+      if (row.latitude && row.geocoded_at && row.last_updated &&
+          new Date(row.geocoded_at) < new Date(row.last_updated)) {
+        missingFields.push('staleGeocoding');
+      }
 
       // Map raw row to Service shape
       const service: Service = {

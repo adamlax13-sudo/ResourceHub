@@ -23,7 +23,11 @@ const FIELD_LABELS: Record<string, string> = {
   latitude: "Geocoding",
   tags: "Tags",
   embedding: "Embedding",
+  embeddingFresh: "Embeddings Fresh",
+  geocodingFresh: "Geocoding Fresh",
   lowConfidence: "Low Confidence",
+  staleEmbedding: "Stale Embedding",
+  staleGeocoding: "Stale Geocoding",
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -52,6 +56,8 @@ const FIELD_FILTER_OPTIONS = [
   { value: "tags", label: "Tags" },
   { value: "embedding", label: "Embedding" },
   { value: "lowConfidence", label: "Low Confidence" },
+  { value: "staleEmbedding", label: "Stale Embedding" },
+  { value: "staleGeocoding", label: "Stale Geocoding" },
 ];
 
 export default function Quality() {

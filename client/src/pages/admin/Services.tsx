@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation, useSearch } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
@@ -23,6 +23,8 @@ import {
   MapPin,
   Flag,
   Sparkles,
+  GitCompare,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -328,6 +330,31 @@ export default function Services() {
     },
   });
 
+  // Duplicate check state
+  const [showDuplicates, setShowDuplicates] = useState(false);
+  const [duplicates, setDuplicates] = useState<any[]>([]);
+
+  // Check duplicates mutation
+  const checkDuplicatesMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/services/${selectedId}/duplicates`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setDuplicates(data.duplicates || []);
+      setShowDuplicates(true);
+    },
+    onError: (err) => {
+      toast({ title: "Duplicate check failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  // Reset duplicates when selecting a different service
+  useEffect(() => {
+    setShowDuplicates(false);
+    setDuplicates([]);
+  }, [selectedId]);
+
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
@@ -628,6 +655,19 @@ export default function Services() {
                 }
                 Flag for Review
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => checkDuplicatesMutation.mutate()}
+                disabled={checkDuplicatesMutation.isPending}
+                className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                {checkDuplicatesMutation.isPending
+                  ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
+                  : <GitCompare className="h-4 w-4 mr-1.5 text-teal-600" />
+                }
+                Check Duplicates
+              </Button>
             </div>
             {showFlagDialog && (
               <div className="p-3 rounded-lg border border-amber-200 bg-amber-50 space-y-2">
@@ -662,6 +702,38 @@ export default function Services() {
                   </Button>
                 </div>
               </div>
+            )}
+            {/* Duplicate check results */}
+            {showDuplicates && (
+              <Card className="bg-amber-50/50 border-amber-200 shadow-sm rounded-xl mt-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-amber-700 flex items-center gap-2">
+                    <GitCompare className="h-4 w-4" />
+                    Potential Duplicates ({duplicates.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {duplicates.length === 0 ? (
+                    <p className="text-sm text-gray-400 py-2">No duplicates found.</p>
+                  ) : (
+                    duplicates.map((dup: any) => (
+                      <div key={dup.id} className="flex items-center justify-between py-2 border-b border-amber-100 last:border-0">
+                        <div>
+                          <p className="text-sm text-gray-900">{dup.name}</p>
+                          <div className="flex gap-2 mt-0.5">
+                            <Badge className={cn(getCategoryColor(dup.category), "text-[10px]")}>{dup.category}</Badge>
+                            <Badge className="bg-amber-100 text-amber-700 text-[10px]">Match: {dup.match_type}</Badge>
+                            {!dup.is_active && <Badge className="bg-gray-100 text-gray-500 text-[10px]">Inactive</Badge>}
+                          </div>
+                        </div>
+                        <Link href={`/admin/services?selected=${dup.id}`}>
+                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900" />
+                        </Link>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
             )}
           </div>
 
