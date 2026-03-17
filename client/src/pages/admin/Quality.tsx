@@ -308,6 +308,7 @@ export default function Quality() {
           subtitle={loading ? undefined : overallScore >= 90 ? "Good" : overallScore >= 70 ? "Needs attention" : "Poor"}
           loading={loading}
           color={overallScore >= 90 ? "emerald" : overallScore >= 70 ? "amber" : "red"}
+          titleExtra={<InfoTip text="Average coverage across all 17 tracked fields. The Dashboard score only checks 8 core contact fields, so it may differ." />}
         />
         <StatCard
           icon={<AlertCircle className="h-4 w-4" />}
@@ -323,6 +324,7 @@ export default function Quality() {
           value={loading ? "--" : String(issuesData?.total ?? allIssues.length)}
           loading={loading}
           color="amber"
+          titleExtra={<InfoTip text="Services missing critical data like phone, email, website, or description. These may appear incomplete to users." />}
         />
         <StatCard
           icon={<BarChart3 className="h-4 w-4" />}

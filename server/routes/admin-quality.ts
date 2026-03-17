@@ -25,7 +25,7 @@ export function registerAdminQualityRoutes(app: Express): void {
   app.get("/api/admin/quality/issues", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
     try {
       const pageSchema = z.coerce.number().int().min(1).default(1);
-      const limitSchema = z.coerce.number().int().min(1).max(100).default(20);
+      const limitSchema = z.coerce.number().int().min(1).max(200).default(50);
 
       const page = pageSchema.safeParse(req.query.page).success
         ? pageSchema.parse(req.query.page)
