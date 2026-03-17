@@ -493,9 +493,6 @@ function LeastClickedWidget({ services, loading, compact }: { services: ServiceE
           Least Clicked Services
           <InfoTip text="Active services that rarely get clicked -- may need better categorization." />
         </CardTitle>
-        <p className="text-xs text-gray-400 mt-0.5">
-          Active services with fewest clicks
-        </p>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -976,7 +973,7 @@ function AnalyticsWidgetGrid({
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
           <div className={cn(
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+              "widget-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
               editMode ? "gap-6 pt-2" : "gap-4"
             )}>
             {visibleWidgets.map((w) => {
@@ -1220,7 +1217,7 @@ export default function Analytics() {
   }, [days, searchData, serviceData]);
 
   return (
-    <div className="p-6 space-y-6 max-w-[1400px]">
+    <div className="p-6 space-y-6">
       {/* Header + Time Range + Edit Layout */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Analytics</h2>

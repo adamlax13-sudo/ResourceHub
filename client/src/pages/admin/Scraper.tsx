@@ -72,7 +72,7 @@ export default function Scraper() {
               <div>
                 <p className="text-xs text-gray-400">Duration</p>
                 <p className="text-sm text-gray-900">
-                  {latestRun.duration || computeDuration(latestRun.startedAt, latestRun.completedAt)}
+                  {formatDuration(latestRun.duration, latestRun.startedAt, latestRun.completedAt)}
                 </p>
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function Scraper() {
             const filtered = hideFailed
               ? data.runs.filter((run) => {
                   const isFailed = run.status?.toLowerCase() === "failed" || run.status?.toLowerCase() === "error";
-                  const isZeroDuration = !run.duration && !run.completedAt;
+                  const isZeroDuration = !run.duration || run.duration === "0ms" || run.duration === "0s";
                   return !(isFailed && isZeroDuration);
                 })
               : data.runs;
@@ -172,7 +172,7 @@ export default function Scraper() {
                                 </span>
                               </td>
                               <td className="px-3 py-2 text-gray-500">
-                                {run.duration || computeDuration(run.startedAt, run.completedAt)}
+                                {formatDuration(run.duration, run.startedAt, run.completedAt)}
                               </td>
                               <td className="px-3 py-2 text-right text-emerald-500">
                                 {run.servicesCreated ?? "-"}
@@ -268,9 +268,8 @@ function StatusBadge({ status }: { status: string }) {
   return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{status}</Badge>;
 }
 
-function computeDuration(startedAt: string, completedAt?: string): string {
-  if (!completedAt) return "In progress";
-  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime();
+function formatMs(ms: number): string {
+  if (ms <= 0) return "0s";
   if (ms < 1000) return `${ms}ms`;
   const sec = Math.floor(ms / 1000);
   if (sec < 60) return `${sec}s`;
@@ -280,4 +279,21 @@ function computeDuration(startedAt: string, completedAt?: string): string {
   const hr = Math.floor(min / 60);
   const remMin = min % 60;
   return `${hr}h ${remMin}m`;
+}
+
+function formatDuration(duration: string | undefined, startedAt: string, completedAt?: string): string {
+  // If we have a raw duration string from the API, parse and format it
+  if (duration) {
+    const match = duration.match(/^(-?\d+)ms$/);
+    if (match) {
+      const ms = Math.abs(parseInt(match[1], 10));
+      return formatMs(ms);
+    }
+    // Already formatted (e.g. "1m 19s"), return as-is
+    return duration;
+  }
+  // Fall back to computing from timestamps
+  if (!completedAt) return "In progress";
+  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime();
+  return formatMs(Math.abs(ms));
 }

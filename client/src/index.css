@@ -189,6 +189,20 @@ input[type="search"]::-webkit-search-cancel-button {
   }
 }
 
+
+/* Widget grid — cards fill their grid cell height so no dead space appears */
+/* The grid uses align-items:stretch (default) so cells match the tallest in the row.
+   These rules make the Card and its content expand to fill that space. */
+.widget-grid > div > .shadcn-card,
+.widget-grid > div > .relative > .shadcn-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.widget-grid .shadcn-card > div:last-child {
+  flex: 1;
+}
+
 /* Reduced Motion Support - Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -38,6 +38,7 @@ interface ServiceListItem {
   confidenceScore?: number;
   isActive?: boolean;
   enrichmentSource?: string;
+  lastUpdated?: string;
 }
 
 interface ServiceDetail {
@@ -528,6 +529,11 @@ export default function Services() {
                       {svc.location && (
                         <span className="text-[10px] text-gray-400 truncate">{svc.location}</span>
                       )}
+                      {svc.lastUpdated && (
+                        <span className="text-[10px] text-gray-400 ml-auto flex-shrink-0">
+                          Edited {formatRelativeTime(svc.lastUpdated)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   {svc.confidenceScore != null && (
@@ -610,7 +616,14 @@ export default function Services() {
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-              <p className="text-sm text-gray-500">ID: {service.id} {service.serviceId ? `/ ${service.serviceId}` : ""}</p>
+              <p className="text-sm text-gray-500">
+                ID: {service.id} {service.serviceId ? `/ ${service.serviceId}` : ""}
+                {service.lastUpdated && (
+                  <span className="ml-2 text-gray-400">
+                    · Edited {formatRelativeTime(service.lastUpdated)}
+                  </span>
+                )}
+              </p>
             </div>
             <div className="flex gap-2">
               <Button
@@ -925,4 +938,19 @@ export default function Services() {
       placeholder="Select a service to view and edit"
     />
   );
+}
+
+function formatRelativeTime(dateStr: string): string {
+  if (!dateStr) return "";
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDays = Math.floor(diffHr / 24);
+  if (diffDays < 30) return `${diffDays}d ago`;
+  return new Date(dateStr).toLocaleDateString();
 }

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { GripVertical, EyeOff, Eye, Pencil, Check, RotateCcw } from "lucide-react";
+import { GripVertical, X, Pencil, Check, RotateCcw, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -9,8 +9,9 @@ import {
   loadDashboardLayout,
   saveDashboardLayout,
   getDefaultDashboardLayout,
-  getWidgetDef,
-} from "@/lib/dashboard-widgets";
+  getCatalogWidget,
+  type WidgetSize,
+} from "@/lib/widget-catalog";
 import {
   DndContext,
   closestCenter,
@@ -28,23 +29,52 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { AddWidgetModal } from "@/components/admin/AddWidgetModal";
 
-// Widget components
-import { HeroStatsWidget } from "@/components/admin/widgets/HeroStatsWidget";
-import { StatCardsWidget } from "@/components/admin/widgets/StatCardsWidget";
+// Widget components — full catalog registry
+import { ServiceOverviewWidget } from "@/components/admin/widgets/ServiceOverviewWidget";
 import { RecentActivityWidget } from "@/components/admin/widgets/RecentActivityWidget";
 import { QualityOverviewWidget } from "@/components/admin/widgets/QualityOverviewWidget";
 import { TopSearchesWidget } from "@/components/admin/widgets/TopSearchesWidget";
 import { ScraperStatusWidget } from "@/components/admin/widgets/ScraperStatusWidget";
+import { FieldCoverageWidget } from "@/components/admin/widgets/FieldCoverageWidget";
+import { PendingReviewsWidget } from "@/components/admin/widgets/PendingReviewsWidget";
+import { RecentFeedbackWidget } from "@/components/admin/widgets/RecentFeedbackWidget";
+import { VoteSummaryWidget } from "@/components/admin/widgets/VoteSummaryWidget";
+import { EmbeddingCoverageWidget } from "@/components/admin/widgets/EmbeddingCoverageWidget";
+import { AnalyticsDailyTrendWidget } from "@/components/admin/widgets/AnalyticsDailyTrendWidget";
+import { AnalyticsCategoriesWidget } from "@/components/admin/widgets/AnalyticsCategoriesWidget";
+import { AnalyticsPeakHoursWidget } from "@/components/admin/widgets/AnalyticsPeakHoursWidget";
+import { AnalyticsTopQueriesWidget } from "@/components/admin/widgets/AnalyticsTopQueriesWidget";
+import { AnalyticsClickPositionsWidget } from "@/components/admin/widgets/AnalyticsClickPositionsWidget";
+import { AnalyticsMostClickedWidget } from "@/components/admin/widgets/AnalyticsMostClickedWidget";
+import { AnalyticsLeastClickedWidget } from "@/components/admin/widgets/AnalyticsLeastClickedWidget";
+import { AnalyticsDevicesWidget } from "@/components/admin/widgets/AnalyticsDevicesWidget";
+import { AnalyticsUnmetNeedsWidget } from "@/components/admin/widgets/AnalyticsUnmetNeedsWidget";
+import { AnalyticsSessionsWidget } from "@/components/admin/widgets/AnalyticsSessionsWidget";
 
-/** Maps widget id to its React component */
-const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
-  "hero-stats": HeroStatsWidget,
-  "stat-cards": StatCardsWidget,
-  "recent-activity": RecentActivityWidget,
-  "quality-overview": QualityOverviewWidget,
-  "top-searches": TopSearchesWidget,
-  "scraper-status": ScraperStatusWidget,
+/** Maps widget catalog id → React component */
+const WIDGET_COMPONENTS: Record<string, React.ComponentType<{ compact?: boolean }>> = {
+  "service-overview": ServiceOverviewWidget as React.ComponentType<{ compact?: boolean }>,
+  "recent-activity": RecentActivityWidget as React.ComponentType<{ compact?: boolean }>,
+  "quality-overview": QualityOverviewWidget as React.ComponentType<{ compact?: boolean }>,
+  "top-searches": TopSearchesWidget as React.ComponentType<{ compact?: boolean }>,
+  "scraper-status": ScraperStatusWidget as React.ComponentType<{ compact?: boolean }>,
+  "quality-field-coverage": FieldCoverageWidget as React.ComponentType<{ compact?: boolean }>,
+  "pending-reviews": PendingReviewsWidget as React.ComponentType<{ compact?: boolean }>,
+  "recent-feedback": RecentFeedbackWidget as React.ComponentType<{ compact?: boolean }>,
+  "vote-summary": VoteSummaryWidget as React.ComponentType<{ compact?: boolean }>,
+  "embedding-coverage": EmbeddingCoverageWidget as React.ComponentType<{ compact?: boolean }>,
+  "analytics-daily-trend": AnalyticsDailyTrendWidget,
+  "analytics-categories": AnalyticsCategoriesWidget,
+  "analytics-peak-hours": AnalyticsPeakHoursWidget,
+  "analytics-top-queries": AnalyticsTopQueriesWidget,
+  "analytics-click-positions": AnalyticsClickPositionsWidget,
+  "analytics-most-clicked": AnalyticsMostClickedWidget,
+  "analytics-least-clicked": AnalyticsLeastClickedWidget,
+  "analytics-devices": AnalyticsDevicesWidget,
+  "analytics-unmet-needs": AnalyticsUnmetNeedsWidget,
+  "analytics-sessions": AnalyticsSessionsWidget,
 };
 
 // ---------- Sortable Widget Wrapper ----------
@@ -54,17 +84,21 @@ function SortableWidget({
   children,
   isEditing,
   size,
+  sizes,
   onResize,
-  onHide,
+  onRemove,
   sizeLocked,
+  pinned,
 }: {
   id: string;
   children: React.ReactNode;
   isEditing: boolean;
-  size: "small" | "medium" | "large";
-  onResize: (size: "small" | "medium" | "large") => void;
-  onHide: () => void;
+  size: WidgetSize;
+  sizes: WidgetSize[];
+  onResize: (size: WidgetSize) => void;
+  onRemove: () => void;
   sizeLocked?: boolean;
+  pinned?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id });
@@ -96,9 +130,8 @@ function SortableWidget({
         "ring-2 ring-teal-200 ring-offset-2",
         "hover:ring-teal-400"
       )}>
-        {/* Floating control bar — positioned above the widget */}
+        {/* Floating control bar */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 px-1.5 py-0.5">
-          {/* Drag handle */}
           <button
             {...attributes}
             {...listeners}
@@ -107,7 +140,6 @@ function SortableWidget({
             <GripVertical className="h-3.5 w-3.5" />
           </button>
 
-          {/* Size buttons */}
           {!sizeLocked && (
             <>
               <div className="w-px h-4 bg-gray-200" />
@@ -115,28 +147,35 @@ function SortableWidget({
                 <button
                   key={s}
                   onClick={() => onResize(s)}
+                  disabled={!sizes.includes(s)}
                   className={cn(
                     "w-6 h-6 rounded-full text-[10px] font-bold transition-all",
                     size === s
                       ? "bg-teal-500 text-white shadow-sm"
-                      : "text-gray-400 hover:bg-gray-100 hover:text-gray-700",
+                      : sizes.includes(s)
+                        ? "text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                        : "text-gray-200 cursor-not-allowed",
                   )}
                 >
                   {s[0].toUpperCase()}
                 </button>
               ))}
+            </>
+          )}
+
+          {!pinned && (
+            <>
               <div className="w-px h-4 bg-gray-200" />
               <button
-                onClick={onHide}
+                onClick={onRemove}
                 className="p-1 text-gray-400 hover:text-red-500 transition-colors"
               >
-                <EyeOff className="h-3.5 w-3.5" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </>
           )}
         </div>
 
-        {/* Widget content */}
         {children}
       </div>
     </div>
@@ -149,19 +188,19 @@ function DashboardWidgetGrid({
   layout,
   editMode,
   onResize,
-  onHide,
-  onRestore,
+  onRemove,
   onDragStart,
   onDragEnd,
+  onAddWidget,
   activeId,
 }: {
   layout: DashboardLayout;
   editMode: boolean;
-  onResize: (id: string, size: "small" | "medium" | "large") => void;
-  onHide: (id: string) => void;
-  onRestore: (id: string) => void;
+  onResize: (id: string, size: WidgetSize) => void;
+  onRemove: (id: string) => void;
   onDragStart: (event: DragStartEvent) => void;
   onDragEnd: (event: DragEndEvent) => void;
+  onAddWidget: () => void;
   activeId: string | null;
 }) {
   const sensors = useSensors(
@@ -169,11 +208,6 @@ function DashboardWidgetGrid({
   );
 
   const visibleWidgets = layout.widgets.filter((w) => w.visible);
-  const hiddenWidgets = layout.widgets.filter((w) => !w.visible);
-
-  const getWidgetLabel = (id: string): string => {
-    return getWidgetDef(id)?.label || id;
-  };
 
   return (
     <>
@@ -183,34 +217,50 @@ function DashboardWidgetGrid({
           strategy={verticalListSortingStrategy}
         >
           <div className={cn(
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+              "widget-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
               editMode ? "gap-6 pt-2" : "gap-4"
             )}>
             {visibleWidgets.map((w) => {
-              const def = getWidgetDef(w.id);
+              const def = getCatalogWidget(w.id);
               const Comp = WIDGET_COMPONENTS[w.id];
-              if (!Comp) return null;
+              if (!Comp || !def) return null;
+              const isCompact = w.size === "small";
               return (
                 <SortableWidget
                   key={w.id}
                   id={w.id}
                   isEditing={editMode}
                   size={w.size}
-                  sizeLocked={def?.sizeLocked}
+                  sizes={def.sizes}
+                  sizeLocked={def.sizeLocked}
+                  pinned={def.pinned}
                   onResize={(s) => onResize(w.id, s)}
-                  onHide={() => onHide(w.id)}
+                  onRemove={() => onRemove(w.id)}
                 >
-                  <Comp />
+                  <Comp compact={isCompact} />
                 </SortableWidget>
               );
             })}
+
+            {/* Add Widget button (edit mode only) */}
+            {editMode && (
+              <div className="col-span-1">
+                <button
+                  onClick={onAddWidget}
+                  className="w-full h-full min-h-[140px] rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 hover:bg-teal-50/50 transition-all flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-teal-600 cursor-pointer"
+                >
+                  <Plus className="h-8 w-8" />
+                  <span className="text-sm font-medium">Add Widget</span>
+                </button>
+              </div>
+            )}
           </div>
         </SortableContext>
         <DragOverlay dropAnimation={null}>
           {activeId ? (
             <div className="bg-white border-2 border-teal-400 rounded-xl shadow-2xl px-4 py-3 w-56 pointer-events-none">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {getWidgetLabel(activeId)}
+                {getCatalogWidget(activeId)?.label || activeId}
               </p>
               <p className="text-[11px] text-gray-400 mt-0.5">Drop to place here</p>
             </div>
@@ -218,24 +268,6 @@ function DashboardWidgetGrid({
         </DragOverlay>
       </DndContext>
 
-      {/* Hidden widgets bar (edit mode only) */}
-      {editMode && hiddenWidgets.length > 0 && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-          <p className="text-xs font-medium text-gray-500 mb-2">Hidden Widgets</p>
-          <div className="flex flex-wrap gap-2">
-            {hiddenWidgets.map((w) => (
-              <button
-                key={w.id}
-                onClick={() => onRestore(w.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-600 hover:border-teal-300 hover:text-teal-700 transition-colors"
-              >
-                <Eye className="h-3 w-3" />
-                {getWidgetDef(w.id)?.label || w.id}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }
@@ -246,8 +278,8 @@ export default function Dashboard() {
   const [layout, setLayout] = useState<DashboardLayout>(loadDashboardLayout);
   const [editMode, setEditMode] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
-  // Lightweight ping to get a shared dataUpdatedAt timestamp for the "Last updated" display
   const { dataUpdatedAt } = useQuery<unknown>({
     queryKey: ["/api/admin/quality/summary"],
     queryFn: async () => {
@@ -266,9 +298,10 @@ export default function Dashboard() {
   );
 
   const handleResize = useCallback(
-    (id: string, size: "small" | "medium" | "large") => {
-      const def = getWidgetDef(id);
+    (id: string, size: WidgetSize) => {
+      const def = getCatalogWidget(id);
       if (def?.sizeLocked) return;
+      if (def && !def.sizes.includes(size)) return;
       const next: DashboardLayout = {
         widgets: layout.widgets.map((w) => (w.id === id ? { ...w, size } : w)),
       };
@@ -277,26 +310,37 @@ export default function Dashboard() {
     [layout, handleLayoutChange],
   );
 
-  const handleHide = useCallback(
+  const handleRemove = useCallback(
     (id: string) => {
+      const def = getCatalogWidget(id);
+      if (def?.pinned) return;
       const next: DashboardLayout = {
-        widgets: layout.widgets.map((w) =>
-          w.id === id ? { ...w, visible: false } : w,
-        ),
+        widgets: layout.widgets.filter((w) => w.id !== id),
       };
       handleLayoutChange(next);
     },
     [layout, handleLayoutChange],
   );
 
-  const handleRestore = useCallback(
-    (id: string) => {
-      const next: DashboardLayout = {
-        widgets: layout.widgets.map((w) =>
-          w.id === id ? { ...w, visible: true } : w,
-        ),
-      };
-      handleLayoutChange(next);
+  const handleAddWidget = useCallback(
+    (widgetId: string) => {
+      if (layout.widgets.find((w) => w.id === widgetId)) {
+        // Already in layout — just make it visible
+        const next: DashboardLayout = {
+          widgets: layout.widgets.map((w) =>
+            w.id === widgetId ? { ...w, visible: true } : w,
+          ),
+        };
+        handleLayoutChange(next);
+      } else {
+        // Add new widget to the end
+        const def = getCatalogWidget(widgetId);
+        if (!def) return;
+        const next: DashboardLayout = {
+          widgets: [...layout.widgets, { id: widgetId, visible: true, size: def.defaultSize }],
+        };
+        handleLayoutChange(next);
+      }
     },
     [layout, handleLayoutChange],
   );
@@ -325,6 +369,8 @@ export default function Dashboard() {
   const handleReset = useCallback(() => {
     handleLayoutChange(getDefaultDashboardLayout());
   }, [handleLayoutChange]);
+
+  const addedWidgetIds = layout.widgets.map((w) => w.id);
 
   return (
     <div className="p-6 space-y-6">
@@ -374,7 +420,7 @@ export default function Dashboard() {
       {editMode && (
         <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-2 flex items-center gap-2 text-sm text-teal-700">
           <Pencil className="h-4 w-4 text-teal-600 flex-shrink-0" />
-          Drag widgets to reorder — Resize with S/M/L — Click eye icon to hide
+          Drag to reorder — Resize with S/M/L — Remove with X — Add widgets with +
         </div>
       )}
 
@@ -383,11 +429,19 @@ export default function Dashboard() {
         layout={layout}
         editMode={editMode}
         onResize={handleResize}
-        onHide={handleHide}
-        onRestore={handleRestore}
+        onRemove={handleRemove}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onAddWidget={() => setAddModalOpen(true)}
         activeId={activeId}
+      />
+
+      {/* Add Widget Modal */}
+      <AddWidgetModal
+        open={addModalOpen}
+        onOpenChange={setAddModalOpen}
+        addedWidgetIds={addedWidgetIds}
+        onAdd={handleAddWidget}
       />
     </div>
   );

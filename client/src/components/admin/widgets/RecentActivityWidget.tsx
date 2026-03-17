@@ -40,7 +40,7 @@ export function RecentActivityWidget() {
         ) : !data?.activity?.length ? (
           <p className="text-sm text-gray-400 py-4 text-center">No recent activity</p>
         ) : (
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-[220px]">
             <div className="space-y-1">
               {data.activity.map((entry, i) => {
                 const href = entry.numericServiceId
