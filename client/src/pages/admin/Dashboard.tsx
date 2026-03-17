@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +33,16 @@ export default function Dashboard() {
   const [layout, setLayout] = useState<DashboardLayout>(loadDashboardLayout);
   const [customizeOpen, setCustomizeOpen] = useState(false);
 
+  // Lightweight ping to get a shared dataUpdatedAt timestamp for the "Last updated" display
+  const { dataUpdatedAt } = useQuery<unknown>({
+    queryKey: ["/api/admin/quality/summary"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/quality/summary");
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
   const handleLayoutChange = useCallback((next: DashboardLayout) => {
     setLayout(next);
     saveDashboardLayout(next);
@@ -43,7 +55,14 @@ export default function Dashboard() {
     <div className="p-6 space-y-6">
       {/* Page header with customize button */}
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+          {dataUpdatedAt > 0 && (
+            <p className="text-xs text-gray-400">
+              Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+            </p>
+          )}
+        </div>
         <Button
           variant="ghost"
           size="sm"

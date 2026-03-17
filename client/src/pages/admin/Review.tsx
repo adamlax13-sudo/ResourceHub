@@ -16,7 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChangeRequest {
@@ -221,9 +221,13 @@ export default function Review() {
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       ) : !listData?.changeRequests?.length ? (
-        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-          <CheckCircle className="h-8 w-8 mb-2 text-emerald-300" />
-          <p className="text-sm">All caught up! No pending reviews.</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+          <ClipboardCheck className="h-12 w-12 text-gray-300 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No Pending Reviews</h3>
+          <p className="text-sm text-gray-500 max-w-md">
+            When the scraper runs or services are imported, proposed changes will appear here for review before going live.
+            You can also flag services for review from the Services page.
+          </p>
         </div>
       ) : (
         <div className="flex-1 overflow-auto">

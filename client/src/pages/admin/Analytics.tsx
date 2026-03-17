@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw, Lock } from "lucide-react";
+import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw, Lock, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
@@ -1160,6 +1160,47 @@ export default function Analytics() {
     staleTime: 60_000,
   });
 
+  const exportCSV = useCallback(() => {
+    const dateStr = new Date().toISOString().split("T")[0];
+
+    // Top queries sheet
+    const queryHeaders = ["Query", "Searches", "Clicks", "CTR"];
+    const queryRows = (searchData?.searches ?? []).map((s) => [
+      `"${s.query.replace(/"/g, '""')}"`,
+      s.searchCount,
+      s.clickCount,
+      s.searchCount > 0 ? ((s.clickCount / s.searchCount) * 100).toFixed(1) + "%" : "0%",
+    ]);
+
+    // Most clicked services sheet (append below with blank separator)
+    const serviceHeaders = ["Service", "Category", "Clicks"];
+    const serviceRows = (serviceData?.services ?? []).slice(0, 25).map((s) => [
+      `"${(s.serviceName || `Service ${s.serviceId}`).replace(/"/g, '""')}"`,
+      `"${(s.category || "").replace(/"/g, '""')}"`,
+      s.clickCount,
+    ]);
+
+    const csv = [
+      `Analytics Export — Last ${days} Days (${dateStr})`,
+      "",
+      "TOP SEARCH QUERIES",
+      queryHeaders.join(","),
+      ...queryRows.map((r) => r.join(",")),
+      "",
+      "MOST CLICKED SERVICES",
+      serviceHeaders.join(","),
+      ...serviceRows.map((r) => r.join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `analytics-${days}d-${dateStr}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [days, searchData, serviceData]);
+
   return (
     <div className="p-6 space-y-6 max-w-[1400px]">
       {/* Header + Time Range + Customize */}
@@ -1184,6 +1225,16 @@ export default function Analytics() {
               </Button>
             ))}
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-gray-700"
+            onClick={exportCSV}
+            title="Export CSV"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            Export CSV
+          </Button>
           <Button
             variant="ghost"
             size="sm"

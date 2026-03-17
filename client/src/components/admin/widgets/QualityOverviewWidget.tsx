@@ -12,10 +12,22 @@ const FIELD_LABELS: Record<string, string> = {
   description: "Description",
   hoursOfOperation: "Hours",
   eligibility: "Eligibility",
-  latitude: "Geocoded",
+  waitTimes: "Wait Times",
+  serviceFormat: "Service Format",
+  processSteps: "Process Steps",
+  requiredDocs: "Required Docs",
+  languagesSupported: "Languages",
+  latitude: "Geocoding",
   tags: "Tags",
   embedding: "Embedding",
+  embeddingFresh: "Embeddings Fresh",
+  geocodingFresh: "Geocoding Fresh",
 };
+
+/** Capitalize an unknown camelCase key as a fallback label */
+function toLabel(key: string): string {
+  return FIELD_LABELS[key] ?? key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+}
 
 export function QualityOverviewWidget() {
   const { data, isPending } = useQuery<{ success: boolean; summary: Record<string, number> }>({
@@ -62,7 +74,7 @@ function LowestFields({ summary }: { summary: Record<string, number> }) {
       {sorted.map(([field, pct]) => (
         <div key={field}>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-gray-600">{FIELD_LABELS[field] ?? field}</span>
+            <span className="text-sm text-gray-600">{toLabel(field)}</span>
             <span className="text-sm font-medium text-gray-900">{pct}%</span>
           </div>
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">

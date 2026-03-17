@@ -23,6 +23,8 @@ interface ScraperRun {
 
 export default function Scraper() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [hideFailed, setHideFailed] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
   const { data, isPending } = useQuery<{
     success: boolean;
@@ -31,7 +33,7 @@ export default function Scraper() {
   }>({
     queryKey: ["/api/admin/scraper/runs"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/scraper/runs?limit=20");
+      const res = await apiRequest("GET", "/api/admin/scraper/runs?limit=100");
       return res.json();
     },
     staleTime: 30_000,
@@ -95,7 +97,18 @@ export default function Scraper() {
       {/* Run History */}
       <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-gray-900 text-base">Run History</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-gray-900 text-base">Run History</CardTitle>
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={hideFailed}
+                onChange={(e) => setHideFailed(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              <span className="text-xs text-gray-500">Hide failed (0ms)</span>
+            </label>
+          </div>
         </CardHeader>
         <CardContent>
           {isPending ? (
@@ -104,84 +117,111 @@ export default function Scraper() {
             </div>
           ) : !data?.runs?.length ? (
             <p className="text-sm text-gray-400 text-center py-4">No runs recorded.</p>
-          ) : (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="w-8" />
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Status</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Started</th>
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Duration</th>
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Created</th>
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Updated</th>
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Errors</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.runs.map((run) => {
-                    const isExpanded = expandedId === run.id;
-                    const hasErrors = (run.errorCount ?? 0) > 0 || (run.errors?.length ?? 0) > 0;
-                    return (
-                      <React.Fragment key={run.id}>
-                        <tr
-                          className={cn(
-                            "border-t border-gray-200 cursor-pointer hover:bg-gray-50",
-                            isExpanded && "bg-gray-50"
-                          )}
-                          onClick={() => setExpandedId(isExpanded ? null : run.id)}
-                        >
-                          <td className="px-2 py-2">
-                            {hasErrors ? (
-                              isExpanded ?
-                                <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> :
-                                <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
-                            ) : <span className="w-3.5" />}
-                          </td>
-                          <td className="px-3 py-2"><StatusBadge status={run.status} /></td>
-                          <td className="px-3 py-2 text-gray-700">
-                            {new Date(run.startedAt).toLocaleDateString()}{" "}
-                            <span className="text-gray-400">
-                              {new Date(run.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                          </td>
-                          <td className="px-3 py-2 text-gray-500">
-                            {run.duration || computeDuration(run.startedAt, run.completedAt)}
-                          </td>
-                          <td className="px-3 py-2 text-right text-emerald-500">
-                            {run.servicesCreated ?? "-"}
-                          </td>
-                          <td className="px-3 py-2 text-right text-amber-500">
-                            {run.servicesUpdated ?? "-"}
-                          </td>
-                          <td className="px-3 py-2 text-right text-red-500">
-                            {run.errorCount ?? run.errors?.length ?? 0}
-                          </td>
-                        </tr>
-                        {isExpanded && hasErrors && (
-                          <tr>
-                            <td colSpan={7} className="px-6 py-3 bg-gray-50">
-                              <p className="text-xs font-medium text-gray-500 mb-2">Errors:</p>
-                              <div className="space-y-1 max-h-48 overflow-auto">
-                                {(run.errors ?? []).map((err, i) => (
-                                  <p key={i} className="text-xs text-red-500 font-mono">{err}</p>
-                                ))}
-                                {!run.errors?.length && (
-                                  <p className="text-xs text-gray-400">
-                                    {run.errorCount} error(s) occurred. See server logs for details.
-                                  </p>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          ) : (() => {
+            // Filter stale zero-duration failed runs when toggle is on
+            const filtered = hideFailed
+              ? data.runs.filter((run) => {
+                  const isFailed = run.status?.toLowerCase() === "failed" || run.status?.toLowerCase() === "error";
+                  const isZeroDuration = !run.duration && !run.completedAt;
+                  return !(isFailed && isZeroDuration);
+                })
+              : data.runs;
+            const displayed = showAll ? filtered : filtered.slice(0, 10);
+            const hasMore = filtered.length > 10;
+
+            return (
+              <>
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="w-8" />
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Status</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Started</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Duration</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Created</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Updated</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Errors</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayed.map((run) => {
+                        const isExpanded = expandedId === run.id;
+                        const hasErrors = (run.errorCount ?? 0) > 0 || (run.errors?.length ?? 0) > 0;
+                        return (
+                          <React.Fragment key={run.id}>
+                            <tr
+                              className={cn(
+                                "border-t border-gray-200 cursor-pointer hover:bg-gray-50",
+                                isExpanded && "bg-gray-50"
+                              )}
+                              onClick={() => setExpandedId(isExpanded ? null : run.id)}
+                            >
+                              <td className="px-2 py-2">
+                                {hasErrors ? (
+                                  isExpanded ?
+                                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> :
+                                    <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+                                ) : <span className="w-3.5" />}
+                              </td>
+                              <td className="px-3 py-2"><StatusBadge status={run.status} /></td>
+                              <td className="px-3 py-2 text-gray-700">
+                                {new Date(run.startedAt).toLocaleDateString()}{" "}
+                                <span className="text-gray-400">
+                                  {new Date(run.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-gray-500">
+                                {run.duration || computeDuration(run.startedAt, run.completedAt)}
+                              </td>
+                              <td className="px-3 py-2 text-right text-emerald-500">
+                                {run.servicesCreated ?? "-"}
+                              </td>
+                              <td className="px-3 py-2 text-right text-amber-500">
+                                {run.servicesUpdated ?? "-"}
+                              </td>
+                              <td className="px-3 py-2 text-right text-red-500">
+                                {run.errorCount ?? run.errors?.length ?? 0}
+                              </td>
+                            </tr>
+                            {isExpanded && hasErrors && (
+                              <tr>
+                                <td colSpan={7} className="px-6 py-3 bg-gray-50">
+                                  <p className="text-xs font-medium text-gray-500 mb-2">Errors:</p>
+                                  <div className="space-y-1 max-h-48 overflow-auto">
+                                    {(run.errors ?? []).map((err, i) => (
+                                      <p key={i} className="text-xs text-red-500 font-mono">{err}</p>
+                                    ))}
+                                    {!run.errors?.length && (
+                                      <p className="text-xs text-gray-400">
+                                        {run.errorCount} error(s) occurred. See server logs for details.
+                                      </p>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {hasMore && (
+                  <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
+                    <span>Showing {displayed.length} of {filtered.length} runs</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAll((v) => !v)}
+                      className="text-teal-600 hover:text-teal-700 font-medium"
+                    >
+                      {showAll ? "Show less" : `Show all ${filtered.length}`}
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
     </div>

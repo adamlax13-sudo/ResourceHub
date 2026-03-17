@@ -65,7 +65,7 @@ export default function Quality() {
   const [fieldFilter, setFieldFilter] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
 
-  const { data: summaryData, isPending: summaryLoading } = useQuery<{
+  const { data: summaryData, isPending: summaryLoading, dataUpdatedAt } = useQuery<{
     success: boolean;
     summary: Record<string, number>;
   }>({
@@ -112,7 +112,14 @@ export default function Quality() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Data Quality</h2>
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900">Data Quality</h2>
+        {dataUpdatedAt > 0 && (
+          <p className="text-xs text-gray-400">
+            Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+          </p>
+        )}
+      </div>
 
       {/* Scorecard */}
       <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
