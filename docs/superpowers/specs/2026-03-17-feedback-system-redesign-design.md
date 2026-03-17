@@ -164,6 +164,17 @@ The modal resets all internal state (selected type, form fields, contextual fiel
 
 **Modal title:** "Report an Issue" when `serviceId` is provided (service context), "Feedback" otherwise. Title does not change when the user switches the selected type.
 
+**Mobile scrollability:** The redesigned modal is taller than the current one. Use `max-h-[85vh] overflow-y-auto` on the dialog content's inner wrapper (excluding the fixed header/title) to ensure the submit button is reachable on small screens.
+
+**Header context hint:** When opened from the header (no service context), show a small muted text below the type selector: "To report incorrect service details, open the service and use 'Report an issue'." This guides users who want to flag a specific service.
+
+### Accessibility
+
+- Use Shadcn `RadioGroup` component for type selection (provides proper `role="radiogroup"` and ARIA labels)
+- Read-only context fields (service name, search query) should use `<Label>` + disabled `<Input>` pairs for screen reader discoverability
+- "Which fields are wrong?" checkbox group should have a visible group label using Shadcn `Checkbox` components with individual `<label>` elements
+- All form fields must have associated `<label>` elements
+
 ### Contextual Fields Per Type
 
 **Incorrect info** (`incorrect_info`):
@@ -197,7 +208,7 @@ The modal resets all internal state (selected type, form fields, contextual fiel
 - Success confirmation screen with checkmark
 - Toast notifications on success/error
 - i18n translation keys (`t('feedback.*')`)
-- Existing rate limiting on `/api/feedback`
+- Existing rate limiting on `/api/feedback` (5 req/hour/IP shared across all feedback types — the low-friction `service_closed` flow is bounded by this limit, acceptable for current scale)
 
 ---
 
@@ -216,11 +227,11 @@ const feedbackSchema = z.object({
   serviceId: z.string().max(255).optional(),
   serviceName: z.string().max(255).optional(),
   searchQuery: z.string().max(500).optional(),
-  hp: z.string().max(0).optional(),  // honeypot — max(0) rejects bot-filled values
+  hp: z.string().optional(),  // honeypot — validated post-parse, not at schema level
 });
 ```
 
-Insert logic stores all fields to the `feedback` table. Existing behavior preserved for clients that don't send new fields (defaults to `type='general'`). The existing post-parse honeypot check (`if (validatedData.hp) return fake success`) must be preserved.
+Insert logic stores all fields to the `feedback` table. Existing behavior preserved for clients that don't send new fields (defaults to `type='general'`). The honeypot is validated post-parse (not at schema level) — if `hp` is non-empty, return a fake 200 success silently so bots cannot distinguish rejection from acceptance. Do NOT use `max(0)` on the honeypot field, as that returns a visible 400 error that bots can learn from.
 
 ---
 
