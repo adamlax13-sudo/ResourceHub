@@ -10,8 +10,8 @@ import { storage } from "../storage";
 import { adminAuth, adminReadLimiter, adminWriteLimiter } from "../middleware/adminAuth";
 import { createErrorResponse } from "../helpers/errors";
 import { db } from "../db";
-import { services } from "@shared/schema";
-import { or, ilike, eq, sql } from "drizzle-orm";
+import { services, serviceChangeRequests } from "@shared/schema";
+import { or, ilike, eq, sql, and } from "drizzle-orm";
 
 const bulkApproveSchema = z.object({
   ids: z.array(z.number().int().min(1)).min(1).max(50),
@@ -45,6 +45,56 @@ export function registerAdminReviewRoutes(app: Express): void {
       console.error("Review list error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
       res.status(500).json(createErrorResponse("Failed to fetch change requests", errorMessage));
+    }
+  });
+
+  // ============= FLAG FOR REVIEW =============
+  app.post("/api/admin/review/flag", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const schema = z.object({
+        serviceId: z.number().int().min(1),
+        reason: z.string().max(500).optional(),
+        missingFields: z.array(z.string()).optional(),
+      });
+      const parsed = schema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json(createErrorResponse("Invalid request", undefined, parsed.error.issues));
+      }
+
+      const { serviceId, reason, missingFields } = parsed.data;
+
+      // Check if there's already a pending review for this service
+      const existing = await db
+        .select({ id: serviceChangeRequests.id })
+        .from(serviceChangeRequests)
+        .where(and(
+          eq(serviceChangeRequests.serviceId, serviceId),
+          eq(serviceChangeRequests.status, "pending"),
+          eq(serviceChangeRequests.source, "admin"),
+          eq(serviceChangeRequests.changeType, "review"),
+        ))
+        .limit(1);
+
+      if (existing.length > 0) {
+        return res.json({ success: true, message: "Already flagged for review", id: existing[0].id });
+      }
+
+      const [created] = await db
+        .insert(serviceChangeRequests)
+        .values({
+          serviceId,
+          changeType: "review",
+          source: "admin",
+          status: "pending",
+          proposedChanges: { reason: reason || "Flagged from quality issues", missingFields: missingFields || [] },
+        })
+        .returning({ id: serviceChangeRequests.id });
+
+      res.json({ success: true, id: created.id });
+    } catch (err) {
+      console.error("Flag for review error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to flag for review", errorMessage));
     }
   });
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,13 @@ import {
   AlertCircle,
   Shield,
   BarChart3,
+  Flag,
 } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
+import { useToast } from "@/hooks/use-toast";
 
 // ---------- Constants ----------
 
@@ -163,6 +165,29 @@ export default function Quality() {
   const [issueSearch, setIssueSearch] = useState("");
   const [issuePage, setIssuePage] = useState(1);
   const [issuesPerPage, setIssuesPerPage] = useState(50);
+  const [flaggedIds, setFlaggedIds] = useState<Set<number>>(new Set());
+  const [flaggingId, setFlaggingId] = useState<number | null>(null);
+  const { toast } = useToast();
+
+  const handleFlag = useCallback(async (serviceId: number, serviceName: string, missingFields: string[]) => {
+    setFlaggingId(serviceId);
+    try {
+      const res = await apiRequest("POST", "/api/admin/review/flag", {
+        serviceId,
+        reason: `Quality issues: missing ${missingFields.map(f => FIELD_LABELS[f] || f).join(", ")}`,
+        missingFields,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFlaggedIds((prev) => new Set(prev).add(serviceId));
+        toast({ title: "Flagged for review", description: serviceName });
+      }
+    } catch {
+      toast({ title: "Failed to flag", description: "Try again", variant: "destructive" });
+    } finally {
+      setFlaggingId(null);
+    }
+  }, [toast]);
 
   // ---------- Queries ----------
 
@@ -623,9 +648,28 @@ export default function Quality() {
                           </span>
                         </td>
                         <td className="px-3 py-2">
-                          <Link href={`/admin/services?selected=${issue.service.id}`}>
-                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
-                          </Link>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => handleFlag(issue.service.id, issue.service.name, issue.missingFields)}
+                              disabled={flaggedIds.has(issue.service.id) || flaggingId === issue.service.id}
+                              title={flaggedIds.has(issue.service.id) ? "Already flagged" : "Flag for review"}
+                              className={cn(
+                                "transition-colors",
+                                flaggedIds.has(issue.service.id)
+                                  ? "text-teal-500 cursor-default"
+                                  : "text-gray-400 hover:text-amber-500 cursor-pointer"
+                              )}
+                            >
+                              {flaggingId === issue.service.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Flag className={cn("h-3.5 w-3.5", flaggedIds.has(issue.service.id) && "fill-teal-500")} />
+                              )}
+                            </button>
+                            <Link href={`/admin/services?selected=${issue.service.id}`}>
+                              <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     ))}
