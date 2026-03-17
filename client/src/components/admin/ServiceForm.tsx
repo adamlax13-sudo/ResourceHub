@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, Plus } from "lucide-react";
 import { CATEGORY_GROUPS } from "@/components/RefinePanel";
 
 export interface ServiceFormData {
@@ -24,6 +24,11 @@ export interface ServiceFormData {
   isFaithBased?: boolean;
   is12Step?: boolean;
   is24_7?: boolean;
+  processSteps?: Array<{ step: number; action: string; details?: string | null }>;
+  requiredDocs?: string[];
+  waitTimes?: string;
+  serviceFormat?: string;
+  languagesSupported?: string[];
 }
 
 interface ServiceFormProps {
@@ -32,6 +37,16 @@ interface ServiceFormProps {
   isPending?: boolean;
   submitLabel?: string;
   onDirtyChange?: (dirty: boolean) => void;
+}
+
+/** Normalize requiredDocs — DB may store string[] or {name: string}[] */
+function normalizeRequiredDocs(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((item) => {
+    if (typeof item === "string") return item;
+    if (item && typeof item === "object" && "name" in item) return String((item as { name: unknown }).name);
+    return String(item);
+  });
 }
 
 export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange }: ServiceFormProps) {
@@ -53,6 +68,8 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     isFaithBased: false,
     is12Step: false,
     is24_7: false,
+    waitTimes: "",
+    serviceFormat: "",
     ...initialData,
   });
 
@@ -69,9 +86,9 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     }
   }, [initialData]);
 
+  // --- Tags ---
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
 
-  // Sync tags when initialData changes
   useEffect(() => {
     if (initialData?.tags !== undefined) {
       setTags(initialData.tags ?? []);
@@ -91,6 +108,87 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     onDirtyChange?.(true);
   };
 
+  // --- Process Steps ---
+  const [processSteps, setProcessSteps] = useState<Array<{ step: number; action: string; details?: string | null }>>(
+    initialData?.processSteps ?? []
+  );
+
+  useEffect(() => {
+    if (initialData?.processSteps !== undefined) {
+      setProcessSteps(initialData.processSteps ?? []);
+    }
+  }, [initialData]);
+
+  const addProcessStep = () => {
+    setProcessSteps((prev) => [...prev, { step: prev.length + 1, action: "", details: "" }]);
+    onDirtyChange?.(true);
+  };
+
+  const updateProcessStep = (index: number, field: "action" | "details", value: string) => {
+    setProcessSteps((prev) =>
+      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
+    );
+    onDirtyChange?.(true);
+  };
+
+  const removeProcessStep = (index: number) => {
+    setProcessSteps((prev) =>
+      prev
+        .filter((_, i) => i !== index)
+        .map((s, i) => ({ ...s, step: i + 1 }))
+    );
+    onDirtyChange?.(true);
+  };
+
+  // --- Required Docs ---
+  const [requiredDocs, setRequiredDocs] = useState<string[]>(
+    normalizeRequiredDocs(initialData?.requiredDocs)
+  );
+
+  useEffect(() => {
+    if (initialData?.requiredDocs !== undefined) {
+      setRequiredDocs(normalizeRequiredDocs(initialData.requiredDocs));
+    }
+  }, [initialData]);
+
+  const addDoc = (doc: string) => {
+    const trimmed = doc.trim();
+    if (trimmed && !requiredDocs.includes(trimmed)) {
+      setRequiredDocs((prev) => [...prev, trimmed]);
+      onDirtyChange?.(true);
+    }
+  };
+
+  const removeDoc = (index: number) => {
+    setRequiredDocs((prev) => prev.filter((_, i) => i !== index));
+    onDirtyChange?.(true);
+  };
+
+  // --- Languages Supported ---
+  const [languagesSupported, setLanguagesSupported] = useState<string[]>(
+    initialData?.languagesSupported ?? []
+  );
+
+  useEffect(() => {
+    if (initialData?.languagesSupported !== undefined) {
+      setLanguagesSupported(initialData.languagesSupported ?? []);
+    }
+  }, [initialData]);
+
+  const addLanguage = (lang: string) => {
+    const trimmed = lang.trim();
+    if (trimmed && !languagesSupported.includes(trimmed)) {
+      setLanguagesSupported((prev) => [...prev, trimmed]);
+      onDirtyChange?.(true);
+    }
+  };
+
+  const removeLanguage = (index: number) => {
+    setLanguagesSupported((prev) => prev.filter((_, i) => i !== index));
+    onDirtyChange?.(true);
+  };
+
+  // --- General field change ---
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     onDirtyChange?.(true);
@@ -98,7 +196,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...form, tags });
+    onSubmit({ ...form, tags, processSteps, requiredDocs, languagesSupported });
   };
 
   return (
@@ -209,6 +307,167 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
       </div>
 
+      {/* Wait Times + Service Format */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="text-gray-700">Wait Times</Label>
+          <Input
+            value={form.waitTimes ?? ""}
+            onChange={(e) => handleChange("waitTimes", e.target.value)}
+            className="mt-1 bg-white border-gray-300 text-gray-900"
+            placeholder="e.g., Walk-in, 2-4 weeks"
+          />
+        </div>
+        <div>
+          <Label className="text-gray-700">Service Format</Label>
+          <select
+            value={form.serviceFormat ?? ""}
+            onChange={(e) => handleChange("serviceFormat", e.target.value)}
+            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
+          >
+            <option value="">Not specified</option>
+            <option value="in-person">In-person</option>
+            <option value="virtual">Virtual/Online</option>
+            <option value="phone">Phone</option>
+            <option value="walk_in">Walk-in</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Process Steps */}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <Label className="text-gray-700">Process Steps</Label>
+          <Button type="button" variant="ghost" size="sm" onClick={addProcessStep} className="h-7 text-teal-600 hover:text-teal-700">
+            <Plus className="h-3 w-3 mr-1" /> Add Step
+          </Button>
+        </div>
+        {processSteps.length === 0 && (
+          <p className="text-xs text-gray-400 mt-1">No steps yet — click Add Step to describe how to access this service.</p>
+        )}
+        {processSteps.map((step, i) => (
+          <div key={i} className="flex gap-2 items-start mt-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
+            <span className="text-sm font-bold text-teal-600 mt-2 w-5 shrink-0">{i + 1}</span>
+            <div className="flex-1 space-y-1.5">
+              <Input
+                value={step.action}
+                onChange={(e) => updateProcessStep(i, "action", e.target.value)}
+                placeholder="What to do"
+                className="text-sm bg-white border-gray-200 text-gray-900"
+              />
+              <Input
+                value={step.details ?? ""}
+                onChange={(e) => updateProcessStep(i, "details", e.target.value)}
+                placeholder="Additional details (optional)"
+                className="text-sm bg-white border-gray-200 text-gray-500"
+              />
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => removeProcessStep(i)}
+              className="h-7 w-7 p-0 mt-1 text-gray-400 hover:text-red-500"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      {/* Required Documents */}
+      <div className="space-y-1">
+        <Label className="text-gray-700">Required Documents</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+          {requiredDocs.map((doc, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-amber-50 text-amber-700 border border-amber-200"
+            >
+              {doc}
+              <button
+                type="button"
+                onClick={() => removeDoc(i)}
+                className="text-amber-400 hover:text-red-500 transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          <input
+            type="text"
+            placeholder={requiredDocs.length === 0 ? "Add document..." : "Add more..."}
+            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                e.preventDefault();
+                addDoc(e.currentTarget.value.trim());
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+        </div>
+        <p className="text-xs text-gray-400">Press Enter to add a document</p>
+      </div>
+
+      {/* Languages Supported */}
+      <div className="space-y-1">
+        <Label className="text-gray-700">Languages Supported</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+          {languagesSupported.map((lang, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-200"
+            >
+              {lang}
+              <button
+                type="button"
+                onClick={() => removeLanguage(i)}
+                className="text-blue-400 hover:text-red-500 transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          <input
+            type="text"
+            list="languages-list"
+            placeholder={languagesSupported.length === 0 ? "Add language..." : "Add more..."}
+            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                e.preventDefault();
+                addLanguage(e.currentTarget.value.trim());
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+          <datalist id="languages-list">
+            <option value="English" />
+            <option value="French" />
+            <option value="Arabic" />
+            <option value="Punjabi" />
+            <option value="Tagalog" />
+            <option value="Spanish" />
+            <option value="Mandarin" />
+            <option value="Cantonese" />
+            <option value="Urdu" />
+            <option value="Hindi" />
+            <option value="Ukrainian" />
+            <option value="Vietnamese" />
+            <option value="Korean" />
+            <option value="Somali" />
+            <option value="Amharic" />
+            <option value="Cree" />
+            <option value="Blackfoot" />
+            <option value="Dene" />
+          </datalist>
+        </div>
+        <p className="text-xs text-gray-400">Press Enter to add a language</p>
+      </div>
+
+      {/* Tags */}
       <div className="space-y-1">
         <Label className="text-gray-700">Tags</Label>
         <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
