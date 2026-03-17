@@ -106,20 +106,37 @@ export default function Services() {
   const urlParams = new URLSearchParams(searchString);
   const urlSelectedId = urlParams.get("selected");
 
-  // List state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("active");
-  const [categoryFilter, setCategoryFilter] = useState<string>("");
-  const [enrichmentSourceFilter, setEnrichmentSourceFilter] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("lastUpdated-desc");
-  const [pageSize, setPageSize] = useState<number>(25);
-  const [page, setPage] = useState(1);
+  // Persist filters in sessionStorage so they survive tab switches
+  const STORAGE_KEY = "admin-services-filters";
+  const savedFilters = (() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  })();
+
+  // List state — initialize from sessionStorage if available
+  const [searchQuery, setSearchQuery] = useState(savedFilters?.searchQuery ?? "");
+  const [statusFilter, setStatusFilter] = useState<string>(savedFilters?.statusFilter ?? "active");
+  const [categoryFilter, setCategoryFilter] = useState<string>(savedFilters?.categoryFilter ?? "");
+  const [enrichmentSourceFilter, setEnrichmentSourceFilter] = useState<string>(savedFilters?.enrichmentSourceFilter ?? "");
+  const [sortBy, setSortBy] = useState<string>(savedFilters?.sortBy ?? "lastUpdated-desc");
+  const [pageSize, setPageSize] = useState<number>(savedFilters?.pageSize ?? 25);
+  const [page, setPage] = useState(savedFilters?.page ?? 1);
   const [selectedId, setSelectedId] = useState<number | null>(
-    urlSelectedId ? Number(urlSelectedId) : null
+    urlSelectedId ? Number(urlSelectedId) : (savedFilters?.selectedId ?? null)
   );
   const [showHistory, setShowHistory] = useState(false);
   const [flagReason, setFlagReason] = useState<string>("");
   const [showFlagDialog, setShowFlagDialog] = useState(false);
+
+  // Save filters to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      searchQuery, statusFilter, categoryFilter, enrichmentSourceFilter,
+      sortBy, pageSize, page, selectedId,
+    }));
+  }, [searchQuery, statusFilter, categoryFilter, enrichmentSourceFilter, sortBy, pageSize, page, selectedId]);
 
   // Sync URL ?selected= param to state
   useEffect(() => {
@@ -445,7 +462,7 @@ export default function Services() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    onClick={() => setPage((p: number) => Math.max(1, p - 1))}
                     disabled={page <= 1}
                     className="h-7 px-2 text-gray-500"
                   >
@@ -454,7 +471,7 @@ export default function Services() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setPage((p) => p + 1)}
+                    onClick={() => setPage((p: number) => p + 1)}
                     disabled={page >= (listData.totalPages || 1)}
                     className="h-7 px-2 text-gray-500"
                   >
