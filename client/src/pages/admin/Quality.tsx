@@ -165,9 +165,26 @@ export default function Quality() {
   const [issueSearch, setIssueSearch] = useState("");
   const [issuePage, setIssuePage] = useState(1);
   const [issuesPerPage, setIssuesPerPage] = useState(50);
-  const [flaggedIds, setFlaggedIds] = useState<Set<number>>(new Set());
   const [flaggingId, setFlaggingId] = useState<number | null>(null);
   const { toast } = useToast();
+
+  // Fetch IDs already flagged for review so flags persist across navigations
+  const { data: flaggedData } = useQuery<{
+    success: boolean;
+    changeRequests: { serviceId?: number }[];
+  }>({
+    queryKey: ["/api/admin/review", "flagged-ids"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/review?changeType=review&status=pending&limit=200");
+      return res.json();
+    },
+    staleTime: 30_000,
+  });
+  const flaggedIds = new Set(
+    (flaggedData?.changeRequests ?? [])
+      .map((r) => r.serviceId)
+      .filter((id): id is number => id != null)
+  );
 
   const handleFlag = useCallback(async (serviceId: number, serviceName: string, missingFields: string[]) => {
     setFlaggingId(serviceId);
@@ -179,7 +196,7 @@ export default function Quality() {
       });
       const data = await res.json();
       if (data.success) {
-        setFlaggedIds((prev) => new Set(prev).add(serviceId));
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/review", "flagged-ids"] });
         toast({ title: "Flagged for review", description: serviceName });
       }
     } catch {
