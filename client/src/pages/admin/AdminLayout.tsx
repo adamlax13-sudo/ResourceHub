@@ -45,7 +45,7 @@ const NAV_ITEMS: NavItem[] = [
 const isDev = typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-function Sidebar({ onLogout, pendingReviews }: { onLogout: () => void; pendingReviews?: number }) {
+function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => void; pendingReviews?: number; newFeedback?: number }) {
   const [location] = useLocation();
 
   const isActive = (item: NavItem) => {
@@ -97,6 +97,11 @@ function Sidebar({ onLogout, pendingReviews }: { onLogout: () => void; pendingRe
                       {item.label === "Review" && !!pendingReviews && pendingReviews > 0 && (
                         <span className="ml-auto text-[10px] bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                           {pendingReviews}
+                        </span>
+                      )}
+                      {item.label === "Feedback" && !!newFeedback && newFeedback > 0 && (
+                        <span className="ml-auto text-[10px] bg-blue-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                          {newFeedback}
                         </span>
                       )}
                     </div>
@@ -168,6 +173,18 @@ export default function AdminLayout() {
   });
   const pendingReviews = statsData?.pendingReviews ?? 0;
 
+  // Fetch new feedback count for sidebar badge
+  const { data: feedbackCountData } = useQuery<{ success: boolean; count: number }>({
+    queryKey: ["/api/admin/feedback/count"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/feedback/count");
+      return res.json();
+    },
+    staleTime: 60_000,
+    enabled: isAuthenticated,
+  });
+  const newFeedback = feedbackCountData?.count ?? 0;
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/admin/login");
@@ -196,7 +213,7 @@ export default function AdminLayout() {
           Development Environment
         </div>
       )}
-      <Sidebar onLogout={handleLogout} pendingReviews={pendingReviews} />
+      <Sidebar onLogout={handleLogout} pendingReviews={pendingReviews} newFeedback={newFeedback} />
       <main className={cn("ml-56", isDev && "mt-6")}>
         <Suspense fallback={<AdminPageLoader />}>
           <Switch>
