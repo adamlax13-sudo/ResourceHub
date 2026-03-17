@@ -82,7 +82,6 @@ const FIELD_FILTER_OPTIONS = [
   { value: "staleGeocoding", label: "Stale Geocoding" },
 ];
 
-const ISSUES_PER_PAGE = 25;
 
 // ---------- Types ----------
 
@@ -162,12 +161,6 @@ export default function Quality() {
   const [severityFilter, setSeverityFilter] = useState("");
   const [hideComplete, setHideComplete] = useState(false);
   const [issueSearch, setIssueSearch] = useState("");
-  const [issuePage, setIssuePage] = useState(1);
-
-  // Reset pagination when filters change
-  useEffect(() => {
-    setIssuePage(1);
-  }, [fieldFilter, severityFilter, issueSearch]);
 
   // ---------- Queries ----------
 
@@ -260,12 +253,6 @@ export default function Quality() {
     !issueSearch || issue.service.name.toLowerCase().includes(issueSearch.toLowerCase())
   );
 
-  // Pagination
-  const totalIssuePages = Math.ceil(searchedIssues.length / ISSUES_PER_PAGE);
-  const paginatedIssues = searchedIssues.slice(
-    (issuePage - 1) * ISSUES_PER_PAGE,
-    issuePage * ISSUES_PER_PAGE
-  );
 
   // ---------- Handlers ----------
 
@@ -549,7 +536,7 @@ export default function Quality() {
             </p>
           ) : (
             <>
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="border border-gray-200 rounded-lg overflow-hidden max-h-[600px] overflow-y-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50">
@@ -573,7 +560,7 @@ export default function Quality() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedIssues.map((issue) => (
+                    {searchedIssues.map((issue) => (
                       <tr
                         key={issue.service.id}
                         className="border-t border-gray-200 hover:bg-gray-50"
@@ -644,38 +631,11 @@ export default function Quality() {
                 </table>
               </div>
 
-              {/* Pagination */}
-              {totalIssuePages > 1 && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-400">
-                    Showing {(issuePage - 1) * ISSUES_PER_PAGE + 1}--
-                    {Math.min(issuePage * ISSUES_PER_PAGE, searchedIssues.length)} of{" "}
-                    {searchedIssues.length}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      disabled={issuePage <= 1}
-                      onClick={() => setIssuePage((p) => Math.max(1, p - 1))}
-                    >
-                      <ChevronLeft className="h-3.5 w-3.5" />
-                    </Button>
-                    <span className="text-xs text-gray-500 px-2 tabular-nums">
-                      {issuePage} / {totalIssuePages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      disabled={issuePage >= totalIssuePages}
-                      onClick={() => setIssuePage((p) => Math.min(totalIssuePages, p + 1))}
-                    >
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
+              {searchedIssues.length > 0 && (
+                <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
+                  {searchedIssues.length} {searchedIssues.length === 1 ? "service" : "services"}
+                  {issueSearch || fieldFilter || severityFilter ? " matching filters" : " total"}
+                </p>
               )}
             </>
           )}
