@@ -184,9 +184,10 @@ export interface IStorage {
     location?: string;
     hasEmbedding?: boolean;
     hasGeocoding?: boolean;
+    enrichmentSource?: string;
     page?: number;
     limit?: number;
-    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated';
+    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated' | 'enrichmentSource';
     order?: 'asc' | 'desc';
   }): Promise<{ services: Service[]; total: number }>;
   getAdminServiceDetail(id: number): Promise<Service | null>;
@@ -1411,9 +1412,10 @@ export class DatabaseStorage implements IStorage {
     location?: string;
     hasEmbedding?: boolean;
     hasGeocoding?: boolean;
+    enrichmentSource?: string;
     page?: number;
     limit?: number;
-    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location';
+    sort?: 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | 'enrichmentSource';
     order?: 'asc' | 'desc';
   }): Promise<{ services: Service[]; total: number }> {
     const page = params.page ?? 1;
@@ -1467,6 +1469,15 @@ export class DatabaseStorage implements IStorage {
       conditions.push(isNull(services.latitude));
     }
 
+    // Enrichment source filter
+    if (params.enrichmentSource === 'ai_enriched') {
+      conditions.push(sql`EXISTS (SELECT 1 FROM ai_service_enrichments WHERE ai_service_enrichments.service_id = services.service_id)`);
+    } else if (params.enrichmentSource === 'none') {
+      conditions.push(isNull(services.enrichmentSource));
+    } else if (params.enrichmentSource) {
+      conditions.push(eq(services.enrichmentSource, params.enrichmentSource));
+    }
+
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     // Determine sort column and order
@@ -1490,6 +1501,9 @@ export class DatabaseStorage implements IStorage {
         break;
       case 'location':
         orderExpr = sortDir(services.location);
+        break;
+      case 'enrichmentSource':
+        orderExpr = sortDir(services.enrichmentSource);
         break;
       default:
         orderExpr = desc(services.lastUpdated);

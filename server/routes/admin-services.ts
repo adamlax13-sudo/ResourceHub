@@ -15,7 +15,8 @@ import { adminAuth, adminReadLimiter, adminWriteLimiter } from "../middleware/ad
 import { createErrorResponse } from "../helpers/errors";
 import { getOpenAI } from "../helpers/openai";
 import { db } from "../db";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { aiServiceEnrichments } from "@shared/schema";
 
 // ============= ZOD SCHEMAS =============
 
@@ -142,9 +143,10 @@ export function registerAdminServiceRoutes(app: Express): void {
         location: req.query.location as string | undefined,
         hasEmbedding: req.query.hasEmbedding === 'true' ? true : req.query.hasEmbedding === 'false' ? false : undefined,
         hasGeocoding: req.query.hasGeocoding === 'true' ? true : req.query.hasGeocoding === 'false' ? false : undefined,
+        enrichmentSource: req.query.enrichmentSource as string | undefined,
         page: req.query.page ? Number(req.query.page) : undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
-        sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | undefined,
+        sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | 'enrichmentSource' | undefined,
         order: req.query.order as 'asc' | 'desc' | undefined,
       };
 
@@ -328,6 +330,37 @@ export function registerAdminServiceRoutes(app: Express): void {
       console.error("Import services error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
       res.status(500).json(createErrorResponse("Failed to import services", errorMessage));
+    }
+  });
+
+  // ============= GET SERVICE ENRICHMENT (named sub-route — before :id) =============
+  app.get("/api/admin/services/:id/enrichment", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
+    try {
+      const idSchema = z.coerce.number().int().min(1);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+
+      const service = await storage.getAdminServiceDetail(parseResult.data);
+      if (!service) {
+        return res.status(404).json(createErrorResponse("Service not found"));
+      }
+
+      const enrichment = service.serviceId
+        ? await db.select().from(aiServiceEnrichments).where(eq(aiServiceEnrichments.serviceId, service.serviceId)).limit(1)
+        : [];
+
+      res.json({
+        success: true,
+        enrichment: enrichment[0] || null,
+        enrichmentSource: service.enrichmentSource,
+        enrichmentDate: service.enrichmentDate,
+      });
+    } catch (err) {
+      console.error("Service enrichment error:", err);
+      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
+      res.status(500).json(createErrorResponse("Failed to fetch enrichment data", errorMessage));
     }
   });
 

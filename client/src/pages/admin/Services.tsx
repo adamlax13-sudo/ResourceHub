@@ -21,7 +21,9 @@ import {
   RefreshCw,
   MapPin,
   Flag,
+  Sparkles,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 
@@ -32,6 +34,7 @@ interface ServiceListItem {
   location?: string;
   confidenceScore?: number;
   isActive?: boolean;
+  enrichmentSource?: string;
 }
 
 interface ServiceDetail {
@@ -58,6 +61,31 @@ interface ServiceDetail {
   confidenceScore?: number;
   embeddingUpdatedAt?: string;
   lastUpdated?: string;
+  enrichmentSource?: string;
+  enrichmentDate?: string;
+}
+
+interface AiEnrichmentRecord {
+  id: number;
+  serviceId: string;
+  serviceName: string;
+  aiDescription?: string;
+  aiCategory?: string;
+  aiProcessSteps?: unknown;
+  aiEligibility?: string;
+  aiWaitTimes?: string;
+  aiRequiredDocs?: unknown;
+  aiLocation?: string;
+  aiContact?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface EnrichmentData {
+  success: boolean;
+  enrichment: AiEnrichmentRecord | null;
+  enrichmentSource?: string;
+  enrichmentDate?: string;
 }
 
 interface HistoryEntry {
@@ -82,6 +110,7 @@ export default function Services() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("active");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [enrichmentSourceFilter, setEnrichmentSourceFilter] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("lastUpdated-desc");
   const [pageSize, setPageSize] = useState<number>(25);
   const [page, setPage] = useState(1);
@@ -111,6 +140,7 @@ export default function Services() {
   if (searchQuery) queryParams.set("q", searchQuery);
   if (statusFilter) queryParams.set("status", statusFilter);
   if (categoryFilter) queryParams.set("category", categoryFilter);
+  if (enrichmentSourceFilter) queryParams.set("enrichmentSource", enrichmentSourceFilter);
   queryParams.set("sort", sortCol);
   queryParams.set("order", sortDir);
   queryParams.set("page", String(page));
@@ -158,6 +188,17 @@ export default function Services() {
     },
     enabled: !!selectedId && showHistory,
     staleTime: 30_000,
+  });
+
+  // Fetch AI enrichment data for selected service
+  const { data: enrichmentData } = useQuery<EnrichmentData>({
+    queryKey: ["/api/admin/services", selectedId, "enrichment"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/admin/services/${selectedId}/enrichment`);
+      return res.json();
+    },
+    enabled: !!selectedId,
+    staleTime: 60_000,
   });
 
   // Update mutation
@@ -306,6 +347,19 @@ export default function Services() {
           </select>
         </div>
         <select
+          value={enrichmentSourceFilter}
+          onChange={(e) => { setEnrichmentSourceFilter(e.target.value); setPage(1); }}
+          className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900 w-full"
+        >
+          <option value="">All Sources</option>
+          <option value="ai_enriched">AI Enriched</option>
+          <option value="web_research_2026_03">Web Research</option>
+          <option value="audit">Audit Verified</option>
+          <option value="found">Scraper Found</option>
+          <option value="manual">Manual</option>
+          <option value="none">No Source Info</option>
+        </select>
+        <select
           value={sortBy}
           onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
           className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 w-full"
@@ -319,6 +373,7 @@ export default function Services() {
           <option value="category-asc">Category (A-Z)</option>
           <option value="clickCount-desc">Most Clicked</option>
           <option value="location-asc">Location (A-Z)</option>
+          <option value="enrichmentSource-desc">AI Enriched First</option>
         </select>
       </div>
 
@@ -343,7 +398,14 @@ export default function Services() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-900 truncate">{svc.name}</p>
+                    <div className="flex items-center gap-1">
+                      <p className="text-sm text-gray-900 truncate">{svc.name}</p>
+                      {svc.enrichmentSource && (
+                        <span title={`Enrichment: ${svc.enrichmentSource}`}>
+                          <Sparkles className="h-3 w-3 flex-shrink-0 text-violet-400" />
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge className={cn(getCategoryColor(svc.category), "text-[10px] px-1.5")}>
                         {svc.category}
@@ -599,12 +661,55 @@ export default function Services() {
               )}
             </div>
           ) : (
-            <ServiceForm
-              initialData={service}
-              onSubmit={(data) => updateMutation.mutate(data)}
-              isPending={updateMutation.isPending}
-              submitLabel="Save Changes"
-            />
+            <>
+              <ServiceForm
+                initialData={service}
+                onSubmit={(data) => updateMutation.mutate(data)}
+                isPending={updateMutation.isPending}
+                submitLabel="Save Changes"
+              />
+              {/* AI-Inferred Data section */}
+              {enrichmentData?.enrichment && (
+                <Card className="bg-violet-50/50 border-violet-200 shadow-sm rounded-xl mt-4">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-violet-700 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      AI-Inferred Data
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-sm">
+                    {enrichmentData.enrichment.aiDescription && (
+                      <div>
+                        <p className="text-xs font-medium text-violet-600 mb-1">AI Description</p>
+                        <p className="text-gray-700 bg-white rounded p-2 border border-violet-100">
+                          {enrichmentData.enrichment.aiDescription}
+                        </p>
+                      </div>
+                    )}
+                    {enrichmentData.enrichment.aiEligibility && (
+                      <div>
+                        <p className="text-xs font-medium text-violet-600 mb-1">AI Eligibility</p>
+                        <p className="text-gray-700 bg-white rounded p-2 border border-violet-100">
+                          {enrichmentData.enrichment.aiEligibility}
+                        </p>
+                      </div>
+                    )}
+                    {enrichmentData.enrichment.aiProcessSteps != null && (
+                      <div>
+                        <p className="text-xs font-medium text-violet-600 mb-1">AI Process Steps</p>
+                        <pre className="text-gray-700 bg-white rounded p-2 border border-violet-100 text-xs whitespace-pre-wrap overflow-auto max-h-48">
+                          {JSON.stringify(enrichmentData.enrichment.aiProcessSteps, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                    <p className="text-xs text-violet-400">
+                      Source: {enrichmentData.enrichmentSource || 'AI enrichment'}
+                      {enrichmentData.enrichmentDate && ` \u2022 ${new Date(enrichmentData.enrichmentDate).toLocaleDateString()}`}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
         </div>
       ) : (
