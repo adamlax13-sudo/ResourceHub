@@ -1,8 +1,9 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
 
 export function InfoTip({ text }: { text: string }) {
   return (
+    <TooltipProvider delayDuration={150}>
     <Tooltip>
       <TooltipTrigger asChild>
         <HelpCircle className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 inline-block ml-1 cursor-help" />
@@ -11,5 +12,6 @@ export function InfoTip({ text }: { text: string }) {
         {text}
       </TooltipContent>
     </Tooltip>
+    </TooltipProvider>
   );
 }
