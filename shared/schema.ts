@@ -12,6 +12,11 @@ export const feedback = pgTable("feedback", {
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }),
   message: text("message").notNull(),
+  type: varchar("type", { length: 50 }).notNull().default("general"),
+  status: varchar("status", { length: 20 }).notNull().default("new"),
+  serviceId: varchar("service_id", { length: 255 }),
+  serviceName: varchar("service_name", { length: 255 }),
+  searchQuery: varchar("search_query", { length: 500 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
