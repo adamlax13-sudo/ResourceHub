@@ -40,7 +40,29 @@ export function registerAdminReviewRoutes(app: Express): void {
       };
 
       const result = await storage.getChangeRequests(params);
-      res.json({ success: true, ...result });
+
+      // Join service names for display
+      const serviceIds = result.requests
+        .map((r) => r.serviceId)
+        .filter((id): id is number => id != null);
+      const serviceNames: Record<number, string> = {};
+      if (serviceIds.length > 0) {
+        const nameRows = await db
+          .select({ id: services.id, name: services.name })
+          .from(services)
+          .where(sql`${services.id} IN ${serviceIds}`);
+        for (const row of nameRows) {
+          serviceNames[row.id] = row.name;
+        }
+      }
+
+      const changeRequests = result.requests.map((r) => ({
+        ...r,
+        serviceName: r.serviceId ? serviceNames[r.serviceId] ?? null : null,
+        createdAt: r.submittedAt,
+      }));
+
+      res.json({ success: true, changeRequests, total: result.total });
     } catch (err) {
       console.error("Review list error:", err);
       const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
