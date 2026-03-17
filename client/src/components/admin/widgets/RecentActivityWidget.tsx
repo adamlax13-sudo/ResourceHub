@@ -71,12 +71,12 @@ export function RecentActivityWidget() {
 
 function ChangeTypeBadge({ type }: { type: string }) {
   const lower = type?.toLowerCase();
-  if (lower === "create" || lower === "created") {
+  if (lower === "create" || lower === "created" || lower === "bulk_insert" || lower === "bulk insert") {
     return (
-      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">NEW</Badge>
+      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">ADDED</Badge>
     );
   }
-  if (lower === "update" || lower === "updated") {
+  if (lower === "update" || lower === "updated" || lower === "enriched" || lower === "restored") {
     return <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs">UPD</Badge>;
   }
   if (

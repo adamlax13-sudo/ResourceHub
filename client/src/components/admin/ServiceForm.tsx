@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
+import { CATEGORY_GROUPS } from "@/components/RefinePanel";
 
 export interface ServiceFormData {
   name: string;
@@ -30,19 +31,10 @@ interface ServiceFormProps {
   onSubmit: (data: ServiceFormData) => void;
   isPending?: boolean;
   submitLabel?: string;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
-const CATEGORY_OPTIONS = [
-  "Addiction Services", "Mental Health", "Housing & Shelter", "Food & Basic Needs",
-  "Financial Assistance", "Legal Services", "Employment Services", "Family Services",
-  "Youth Services", "Senior Services", "Indigenous Services", "Newcomer Services",
-  "Disability Support", "Healthcare Access", "Crisis Services", "Gambling Support",
-  "Grief & Loss", "Domestic Violence", "Sexual Assault", "LGBTQ+ Services",
-  "Transportation", "Hospital & Emergency", "Criminal Justice Reintegration",
-  "Parenting & Child Development", "Social & Community", "Education & Training",
-];
-
-export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save" }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange }: ServiceFormProps) {
   const [form, setForm] = useState<ServiceFormData>({
     name: "",
     category: "",
@@ -64,10 +56,16 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     ...initialData,
   });
 
+  const initialDataRef = useRef(initialData);
+  const hasMounted = useRef(false);
+
   // Sync if initialData changes (e.g., detail load)
   useEffect(() => {
     if (initialData) {
       setForm((prev) => ({ ...prev, ...initialData }));
+      initialDataRef.current = initialData;
+      hasMounted.current = false; // reset dirty tracking on new data
+      onDirtyChange?.(false);
     }
   }, [initialData]);
 
@@ -84,15 +82,18 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     const trimmed = tag.trim();
     if (trimmed && !tags.includes(trimmed)) {
       setTags((prev) => [...prev, trimmed]);
+      onDirtyChange?.(true);
     }
   };
 
   const removeTag = (index: number) => {
     setTags((prev) => prev.filter((_, i) => i !== index));
+    onDirtyChange?.(true);
   };
 
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    onDirtyChange?.(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -122,8 +123,12 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
           >
             <option value="">Select...</option>
-            {CATEGORY_OPTIONS.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+            {CATEGORY_GROUPS.map(group => (
+              <optgroup key={group.label} label={group.label}>
+                {group.categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>

@@ -1,6 +1,8 @@
 import { Suspense, lazy, useEffect } from "react";
 import { Switch, Route, useLocation, Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { apiRequest } from "@/lib/queryClient";
 import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload, HelpCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -40,7 +42,10 @@ const NAV_ITEMS: NavItem[] = [
   { label: "System", path: "/admin/system", icon: Settings, section: "TOOLS" },
 ];
 
-function Sidebar({ onLogout }: { onLogout: () => void }) {
+const isDev = typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+function Sidebar({ onLogout, pendingReviews }: { onLogout: () => void; pendingReviews?: number }) {
   const [location] = useLocation();
 
   const isActive = (item: NavItem) => {
@@ -57,7 +62,7 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
   }
 
   return (
-    <aside className="w-56 bg-white border-r border-gray-200 flex flex-col min-h-screen fixed left-0 top-0 z-40">
+    <aside className={cn("w-56 bg-white border-r border-gray-200 flex flex-col min-h-screen fixed left-0 top-0 z-40", isDev && "top-6")}>
       {/* Brand */}
       <div className="px-4 py-5 border-b border-gray-100">
         <h1 className="text-lg font-bold text-teal-600">ResourceHub</h1>
@@ -89,6 +94,11 @@ function Sidebar({ onLogout }: { onLogout: () => void }) {
                       )}
                       <item.icon className={cn("h-4 w-4 flex-shrink-0", active ? "text-teal-600" : "text-gray-400")} />
                       {item.label}
+                      {item.label === "Review" && !!pendingReviews && pendingReviews > 0 && (
+                        <span className="ml-auto text-[10px] bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                          {pendingReviews}
+                        </span>
+                      )}
                     </div>
                   </Link>
                 );
@@ -146,6 +156,18 @@ export default function AdminLayout() {
   const { isAuthenticated, isLoading, logout } = useAdminAuth();
   const [, navigate] = useLocation();
 
+  // Fetch dashboard stats for pending review count
+  const { data: statsData } = useQuery<{ success: boolean; pendingReviews?: number }>({
+    queryKey: ["/api/admin/dashboard/stats"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/dashboard/stats");
+      return res.json();
+    },
+    staleTime: 60_000,
+    enabled: isAuthenticated,
+  });
+  const pendingReviews = statsData?.pendingReviews ?? 0;
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/admin/login");
@@ -169,8 +191,13 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar onLogout={handleLogout} />
-      <main className="ml-56">
+      {isDev && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-amber-400 text-amber-900 text-[11px] font-medium text-center py-0.5">
+          Development Environment
+        </div>
+      )}
+      <Sidebar onLogout={handleLogout} pendingReviews={pendingReviews} />
+      <main className={cn("ml-56", isDev && "mt-6")}>
         <Suspense fallback={<AdminPageLoader />}>
           <Switch>
             <Route path="/admin" component={Dashboard} />

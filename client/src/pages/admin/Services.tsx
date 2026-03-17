@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
 import { ServiceForm, type ServiceFormData } from "@/components/admin/ServiceForm";
+import { CATEGORY_GROUPS } from "@/components/RefinePanel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -129,6 +130,24 @@ export default function Services() {
   const [showHistory, setShowHistory] = useState(false);
   const [flagReason, setFlagReason] = useState<string>("");
   const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const isDirtyRef = useRef(false);
+
+  // Keep ref in sync for beforeunload handler
+  useEffect(() => {
+    isDirtyRef.current = isDirty;
+  }, [isDirty]);
+
+  // Warn on browser tab close if dirty
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isDirtyRef.current) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, []);
 
   // Save filters to sessionStorage whenever they change
   useEffect(() => {
@@ -168,8 +187,6 @@ export default function Services() {
     success: boolean;
     services: ServiceListItem[];
     total: number;
-    page: number;
-    totalPages: number;
   }>({
     queryKey: ["/api/admin/services", queryParams.toString()],
     queryFn: async () => {
@@ -317,6 +334,8 @@ export default function Services() {
     setPage(1);
   }, []);
 
+  const totalPages = listData?.total ? Math.ceil(listData.total / pageSize) : 1;
+
   const service = detailData?.service;
 
   // Check stale embedding
@@ -352,13 +371,13 @@ export default function Services() {
             className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
           >
             <option value="">All Categories</option>
-            <option value="Addiction Services">Addiction</option>
-            <option value="Mental Health">Mental Health</option>
-            <option value="Housing & Shelter">Housing</option>
-            <option value="Food & Basic Needs">Basic Needs</option>
-            <option value="Crisis Services">Crisis</option>
-            <option value="Healthcare Access">Healthcare</option>
-            <option value="Hospital & Emergency">Hospital/ER</option>
+            {CATEGORY_GROUPS.map(group => (
+              <optgroup key={group.label} label={group.label}>
+                {group.categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
           <select
             value={enrichmentSourceFilter}
@@ -405,7 +424,13 @@ export default function Services() {
             {listData?.services?.map((svc) => (
               <div
                 key={svc.id}
-                onClick={() => { setSelectedId(svc.id); setShowHistory(false); }}
+                onClick={() => {
+                  if (svc.id === selectedId) return;
+                  if (isDirty && !window.confirm("You have unsaved changes. Discard?")) return;
+                  setIsDirty(false);
+                  setSelectedId(svc.id);
+                  setShowHistory(false);
+                }}
                 className={cn(
                   "px-3 py-2.5 border-b border-gray-100 cursor-pointer transition-colors",
                   selectedId === svc.id
@@ -455,7 +480,7 @@ export default function Services() {
               <div className="flex items-center justify-between text-xs text-gray-400">
                 <span>
                   {listData.total > 0
-                    ? `Page ${listData.page} of ${listData.totalPages} (${listData.total} total)`
+                    ? `Page ${page} of ${totalPages} (${listData.total} total)`
                     : "No results"}
                 </span>
                 <div className="flex gap-1">
@@ -472,7 +497,7 @@ export default function Services() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setPage((p: number) => p + 1)}
-                    disabled={page >= (listData.totalPages || 1)}
+                    disabled={page >= totalPages}
                     className="h-7 px-2 text-gray-500"
                   >
                     <ChevronRight className="h-3 w-3" />
@@ -681,9 +706,13 @@ export default function Services() {
             <>
               <ServiceForm
                 initialData={service}
-                onSubmit={(data) => updateMutation.mutate(data)}
+                onSubmit={(data) => {
+                  setIsDirty(false);
+                  updateMutation.mutate(data);
+                }}
                 isPending={updateMutation.isPending}
                 submitLabel="Save Changes"
+                onDirtyChange={setIsDirty}
               />
               {/* AI-Inferred Data section */}
               {enrichmentData?.enrichment && (
