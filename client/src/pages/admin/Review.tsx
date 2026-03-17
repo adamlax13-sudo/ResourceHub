@@ -16,7 +16,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck, ExternalLink } from "lucide-react";
+import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 
 interface ChangeRequest {
@@ -318,16 +319,28 @@ export default function Review() {
             </div>
           )}
 
-          {/* Missing fields banner for review-flagged items */}
-          {isReviewFlag && missingFields.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
-              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
-              <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
-              {missingFields.map((f) => (
-                <Badge key={f} className="bg-amber-100 text-amber-700 border-amber-300 text-[10px]">
-                  {FIELD_LABELS[f] || f}
-                </Badge>
-              ))}
+          {/* Missing fields banner + full editor link for review-flagged items */}
+          {isReviewFlag && (
+            <div className="space-y-2">
+              {missingFields.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                  <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
+                  {missingFields.map((f) => (
+                    <Badge key={f} className="bg-amber-100 text-amber-700 border-amber-300 text-[10px]">
+                      {FIELD_LABELS[f] || f}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {request.serviceId && (
+                <Link href={`/admin/services?selected=${request.serviceId}`}>
+                  <Button variant="outline" size="sm" className="w-full border-teal-200 text-teal-700 hover:bg-teal-50">
+                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                    Open Full Editor — Geocode, Regenerate Embedding, Check Duplicates
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
 
