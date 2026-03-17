@@ -306,26 +306,24 @@ export default function Services() {
   const hasStaleEmbedding = service?.embeddingUpdatedAt && service?.lastUpdated &&
     new Date(service.embeddingUpdatedAt) < new Date(service.lastUpdated);
 
-  const list = (
-    <div className="flex flex-col h-full">
-      {/* Search + Filters */}
-      <div className="p-3 border-b border-gray-200 space-y-2">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+  const listHeader = (
+      <div className="p-3 border-b border-gray-200 space-y-1.5">
+        <form onSubmit={handleSearch}>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search services..."
-              className="pl-8 bg-white border-gray-300 text-gray-900 text-sm h-9"
+              className="pl-8 bg-white border-gray-300 text-gray-900 text-sm h-8"
             />
           </div>
         </form>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-1.5">
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
+            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -334,35 +332,35 @@ export default function Services() {
           <select
             value={categoryFilter}
             onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900 flex-1"
+            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
           >
             <option value="">All Categories</option>
-            <option value="Addiction Services">Addiction Services</option>
+            <option value="Addiction Services">Addiction</option>
             <option value="Mental Health">Mental Health</option>
-            <option value="Housing & Shelter">Housing & Shelter</option>
-            <option value="Food & Basic Needs">Food & Basic Needs</option>
-            <option value="Crisis Services">Crisis Services</option>
-            <option value="Healthcare Access">Healthcare Access</option>
-            <option value="Hospital & Emergency">Hospital & Emergency</option>
+            <option value="Housing & Shelter">Housing</option>
+            <option value="Food & Basic Needs">Basic Needs</option>
+            <option value="Crisis Services">Crisis</option>
+            <option value="Healthcare Access">Healthcare</option>
+            <option value="Hospital & Emergency">Hospital/ER</option>
+          </select>
+          <select
+            value={enrichmentSourceFilter}
+            onChange={(e) => { setEnrichmentSourceFilter(e.target.value); setPage(1); }}
+            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
+          >
+            <option value="">All Sources</option>
+            <option value="ai_enriched">AI Enriched</option>
+            <option value="web_research_2026_03">Web Research</option>
+            <option value="audit">Audit</option>
+            <option value="found">Scraper</option>
+            <option value="manual">Manual</option>
+            <option value="none">No Source</option>
           </select>
         </div>
         <select
-          value={enrichmentSourceFilter}
-          onChange={(e) => { setEnrichmentSourceFilter(e.target.value); setPage(1); }}
-          className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900 w-full"
-        >
-          <option value="">All Sources</option>
-          <option value="ai_enriched">AI Enriched</option>
-          <option value="web_research_2026_03">Web Research</option>
-          <option value="audit">Audit Verified</option>
-          <option value="found">Scraper Found</option>
-          <option value="manual">Manual</option>
-          <option value="none">No Source Info</option>
-        </select>
-        <select
           value={sortBy}
           onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-          className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 w-full"
+          className="h-7 rounded border border-gray-200 bg-white px-1.5 text-[11px] text-gray-700 w-full"
         >
           <option value="name-asc">Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
@@ -376,8 +374,10 @@ export default function Services() {
           <option value="enrichmentSource-desc">AI Enriched First</option>
         </select>
       </div>
+  );
 
-      {/* List */}
+  const list = (
+    <div className="flex flex-col h-full">
       {listLoading ? (
         <div className="flex justify-center py-8">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
@@ -720,6 +720,7 @@ export default function Services() {
 
   return (
     <MasterDetailLayout
+      listHeader={listHeader}
       list={list}
       detail={detail}
       placeholder="Select a service to view and edit"
