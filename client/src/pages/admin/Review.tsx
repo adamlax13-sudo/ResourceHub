@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
 import { DiffView } from "@/components/admin/DiffView";
 import { ServiceForm, type ServiceFormData } from "@/components/admin/ServiceForm";
+import { ServiceDetailPanel } from "@/components/admin/ServiceDetailPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,8 +17,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck, ExternalLink } from "lucide-react";
-import { Link } from "wouter";
+import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChangeRequest {
@@ -34,7 +34,6 @@ interface ChangeRequest {
 }
 
 interface ChangeRequestDetail extends ChangeRequest {
-  currentServiceData?: Record<string, unknown>;
   reviewNotes?: string;
 }
 
@@ -93,16 +92,9 @@ export default function Review() {
     staleTime: 10_000,
   });
 
-  // Auto-open edit mode for review-flagged items
   const request = detailData?.request;
   const isReviewFlag = request?.changeType === "review";
   const missingFields = isReviewFlag ? ((request?.proposedChanges as any)?.missingFields as string[] ?? []) : [];
-
-  useEffect(() => {
-    if (isReviewFlag && request) {
-      setEditMode(true);
-    }
-  }, [isReviewFlag, request?.id]);
 
   // Approve
   const approveMutation = useMutation({
@@ -220,6 +212,7 @@ export default function Review() {
             <option value="create">Create</option>
             <option value="update">Update</option>
             <option value="deactivate">Deactivate</option>
+            <option value="review">Review</option>
           </select>
         </div>
         {selectedIds.size > 0 && (
@@ -319,41 +312,53 @@ export default function Review() {
             </div>
           )}
 
-          {/* Missing fields banner + full editor link for review-flagged items */}
-          {isReviewFlag && (
-            <div className="space-y-2">
-              {missingFields.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                  <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                  <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
-                  {missingFields.map((f) => (
-                    <Badge key={f} className="bg-amber-100 text-amber-700 border-amber-300 text-[10px]">
-                      {FIELD_LABELS[f] || f}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              {request.serviceId && (
-                <Link href={`/admin/services?selected=${request.serviceId}`}>
-                  <Button variant="outline" size="sm" className="w-full border-teal-200 text-teal-700 hover:bg-teal-50">
-                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                    Open Full Editor — Geocode, Regenerate Embedding, Check Duplicates
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
-
           {/* Content based on type */}
-          {editMode ? (
+          {isReviewFlag && request.serviceId ? (
+            <>
+              <ServiceDetailPanel
+                serviceId={request.serviceId}
+                highlightFields={missingFields}
+                onSaveSuccess={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/review"] })}
+                banner={
+                  missingFields.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                      <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                      <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
+                      {missingFields.map((f) => (
+                        <Badge key={f} className="bg-amber-100 text-amber-700 border-amber-300 text-[10px]">
+                          {FIELD_LABELS[f] || f}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : undefined
+                }
+              />
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => approveMutation.mutate(request.id)}
+                  disabled={approveMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Mark Resolved
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setRejectDialogOpen(true)}
+                  className="border-red-300 text-red-500 hover:bg-red-50"
+                >
+                  <XCircle className="h-4 w-4 mr-1" />
+                  Dismiss
+                </Button>
+              </div>
+            </>
+          ) : editMode ? (
             <ServiceForm
-              initialData={isReviewFlag ? (request.currentServiceData as any) : (request.proposedChanges as any)}
-              onSubmit={(data) =>
-                editApproveMutation.mutate({ id: request.id, data })
-              }
+              initialData={request.proposedChanges as any}
+              onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
               isPending={editApproveMutation.isPending}
               submitLabel="Save & Approve"
-              highlightFields={missingFields}
             />
           ) : request.changeType === "update" && Object.keys(diffChanges).length > 0 ? (
             <DiffView changes={diffChanges} />
@@ -396,7 +401,7 @@ export default function Review() {
           )}
 
           {/* Action Buttons */}
-          {!editMode && (
+          {!editMode && !isReviewFlag && (
             <div className="flex gap-2 pt-4 border-t border-gray-200">
               <Button
                 onClick={() => approveMutation.mutate(request.id)}
@@ -491,6 +496,9 @@ function ChangeTypeBadge({ type }: { type: string }) {
   }
   if (type === "deactivate") {
     return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">REMOVE</Badge>;
+  }
+  if (type === "review") {
+    return <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs">REVIEW</Badge>;
   }
   return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{type}</Badge>;
 }
