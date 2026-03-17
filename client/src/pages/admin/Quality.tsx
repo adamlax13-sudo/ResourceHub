@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,9 +15,15 @@ const FIELD_LABELS: Record<string, string> = {
   description: "Description",
   hoursOfOperation: "Hours",
   eligibility: "Eligibility",
+  waitTimes: "Wait Times",
+  serviceFormat: "Service Format",
+  processSteps: "Process Steps",
+  requiredDocs: "Required Docs",
+  languagesSupported: "Languages",
   latitude: "Geocoding",
   tags: "Tags",
   embedding: "Embedding",
+  lowConfidence: "Low Confidence",
 };
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -26,7 +33,31 @@ const SEVERITY_COLORS: Record<string, string> = {
   low: "bg-gray-50 text-gray-500 border-gray-200",
 };
 
+// All filterable field options for the issues table
+const FIELD_FILTER_OPTIONS = [
+  { value: "", label: "All Fields" },
+  { value: "phone", label: "Phone" },
+  { value: "email", label: "Email" },
+  { value: "websiteUrl", label: "Website" },
+  { value: "address", label: "Address" },
+  { value: "description", label: "Description" },
+  { value: "hoursOfOperation", label: "Hours" },
+  { value: "eligibility", label: "Eligibility" },
+  { value: "waitTimes", label: "Wait Times" },
+  { value: "serviceFormat", label: "Service Format" },
+  { value: "processSteps", label: "Process Steps" },
+  { value: "requiredDocs", label: "Required Docs" },
+  { value: "languagesSupported", label: "Languages" },
+  { value: "latitude", label: "Geocoding" },
+  { value: "tags", label: "Tags" },
+  { value: "embedding", label: "Embedding" },
+  { value: "lowConfidence", label: "Low Confidence" },
+];
+
 export default function Quality() {
+  const [fieldFilter, setFieldFilter] = useState("");
+  const [severityFilter, setSeverityFilter] = useState("");
+
   const { data: summaryData, isPending: summaryLoading } = useQuery<{
     success: boolean;
     summary: Record<string, number>;
@@ -50,7 +81,7 @@ export default function Quality() {
   }>({
     queryKey: ["/api/admin/quality/issues"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/admin/quality/issues?limit=50");
+      const res = await apiRequest("GET", "/api/admin/quality/issues?limit=200");
       return res.json();
     },
     staleTime: 60_000,
@@ -61,9 +92,16 @@ export default function Quality() {
   const fieldBars = summary
     ? Object.entries(summary)
         .filter(([key]) => FIELD_LABELS[key])
-        .map(([key, pct]) => ({ label: FIELD_LABELS[key], pct: Math.round(pct as number) }))
+        .map(([key, pct]) => ({ key, label: FIELD_LABELS[key], pct: Math.round(pct as number) }))
         .sort((a, b) => a.pct - b.pct)
     : [];
+
+  // Apply client-side filters to issues
+  const filteredIssues = (issuesData?.issues ?? []).filter((issue) => {
+    if (fieldFilter && !issue.missingFields.includes(fieldFilter)) return false;
+    if (severityFilter && issue.severity !== severityFilter) return false;
+    return true;
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -82,7 +120,14 @@ export default function Quality() {
           ) : (
             <div className="space-y-3">
               {fieldBars.map((bar) => (
-                <div key={bar.label} className="space-y-1">
+                <div
+                  key={bar.key}
+                  className={cn(
+                    "space-y-1 cursor-pointer rounded px-2 py-1 -mx-2 transition-colors",
+                    fieldFilter === bar.key ? "bg-teal-50" : "hover:bg-gray-50"
+                  )}
+                  onClick={() => setFieldFilter(fieldFilter === bar.key ? "" : bar.key)}
+                >
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">{bar.label}</span>
                     <span className="text-gray-700">{bar.pct}%</span>
@@ -107,17 +152,42 @@ export default function Quality() {
       {/* Issue Queue */}
       <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-gray-900 text-base">
-            Issues {issuesData?.total ? `(${issuesData.total})` : ""}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-gray-900 text-base">
+              Issues {filteredIssues.length > 0 ? `(${filteredIssues.length}${fieldFilter || severityFilter ? ` of ${issuesData?.total ?? 0}` : ""})` : ""}
+            </CardTitle>
+            <div className="flex gap-2">
+              <select
+                value={fieldFilter}
+                onChange={(e) => setFieldFilter(e.target.value)}
+                className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
+              >
+                {FIELD_FILTER_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <select
+                value={severityFilter}
+                onChange={(e) => setSeverityFilter(e.target.value)}
+                className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
+              >
+                <option value="">All Severity</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+              </select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {issuesLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
             </div>
-          ) : !issuesData?.issues?.length ? (
-            <p className="text-sm text-gray-400 text-center py-4">No quality issues found.</p>
+          ) : !filteredIssues.length ? (
+            <p className="text-sm text-gray-400 text-center py-4">
+              {fieldFilter || severityFilter ? "No issues match the selected filters." : "No quality issues found."}
+            </p>
           ) : (
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <table className="w-full text-sm">
@@ -131,7 +201,7 @@ export default function Quality() {
                   </tr>
                 </thead>
                 <tbody>
-                  {issuesData.issues.map((issue) => (
+                  {filteredIssues.map((issue) => (
                     <tr key={issue.service.id} className="border-t border-gray-200 hover:bg-gray-50">
                       <td className="px-3 py-2 text-gray-900 max-w-[200px] truncate">{issue.service.name}</td>
                       <td className="px-3 py-2">
@@ -142,7 +212,16 @@ export default function Quality() {
                       <td className="px-3 py-2">
                         <div className="flex gap-1 flex-wrap">
                           {issue.missingFields.map((field, i) => (
-                            <Badge key={i} className="bg-red-50 text-red-600 border-red-200 text-[10px]">
+                            <Badge
+                              key={i}
+                              className={cn(
+                                "text-[10px] cursor-pointer",
+                                fieldFilter === field
+                                  ? "bg-teal-50 text-teal-700 border-teal-200"
+                                  : "bg-red-50 text-red-600 border-red-200"
+                              )}
+                              onClick={() => setFieldFilter(fieldFilter === field ? "" : field)}
+                            >
                               {FIELD_LABELS[field] || field}
                             </Badge>
                           ))}

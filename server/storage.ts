@@ -1695,6 +1695,11 @@ export class DatabaseStorage implements IStorage {
         COUNT(*) FILTER (WHERE description IS NOT NULL AND description != '') * 100.0 / NULLIF(COUNT(*), 0) AS description,
         COUNT(*) FILTER (WHERE hours_of_operation IS NOT NULL AND hours_of_operation != '') * 100.0 / NULLIF(COUNT(*), 0) AS "hoursOfOperation",
         COUNT(*) FILTER (WHERE eligibility IS NOT NULL AND eligibility != '') * 100.0 / NULLIF(COUNT(*), 0) AS eligibility,
+        COUNT(*) FILTER (WHERE wait_times IS NOT NULL AND wait_times != '') * 100.0 / NULLIF(COUNT(*), 0) AS "waitTimes",
+        COUNT(*) FILTER (WHERE service_format IS NOT NULL AND service_format != '') * 100.0 / NULLIF(COUNT(*), 0) AS "serviceFormat",
+        COUNT(*) FILTER (WHERE process_steps IS NOT NULL AND process_steps::text != '[]' AND process_steps::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS "processSteps",
+        COUNT(*) FILTER (WHERE required_docs IS NOT NULL AND required_docs::text != '[]' AND required_docs::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS "requiredDocs",
+        COUNT(*) FILTER (WHERE languages_supported IS NOT NULL AND languages_supported::text != '[]' AND languages_supported::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS "languagesSupported",
         COUNT(*) FILTER (WHERE latitude IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS latitude,
         COUNT(*) FILTER (WHERE tags IS NOT NULL AND tags::text != '[]' AND tags::text != 'null') * 100.0 / NULLIF(COUNT(*), 0) AS tags,
         COUNT(*) FILTER (WHERE embedding IS NOT NULL) * 100.0 / NULLIF(COUNT(*), 0) AS embedding
@@ -1704,7 +1709,7 @@ export class DatabaseStorage implements IStorage {
 
     const row = result.rows[0] as any;
     const summary: Record<string, number> = {};
-    for (const field of ['phone', 'email', 'websiteUrl', 'address', 'description', 'hoursOfOperation', 'eligibility', 'latitude', 'tags', 'embedding']) {
+    for (const field of ['phone', 'email', 'websiteUrl', 'address', 'description', 'hoursOfOperation', 'eligibility', 'waitTimes', 'serviceFormat', 'processSteps', 'requiredDocs', 'languagesSupported', 'latitude', 'tags', 'embedding']) {
       summary[field] = Math.round(Number(row?.[field] ?? 0) * 10) / 10;
     }
     return summary;
@@ -1734,10 +1739,15 @@ export class DatabaseStorage implements IStorage {
           -- High: low confidence or no description
           OR confidence_score < 30
           OR (description IS NULL OR description = '')
-          -- Medium: missing geocoding, hours, or embedding
+          -- Medium: missing geocoding, hours, embedding, or other fields
           OR latitude IS NULL
           OR (hours_of_operation IS NULL OR hours_of_operation = '')
           OR embedding IS NULL
+          OR (wait_times IS NULL OR wait_times = '')
+          OR (service_format IS NULL OR service_format = '')
+          OR (process_steps IS NULL OR process_steps::text = '[]' OR process_steps::text = 'null')
+          OR (required_docs IS NULL OR required_docs::text = '[]' OR required_docs::text = 'null')
+          OR (languages_supported IS NULL OR languages_supported::text = '[]' OR languages_supported::text = 'null')
         )
       ORDER BY
         CASE
@@ -1761,6 +1771,11 @@ export class DatabaseStorage implements IStorage {
           OR latitude IS NULL
           OR (hours_of_operation IS NULL OR hours_of_operation = '')
           OR embedding IS NULL
+          OR (wait_times IS NULL OR wait_times = '')
+          OR (service_format IS NULL OR service_format = '')
+          OR (process_steps IS NULL OR process_steps::text = '[]' OR process_steps::text = 'null')
+          OR (required_docs IS NULL OR required_docs::text = '[]' OR required_docs::text = 'null')
+          OR (languages_supported IS NULL OR languages_supported::text = '[]' OR languages_supported::text = 'null')
         )
     `);
 
@@ -1774,6 +1789,14 @@ export class DatabaseStorage implements IStorage {
       if (row.confidence_score < 30) missingFields.push('lowConfidence');
       if (!row.latitude) missingFields.push('latitude');
       if (!row.hours_of_operation) missingFields.push('hoursOfOperation');
+      if (!row.wait_times) missingFields.push('waitTimes');
+      if (!row.service_format) missingFields.push('serviceFormat');
+      const ps = row.process_steps;
+      if (!ps || (typeof ps === 'string' ? ps === '[]' || ps === 'null' : Array.isArray(ps) && ps.length === 0)) missingFields.push('processSteps');
+      const rd = row.required_docs;
+      if (!rd || (typeof rd === 'string' ? rd === '[]' || rd === 'null' : Array.isArray(rd) && rd.length === 0)) missingFields.push('requiredDocs');
+      const ls = row.languages_supported;
+      if (!ls || (typeof ls === 'string' ? ls === '[]' || ls === 'null' : Array.isArray(ls) && ls.length === 0)) missingFields.push('languagesSupported');
 
       // Map raw row to Service shape
       const service: Service = {
