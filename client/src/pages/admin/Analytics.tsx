@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
+import { Loader2, MousePointerClick, Search, Building2, ArrowDown, Settings, ChevronUp, ChevronDown, RotateCcw, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
@@ -162,7 +162,7 @@ function OverviewWidget({ overview, loading }: { overview?: OverviewData; loadin
   );
 }
 
-function DailyTrendWidget({ trends, loading }: { trends: TrendEntry[]; loading: boolean }) {
+function DailyTrendWidget({ trends, loading, compact }: { trends: TrendEntry[]; loading: boolean; compact?: boolean }) {
   const trendChart = trends.map((t) => ({
     ...t,
     label: new Date(t.date + "T00:00:00").toLocaleDateString("en-CA", {
@@ -170,6 +170,8 @@ function DailyTrendWidget({ trends, loading }: { trends: TrendEntry[]; loading: 
       day: "numeric",
     }),
   }));
+
+  const chartHeight = compact ? 200 : 280;
 
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
@@ -185,7 +187,7 @@ function DailyTrendWidget({ trends, loading }: { trends: TrendEntry[]; loading: 
         ) : trendChart.length === 0 ? (
           <EmptyState message="No trend data for this period." />
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <AreaChart data={trendChart}>
               <defs>
                 <linearGradient id="tealGradient" x1="0" y1="0" x2="0" y2="1">
@@ -232,8 +234,9 @@ function DailyTrendWidget({ trends, loading }: { trends: TrendEntry[]; loading: 
   );
 }
 
-function CategoriesWidget({ categories, loading }: { categories: CategoryEntry[]; loading: boolean }) {
-  const maxCategoryClicks = categories.length > 0 ? categories[0].clicks : 1;
+function CategoriesWidget({ categories, loading, compact }: { categories: CategoryEntry[]; loading: boolean; compact?: boolean }) {
+  const displayCategories = compact ? categories.slice(0, 5) : categories;
+  const maxCategoryClicks = displayCategories.length > 0 ? displayCategories[0].clicks : 1;
 
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
@@ -249,8 +252,8 @@ function CategoriesWidget({ categories, loading }: { categories: CategoryEntry[]
         ) : categories.length === 0 ? (
           <EmptyState message="No category data for this period." />
         ) : (
-          <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
-            {categories.map((cat) => {
+          <div className={cn("space-y-2 pr-1", compact ? "" : "max-h-[360px] overflow-y-auto")}>
+            {displayCategories.map((cat) => {
               const pct = Math.round((cat.clicks / maxCategoryClicks) * 100);
               const colorClasses = getCategoryColor(cat.category);
               const textColor = colorClasses.split(" ").find((c) => c.startsWith("text-")) ?? "text-gray-600";
@@ -281,13 +284,15 @@ function CategoriesWidget({ categories, loading }: { categories: CategoryEntry[]
   );
 }
 
-function PeakHoursWidget({ hoursData, loading }: { hoursData: HourEntry[]; loading: boolean }) {
+function PeakHoursWidget({ hoursData, loading, compact }: { hoursData: HourEntry[]; loading: boolean; compact?: boolean }) {
   const hoursMap = new Map(hoursData.map((h) => [h.hour, h.clicks]));
   const hours = Array.from({ length: 24 }, (_, i) => ({
     hour: i,
     label: `${i.toString().padStart(2, "0")}:00`,
     clicks: hoursMap.get(i) ?? 0,
   }));
+
+  const chartHeight = compact ? 200 : 360;
 
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
@@ -301,7 +306,7 @@ function PeakHoursWidget({ hoursData, loading }: { hoursData: HourEntry[]; loadi
         {loading ? (
           <Spinner />
         ) : (
-          <ResponsiveContainer width="100%" height={360}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <BarChart data={hours}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis
@@ -327,7 +332,9 @@ function PeakHoursWidget({ hoursData, loading }: { hoursData: HourEntry[]; loadi
   );
 }
 
-function TopQueriesWidget({ searches, loading }: { searches: SearchEntry[]; loading: boolean }) {
+function TopQueriesWidget({ searches, loading, compact }: { searches: SearchEntry[]; loading: boolean; compact?: boolean }) {
+  const displaySearches = compact ? searches.slice(0, 5) : searches;
+
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
       <CardHeader className="pb-2">
@@ -343,7 +350,7 @@ function TopQueriesWidget({ searches, loading }: { searches: SearchEntry[]; load
           <EmptyState message="No search data for this period." />
         ) : (
           <div className="border border-gray-100 rounded-lg overflow-hidden">
-            <div className="max-h-[360px] overflow-y-auto">
+            <div className={cn(compact ? "" : "max-h-[360px] overflow-y-auto")}>
               <table className="w-full text-sm">
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-gray-50">
@@ -363,7 +370,7 @@ function TopQueriesWidget({ searches, loading }: { searches: SearchEntry[]; load
                   </tr>
                 </thead>
                 <tbody>
-                  {searches.map((s, i) => {
+                  {displaySearches.map((s, i) => {
                     const ctr =
                       s.searchCount > 0
                         ? ((s.clickCount / s.searchCount) * 100).toFixed(1)
@@ -398,7 +405,9 @@ function TopQueriesWidget({ searches, loading }: { searches: SearchEntry[]; load
   );
 }
 
-function ClickPositionsWidget({ positions, loading }: { positions: PositionEntry[]; loading: boolean }) {
+function ClickPositionsWidget({ positions, loading, compact }: { positions: PositionEntry[]; loading: boolean; compact?: boolean }) {
+  const chartHeight = compact ? 200 : 360;
+
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
       <CardHeader className="pb-2">
@@ -413,7 +422,7 @@ function ClickPositionsWidget({ positions, loading }: { positions: PositionEntry
         ) : positions.length === 0 ? (
           <EmptyState message="No click position data for this period." />
         ) : (
-          <ResponsiveContainer width="100%" height={360}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <BarChart data={positions.slice(0, 20)}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis
@@ -445,7 +454,9 @@ function ClickPositionsWidget({ positions, loading }: { positions: PositionEntry
   );
 }
 
-function MostClickedWidget({ services, loading }: { services: ServiceEntry[]; loading: boolean }) {
+function MostClickedWidget({ services, loading, compact }: { services: ServiceEntry[]; loading: boolean; compact?: boolean }) {
+  const displayServices = compact ? services.slice(0, 5) : services.slice(0, 25);
+
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
       <CardHeader className="pb-2">
@@ -460,14 +471,18 @@ function MostClickedWidget({ services, loading }: { services: ServiceEntry[]; lo
         ) : services.length === 0 ? (
           <EmptyState message="No service click data for this period." />
         ) : (
-          <ServiceTable services={services.slice(0, 25)} />
+          <ServiceTable services={displayServices} compact={compact} />
         )}
       </CardContent>
     </Card>
   );
 }
 
-function LeastClickedWidget({ services, loading }: { services: ServiceEntry[]; loading: boolean }) {
+function LeastClickedWidget({ services, loading, compact }: { services: ServiceEntry[]; loading: boolean; compact?: boolean }) {
+  const displayServices = compact
+    ? [...services].reverse().slice(0, 5)
+    : [...services].reverse().slice(0, 25);
+
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
       <CardHeader className="pb-2">
@@ -485,14 +500,14 @@ function LeastClickedWidget({ services, loading }: { services: ServiceEntry[]; l
         ) : services.length === 0 ? (
           <EmptyState message="No service data for this period." />
         ) : (
-          <ServiceTable services={[...services].reverse().slice(0, 25)} />
+          <ServiceTable services={displayServices} compact={compact} />
         )}
       </CardContent>
     </Card>
   );
 }
 
-function DevicesWidget({ days }: { days: number }) {
+function DevicesWidget({ days, compact }: { days: number; compact?: boolean }) {
   const { data, isPending } = useQuery<{
     success: boolean;
     devices: DeviceEntry[];
@@ -550,7 +565,7 @@ function DevicesWidget({ days }: { days: number }) {
                       <span className="text-sm text-gray-700">{d.device_type}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-500 tabular-nums">{d.clicks}</span>
+                      {!compact && <span className="text-sm text-gray-500 tabular-nums">{d.clicks}</span>}
                       <span className="text-sm font-medium text-gray-700 tabular-nums w-14 text-right">{pct}%</span>
                     </div>
                   </div>
@@ -564,7 +579,7 @@ function DevicesWidget({ days }: { days: number }) {
   );
 }
 
-function NoClicksWidget({ days }: { days: number }) {
+function NoClicksWidget({ days, compact }: { days: number; compact?: boolean }) {
   const { data, isPending } = useQuery<{
     success: boolean;
     noClicks: NoClickEntry[];
@@ -578,6 +593,7 @@ function NoClicksWidget({ days }: { days: number }) {
   });
 
   const noClicks = data?.noClicks ?? [];
+  const displayNoClicks = compact ? noClicks.slice(0, 5) : noClicks;
 
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
@@ -594,7 +610,7 @@ function NoClicksWidget({ days }: { days: number }) {
           <EmptyState message="No unmet-need data for this period." />
         ) : (
           <div className="border border-gray-100 rounded-lg overflow-hidden">
-            <div className="max-h-[360px] overflow-y-auto">
+            <div className={cn(compact ? "" : "max-h-[360px] overflow-y-auto")}>
               <table className="w-full text-sm">
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-gray-50">
@@ -610,7 +626,7 @@ function NoClicksWidget({ days }: { days: number }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {noClicks.map((entry, i) => (
+                  {displayNoClicks.map((entry, i) => (
                     <tr key={i} className="border-t border-gray-100 hover:bg-gray-50/50">
                       <td className="px-3 py-2 text-gray-900 truncate max-w-[220px]">
                         {entry.query || "(empty)"}
@@ -633,7 +649,7 @@ function NoClicksWidget({ days }: { days: number }) {
   );
 }
 
-function SessionsWidget({ days }: { days: number }) {
+function SessionsWidget({ days, compact }: { days: number; compact?: boolean }) {
   const { data, isPending } = useQuery<{
     success: boolean;
     sessions: SessionEntry[];
@@ -647,6 +663,7 @@ function SessionsWidget({ days }: { days: number }) {
   });
 
   const sessions = data?.sessions ?? [];
+  const chartHeight = compact ? 180 : 280;
 
   return (
     <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
@@ -662,7 +679,7 @@ function SessionsWidget({ days }: { days: number }) {
         ) : sessions.length === 0 ? (
           <EmptyState message="No session data for this period." />
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <BarChart data={sessions}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis
@@ -696,19 +713,21 @@ function SessionsWidget({ days }: { days: number }) {
 
 // ---------- Shared sub-components ----------
 
-function ServiceTable({ services }: { services: ServiceEntry[] }) {
+function ServiceTable({ services, compact }: { services: ServiceEntry[]; compact?: boolean }) {
   return (
-    <div className="border border-gray-100 rounded-lg overflow-hidden">
-      <div className="max-h-[360px] overflow-y-auto">
+    <div className="border border-gray-100 rounded-lg overflow-hidden overflow-x-auto">
+      <div className={cn(compact ? "" : "max-h-[360px] overflow-y-auto")}>
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="bg-gray-50">
               <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
                 Service
               </th>
-              <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
-                Category
-              </th>
+              {!compact && (
+                <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
+                  Category
+                </th>
+              )}
               <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
                 Clicks
               </th>
@@ -723,20 +742,22 @@ function ServiceTable({ services }: { services: ServiceEntry[] }) {
                 <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
                   {s.serviceName || `Service ${s.serviceId}`}
                 </td>
-                <td className="px-3 py-2">
-                  {s.category ? (
-                    <span
-                      className={cn(
-                        "inline-block px-2 py-0.5 text-[10px] font-medium rounded-full border truncate max-w-[120px]",
-                        getCategoryColor(s.category)
-                      )}
-                    >
-                      {s.category}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-gray-300">--</span>
-                  )}
-                </td>
+                {!compact && (
+                  <td className="px-3 py-2">
+                    {s.category ? (
+                      <span
+                        className={cn(
+                          "inline-block px-2 py-0.5 text-[10px] font-medium rounded-full border truncate max-w-[120px]",
+                          getCategoryColor(s.category)
+                        )}
+                      >
+                        {s.category}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-300">--</span>
+                    )}
+                  </td>
+                )}
                 <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
                   {s.clickCount}
                 </td>
@@ -804,6 +825,20 @@ function CustomizeAnalytics({
     [layout, onLayoutChange],
   );
 
+  const updateWidgetSize = useCallback(
+    (id: string, size: 'small' | 'medium' | 'large') => {
+      const def = getAnalyticsWidgetDef(id);
+      if (def?.sizeLocked) return;
+      const next: AnalyticsLayout = {
+        widgets: layout.widgets.map((w) =>
+          w.id === id ? { ...w, size } : w,
+        ),
+      };
+      onLayoutChange(next);
+    },
+    [layout, onLayoutChange],
+  );
+
   const moveWidget = useCallback(
     (id: string, direction: "up" | "down") => {
       const idx = layout.widgets.findIndex((w) => w.id === id);
@@ -824,11 +859,11 @@ function CustomizeAnalytics({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Customize Analytics</DialogTitle>
           <DialogDescription>
-            Toggle widgets on or off, and reorder them with the arrow buttons.
+            Toggle widgets on or off, resize them (S/M/L), and reorder with the arrow buttons.
           </DialogDescription>
         </DialogHeader>
 
@@ -839,6 +874,7 @@ function CustomizeAnalytics({
 
             const isFirst = index === 0;
             const isLast = index === layout.widgets.length - 1;
+            const currentSize = item.size;
 
             return (
               <div
@@ -846,7 +882,7 @@ function CustomizeAnalytics({
                 className="flex items-center gap-2 py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 {/* Reorder buttons */}
-                <div className="flex flex-col gap-0.5 w-6">
+                <div className="flex flex-col gap-0.5 w-6 flex-shrink-0">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -872,6 +908,32 @@ function CustomizeAnalytics({
                   <p className="text-sm font-medium text-gray-900">{def.label}</p>
                   <p className="text-xs text-gray-400 truncate">{def.description}</p>
                 </div>
+
+                {/* Size selector */}
+                {def.sizeLocked ? (
+                  <div className="flex items-center gap-1 text-gray-300 flex-shrink-0">
+                    <Lock className="h-3 w-3" />
+                    <span className="text-[10px] font-medium">L</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 flex-shrink-0">
+                    {(['small', 'medium', 'large'] as const).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => updateWidgetSize(item.id, s)}
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-medium border transition-colors",
+                          currentSize === s
+                            ? "bg-teal-50 text-teal-700 border-teal-200"
+                            : "bg-white text-gray-400 border-gray-200 hover:text-gray-600"
+                        )}
+                      >
+                        {s === 'small' ? 'S' : s === 'medium' ? 'M' : 'L'}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Toggle */}
                 <button
@@ -952,54 +1014,53 @@ function AnalyticsWidgetGrid({
   serviceData: ServiceEntry[];
   serviceLoading: boolean;
 }) {
-  const WIDGET_MAP: Record<string, React.ReactNode> = {
-    overview: <OverviewWidget overview={overviewData} loading={overviewLoading} />,
-    "daily-trend": <DailyTrendWidget trends={trendsData} loading={trendsLoading} />,
-    categories: <CategoriesWidget categories={categoriesData} loading={categoriesLoading} />,
-    "peak-hours": <PeakHoursWidget hoursData={hoursData} loading={hoursLoading} />,
-    "top-queries": <TopQueriesWidget searches={searchData} loading={searchLoading} />,
-    "click-positions": <ClickPositionsWidget positions={positionsData} loading={positionsLoading} />,
-    "most-clicked": <MostClickedWidget services={serviceData} loading={serviceLoading} />,
-    "least-clicked": <LeastClickedWidget services={serviceData} loading={serviceLoading} />,
-    devices: <DevicesWidget days={days} />,
-    "no-clicks": <NoClicksWidget days={days} />,
-    sessions: <SessionsWidget days={days} />,
-  };
+  const visibleWidgets = layout.widgets.filter((w) => w.visible);
 
-  const visible = layout.widgets.filter((w) => w.visible);
-  const elements: React.ReactNode[] = [];
-  let halfBuffer: { id: string }[] = [];
-
-  const flushHalves = () => {
-    if (halfBuffer.length === 0) return;
-    elements.push(
-      <div key={`half-row-${halfBuffer.map((h) => h.id).join("-")}`} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {halfBuffer.map((h) => (
-          <div key={h.id}>{WIDGET_MAP[h.id]}</div>
-        ))}
-      </div>,
-    );
-    halfBuffer = [];
-  };
-
-  for (const item of visible) {
-    const def = getAnalyticsWidgetDef(item.id);
-    if (!def) continue;
-
-    if (def.size === "full") {
-      flushHalves();
-      elements.push(<div key={item.id}>{WIDGET_MAP[item.id]}</div>);
-    } else {
-      halfBuffer.push(item);
-      if (halfBuffer.length === 2) {
-        flushHalves();
-      }
+  const renderWidget = (id: string, compact: boolean) => {
+    switch (id) {
+      case 'overview':
+        return <OverviewWidget overview={overviewData} loading={overviewLoading} />;
+      case 'daily-trend':
+        return <DailyTrendWidget trends={trendsData} loading={trendsLoading} compact={compact} />;
+      case 'categories':
+        return <CategoriesWidget categories={categoriesData} loading={categoriesLoading} compact={compact} />;
+      case 'peak-hours':
+        return <PeakHoursWidget hoursData={hoursData} loading={hoursLoading} compact={compact} />;
+      case 'top-queries':
+        return <TopQueriesWidget searches={searchData} loading={searchLoading} compact={compact} />;
+      case 'click-positions':
+        return <ClickPositionsWidget positions={positionsData} loading={positionsLoading} compact={compact} />;
+      case 'most-clicked':
+        return <MostClickedWidget services={serviceData} loading={serviceLoading} compact={compact} />;
+      case 'least-clicked':
+        return <LeastClickedWidget services={serviceData} loading={serviceLoading} compact={compact} />;
+      case 'devices':
+        return <DevicesWidget days={days} compact={compact} />;
+      case 'no-clicks':
+        return <NoClicksWidget days={days} compact={compact} />;
+      case 'sessions':
+        return <SessionsWidget days={days} compact={compact} />;
+      default:
+        return null;
     }
-  }
+  };
 
-  flushHalves();
-
-  return <>{elements}</>;
+  return (
+    <div className="grid grid-cols-6 gap-4">
+      {visibleWidgets.map((w) => {
+        const colSpan =
+          w.size === 'large' ? 'col-span-6'
+          : w.size === 'medium' ? 'col-span-6 lg:col-span-3'
+          : 'col-span-6 sm:col-span-3 lg:col-span-2';
+        const isCompact = w.size === 'small';
+        return (
+          <div key={w.id} className={colSpan}>
+            {renderWidget(w.id, isCompact)}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 // ---------- Main Component ----------
