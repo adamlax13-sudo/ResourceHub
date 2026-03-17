@@ -89,17 +89,21 @@ export function registerAdminAnalyticsRoutes(app: Express): void {
 
       const results = await db.execute(sql`
         SELECT
-          COUNT(*)::int AS "totalClicks",
+          COUNT(*)::int AS "totalSearches",
+          COUNT(*) FILTER (WHERE clicked_service_id IS NOT NULL)::int AS "totalClicks",
           COUNT(DISTINCT normalized_query)::int AS "uniqueQueries",
-          COUNT(DISTINCT clicked_service_id)::int AS "uniqueServicesClicked",
-          ROUND(AVG(click_position)::numeric, 1)::float AS "avgClickPosition",
-          ROUND(AVG(result_count)::numeric, 1)::float AS "avgResultCount"
+          COUNT(DISTINCT clicked_service_id) FILTER (WHERE clicked_service_id IS NOT NULL)::int AS "uniqueServicesClicked",
+          ROUND(AVG(click_position) FILTER (WHERE click_position IS NOT NULL)::numeric, 1)::float AS "avgClickPosition",
+          ROUND(AVG(result_count)::numeric, 1)::float AS "avgResultCount",
+          COUNT(DISTINCT CONCAT(DATE(created_at), '|', COALESCE(LEFT(user_agent, 100), 'unknown')))::int AS "approximateVisitors"
         FROM search_analytics
         WHERE created_at >= ${cutoff}
       `);
 
       const row = results.rows[0] || {
+        totalSearches: 0,
         totalClicks: 0,
+        approximateVisitors: 0,
         uniqueQueries: 0,
         uniqueServicesClicked: 0,
         avgClickPosition: null,

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, MousePointerClick, Search, Building2, ArrowDown, RotateCcw, Download, GripVertical, EyeOff, Eye, Pencil, Check } from "lucide-react";
+import { Loader2, MousePointerClick, Search, Building2, ArrowDown, RotateCcw, Download, GripVertical, EyeOff, Eye, Pencil, Check, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { InfoTip } from "@/components/admin/InfoTip";
@@ -25,7 +25,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -35,6 +35,8 @@ type TimeRange = 7 | 30 | 90;
 
 interface OverviewData {
   totalClicks: number;
+  totalSearches: number;
+  approximateVisitors: number;
   uniqueQueries: number;
   uniqueServicesClicked: number;
   avgClickPosition: number | null;
@@ -128,17 +130,23 @@ const tooltipStyle = {
 
 function OverviewWidget({ overview, loading }: { overview?: OverviewData; loading: boolean }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <AnalyticsStatCard
+        icon={<Search className="h-4 w-4" />}
+        label="Total Searches"
+        value={overview ? formatNumber(overview.totalSearches) : "--"}
+        loading={loading}
+      />
+      <AnalyticsStatCard
+        icon={<Users className="h-4 w-4" />}
+        label={<>Unique Visitors <InfoTip text="Approximate unique visitors based on distinct user-agent per day. Not exact but useful for trends." /></>}
+        value={overview ? formatNumber(overview.approximateVisitors) : "--"}
+        loading={loading}
+      />
       <AnalyticsStatCard
         icon={<MousePointerClick className="h-4 w-4" />}
         label="Total Clicks"
         value={overview ? formatNumber(overview.totalClicks) : "--"}
-        loading={loading}
-      />
-      <AnalyticsStatCard
-        icon={<Search className="h-4 w-4" />}
-        label="Unique Queries"
-        value={overview ? formatNumber(overview.uniqueQueries) : "--"}
         loading={loading}
       />
       <AnalyticsStatCard
@@ -811,15 +819,14 @@ function SortableWidget({ id, children, isEditing, size, onResize, onHide, sizeL
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   const colSpan = size === 'large' ? 'col-span-6'
     : size === 'medium' ? 'col-span-6 lg:col-span-3'
-    : 'col-span-6 sm:col-span-3 lg:col-span-2';
+    : 'col-span-6 md:col-span-3 lg:col-span-2';
 
   return (
-    <div ref={setNodeRef} style={style} className={colSpan}>
+    <div ref={setNodeRef} style={style} className={cn(colSpan, isDragging && "opacity-30")}>
       <div className="relative">
         {isEditing && (
           <>
@@ -896,7 +903,9 @@ function AnalyticsWidgetGrid({
   onResize,
   onHide,
   onRestore,
+  onDragStart,
   onDragEnd,
+  activeId,
 }: {
   layout: AnalyticsLayout;
   editMode: boolean;
@@ -918,7 +927,9 @@ function AnalyticsWidgetGrid({
   onResize: (id: string, size: 'small' | 'medium' | 'large') => void;
   onHide: (id: string) => void;
   onRestore: (id: string) => void;
+  onDragStart: (event: DragStartEvent) => void;
   onDragEnd: (event: DragEndEvent) => void;
+  activeId: string | null;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -926,6 +937,10 @@ function AnalyticsWidgetGrid({
 
   const visibleWidgets = layout.widgets.filter((w) => w.visible);
   const hiddenWidgets = layout.widgets.filter((w) => !w.visible);
+
+  const getWidgetLabel = (id: string): string => {
+    return getAnalyticsWidgetDef(id)?.label || id;
+  };
 
   const renderWidget = (id: string, compact: boolean) => {
     switch (id) {
@@ -958,9 +973,9 @@ function AnalyticsWidgetGrid({
 
   return (
     <>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-6 gap-4" style={{ gridAutoFlow: 'dense' }}>
             {visibleWidgets.map((w) => {
               const def = getAnalyticsWidgetDef(w.id);
               const isCompact = w.size === 'small';
@@ -980,6 +995,16 @@ function AnalyticsWidgetGrid({
             })}
           </div>
         </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className="bg-white border-2 border-teal-400 rounded-xl shadow-xl px-4 py-3 w-64 opacity-90">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {getWidgetLabel(activeId)}
+              </p>
+              <p className="text-xs text-gray-400">Drag to reorder</p>
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       {/* Hidden widgets bar (edit mode only) */}
@@ -1010,6 +1035,7 @@ export default function Analytics() {
   const [days, setDays] = useState<TimeRange>(30);
   const [layout, setLayout] = useState<AnalyticsLayout>(loadAnalyticsLayout);
   const [editMode, setEditMode] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleLayoutChange = useCallback((next: AnalyticsLayout) => {
     setLayout(next);
@@ -1045,7 +1071,12 @@ export default function Analytics() {
     handleLayoutChange(next);
   }, [layout, handleLayoutChange]);
 
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
+
   const handleDragEnd = useCallback((event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = layout.widgets.findIndex(w => w.id === active.id);
@@ -1276,7 +1307,9 @@ export default function Analytics() {
         onResize={handleResize}
         onHide={handleHide}
         onRestore={handleRestore}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        activeId={activeId}
       />
     </div>
   );

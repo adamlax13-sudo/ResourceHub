@@ -15,6 +15,8 @@ import {
   DndContext,
   closestCenter,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
@@ -70,7 +72,6 @@ function SortableWidget({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   const colSpan =
@@ -78,10 +79,10 @@ function SortableWidget({
       ? "col-span-6"
       : size === "medium"
         ? "col-span-6 lg:col-span-3"
-        : "col-span-6 sm:col-span-3 lg:col-span-2";
+        : "col-span-6 md:col-span-3 lg:col-span-2";
 
   return (
-    <div ref={setNodeRef} style={style} className={colSpan}>
+    <div ref={setNodeRef} style={style} className={cn(colSpan, isDragging && "opacity-30")}>
       <div className="relative">
         {isEditing && (
           <>
@@ -150,14 +151,18 @@ function DashboardWidgetGrid({
   onResize,
   onHide,
   onRestore,
+  onDragStart,
   onDragEnd,
+  activeId,
 }: {
   layout: DashboardLayout;
   editMode: boolean;
   onResize: (id: string, size: "small" | "medium" | "large") => void;
   onHide: (id: string) => void;
   onRestore: (id: string) => void;
+  onDragStart: (event: DragStartEvent) => void;
   onDragEnd: (event: DragEndEvent) => void;
+  activeId: string | null;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -166,14 +171,18 @@ function DashboardWidgetGrid({
   const visibleWidgets = layout.widgets.filter((w) => w.visible);
   const hiddenWidgets = layout.widgets.filter((w) => !w.visible);
 
+  const getWidgetLabel = (id: string): string => {
+    return getWidgetDef(id)?.label || id;
+  };
+
   return (
     <>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <SortableContext
           items={visibleWidgets.map((w) => w.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-6 gap-4" style={{ gridAutoFlow: 'dense' }}>
             {visibleWidgets.map((w) => {
               const def = getWidgetDef(w.id);
               const Comp = WIDGET_COMPONENTS[w.id];
@@ -194,6 +203,16 @@ function DashboardWidgetGrid({
             })}
           </div>
         </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className="bg-white border-2 border-teal-400 rounded-xl shadow-xl px-4 py-3 w-64 opacity-90">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {getWidgetLabel(activeId)}
+              </p>
+              <p className="text-xs text-gray-400">Drag to reorder</p>
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       {/* Hidden widgets bar (edit mode only) */}
@@ -223,6 +242,7 @@ function DashboardWidgetGrid({
 export default function Dashboard() {
   const [layout, setLayout] = useState<DashboardLayout>(loadDashboardLayout);
   const [editMode, setEditMode] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   // Lightweight ping to get a shared dataUpdatedAt timestamp for the "Last updated" display
   const { dataUpdatedAt } = useQuery<unknown>({
@@ -278,8 +298,16 @@ export default function Dashboard() {
     [layout, handleLayoutChange],
   );
 
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      setActiveId(event.active.id as string);
+    },
+    [],
+  );
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      setActiveId(null);
       const { active, over } = event;
       if (over && active.id !== over.id) {
         const oldIndex = layout.widgets.findIndex((w) => w.id === active.id);
@@ -354,7 +382,9 @@ export default function Dashboard() {
         onResize={handleResize}
         onHide={handleHide}
         onRestore={handleRestore}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        activeId={activeId}
       />
     </div>
   );
