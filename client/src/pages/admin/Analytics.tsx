@@ -816,65 +816,65 @@ function SortableWidget({ id, children, isEditing, size, onResize, onHide, sizeL
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
+  const colSpan = size === 'large' ? 'col-span-1 md:col-span-2 lg:col-span-4'
+    : size === 'medium' ? 'col-span-1 md:col-span-2'
+    : 'col-span-1';
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  const colSpan = size === 'large' ? 'col-span-6'
-    : size === 'medium' ? 'col-span-6 lg:col-span-3'
-    : 'col-span-6 md:col-span-3 lg:col-span-2';
+  if (!isEditing) {
+    return (
+      <div ref={setNodeRef} style={style} className={colSpan}>
+        {children}
+      </div>
+    );
+  }
 
   return (
-    <div ref={setNodeRef} style={style} className={cn(colSpan, isDragging && "opacity-30")}>
-      <div className="relative">
-        {isEditing && (
-          <>
-            {/* Edit overlay border */}
-            <div className="absolute inset-0 z-10 border-2 border-dashed border-teal-300 rounded-xl pointer-events-none" />
+    <div ref={setNodeRef} style={style} className={cn(colSpan, isDragging && "opacity-30 scale-[0.98]")}>
+      <div className={cn(
+        "relative rounded-xl transition-all",
+        "ring-2 ring-teal-200 ring-offset-2",
+        "hover:ring-teal-400"
+      )}>
+        {/* Floating control bar — positioned above the widget */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 px-1.5 py-0.5">
+          {/* Drag handle */}
+          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-700 transition-colors">
+            <GripVertical className="h-3.5 w-3.5" />
+          </button>
 
-            {/* Top bar with controls */}
-            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-2 py-1.5 bg-white/90 backdrop-blur-sm rounded-t-xl border-b border-teal-200">
-              {/* Drag handle */}
-              <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600">
-                <GripVertical className="h-4 w-4" />
+          {/* Size buttons */}
+          {!sizeLocked && (
+            <>
+              <div className="w-px h-4 bg-gray-200" />
+              {(['small', 'medium', 'large'] as const).map(s => (
+                <button
+                  key={s}
+                  onClick={() => onResize(s)}
+                  className={cn(
+                    "w-6 h-6 rounded-full text-[10px] font-bold transition-all",
+                    size === s
+                      ? "bg-teal-500 text-white shadow-sm"
+                      : "text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  )}
+                >
+                  {s[0].toUpperCase()}
+                </button>
+              ))}
+              <div className="w-px h-4 bg-gray-200" />
+              <button onClick={onHide} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                <EyeOff className="h-3.5 w-3.5" />
               </button>
-
-              <div className="flex items-center gap-1.5">
-                {/* Size buttons */}
-                {!sizeLocked && (
-                  <div className="flex gap-0.5 bg-gray-100 rounded-md p-0.5">
-                    {(['small', 'medium', 'large'] as const).map(s => (
-                      <button
-                        key={s}
-                        onClick={() => onResize(s)}
-                        className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-semibold transition-colors",
-                          size === s
-                            ? "bg-teal-500 text-white shadow-sm"
-                            : "text-gray-500 hover:text-gray-700"
-                        )}
-                      >
-                        {s === 'small' ? 'S' : s === 'medium' ? 'M' : 'L'}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Hide button */}
-                {!sizeLocked && (
-                  <button onClick={onHide} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
-                    <EyeOff className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-
-        <div className={isEditing ? "pt-8" : ""}>
-          {children}
+            </>
+          )}
         </div>
+
+        {/* Widget content */}
+        {children}
       </div>
     </div>
   );
@@ -975,7 +975,10 @@ function AnalyticsWidgetGrid({
     <>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <SortableContext items={visibleWidgets.map(w => w.id)} strategy={verticalListSortingStrategy}>
-          <div className="grid grid-cols-6 gap-4" style={{ gridAutoFlow: 'dense' }}>
+          <div className={cn(
+              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+              editMode ? "gap-6 pt-2" : "gap-4"
+            )}>
             {visibleWidgets.map((w) => {
               const def = getAnalyticsWidgetDef(w.id);
               const isCompact = w.size === 'small';
@@ -995,13 +998,13 @@ function AnalyticsWidgetGrid({
             })}
           </div>
         </SortableContext>
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeId ? (
-            <div className="bg-white border-2 border-teal-400 rounded-xl shadow-xl px-4 py-3 w-64 opacity-90">
+            <div className="bg-white border-2 border-teal-400 rounded-xl shadow-2xl px-4 py-3 w-56 pointer-events-none">
               <p className="text-sm font-medium text-gray-900 truncate">
                 {getWidgetLabel(activeId)}
               </p>
-              <p className="text-xs text-gray-400">Drag to reorder</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Drop to place here</p>
             </div>
           ) : null}
         </DragOverlay>
