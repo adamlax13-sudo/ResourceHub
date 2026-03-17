@@ -7,34 +7,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { getCategoryColor } from "@/lib/category-colors";
 import { cn } from "@/lib/utils";
 
-interface SearchResult {
+interface SearchService {
   id: number;
   name: string;
   category: string;
-  rrfScore?: number;
-  boostDetails?: Record<string, unknown>;
   description?: string;
-}
-
-interface QueryAnalysis {
-  intent?: string;
-  secondaryIntent?: string;
-  subIntents?: string[];
-  correctedQuery?: string;
-  attributes?: Record<string, unknown>;
-  isCrisis?: boolean;
-  semanticQuery?: string;
+  rrfScore?: number;
+  location?: string;
 }
 
 interface TestResult {
   success: boolean;
-  analysis?: QueryAnalysis;
-  results?: SearchResult[];
-  totalResults?: number;
-  timings?: Record<string, number>;
-  cacheStatus?: string;
+  analysis: {
+    raw: string;
+    corrected: string;
+    normalized: string;
+    keywords: string[];
+    intent: string;
+    intents?: { intent: string; confidence: number }[];
+    location?: string;
+    isCrisis: boolean;
+    subIntents?: string[];
+    negativeTerms?: string[];
+    searcher?: string;
+    targetPerson?: Record<string, unknown>;
+    detections?: Record<string, unknown>;
+  };
+  response: {
+    services: SearchService[];
+    summary?: string;
+    pagination?: { total: number; page: number; pageSize: number };
+    searchTimeMs?: number;
+    cached?: boolean;
+  };
+  searchTimeMs: number;
 }
 
 export default function SearchTest() {
@@ -72,6 +81,10 @@ export default function SearchTest() {
     if (query.trim()) testMutation.mutate();
   };
 
+  const analysis = result?.analysis;
+  const response = result?.response;
+  const services = response?.services ?? [];
+
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-xl font-semibold text-gray-900">Search Test</h2>
@@ -100,6 +113,28 @@ export default function SearchTest() {
 
       {result && (
         <>
+          {/* Performance Summary */}
+          <div className="flex gap-3 flex-wrap">
+            <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm">
+              <span className="text-xs text-gray-400">Search Time</span>
+              <p className="text-sm font-mono text-gray-900">{result.searchTimeMs}ms</p>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm">
+              <span className="text-xs text-gray-400">Results</span>
+              <p className="text-sm font-mono text-gray-900">{services.length}</p>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm">
+              <span className="text-xs text-gray-400">Cached</span>
+              <p className="text-sm text-gray-900">{response?.cached ? "Yes" : "No"}</p>
+            </div>
+            {analysis?.isCrisis && (
+              <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-2 shadow-sm">
+                <span className="text-xs text-red-400">Crisis Detected</span>
+                <p className="text-sm font-bold text-red-700">Yes</p>
+              </div>
+            )}
+          </div>
+
           {/* Query Analysis */}
           <CollapsibleSection
             title="Query Analysis"
@@ -107,33 +142,68 @@ export default function SearchTest() {
             expanded={expandedSections.has("analysis")}
             onToggle={() => toggleSection("analysis")}
           >
-            {result.analysis ? (
-              <div className="space-y-3">
+            {analysis ? (
+              <div className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <Field label="Intent" value={result.analysis.intent} />
-                  <Field label="Secondary Intent" value={result.analysis.secondaryIntent} />
-                  <Field label="Corrected Query" value={result.analysis.correctedQuery} />
-                  <Field label="Semantic Query" value={result.analysis.semanticQuery} />
-                  <Field label="Crisis" value={result.analysis.isCrisis ? "Yes" : "No"} />
-                  <Field label="Cache Status" value={result.cacheStatus} />
+                  <Field label="Raw Query" value={analysis.raw} />
+                  <Field label="Corrected" value={analysis.corrected !== analysis.raw ? analysis.corrected : undefined} />
+                  <Field label="Normalized" value={analysis.normalized} />
+                  <Field label="Intent" value={analysis.intent} highlight />
+                  <Field label="Location" value={analysis.location} />
+                  <Field label="Searcher" value={analysis.searcher} />
                 </div>
-                {result.analysis.subIntents && result.analysis.subIntents.length > 0 && (
+
+                {analysis.keywords?.length > 0 && (
                   <div>
-                    <span className="text-xs text-gray-400">Sub-intents:</span>
-                    <div className="flex gap-1 mt-1">
-                      {result.analysis.subIntents.map((si) => (
-                        <Badge key={si} className="bg-teal-50 text-teal-700 border-teal-200 text-xs">
-                          {si}
+                    <span className="text-xs text-gray-400">Keywords</span>
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {analysis.keywords.map((kw) => (
+                        <Badge key={kw} className="bg-gray-100 text-gray-600 border-gray-200 text-xs">{kw}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {analysis.subIntents && analysis.subIntents.length > 0 && (
+                  <div>
+                    <span className="text-xs text-gray-400">Sub-intents</span>
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {analysis.subIntents.map((si) => (
+                        <Badge key={si} className="bg-teal-50 text-teal-700 border-teal-200 text-xs">{si}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {analysis.intents && analysis.intents.length > 0 && (
+                  <div>
+                    <span className="text-xs text-gray-400">All Intents (with confidence)</span>
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {analysis.intents.map((i) => (
+                        <Badge key={i.intent} className="bg-violet-50 text-violet-700 border-violet-200 text-xs">
+                          {i.intent} ({(i.confidence * 100).toFixed(0)}%)
                         </Badge>
                       ))}
                     </div>
                   </div>
                 )}
-                {result.analysis.attributes && Object.keys(result.analysis.attributes).length > 0 && (
+
+                {analysis.negativeTerms && analysis.negativeTerms.length > 0 && (
                   <div>
-                    <span className="text-xs text-gray-400">Attributes:</span>
-                    <pre className="mt-1 text-xs text-gray-500 bg-gray-50 p-2 rounded-lg overflow-auto">
-                      {JSON.stringify(result.analysis.attributes, null, 2)}
+                    <span className="text-xs text-gray-400">Negative Terms</span>
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {analysis.negativeTerms.map((t) => (
+                        <Badge key={t} className="bg-red-50 text-red-600 border-red-200 text-xs">{t}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {analysis.detections && Object.keys(analysis.detections).length > 0 && (
+                  <div>
+                    <span className="text-xs text-gray-400">Detections</span>
+                    <pre className="mt-1 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg overflow-auto max-h-32">
+                      {JSON.stringify(analysis.detections, null, 2)}
                     </pre>
                   </div>
                 )}
@@ -143,33 +213,26 @@ export default function SearchTest() {
             )}
           </CollapsibleSection>
 
-          {/* Timings */}
-          {result.timings && (
-            <CollapsibleSection
-              title="Timings"
-              id="timings"
-              expanded={expandedSections.has("timings")}
-              onToggle={() => toggleSection("timings")}
-            >
-              <div className="flex gap-4 flex-wrap">
-                {Object.entries(result.timings).map(([key, val]) => (
-                  <div key={key}>
-                    <span className="text-xs text-gray-400">{key}</span>
-                    <p className="text-sm text-gray-900 font-mono">{val}ms</p>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleSection>
+          {/* Summary */}
+          {response?.summary && (
+            <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-gray-900 text-base">AI Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-700 leading-relaxed">{response.summary}</p>
+              </CardContent>
+            </Card>
           )}
 
           {/* Search Results */}
           <CollapsibleSection
-            title={`Search Results (${result.totalResults ?? result.results?.length ?? 0})`}
+            title={`Search Results (${services.length})`}
             id="results"
             expanded={expandedSections.has("results")}
             onToggle={() => toggleSection("results")}
           >
-            {!result.results?.length ? (
+            {!services.length ? (
               <p className="text-sm text-gray-400">No results returned.</p>
             ) : (
               <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -178,26 +241,30 @@ export default function SearchTest() {
                     <tr className="bg-gray-50">
                       <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-10">#</th>
                       <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-28">Category</th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">Category</th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-24">Location</th>
                       <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">Score</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {result.results.map((r, i) => (
+                    {services.map((r, i) => (
                       <tr key={r.id} className="border-t border-gray-200 hover:bg-gray-50">
                         <td className="px-3 py-2 text-gray-400">{i + 1}</td>
                         <td className="px-3 py-2">
-                          <p className="text-gray-900 truncate max-w-[350px]">{r.name}</p>
+                          <p className="text-gray-900 truncate max-w-[300px]">{r.name}</p>
                           {r.description && (
-                            <p className="text-xs text-gray-400 truncate max-w-[350px] mt-0.5">
-                              {r.description}
+                            <p className="text-xs text-gray-400 truncate max-w-[300px] mt-0.5">
+                              {r.description.slice(0, 100)}...
                             </p>
                           )}
                         </td>
                         <td className="px-3 py-2">
-                          <Badge className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                          <Badge className={cn(getCategoryColor(r.category), "text-[10px]")}>
                             {r.category}
                           </Badge>
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-500 truncate max-w-[100px]">
+                          {r.location || "--"}
                         </td>
                         <td className="px-3 py-2 text-right font-mono text-gray-700">
                           {r.rrfScore?.toFixed(3) ?? "N/A"}
@@ -215,11 +282,13 @@ export default function SearchTest() {
   );
 }
 
-function Field({ label, value }: { label: string; value?: string | null }) {
+function Field({ label, value, highlight }: { label: string; value?: string | null; highlight?: boolean }) {
   return (
     <div>
       <span className="text-xs text-gray-400">{label}</span>
-      <p className="text-sm text-gray-900">{value || "--"}</p>
+      <p className={cn("text-sm", highlight ? "text-teal-700 font-medium" : "text-gray-900")}>
+        {value || "--"}
+      </p>
     </div>
   );
 }

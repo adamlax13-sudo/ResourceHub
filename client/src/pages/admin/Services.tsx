@@ -93,8 +93,7 @@ interface HistoryEntry {
   id: number;
   changeType: string;
   changedFields?: Record<string, unknown>;
-  changedAt: string;
-  source?: string;
+  recordedAt: string;
 }
 
 export default function Services() {
@@ -688,10 +687,10 @@ export default function Services() {
                           {entry.changeType}
                         </Badge>
                         <span className="text-xs text-gray-400">
-                          {new Date(entry.changedAt).toLocaleString()}
+                          {new Date(entry.recordedAt).toLocaleString()}
                         </span>
                       </div>
-                      {entry.source && <p className="text-xs text-gray-400 mt-1">Source: {entry.source}</p>}
+                      {entry.changedFields && (entry.changedFields as any).source && <p className="text-xs text-gray-400 mt-1">Source: {(entry.changedFields as any).source}</p>}
                       {entry.changedFields && (
                         <pre className="mt-2 text-xs text-gray-500 overflow-auto max-h-32">
                           {JSON.stringify(entry.changedFields, null, 2)}
