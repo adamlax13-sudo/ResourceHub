@@ -4,8 +4,15 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, Database, Trash2, Activity, CheckCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Loader2, RefreshCw, Database, Trash2, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SystemStatus {
@@ -27,8 +34,34 @@ interface SystemStatus {
   } | null;
 }
 
+type ConfirmAction = "refresh" | "persist" | "recompute" | "purge" | null;
+
+const CONFIRM_CONFIG: Record<string, { title: string; description: string; variant: "default" | "destructive" }> = {
+  refresh: {
+    title: "Refresh Search View?",
+    description: "This will refresh the materialized search view and clear the search cache. Active user searches may briefly return stale results.",
+    variant: "default",
+  },
+  persist: {
+    title: "Persist Enrichments?",
+    description: "This will copy AI-generated descriptions, eligibility, and process steps into service records where those fields are currently empty. Existing data will NOT be overwritten.",
+    variant: "default",
+  },
+  recompute: {
+    title: "Recompute Click Affinities?",
+    description: "This will recalculate query-service affinity scores from click analytics data. This may take a few minutes and will affect search ranking.",
+    variant: "default",
+  },
+  purge: {
+    title: "Purge Analytics Data?",
+    description: "This will permanently delete search analytics records. This action cannot be undone.",
+    variant: "destructive",
+  },
+};
+
 export default function System() {
   const { toast } = useToast();
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
   const { data: status, isPending: statusLoading, refetch: refetchStatus } = useQuery<SystemStatus>({
     queryKey: ["/api/admin/system/status"],
@@ -39,7 +72,6 @@ export default function System() {
     staleTime: 30_000,
   });
 
-  // Refresh search view
   const refreshSearchMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/admin/refresh-search");
@@ -47,14 +79,15 @@ export default function System() {
     },
     onSuccess: (data) => {
       toast({ title: "Search view refreshed", description: data.message });
+      setConfirmAction(null);
       refetchStatus();
     },
     onError: (err) => {
       toast({ title: "Refresh failed", description: err.message, variant: "destructive" });
+      setConfirmAction(null);
     },
   });
 
-  // Persist enrichments
   const persistEnrichmentsMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/admin/persist-enrichments");
@@ -62,27 +95,29 @@ export default function System() {
     },
     onSuccess: (data) => {
       toast({ title: "Enrichments persisted", description: data.message });
+      setConfirmAction(null);
     },
     onError: (err) => {
       toast({ title: "Persist failed", description: err.message, variant: "destructive" });
+      setConfirmAction(null);
     },
   });
 
-  // Recompute affinities
   const recomputeAffinitiesMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/admin/system/recompute-affinities");
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: "Affinities recomputation", description: data.message });
+      toast({ title: "Affinities recomputed", description: data.message });
+      setConfirmAction(null);
     },
     onError: (err) => {
       toast({ title: "Recomputation failed", description: err.message, variant: "destructive" });
+      setConfirmAction(null);
     },
   });
 
-  // Purge analytics
   const [purgeDays, setPurgeDays] = useState(180);
   const purgeAnalyticsMutation = useMutation({
     mutationFn: async () => {
@@ -93,14 +128,15 @@ export default function System() {
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: "Analytics purged", description: `Deleted ${data.deleted} rows` });
+      toast({ title: "Analytics purged", description: `Deleted ${data.deleted} records` });
+      setConfirmAction(null);
     },
     onError: (err) => {
       toast({ title: "Purge failed", description: err.message, variant: "destructive" });
+      setConfirmAction(null);
     },
   });
 
-  // Dry-run purge count
   const purgePreviewMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/admin/system/purge-analytics", {
@@ -112,7 +148,7 @@ export default function System() {
     onSuccess: (data) => {
       toast({
         title: "Purge preview",
-        description: `Would delete ${data.rowsToDelete} rows older than ${data.cutoffDate?.split("T")[0]}`,
+        description: `Would delete ${data.rowsToDelete} records older than ${data.cutoffDate?.split("T")[0]}`,
       });
     },
     onError: (err) => {
@@ -120,12 +156,57 @@ export default function System() {
     },
   });
 
+  const handleConfirm = () => {
+    switch (confirmAction) {
+      case "refresh": refreshSearchMutation.mutate(); break;
+      case "persist": persistEnrichmentsMutation.mutate(); break;
+      case "recompute": recomputeAffinitiesMutation.mutate(); break;
+      case "purge": purgeAnalyticsMutation.mutate(); break;
+    }
+  };
+
+  const isConfirmPending =
+    refreshSearchMutation.isPending ||
+    persistEnrichmentsMutation.isPending ||
+    recomputeAffinitiesMutation.isPending ||
+    purgeAnalyticsMutation.isPending;
+
+  const config = confirmAction ? CONFIRM_CONFIG[confirmAction] : null;
+
   const db = status?.database;
   const svcs = status?.services;
 
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-xl font-semibold text-gray-900">System</h2>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={!!confirmAction} onOpenChange={(open) => { if (!open && !isConfirmPending) setConfirmAction(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{config?.title}</DialogTitle>
+            <DialogDescription>{config?.description}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmAction(null)}
+              disabled={isConfirmPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={config?.variant === "destructive" ? "destructive" : "default"}
+              onClick={handleConfirm}
+              disabled={isConfirmPending}
+              className={config?.variant !== "destructive" ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
+            >
+              {isConfirmPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+              {isConfirmPending ? "Running..." : "Yes, proceed"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* System Status */}
       <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
@@ -149,7 +230,6 @@ export default function System() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {/* DB Health */}
               <div className="space-y-1">
                 <p className="text-xs text-gray-400">Database</p>
                 <div className="flex items-center gap-2">
@@ -165,14 +245,11 @@ export default function System() {
                   <p className="text-xs text-gray-400">{db.pingMs}ms ping</p>
                 )}
               </div>
-
-              {/* Service Counts */}
               <div className="space-y-1">
                 <p className="text-xs text-gray-400">Services</p>
                 <p className="text-sm text-gray-900">{svcs?.activeServices ?? 0} active</p>
                 <p className="text-xs text-gray-400">{svcs?.inactiveServices ?? 0} inactive</p>
               </div>
-
               <div className="space-y-1">
                 <p className="text-xs text-gray-400">Embeddings</p>
                 <p className="text-sm text-gray-900">{svcs?.servicesWithEmbedding ?? 0}</p>
@@ -180,7 +257,6 @@ export default function System() {
                   of {svcs?.totalServices ?? 0} total
                 </p>
               </div>
-
               <div className="space-y-1">
                 <p className="text-xs text-gray-400">Cache</p>
                 <p className="text-sm text-gray-900">{status?.cache?.cachedQueries ?? 0} queries</p>
@@ -196,7 +272,6 @@ export default function System() {
           <CardTitle className="text-gray-900 text-base">Maintenance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Refresh Search View */}
           <JobRow
             icon={RefreshCw}
             title="Refresh Search View"
@@ -204,17 +279,13 @@ export default function System() {
             action={
               <Button
                 size="sm"
-                onClick={() => refreshSearchMutation.mutate()}
-                disabled={refreshSearchMutation.isPending}
+                onClick={() => setConfirmAction("refresh")}
                 className="bg-teal-600 hover:bg-teal-700 text-white"
               >
-                {refreshSearchMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Refresh
               </Button>
             }
           />
-
-          {/* Persist Enrichments */}
           <JobRow
             icon={Database}
             title="Persist Enrichments"
@@ -222,17 +293,13 @@ export default function System() {
             action={
               <Button
                 size="sm"
-                onClick={() => persistEnrichmentsMutation.mutate()}
-                disabled={persistEnrichmentsMutation.isPending}
+                onClick={() => setConfirmAction("persist")}
                 className="bg-teal-600 hover:bg-teal-700 text-white"
               >
-                {persistEnrichmentsMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Persist
               </Button>
             }
           />
-
-          {/* Recompute Affinities */}
           <JobRow
             icon={Activity}
             title="Recompute Affinities"
@@ -240,17 +307,15 @@ export default function System() {
             action={
               <Button
                 size="sm"
-                onClick={() => recomputeAffinitiesMutation.mutate()}
-                disabled={recomputeAffinitiesMutation.isPending}
+                onClick={() => setConfirmAction("recompute")}
                 className="bg-teal-600 hover:bg-teal-700 text-white"
               >
-                {recomputeAffinitiesMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Recompute
               </Button>
             }
           />
 
-          {/* Purge Analytics */}
+          {/* Purge Analytics — special layout with days selector */}
           <div className="flex items-start justify-between gap-4 py-3 border-t border-gray-200">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-red-50 p-2 mt-0.5">
@@ -259,7 +324,7 @@ export default function System() {
               <div>
                 <p className="text-sm font-medium text-gray-900">Purge Analytics</p>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Delete old search analytics data.
+                  Permanently delete old search analytics data.
                 </p>
               </div>
             </div>
@@ -281,15 +346,14 @@ export default function System() {
                 disabled={purgePreviewMutation.isPending}
                 className="border-gray-300 text-xs"
               >
+                {purgePreviewMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Preview
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => purgeAnalyticsMutation.mutate()}
-                disabled={purgeAnalyticsMutation.isPending}
+                onClick={() => setConfirmAction("purge")}
               >
-                {purgeAnalyticsMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Purge
               </Button>
             </div>
