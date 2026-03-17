@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, LocateFixed, Loader2 } from "lucide-react";
+import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, LocateFixed, Loader2, MessageSquarePlus } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -47,6 +47,7 @@ interface HeroProps {
   userCoords: { lat: number; lng: number } | null;
   onNearMe: () => void;
   isLocating: boolean;
+  openFeedback?: () => void;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -324,7 +325,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating }: HeroProps) {
+export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const { t } = useTranslation();
@@ -412,6 +413,17 @@ export function Hero({ onSearch, isLoading, initialQuery = "", locations, onLoca
           </div>
 
           <div className="flex items-center gap-2">
+            {openFeedback && (
+              <button
+                onClick={openFeedback}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
+                aria-label={t('feedback.headerButton')}
+                data-testid="button-header-feedback"
+              >
+                <MessageSquarePlus className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('feedback.headerButton')}</span>
+              </button>
+            )}
             <QuickExitButton
               className="text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all"
             />
