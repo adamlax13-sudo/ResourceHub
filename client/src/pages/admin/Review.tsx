@@ -263,7 +263,7 @@ export default function Review() {
                 <div className="flex items-center gap-2">
                   <ChangeTypeBadge type={cr.changeType} />
                   <p className="text-sm text-foreground truncate">
-                    {cr.serviceName || (cr.proposedChanges as any)?.name || `#${cr.serviceId || cr.id}`}
+                    {cr.serviceName || (typeof (cr.proposedChanges as any)?.name === "string" ? (cr.proposedChanges as any).name : null) || `Change #${cr.id}`}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">

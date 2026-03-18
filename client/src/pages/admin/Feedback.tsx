@@ -238,7 +238,7 @@ export default function Feedback() {
                             )}
                           </td>
                           <td className="px-3 py-2.5 text-foreground">
-                            <p className="line-clamp-2">{msg.message}</p>
+                            <p className="line-clamp-2" title={msg.message?.length > 100 ? msg.message : undefined}>{msg.message}</p>
                             {msg.searchQuery && (
                               <p className="text-[10px] text-muted-foreground mt-0.5">Search: "{msg.searchQuery}"</p>
                             )}
@@ -311,7 +311,7 @@ export default function Feedback() {
         <Card className="bg-card border-border shadow-sm rounded-xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-foreground text-base">
-              Service Votes {votesData?.votes?.length ? `(${votesData.votes.length} services)` : ""}
+              Service Votes {votesData?.votes?.length ? `(${votesData.votes.reduce((sum: number, v: any) => sum + (v.total_votes ?? 0), 0)} votes across ${votesData.votes.length} services)` : ""}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -55,6 +55,23 @@ function normalizeRequiredDocs(raw: unknown): string[] {
   });
 }
 
+/** Normalize processSteps — DB may store string[], object[], or mixed */
+function normalizeProcessSteps(raw: unknown): Array<{ step: number; action: string; details?: string | null }> {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((item, i) => {
+    if (typeof item === "string") return { step: i + 1, action: item, details: null };
+    if (item && typeof item === "object") {
+      const obj = item as Record<string, unknown>;
+      return {
+        step: typeof obj.step === "number" ? obj.step : i + 1,
+        action: String(obj.action || obj.name || obj.title || ""),
+        details: obj.details != null ? String(obj.details) : null,
+      };
+    }
+    return { step: i + 1, action: String(item), details: null };
+  });
+}
+
 export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, onChange, highlightFields }: ServiceFormProps) {
   const highlightSet = new Set(highlightFields ?? []);
   const hl = (field: string) => highlightSet.has(field) ? "ring-2 ring-amber-300 bg-amber-50/50" : "";
@@ -118,12 +135,12 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
   // --- Process Steps ---
   const [processSteps, setProcessSteps] = useState<Array<{ step: number; action: string; details?: string | null }>>(
-    initialData?.processSteps ?? []
+    normalizeProcessSteps(initialData?.processSteps)
   );
 
   useEffect(() => {
     if (initialData?.processSteps !== undefined) {
-      setProcessSteps(initialData.processSteps ?? []);
+      setProcessSteps(normalizeProcessSteps(initialData.processSteps));
     }
   }, [initialData]);
 
@@ -214,8 +231,19 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     }
   };
 
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.name?.trim()) {
+      setValidationError("Name is required.");
+      return;
+    }
+    if (!form.category?.trim()) {
+      setValidationError("Category is required.");
+      return;
+    }
+    setValidationError(null);
     onSubmit({ ...form, tags, processSteps, requiredDocs, languagesSupported });
   };
 
@@ -584,7 +612,10 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </label>
       </div>
 
-      <div className="pt-4 flex justify-end">
+      {validationError && (
+        <p className="text-sm text-red-500 text-right">{validationError}</p>
+      )}
+      <div className="pt-2 flex justify-end">
         <Button type="submit" disabled={isPending} className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm">
           {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {submitLabel}

@@ -71,12 +71,13 @@ export function RecentActivityWidget() {
                   </div>
                 );
 
+                const key = `activity-${entry.id ?? i}`;
                 return href ? (
-                  <Link key={entry.id || i} href={href}>
+                  <Link key={key} href={href}>
                     {content}
                   </Link>
                 ) : (
-                  <div key={entry.id || i}>{content}</div>
+                  <div key={key}>{content}</div>
                 );
               })}
             </div>
