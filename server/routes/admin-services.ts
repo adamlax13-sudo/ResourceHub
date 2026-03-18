@@ -13,7 +13,6 @@ import { z } from "zod";
 import { storage } from "../storage";
 import { adminAuth, adminReadLimiter, adminWriteLimiter } from "../middleware/adminAuth";
 import { asyncHandler, createErrorResponse } from "../helpers/errors";
-import { getOpenAI } from "../helpers/openai";
 import { db } from "../db";
 import { eq, sql } from "drizzle-orm";
 import { aiServiceEnrichments, services } from "@shared/schema";
@@ -80,22 +79,8 @@ const importSchema = z.object({
 /**
  * Build embedding text from service fields and generate an embedding vector.
  */
-async function generateEmbedding(service: { name: string; description?: string | null; category?: string | null; tags?: any }): Promise<number[]> {
-  const openai = getOpenAI();
-  const parts = [service.name];
-  if (service.description) parts.push(service.description);
-  if (service.category) parts.push(service.category);
-  if (Array.isArray(service.tags)) parts.push(service.tags.join(' '));
-  const text = parts.join(' ').slice(0, 8000);
-
-  const response = await openai.embeddings.create({
-    model: 'text-embedding-3-large',
-    input: text,
-    dimensions: 1536,
-  });
-
-  return response.data[0].embedding;
-}
+// Re-export shared embedding helper for use in this file
+import { generateEmbedding } from '../helpers/embedding';
 
 /**
  * Geocode an address via Mapbox and return [lat, lng].

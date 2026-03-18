@@ -1067,6 +1067,44 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  /**
+   * Auto-refresh search infrastructure after a service change.
+   * Re-embeds (if content changed), refreshes the materialized view,
+   * and clears the search cache. Runs async — callers should .catch(() => {}).
+   */
+  private async _refreshSearchInfrastructure(serviceId: number, serviceStringId: string, contentChanged: boolean): Promise<void> {
+    try {
+      // Re-generate embedding if content changed (name, description, eligibility, etc.)
+      if (contentChanged) {
+        try {
+          const { generateEmbedding } = await import('./helpers/embedding');
+          const svc = await this.getAdminServiceDetail(serviceId);
+          if (svc) {
+            const embedding = await generateEmbedding(svc);
+            const embeddingStr = `[${embedding.join(',')}]`;
+            await db.execute(
+              sql`UPDATE services SET embedding = ${embeddingStr}::vector, embedding_updated_at = NOW() WHERE id = ${serviceId}`
+            );
+            console.log(`[SearchRefresh] Re-embedded service ${serviceStringId}`);
+          }
+        } catch (embedErr) {
+          console.warn(`[SearchRefresh] Embedding failed for ${serviceStringId}:`, embedErr);
+          // Not fatal — search still works via SQL
+        }
+      }
+
+      // Refresh materialized view so SQL search picks up changes
+      await this.refreshSearchView();
+
+      // Clear search cache so stale results aren't served
+      await this.clearSearchCache();
+
+      console.log(`[SearchRefresh] Infrastructure refreshed for ${serviceStringId}`);
+    } catch (err) {
+      console.warn(`[SearchRefresh] Failed for ${serviceStringId}:`, err);
+    }
+  }
+
   // ============= PRECOMPUTED SEARCH CACHE =============
 
   /**
@@ -1448,6 +1486,14 @@ export class DatabaseStorage implements IStorage {
         changeType: 'updated',
         confidenceScore: updated.confidenceScore,
       });
+
+      // Auto-refresh search infrastructure when service content or activation changes.
+      // Runs async (fire-and-forget) so the API response isn't delayed.
+      const activationChanged = 'isActive' in changedFields;
+      const contentChanged = editedContentFields.length > 0;
+      if (activationChanged || contentChanged) {
+        this._refreshSearchInfrastructure(updated.id, updated.serviceId, contentChanged).catch(() => {});
+      }
     }
 
     return updated;
