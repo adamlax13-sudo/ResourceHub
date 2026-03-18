@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { type ServiceDetail } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { ProcessTimeline } from "./ProcessTimeline";
-import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart, Flag } from "lucide-react";
+import { FileText, Clock, Phone, MapPin, ExternalLink, CheckCircle, Globe, Mail, Loader2, Heart, Flag, Share2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -129,6 +129,26 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
+
+  const handleShare = useCallback(async () => {
+    if (!service) return;
+    const shareUrl = `${window.location.origin}/?service=${encodeURIComponent(service.id)}`;
+    const shareData = { title: service.name, text: `${service.name} — ${service.category}`, url: shareUrl };
+
+    // Use native share sheet on mobile if available
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+      return;
+    }
+
+    // Fallback: copy link to clipboard
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareState('copied');
+      setTimeout(() => setShareState('idle'), 2000);
+    } catch {}
+  }, [service]);
 
   // Fetch service details when modal opens
   useEffect(() => {
@@ -254,22 +274,35 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
                 {service.description}
               </DialogDescription>
             </div>
-            {/* Heart / favorite button */}
-            {onToggleFavorite && (
+            {/* Action buttons — share + heart */}
+            <div className="absolute top-3 right-10 md:top-6 md:right-14 flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => onToggleFavorite(service)}
-                className={`absolute top-3 right-10 md:top-6 md:right-14 p-2 rounded-full transition-colors ${
-                  isFavorite
-                    ? "text-red-500"
-                    : "text-muted-foreground/40 hover:text-red-400"
-                }`}
-                aria-label={isFavorite ? "Remove from shortlist" : "Save to shortlist"}
-                aria-pressed={isFavorite}
+                onClick={handleShare}
+                className="p-2 rounded-full text-muted-foreground/40 hover:text-primary transition-colors"
+                aria-label="Share this service"
               >
-                <Heart className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} aria-hidden="true" />
+                {shareState === 'copied'
+                  ? <Check className="w-5 h-5 text-emerald-500" aria-hidden="true" />
+                  : <Share2 className="w-5 h-5" aria-hidden="true" />
+                }
               </button>
-            )}
+              {onToggleFavorite && (
+                <button
+                  type="button"
+                  onClick={() => onToggleFavorite(service)}
+                  className={`p-2 rounded-full transition-colors ${
+                    isFavorite
+                      ? "text-red-500"
+                      : "text-muted-foreground/40 hover:text-red-400"
+                  }`}
+                  aria-label={isFavorite ? "Remove from shortlist" : "Save to shortlist"}
+                  aria-pressed={isFavorite}
+                >
+                  <Heart className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} aria-hidden="true" />
+                </button>
+              )}
+            </div>
           </div>
 
           <ScrollArea className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 140px)' }}>

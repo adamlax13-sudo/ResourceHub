@@ -82,7 +82,7 @@ function LowestFields({ summary }: { summary: Record<string, number> }) {
               className="h-full rounded-full transition-all"
               style={{
                 width: `${Math.min(pct, 100)}%`,
-                backgroundColor: pct >= 80 ? "#10b981" : pct >= 50 ? "#f59e0b" : "#ef4444",
+                backgroundColor: pct >= 80 ? "hsl(var(--chart-1))" : pct >= 50 ? "hsl(var(--chart-3))" : "hsl(var(--destructive, 0 84% 60%))",
               }}
             />
           </div>

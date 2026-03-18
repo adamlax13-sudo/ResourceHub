@@ -15,6 +15,8 @@ export function useAdminQuery<T = unknown>(key: string | string[], url: string, 
     },
     enabled,
     staleTime: 30_000,
+    refetchInterval: 60_000,       // Auto-refresh every 60s
+    refetchOnWindowFocus: true,    // Refresh when tab regains focus
     retry: false,
   });
 }

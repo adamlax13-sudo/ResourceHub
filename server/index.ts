@@ -42,21 +42,24 @@ app.use((req, res, next) => {
 });
 
 // Security headers via Helmet
+const isDev = process.env.NODE_ENV === 'development';
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:", "https://api.mapbox.com"],
-      connectSrc: ["'self'", "https://api.mapbox.com", "https://events.mapbox.com"],
-      fontSrc: ["'self'"],
-      workerSrc: ["'self'", "blob:"],
-      childSrc: ["blob:"],
-      objectSrc: ["'none'"],
-      frameAncestors: ["'none'"],
-    },
-  },
+  contentSecurityPolicy: isDev
+    ? false  // Disable CSP in dev — Vite HMR needs inline scripts/WebSocket
+    : {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "data:", "blob:", "https://api.mapbox.com"],
+          connectSrc: ["'self'", "https://api.mapbox.com", "https://events.mapbox.com"],
+          fontSrc: ["'self'"],
+          workerSrc: ["'self'", "blob:"],
+          childSrc: ["blob:"],
+          objectSrc: ["'none'"],
+          frameAncestors: ["'none'"],
+        },
+      },
   crossOriginEmbedderPolicy: false,
 }));
 
@@ -170,16 +173,29 @@ process.on('unhandledRejection', (reason, promise) => {
   // Register main routes (search, feedback, analytics)
   await registerRoutes(httpServer, app);
 
-  const clientBuildPath = path.join(_currentDir, "../dist/public");
-  app.use(express.static(clientBuildPath));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(clientBuildPath, "index.html"));
-  });
+  if (process.env.NODE_ENV === 'development') {
+    // Dev mode: Vite middleware for HMR — single process, one port
+    const { createServer: createViteServer } = await import('vite');
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
+  } else {
+    // Production: serve pre-built static files
+    const clientBuildPath = path.join(_currentDir, "../dist/public");
+    app.use(express.static(clientBuildPath));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(clientBuildPath, "index.html"));
+    });
+  }
 
   const port = parseInt(process.env.PORT || "5000", 10);
   httpServer.listen(port, "0.0.0.0", () => {
     console.log(`Server running on port ${port}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Dev server with HMR at http://localhost:${port}`);
+    }
     console.log(`Health check available at http://localhost:${port}/api/health`);
   });
 })();

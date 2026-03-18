@@ -97,7 +97,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
                       <item.icon className={cn("h-4 w-4 flex-shrink-0", active ? "text-primary" : "text-muted-foreground")} />
                       {item.label}
                       {item.label === "Review" && !!pendingReviews && pendingReviews > 0 && (
-                        <span className="ml-auto text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                        <span className="ml-auto text-[10px] bg-primary text-white dark:text-gray-950 font-semibold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                           {pendingReviews}
                         </span>
                       )}

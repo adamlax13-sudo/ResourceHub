@@ -13,6 +13,7 @@ import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
 import { MyShortlist } from "@/components/MyShortlist";
+import { QuickExitButton } from "@/components/QuickExitButton";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
@@ -95,7 +96,11 @@ function removeChip(filters: SearchFilters, chipKey: string): SearchFilters {
 export default function Home() {
   const { mutate: search, isPending, data, error } = useSearch();
   const { searchState, setSearchResults, setLocations, setFilters, clearFilters, activeFilterCount, setUserCoords } = useSearchContext();
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(() => {
+    // Support deep-linking via ?service=ID (e.g. from share button)
+    const params = new URLSearchParams(window.location.search);
+    return params.get('service') || null;
+  });
   const [feedbackContext, setFeedbackContext] = useState<{
     serviceId?: string;
     serviceName?: string;
@@ -277,6 +282,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
+      {/* Floating quick exit — always visible, tracks mouse on desktop */}
+      <QuickExitButton floating />
       <Hero
         onSearch={handleSearch}
         isLoading={isPending}

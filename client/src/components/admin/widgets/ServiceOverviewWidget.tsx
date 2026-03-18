@@ -23,6 +23,8 @@ export function ServiceOverviewWidget() {
       return res.json();
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
 
   return (
@@ -66,7 +68,7 @@ export function ServiceOverviewWidget() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatCard title="Pending Reviews" value={stats?.pendingReviews ?? 0} icon={ClipboardCheck} />
+          <StatCard title="Data Entries Pending Review" value={stats?.pendingReviews ?? 0} icon={ClipboardCheck} />
           <StatCard title="Searches Today" value={stats?.searchesToday ?? 0} icon={Search} />
           <StatCard
             title="Quality Score"

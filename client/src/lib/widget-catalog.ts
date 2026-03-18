@@ -139,7 +139,7 @@ export const WIDGET_CATALOG: CatalogWidget[] = [
   },
   {
     id: 'pending-reviews',
-    label: 'Pending Reviews',
+    label: 'Data Entries Pending Review',
     description: 'Services awaiting review approval',
     category: 'Services',
     sizes: ['small', 'medium'],

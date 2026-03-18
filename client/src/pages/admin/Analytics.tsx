@@ -31,7 +31,9 @@ import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay, P
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-type TimeRange = 7 | 30 | 90;
+type TimeRange = 1 | 7 | 30 | 90;
+
+const ANALYTICS_TIMERANGE_KEY = "admin-analytics-timerange";
 
 // ---------- API response types ----------
 
@@ -1052,7 +1054,21 @@ function AnalyticsWidgetGrid({
 // ---------- Main Component ----------
 
 export default function Analytics() {
-  const [days, setDays] = useState<TimeRange>(30);
+  const [days, setDays] = useState<TimeRange>(() => {
+    try {
+      const saved = localStorage.getItem(ANALYTICS_TIMERANGE_KEY);
+      if (saved) {
+        const n = Number(saved);
+        if (n === 1 || n === 7 || n === 30 || n === 90) return n as TimeRange;
+      }
+    } catch {}
+    return 30;
+  });
+
+  const handleSetDays = useCallback((d: TimeRange) => {
+    setDays(d);
+    try { localStorage.setItem(ANALYTICS_TIMERANGE_KEY, String(d)); } catch {}
+  }, []);
   const [layout, setLayout] = useState<AnalyticsLayout>(loadAnalyticsLayout);
   const [editMode, setEditMode] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -1243,12 +1259,12 @@ export default function Analytics() {
         <h2 className="text-xl font-semibold text-foreground">Analytics</h2>
         <div className="flex items-center gap-3">
           <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-            {([7, 30, 90] as TimeRange[]).map((d) => (
+            {([1, 7, 30, 90] as TimeRange[]).map((d) => (
               <Button
                 key={d}
                 variant="ghost"
                 size="sm"
-                onClick={() => setDays(d)}
+                onClick={() => handleSetDays(d)}
                 className={cn(
                   "h-7 px-3 text-xs font-medium",
                   days === d
@@ -1256,7 +1272,7 @@ export default function Analytics() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                {d}d
+                {d === 1 ? "Today" : `${d}d`}
               </Button>
             ))}
           </div>

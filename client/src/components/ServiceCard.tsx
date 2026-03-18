@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart, ExternalLink } from "lucide-react";
 import { type ServiceSummary } from "@shared/routes";
@@ -6,6 +6,48 @@ import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { formatDistance } from "@/lib/utils";
+
+/** Truncated description with show more/less toggle on mobile */
+function ServiceDescription({ description }: { description?: string | null }) {
+  const [expanded, setExpanded] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  const checkTruncation = useCallback((el: HTMLParagraphElement | null) => {
+    if (el) {
+      (textRef as React.MutableRefObject<HTMLParagraphElement | null>).current = el;
+      // scrollHeight > clientHeight means text is clamped
+      setIsTruncated(el.scrollHeight > el.clientHeight + 1);
+    }
+  }, []);
+
+  if (!description) return null;
+
+  return (
+    <div className="mb-4 sm:mb-6 flex-grow min-w-0">
+      <p
+        ref={expanded ? undefined : checkTruncation}
+        className={`text-muted-foreground break-words whitespace-normal overflow-wrap-anywhere ${
+          expanded ? "" : "line-clamp-3 sm:line-clamp-4"
+        }`}
+      >
+        {description}
+      </p>
+      {(isTruncated || expanded) && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
+          className="text-primary text-sm font-medium mt-1 hover:underline"
+        >
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+    </div>
+  );
+}
 
 /** Maps AA service names to their regional meeting-finder URL */
 function getAAMeetingUrl(serviceName: string): string | null {
@@ -132,9 +174,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
           {service.name}
         </h3>
 
-        <p className="text-muted-foreground mb-4 sm:mb-6 flex-grow min-w-0 break-words whitespace-normal overflow-wrap-anywhere line-clamp-3 sm:line-clamp-4">
-          {service.description}
-        </p>
+        <ServiceDescription description={service.description} />
 
         <div className="space-y-2 sm:space-y-3 mt-auto">
           <div className="flex items-start text-sm text-slate-600">

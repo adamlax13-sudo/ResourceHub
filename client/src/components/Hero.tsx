@@ -1,5 +1,5 @@
 import { Search, MapPin, ChevronDown, Check, Mic, MicOff, SlidersHorizontal, Locate, LocateFixed, Loader2, MessageSquarePlus } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -332,6 +332,18 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
   const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   const { isSupported: voiceSupported, isListening, startListening, stopListening } = useVoiceSearch();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea to fit content
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    // Clamp between min (64px / h-16) and max (160px)
+    el.style.height = `${Math.min(Math.max(el.scrollHeight, 64), 160)}px`;
+  }, []);
+
+  useLayoutEffect(() => { autoResize(); }, [query, autoResize]);
 
   // Get current selected location (first in array or empty for "All of Alberta")
   const selectedLocation = locations.length > 0 ? locations[0] : '';
@@ -662,14 +674,22 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
             >
               <SlidersHorizontal className="w-5 h-5" aria-hidden="true" />
             </button>
-            <input
+            <textarea
+              ref={textareaRef}
               id="hero-search"
-              type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                // Submit on Enter (without Shift for newline)
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (query.trim()) handleSubmit(e as unknown as React.FormEvent);
+                }
+              }}
               placeholder={t('app.searchPlaceholder')}
-              maxLength={200}
-              className={`relative w-full h-16 pl-14 rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)] ${voiceSupported ? 'pr-28' : 'pr-16'}`}
+              maxLength={500}
+              rows={1}
+              className={`relative w-full min-h-[64px] pl-14 pt-[18px] rounded-2xl text-lg text-foreground bg-white shadow-2xl border-2 border-transparent focus:border-primary/30 focus:outline-none transition-all placeholder:text-muted-foreground focus:shadow-[0_0_30px_rgba(255,255,255,0.3)] resize-none overflow-hidden ${voiceSupported ? 'pr-28' : 'pr-16'}`}
               disabled={isLoading}
               aria-describedby="search-hint"
               data-testid="input-search"

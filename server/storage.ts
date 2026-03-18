@@ -1879,7 +1879,7 @@ export class DatabaseStorage implements IStorage {
       db.select({ count: sql<number>`count(*)` }).from(serviceChangeRequests).where(eq(serviceChangeRequests.status, 'pending')),
       db.execute(sql`
         SELECT COUNT(*) AS count FROM search_analytics
-        WHERE created_at >= CURRENT_DATE
+        WHERE created_at >= (CURRENT_TIMESTAMP AT TIME ZONE 'America/Edmonton')::date
       `),
       db.execute(sql`
         SELECT

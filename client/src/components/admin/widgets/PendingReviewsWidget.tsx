@@ -23,6 +23,8 @@ export function PendingReviewsWidget() {
       return res.json();
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
 
   const pendingReviews = data?.reviews?.filter((r) => r.status === "pending") ?? [];
@@ -32,7 +34,7 @@ export function PendingReviewsWidget() {
     <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium text-foreground">Pending Reviews</CardTitle>
+          <CardTitle className="text-base font-medium text-foreground">Data Entries Pending Review</CardTitle>
           {pendingReviews.length > 0 && (
             <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
               {pendingReviews.length}
