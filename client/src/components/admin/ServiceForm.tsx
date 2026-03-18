@@ -373,18 +373,34 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
         <div>
           <Label className="text-foreground">Service Format</Label>
-          <select
-            value={form.serviceFormat ?? ""}
-            onChange={(e) => handleChange("serviceFormat", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
-          >
-            <option value="">Not specified</option>
-            <option value="in-person">In-person</option>
-            <option value="virtual">Virtual/Online</option>
-            <option value="phone">Phone</option>
-            <option value="walk_in">Walk-in</option>
-            <option value="online">Online</option>
-          </select>
+          <div className={cn("mt-1 flex flex-wrap gap-x-4 gap-y-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm", hl("serviceFormat"))}>
+            {[
+              { value: "in-person", label: "In-person" },
+              { value: "virtual", label: "Virtual" },
+              { value: "phone", label: "Phone" },
+              { value: "walk_in", label: "Walk-in" },
+              { value: "residential", label: "Residential" },
+            ].map((opt) => {
+              const current = (form.serviceFormat ?? "").split(",").map(s => s.trim()).filter(Boolean);
+              const checked = current.includes(opt.value);
+              return (
+                <label key={opt.value} className="flex items-center gap-1.5 text-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => {
+                      const next = checked
+                        ? current.filter(v => v !== opt.value)
+                        : [...current, opt.value];
+                      handleChange("serviceFormat", next.join(", ") || "");
+                    }}
+                    className="rounded"
+                  />
+                  {opt.label}
+                </label>
+              );
+            })}
+          </div>
         </div>
       </div>
 

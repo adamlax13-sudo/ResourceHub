@@ -16,7 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw, ClipboardCheck, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChangeRequest {
@@ -371,7 +371,7 @@ export default function Review() {
                 changedFields={Object.keys(diffChanges).filter(k => k !== "id" && k !== "isActive")}
               />
               {/* Action buttons */}
-              <div className="flex gap-2 pt-4 border-t border-border">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                 <Button
                   onClick={() => approveMutation.mutate(request.id)}
                   disabled={approveMutation.isPending}
@@ -389,6 +389,36 @@ export default function Review() {
                   <XCircle className="h-4 w-4 mr-1" />
                   Reject
                 </Button>
+                {request.serviceId && (
+                  <div className="flex gap-1.5 ml-auto">
+                    <Button
+                      variant="ghost" size="sm"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/admin/services/${request.serviceId}/geocode`, {});
+                          toast({ title: "Geocoded successfully" });
+                        } catch { toast({ title: "Geocode failed", variant: "destructive" }); }
+                      }}
+                      className="text-muted-foreground hover:text-foreground text-xs"
+                    >
+                      <MapPin className="h-3.5 w-3.5 mr-1" />
+                      Geocode
+                    </Button>
+                    <Button
+                      variant="ghost" size="sm"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/admin/services/${request.serviceId}/regenerate-embedding`, {});
+                          toast({ title: "Embedding regenerated" });
+                        } catch { toast({ title: "Embedding regen failed", variant: "destructive" }); }
+                      }}
+                      className="text-muted-foreground hover:text-foreground text-xs"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                      Re-embed
+                    </Button>
+                  </div>
+                )}
               </div>
             </>
           ) : request.changeType === "create" && request.proposedChanges ? (
