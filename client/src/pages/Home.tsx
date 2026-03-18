@@ -374,6 +374,25 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
+              {/* Query understanding display — shows parsed intent and attributes */}
+              {data?.queryUnderstanding?.intent && (
+                <div className="mb-3 text-sm text-muted-foreground">
+                  Showing results for:{' '}
+                  <span className="font-medium text-foreground italic">{searchState.query}</span>
+                  {data.queryUnderstanding.attributes?.serviceType && (
+                    <span> ({data.queryUnderstanding.attributes.serviceType})</span>
+                  )}
+                  {data.queryUnderstanding.location && (
+                    <span> in <span className="font-medium">{data.queryUnderstanding.location}</span></span>
+                  )}
+                  {data.queryUnderstanding.attributes?.demographic && (
+                    <span> — {data.queryUnderstanding.attributes.demographic}</span>
+                  )}
+                  {data.queryUnderstanding.attributes?.serviceFormat?.map(f => (
+                    <span key={f} className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">{f}</span>
+                  ))}
+                </div>
+              )}
               {/* Results toolbar: List/Map toggle + Shortlist + Refine buttons */}
               <div className="flex items-center justify-between gap-2 mb-4">
                 {/* List/Map toggle */}

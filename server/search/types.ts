@@ -240,6 +240,17 @@ export interface SearchResult {
   totalResults: number;
 }
 
+export interface QueryUnderstanding {
+  intent?: string;
+  attributes?: {
+    demographic?: string;
+    serviceFormat?: string[];
+    serviceType?: string;
+    urgency?: string;
+  };
+  location?: string;
+}
+
 export interface SearchResponse {
   services: LiteService[] | LiteServiceWithDebug[];
   summary: string;
@@ -254,6 +265,7 @@ export interface SearchResponse {
   searchTimeMs: number;
   cached: boolean;
   searchType?: SearchType;
+  queryUnderstanding?: QueryUnderstanding;
 }
 
 // === STORAGE TYPES ===

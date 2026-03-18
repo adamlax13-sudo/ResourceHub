@@ -1,3 +1,4 @@
+import { useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ShieldAlert,
@@ -41,6 +42,26 @@ interface CategoryTilesProps {
 }
 
 export function CategoryTiles({ onSelect }: CategoryTilesProps) {
+  // Track which categories have been prefetched to avoid duplicate requests
+  const prefetchedRef = useRef<Set<string>>(new Set());
+
+  // Prefetch category results on hover (low-priority background fetch)
+  const prefetchCategory = useCallback((query: string) => {
+    if (prefetchedRef.current.has(query)) return;
+    prefetchedRef.current.add(query);
+
+    // Low-priority background fetch — results go into server cache
+    fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, page: 1, pageSize: 30 }),
+      priority: 'low' as RequestPriority,
+    }).catch(() => {
+      // Remove from set so it can be retried
+      prefetchedRef.current.delete(query);
+    });
+  }, []);
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8">
       <p className="text-center text-foreground/70 mb-6 text-base font-medium">
@@ -58,6 +79,8 @@ export function CategoryTiles({ onSelect }: CategoryTilesProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05, duration: 0.3 }}
               onClick={() => onSelect(cat.query)}
+              onMouseEnter={() => prefetchCategory(cat.query)}
+              onFocus={() => prefetchCategory(cat.query)}
               className="flex flex-col items-center gap-2.5 p-4 rounded-2xl border border-border
                          bg-card hover:bg-primary/5 hover:border-primary/25
                          hover:scale-105 transition-all duration-200

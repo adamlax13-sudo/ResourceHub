@@ -10,6 +10,7 @@ import { storage } from "../storage";
 import { adminAuth, adminLimiter } from "../middleware/adminAuth";
 import { createErrorResponse } from "../helpers/errors";
 import { withTimeout } from "../helpers/timeout";
+import { prewarmCategoryCache } from "../search/cache-warmer";
 
 export function registerAdminRoutes(app: Express): void {
   // ============= ADMIN: REFRESH SEARCH VIEW =============
@@ -27,6 +28,10 @@ export function registerAdminRoutes(app: Express): void {
       const staleCleared = await storage.clearStaleSearches();
 
       console.log(`[Admin] Search view refreshed, cache cleared, ${staleCleared} stale entries removed`);
+
+      // Re-warm category cache in background after clearing
+      prewarmCategoryCache().catch(() => {});
+
       res.json({ success: true, message: `Search view refreshed, cache cleared, ${staleCleared} stale entries removed` });
     } catch (err) {
       console.error("Refresh search error:", err);

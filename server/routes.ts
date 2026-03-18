@@ -22,6 +22,7 @@ import { registerAdminSystemRoutes } from "./routes/admin-system";
 import { registerAdminFeedbackRoutes } from "./routes/admin-feedback";
 import { registerAdminRoutes } from "./routes/admin";
 import { registerLocationRoutes } from "./routes/location";
+import { registerSuggestRoutes } from "./routes/suggest";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -45,6 +46,7 @@ export async function registerRoutes(
 
   registerAdminRoutes(app);
   registerLocationRoutes(app);
+  registerSuggestRoutes(app);
 
   return httpServer;
 }

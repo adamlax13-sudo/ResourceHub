@@ -105,6 +105,17 @@ export const api = {
           services: z.array(serviceSummarySchema),
           summary: z.string(),
           pagination: paginationSchema.optional(),
+          // Query understanding metadata for frontend display
+          queryUnderstanding: z.object({
+            intent: z.string().optional(),
+            attributes: z.object({
+              demographic: z.string().optional(),
+              serviceFormat: z.array(z.string()).optional(),
+              serviceType: z.string().optional(),
+              urgency: z.string().optional(),
+            }).optional(),
+            location: z.string().optional(),
+          }).optional(),
         }),
         400: z.object({ message: z.string() }),
       },

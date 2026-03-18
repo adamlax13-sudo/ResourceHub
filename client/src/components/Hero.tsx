@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { QuickExitButton } from './QuickExitButton';
+import { SearchSuggestions } from './SearchSuggestions';
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { extractQueryLocation } from "@/lib/extract-query-location";
 
@@ -329,6 +330,8 @@ function useVoiceSearch() {
 export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   const { isSupported: voiceSupported, isListening, startListening, stopListening } = useVoiceSearch();
@@ -662,7 +665,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
             />
           </div>
 
-          <div className="relative group">
+          <div ref={searchContainerRef} className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-white/30 via-primary/30 to-white/30 rounded-3xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <label htmlFor="hero-search" className="sr-only">{t('app.searchPlaceholder')}</label>
             {/* Filter icon — opens RefinePanel for pre-search refinement */}
@@ -678,11 +681,13 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
               ref={textareaRef}
               id="hero-search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
               onKeyDown={(e) => {
                 // Submit on Enter (without Shift for newline)
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
+                  setShowSuggestions(false);
                   if (query.trim()) handleSubmit(e as unknown as React.FormEvent);
                 }
               }}
@@ -747,6 +752,18 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
                 <Search className="w-6 h-6" aria-hidden="true" />
               )}
             </button>
+
+            <SearchSuggestions
+              query={query}
+              isVisible={showSuggestions && !isLoading}
+              anchorRef={searchContainerRef}
+              onSelect={(suggestion) => {
+                setQuery(suggestion);
+                setShowSuggestions(false);
+                onSearch(suggestion, locationsRef.current);
+              }}
+              onDismiss={() => setShowSuggestions(false)}
+            />
           </div>
           <div className="mt-6 flex flex-col items-center gap-3">
             {isLoading ? (

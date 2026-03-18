@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v158';
+const CACHE_VERSION = 'v159';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -17,6 +17,8 @@ import type {
   LiteService,
   LiteServiceWithDebug,
   SearchType,
+  QueryAnalysis,
+  QueryUnderstanding,
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
 import { enhanceIntentWithLLM } from './llm-intent';
@@ -115,16 +117,14 @@ function trackCacheHit(hit: boolean, query: string) {
 }
 
 /**
- * Attach coordinates to services (always — needed for map view).
- * When user coordinates are provided, also compute distances and optionally sort/filter.
+ * Attach pre-fetched coordinates to services and compute distances.
+ * Coordinates are fetched in parallel with confidence scores before this call.
  */
-async function applyDistanceProcessing(
+function applyDistanceWithCoords(
   services: LiteService[],
   input: SearchInput,
-): Promise<LiteService[]> {
-  // Always fetch coordinates so the map view can render pins
-  const coords = await storage.getServiceCoordinates(services.map(s => s.id));
-
+  coords: Map<string, { lat: number; lng: number }>,
+): LiteService[] {
   let result: LiteService[] = services.map(s => {
     const c = coords.get(s.id);
     return { ...s, latitude: c?.lat ?? null, longitude: c?.lng ?? null };
@@ -257,6 +257,91 @@ async function refreshServicesCache(): Promise<ServicesCacheData> {
 }
 
 /**
+ * Trigram similarity between two strings (Jaccard coefficient on character trigrams).
+ */
+function trigramSimilarity(a: string, b: string): number {
+  const buildTrigrams = (s: string): Set<string> => {
+    const t = new Set<string>();
+    const lower = s.toLowerCase();
+    for (let i = 0; i <= lower.length - 3; i++) t.add(lower.slice(i, i + 3));
+    return t;
+  };
+  const ta = buildTrigrams(a);
+  const tb = buildTrigrams(b);
+  if (ta.size === 0 || tb.size === 0) return 0;
+  let intersection = 0;
+  Array.from(ta).forEach(t => { if (tb.has(t)) intersection++; });
+  const union = ta.size + tb.size - intersection;
+  return union > 0 ? intersection / union : 0;
+}
+
+/**
+ * When the top result strongly matches the query by name, fetch sibling services
+ * from the same organization and insert them near the top.
+ * e.g., searching "CMHA" shows CMHA — Counselling, CMHA — Peer Support, etc.
+ */
+async function insertOrgSiblings(services: LiteService[], query: string): Promise<LiteService[]> {
+  if (services.length < 2) return services;
+
+  const top = services[0];
+  if (!top.rrfScore || !top.name) return services;
+
+  // Check trigram similarity between query and top result name
+  const similarity = trigramSimilarity(query, top.name);
+  if (similarity < 0.3) return services;
+
+  // Check if top result is significantly ahead of #2 (strong match signal)
+  const second = services[1];
+  const secondScore = second.rrfScore ?? 0;
+  if (top.rrfScore < secondScore * 1.3) return services;
+
+  // Extract org name: split on " — " delimiter
+  const delimiter = ' — ';
+  const delimIdx = top.name.indexOf(delimiter);
+  if (delimIdx < 0) return services;
+
+  const orgName = top.name.slice(0, delimIdx).trim();
+  if (orgName.length < 3) return services;
+
+  try {
+    const siblings = await storage.getServicesByOrg(orgName);
+    if (siblings.length <= 1) return services;
+
+    // Build sibling LiteService entries
+    const existingIds = new Set(services.map(s => s.id));
+    const siblingLite: LiteService[] = siblings
+      .filter(s => !existingIds.has(s.serviceId) && s.serviceId !== top.id)
+      .map(s => ({
+        id: s.serviceId,
+        name: s.name,
+        category: s.category || '',
+        description: (s.description || '').slice(0, 300),
+        location: s.address || s.location || '',
+        waitTimes: s.waitTimes || '',
+        phone: s.phone || undefined,
+        genderRestriction: s.genderRestriction ?? null,
+        ageGroup: s.ageGroup ?? null,
+        isFaithBased: s.isFaithBased ?? null,
+        is12Step: s.is12Step ?? null,
+        serviceFormat: s.serviceFormat ?? null,
+        languagesSupported: (s.languagesSupported as string[] | null) ?? null,
+        // Score slightly below top match so they rank right after it
+        rrfScore: (top.rrfScore ?? 50) * 0.9,
+      }));
+
+    if (siblingLite.length === 0) return services;
+
+    // Insert: top match first, then siblings, then rest of results
+    const rest = services.slice(1);
+    console.log(`[SearchOrchestrator] Org siblings: "${orgName}" → +${siblingLite.length} services`);
+    return [top, ...siblingLite, ...rest];
+  } catch (err) {
+    console.warn('[SearchOrchestrator] Sibling fetch failed:', err instanceof Error ? err.message : err);
+    return services;
+  }
+}
+
+/**
  * Filter out deactivated services from cached/precomputed results.
  * This prevents stale caches from returning services that were deactivated
  * after the cache was populated.
@@ -272,6 +357,36 @@ function filterActiveServices(services: LiteService[], activeIds: Set<string>): 
     console.log(`[SearchOrchestrator] Filtered out ${services.length - filtered.length} inactive service(s) from cached results`);
   }
   return filtered;
+}
+
+/**
+ * Build a lightweight query understanding summary for the frontend.
+ */
+function buildQueryUnderstanding(analysis: QueryAnalysis): QueryUnderstanding {
+  const understanding: QueryUnderstanding = {};
+
+  // Human-readable intent name
+  const intentLabel = analysis.intent.replace(/_/g, ' ');
+  if (intentLabel !== 'general') {
+    understanding.intent = intentLabel;
+  }
+
+  // Pass through structured attributes
+  if (analysis.attributes) {
+    const attrs: QueryUnderstanding['attributes'] = {};
+    if (analysis.attributes.demographic) attrs.demographic = analysis.attributes.demographic;
+    if (analysis.attributes.serviceFormat?.length) attrs.serviceFormat = analysis.attributes.serviceFormat;
+    if (analysis.attributes.serviceType) attrs.serviceType = analysis.attributes.serviceType;
+    if (analysis.attributes.urgency) attrs.urgency = analysis.attributes.urgency;
+    if (Object.keys(attrs).length > 0) understanding.attributes = attrs;
+  }
+
+  // Location
+  if (analysis.location.specified) {
+    understanding.location = analysis.location.specified;
+  }
+
+  return understanding;
 }
 
 /**
@@ -328,35 +443,29 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Load alias map for query analysis
   const aliasMap = await storage.getAliasLookup();
 
-  // Analyze the query (regex-based, then enhance with LLM)
+  // Analyze the query (regex-based — synchronous, instant)
   const analysisStart = Date.now();
   let analysis = analyzeQuery(input.query, input.location, aliasMap);
-  analysis = await enhanceIntentWithLLM(analysis);
   timings.analysis_ms = Date.now() - analysisStart;
 
-  // SAFETY: If LLM escalated to crisis, ensure isCrisis flag is synced
-  // (applyLLMIntents sets it, but this is a belt-and-suspenders guard)
-  if (analysis.intent === 'crisis' && !analysis.isCrisis) {
-    analysis = { ...analysis, isCrisis: true };
-    console.log(`[SearchOrchestrator] SAFETY: Synced isCrisis=true after LLM crisis escalation`);
-  }
+  // Fire LLM intent enhancement in parallel — don't await yet.
+  // Cache check uses regex-only analysis; LLM results merge in later if needed.
+  const llmIntentPromise = enhanceIntentWithLLM(analysis);
 
   const intentLog = analysis.intents.secondary
     ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
     : `${analysis.intent}(${analysis.intents.primary.confidence})`;
-  const attrLog = analysis.attributes
-    ? `, Attrs: ${JSON.stringify(analysis.attributes)}`.slice(0, 120)
-    : '';
-  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}${attrLog}`);
+  console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}`);
 
-  // Check regular cache - include version, substance type, and secondary intent in key
+  // Check regular cache — key uses only regex-derived fields (no LLM-dependent fields)
+  // so cache hits are not blocked by LLM latency. LLM enhancement is applied post-cache.
   const cacheStart = Date.now();
-  const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
-  const secondaryKey = analysis.intents.secondary ? `:sec:${analysis.intents.secondary.intent}` : '';
-  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}${secondaryKey}`;
+  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}`;
   const cached = await storage.getSearchByQuery(cacheKey);
   timings.cache_lookup_ms = Date.now() - cacheStart;
   if (cached) {
+    // Cache hit — don't need LLM enhancement, but must drain the promise to avoid unhandled rejection
+    llmIntentPromise.catch(() => {});
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
     // Filter out any deactivated services from cached results
@@ -395,8 +504,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyFilterMatchBoosts(services, cachedFilters);
     }
 
+    // Fetch confidence scores + coordinates in parallel (independent DB queries)
+    const serviceIds = services.map(s => s.id);
+    const [cachedConfScores, cachedCoords] = await Promise.all([
+      storage.getConfidenceScores(serviceIds),
+      storage.getServiceCoordinates(serviceIds),
+    ]);
+
     // Data quality boost applies regardless of filters
-    const cachedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
     const beforeQualityCached = DEBUG_SEARCH ? [...services] : services;
     services = applyDataQualityBoost(services, cachedConfScores);
     logScoringImpact('quality-boost', beforeQualityCached, services);
@@ -412,9 +527,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     logScoringImpact('sub-intent-boost', beforeSubIntentCached, services);
     timings.scoring_ms = Date.now() - scoringStart;
 
-    // Distance processing — attach distances, filter, sort
+    // Distance processing — use pre-fetched coordinates
     const distStart = Date.now();
-    services = await applyDistanceProcessing(services, input);
+    services = applyDistanceWithCoords(services, input, cachedCoords);
     timings.distance_ms = Date.now() - distStart;
 
     timings.search_ms = 0; // cache hit — no search executed
@@ -422,10 +537,28 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     logTimings(input.query, 'cached', timings as SearchTimings);
     trackCacheHit(true, input.query);
 
-    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
+    const cachedUnderstanding = buildQueryUnderstanding(analysis);
+    return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds, cachedUnderstanding);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
   trackCacheHit(false, input.query);
+
+  // Await LLM intent enhancement (already running in parallel since before cache check).
+  // This enriches analysis with better intents, attributes, and semantic query for search.
+  analysis = await llmIntentPromise;
+
+  // SAFETY: If LLM escalated to crisis, ensure isCrisis flag is synced
+  if (analysis.intent === 'crisis' && !analysis.isCrisis) {
+    analysis = { ...analysis, isCrisis: true };
+    console.log(`[SearchOrchestrator] SAFETY: Synced isCrisis=true after LLM crisis escalation`);
+  }
+
+  const attrLog = analysis.attributes
+    ? `, Attrs: ${JSON.stringify(analysis.attributes)}`.slice(0, 120)
+    : '';
+  if (attrLog) {
+    console.log(`[SearchOrchestrator] LLM enhanced: Intent: ${analysis.intent}${attrLog}`);
+  }
 
   // Execute search with timeout protection
   const searchStart = Date.now();
@@ -461,6 +594,10 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
   // Filter out deactivated services from fresh results (materialized view may be stale)
   result.services = filterActiveServices(result.services, servicesCache.activeIds);
+
+  // Similar services: when top result strongly matches the query by name,
+  // fetch sibling services from the same organization and insert them at top.
+  result.services = await insertOrgSiblings(result.services, input.query);
 
   // For crisis queries: direct crisis replaces results, situational crisis pins 988.
   // MUST run AFTER filterActiveServices — 988 is a synthetic service not in the DB,
@@ -513,8 +650,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
   }
 
+  // Fetch confidence scores + coordinates in parallel (independent DB queries)
+  const freshServiceIds = result.services.map(s => s.id);
+  const [freshConfScores, freshCoords] = await Promise.all([
+    storage.getConfidenceScores(freshServiceIds),
+    storage.getServiceCoordinates(freshServiceIds),
+  ]);
+
   // Data quality boost applies regardless of filters
-  const freshConfScores = await storage.getConfidenceScores(result.services.map(s => s.id));
   const beforeQuality = DEBUG_SEARCH ? [...result.services] : result.services;
   result.services = applyDataQualityBoost(result.services, freshConfScores);
   logScoringImpact('quality-boost', beforeQuality, result.services);
@@ -525,15 +668,16 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   logScoringImpact('sub-intent-boost', beforeSubIntent, result.services);
   timings.scoring_ms = Date.now() - freshScoringStart;
 
-  // Distance processing — attach distances, filter, sort
+  // Distance processing — use pre-fetched coordinates
   const freshDistStart = Date.now();
-  result.services = await applyDistanceProcessing(result.services, input);
+  result.services = applyDistanceWithCoords(result.services, input, freshCoords);
   timings.distance_ms = Date.now() - freshDistStart;
 
   timings.total_ms = Date.now() - startTime;
   logTimings(input.query, 'fresh', timings as SearchTimings);
 
-  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
+  const freshUnderstanding = buildQueryUnderstanding(analysis);
+  return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds, freshUnderstanding);
 }
 
 /**
@@ -709,7 +853,8 @@ function formatResponse(
   intent?: QueryIntent,
   secondaryIntent?: QueryIntent,
   subIntents?: string[],
-  impliedNeeds?: string[]
+  impliedNeeds?: string[],
+  queryUnderstanding?: import('./types').QueryUnderstanding,
 ): SearchResponse {
   // Trim to relevant results before pagination (rescue categories from both intents)
   services = trimToRelevant(services, intent, secondaryIntent, subIntents, impliedNeeds);
@@ -744,6 +889,7 @@ function formatResponse(
     searchTimeMs: Date.now() - startTime,
     cached,
     searchType,
+    queryUnderstanding,
   };
 }
 
