@@ -1764,15 +1764,21 @@ export class DatabaseStorage implements IStorage {
         // When approving, always activate the service (review pipeline = approving for go-live)
         // Strip non-column fields and map form fields to DB columns
         const allowedFields = new Set([
-          'name', 'category', 'description', 'location', 'contact', 'eligibility',
+          'name', 'category', 'description', 'location', 'eligibility',
           'processSteps', 'waitTimes', 'requiredDocs', 'hoursOfOperation',
           'languagesSupported', 'serviceFormat', 'websiteUrl', 'phone', 'email',
           'address', 'genderRestriction', 'ageGroup', 'isFaithBased', 'is12Step',
           'is24_7', 'tags', 'confidenceScore',
         ]);
+        // Fields with DB CHECK constraints — empty string must become null
+        const constrainedFields = new Set(['ageGroup', 'genderRestriction']);
         const updateFields: Record<string, any> = { isActive: true };
         for (const [key, val] of Object.entries(proposed)) {
-          if (allowedFields.has(key) && val !== undefined) {
+          if (!allowedFields.has(key) || val === undefined) continue;
+          // Convert empty strings to null for CHECK-constrained fields
+          if (constrainedFields.has(key) && val === '') {
+            updateFields[key] = null;
+          } else {
             updateFields[key] = val;
           }
         }
