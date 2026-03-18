@@ -74,7 +74,7 @@ export default function System() {
 
   const refreshSearchMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/refresh-search");
+      const res = await apiRequest("POST", "/api/admin/refresh-search", {});
       return res.json();
     },
     onSuccess: (data) => {
@@ -90,7 +90,7 @@ export default function System() {
 
   const persistEnrichmentsMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/persist-enrichments");
+      const res = await apiRequest("POST", "/api/admin/persist-enrichments", {});
       return res.json();
     },
     onSuccess: (data) => {
@@ -105,7 +105,7 @@ export default function System() {
 
   const recomputeAffinitiesMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/system/recompute-affinities");
+      const res = await apiRequest("POST", "/api/admin/system/recompute-affinities", {});
       return res.json();
     },
     onSuccess: (data) => {

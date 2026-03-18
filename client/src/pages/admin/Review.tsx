@@ -17,7 +17,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, XCircle, Edit2, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChangeRequest {
@@ -56,7 +56,7 @@ export default function Review() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [editMode, setEditMode] = useState(false);
+
 
   // Build query params
   const queryParams = new URLSearchParams({ status: "pending" });
@@ -99,7 +99,7 @@ export default function Review() {
   // Approve
   const approveMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest("POST", `/api/admin/review/${id}/approve`);
+      const res = await apiRequest("POST", `/api/admin/review/${id}/approve`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -154,14 +154,13 @@ export default function Review() {
     mutationFn: async ({ id, data }: { id: number; data: ServiceFormData }) => {
       // Update the proposed changes, then approve
       await apiRequest("PATCH", `/api/admin/review/${id}`, { proposedChanges: data });
-      const res = await apiRequest("POST", `/api/admin/review/${id}/approve`);
+      const res = await apiRequest("POST", `/api/admin/review/${id}/approve`, {});
       return res.json();
     },
     onSuccess: () => {
       toast({ title: "Edited and approved" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/review"] });
       setSelectedId(null);
-      setEditMode(false);
     },
     onError: (err) => {
       toast({ title: "Edit & approve failed", description: err.message, variant: "destructive" });
@@ -259,7 +258,7 @@ export default function Review() {
                 className="rounded flex-shrink-0"
                 onClick={(e) => e.stopPropagation()}
               />
-              <div className="min-w-0 flex-1" onClick={() => { setSelectedId(cr.id); setEditMode(false); }}>
+              <div className="min-w-0 flex-1" onClick={() => setSelectedId(cr.id)}>
                 <div className="flex items-center gap-2">
                   <ChangeTypeBadge type={cr.changeType} />
                   <p className="text-sm text-gray-900 truncate">
@@ -353,29 +352,75 @@ export default function Review() {
                 </Button>
               </div>
             </>
-          ) : editMode ? (
-            <ServiceForm
-              initialData={request.proposedChanges as any}
-              onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
-              isPending={editApproveMutation.isPending}
-              submitLabel="Save & Approve"
-            />
-          ) : request.changeType === "update" && Object.keys(diffChanges).length > 0 ? (
-            <DiffView changes={diffChanges} />
-          ) : request.changeType === "create" && request.proposedChanges ? (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Proposed Service</h4>
-              <div className="space-y-1">
-                {Object.entries(request.proposedChanges).map(([key, val]) => (
-                  <div key={key} className="flex gap-2 py-1">
-                    <span className="text-xs text-gray-400 w-32 flex-shrink-0">{key}</span>
-                    <span className="text-sm text-gray-700 break-words">
-                      {val == null ? "(empty)" : typeof val === "object" ? JSON.stringify(val) : String(val)}
-                    </span>
-                  </div>
-                ))}
+          ) : request.changeType === "update" ? (
+            <>
+              {/* Show diff of what changed at the top */}
+              {Object.keys(diffChanges).length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-700">Changed Fields</h4>
+                  <DiffView changes={diffChanges} />
+                </div>
+              )}
+              {/* Editable form with full proposed data — user can review all fields, edit if needed, and approve */}
+              <div className="border-t border-gray-200 pt-4">
+                <h4 className="text-sm font-medium text-gray-700 px-4 mb-2">Full Service Data</h4>
+                <ServiceForm
+                  initialData={request.proposedChanges as any}
+                  onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
+                  isPending={editApproveMutation.isPending}
+                  submitLabel="Save & Approve"
+                />
               </div>
-            </div>
+              {/* Action buttons */}
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => approveMutation.mutate(request.id)}
+                  disabled={approveMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Approve As-Is
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setRejectDialogOpen(true)}
+                  className="border-red-300 text-red-500 hover:bg-red-50"
+                >
+                  <XCircle className="h-4 w-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
+            </>
+          ) : request.changeType === "create" && request.proposedChanges ? (
+            <>
+              {/* Editable form for new services too */}
+              <ServiceForm
+                initialData={request.proposedChanges as any}
+                onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
+                isPending={editApproveMutation.isPending}
+                submitLabel="Save & Approve"
+              />
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => approveMutation.mutate(request.id)}
+                  disabled={approveMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Approve As-Is
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setRejectDialogOpen(true)}
+                  className="border-red-300 text-red-500 hover:bg-red-50"
+                >
+                  <XCircle className="h-4 w-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
+            </>
           ) : request.changeType === "deactivate" ? (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-700">Deactivation Request</h4>
@@ -395,40 +440,28 @@ export default function Review() {
                   ))}
                 </div>
               )}
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => approveMutation.mutate(request.id)}
+                  disabled={approveMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Approve
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setRejectDialogOpen(true)}
+                  className="border-red-300 text-red-500 hover:bg-red-50"
+                >
+                  <XCircle className="h-4 w-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-gray-400">No details available.</p>
-          )}
-
-          {/* Action Buttons */}
-          {!editMode && !isReviewFlag && (
-            <div className="flex gap-2 pt-4 border-t border-gray-200">
-              <Button
-                onClick={() => approveMutation.mutate(request.id)}
-                disabled={approveMutation.isPending}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Approve
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setEditMode(true)}
-                className="border-gray-300"
-              >
-                <Edit2 className="h-4 w-4 mr-1" />
-                Edit & Approve
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setRejectDialogOpen(true)}
-                className="border-red-300 text-red-500 hover:bg-red-50"
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Reject
-              </Button>
-            </div>
           )}
 
           {/* Post-approval toast prompt */}

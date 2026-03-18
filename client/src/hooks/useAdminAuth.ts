@@ -42,7 +42,7 @@ export function useAdminAuth() {
 
   const logout = useCallback(async () => {
     try {
-      await apiRequest("POST", "/api/admin/auth/logout");
+      await apiRequest("POST", "/api/admin/auth/logout", {});
     } catch {
       // ignore
     }

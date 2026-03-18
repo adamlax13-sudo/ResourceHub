@@ -39,6 +39,8 @@ interface ServiceFormProps {
   submitLabel?: string;
   onDirtyChange?: (dirty: boolean) => void;
   onNameChange?: (name: string) => void;
+  /** Called with current form data whenever any field changes */
+  onChange?: (data: ServiceFormData) => void;
   /** Field keys to highlight as needing attention (e.g. missing data) */
   highlightFields?: string[];
 }
@@ -53,7 +55,7 @@ function normalizeRequiredDocs(raw: unknown): string[] {
   });
 }
 
-export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, highlightFields }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, onChange, highlightFields }: ServiceFormProps) {
   const highlightSet = new Set(highlightFields ?? []);
   const hl = (field: string) => highlightSet.has(field) ? "ring-2 ring-amber-300 bg-amber-50/50" : "";
   const [form, setForm] = useState<ServiceFormData>({
@@ -193,6 +195,15 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     setLanguagesSupported((prev) => prev.filter((_, i) => i !== index));
     onDirtyChange?.(true);
   };
+
+  // Report form data changes to parent for draft persistence
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+    onChange?.({ ...form, tags, processSteps, requiredDocs, languagesSupported });
+  }, [form, tags, processSteps, requiredDocs, languagesSupported]);
 
   // --- General field change ---
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {

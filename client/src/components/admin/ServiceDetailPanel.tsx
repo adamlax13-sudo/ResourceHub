@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -121,6 +121,24 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   const [isDirty, setIsDirty] = useState(false);
   const isDirtyRef = useRef(false);
 
+  // --- Draft persistence via sessionStorage ---
+  const draftKey = `service-draft-${serviceId}`;
+
+  const getSavedDraft = (): Partial<ServiceFormData> | null => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+
+  const saveDraft = (data: ServiceFormData) => {
+    try { sessionStorage.setItem(draftKey, JSON.stringify(data)); } catch {}
+  };
+
+  const clearDraft = () => {
+    try { sessionStorage.removeItem(draftKey); } catch {}
+  };
+
   // Keep ref in sync for beforeunload handler
   useEffect(() => {
     isDirtyRef.current = isDirty;
@@ -188,6 +206,19 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
 
   const service = detailData?.service;
 
+  // Load draft once when serviceId or service data changes (not every render)
+  const [draft, setDraft] = useState<Partial<ServiceFormData> | null>(null);
+  useEffect(() => {
+    setDraft(getSavedDraft());
+  }, [serviceId, service]);
+
+  // Merge saved draft over server data so edits persist across navigation
+  const formInitialData = useMemo(() => {
+    if (!service) return undefined;
+    if (!draft) return service;
+    return { ...service, ...draft };
+  }, [service, draft]);
+
   // Fetch duplicate-of service name when needed
   const { data: duplicateOfData } = useQuery<{
     success: boolean;
@@ -209,10 +240,20 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-      const res = await apiRequest("PATCH", `/api/admin/services/${serviceId}`, data);
+      // Strip null values (DB nulls fail Zod validation which expects undefined)
+      // and remove fields not in the update schema
+      const cleaned: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== null && value !== undefined) {
+          cleaned[key] = value;
+        }
+      }
+      const res = await apiRequest("PATCH", `/api/admin/services/${serviceId}`, cleaned);
       return res.json();
     },
     onSuccess: () => {
+      clearDraft();
+      setDraft(null);
       toast({ title: "Service updated successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
       onSaveSuccess?.();
@@ -242,7 +283,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   // Restore mutation
   const restoreMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/restore`);
+      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/restore`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -257,7 +298,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   // Regen embedding mutation
   const regenEmbeddingMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/regenerate-embedding`);
+      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/regenerate-embedding`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -272,7 +313,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   // Geocode mutation
   const geocodeMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/geocode`);
+      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/geocode`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -336,7 +377,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   // Clear duplicate mutation
   const clearDuplicateMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/clear-duplicate`);
+      const res = await apiRequest("POST", `/api/admin/services/${serviceId}/clear-duplicate`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -632,8 +673,20 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
           </div>
         ) : (
           <>
+            {draft && (
+              <div className="mx-4 mt-3 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-between">
+                <span className="text-xs text-amber-700">Unsaved draft restored</span>
+                <button
+                  type="button"
+                  onClick={() => { clearDraft(); setDraft(null); queryClient.invalidateQueries({ queryKey: ["/api/admin/services", serviceId] }); }}
+                  className="text-xs text-amber-500 hover:text-amber-700 underline"
+                >
+                  Discard draft
+                </button>
+              </div>
+            )}
             <ServiceForm
-              initialData={service}
+              initialData={formInitialData}
               onSubmit={(data) => {
                 setIsDirty(false);
                 updateMutation.mutate(data);
@@ -641,6 +694,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               isPending={updateMutation.isPending}
               submitLabel="Save Changes"
               onDirtyChange={(dirty) => { setIsDirty(dirty); onDirtyChange?.(dirty); }}
+              onChange={saveDraft}
               highlightFields={highlightFields}
             />
             {/* AI-Inferred Data section */}
