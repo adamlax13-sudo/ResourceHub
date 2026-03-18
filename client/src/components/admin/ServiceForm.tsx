@@ -373,7 +373,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
         <div>
           <Label className="text-foreground">Service Format</Label>
-          <div className={cn("mt-1 flex flex-wrap gap-x-4 gap-y-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm", hl("serviceFormat"))}>
+          <div className={cn("mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm", hl("serviceFormat"))}>
             {[
               { value: "in-person", label: "In-person" },
               { value: "virtual", label: "Virtual" },
@@ -384,7 +384,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
               const current = (form.serviceFormat ?? "").split(",").map(s => s.trim()).filter(Boolean);
               const checked = current.includes(opt.value);
               return (
-                <label key={opt.value} className="flex items-center gap-1.5 text-foreground cursor-pointer">
+                <label key={opt.value} className="flex items-center gap-1 text-muted-foreground hover:text-foreground cursor-pointer text-xs">
                   <input
                     type="checkbox"
                     checked={checked}
@@ -394,7 +394,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
                         : [...current, opt.value];
                       handleChange("serviceFormat", next.join(", ") || "");
                     }}
-                    className="rounded"
+                    className="rounded h-3.5 w-3.5"
                   />
                   {opt.label}
                 </label>
