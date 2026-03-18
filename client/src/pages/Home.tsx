@@ -374,26 +374,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Query understanding display — shows parsed intent and attributes */}
-              {data?.queryUnderstanding?.intent && (
-                <div className="mb-3 text-sm text-muted-foreground">
-                  Showing results for:{' '}
-                  <span className="font-medium text-foreground italic">{searchState.query}</span>
-                  {data.queryUnderstanding.attributes?.serviceType && (
-                    <span> ({data.queryUnderstanding.attributes.serviceType})</span>
-                  )}
-                  {data.queryUnderstanding.location && (
-                    <span> in <span className="font-medium">{data.queryUnderstanding.location}</span></span>
-                  )}
-                  {data.queryUnderstanding.attributes?.demographic && (
-                    <span> — {data.queryUnderstanding.attributes.demographic}</span>
-                  )}
-                  {data.queryUnderstanding.attributes?.serviceFormat?.map(f => (
-                    <span key={f} className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary">{f}</span>
-                  ))}
-                </div>
-              )}
-              {/* Results toolbar: List/Map toggle + Shortlist + Refine buttons */}
+              {/* Results toolbar: view toggle, query summary, action buttons */}
               <div className="flex items-center justify-between gap-2 mb-4">
                 {/* List/Map toggle */}
                 <div className="inline-flex gap-0.5 p-1 bg-muted rounded-lg border border-border" role="radiogroup" aria-label="View mode">
@@ -428,6 +409,20 @@ export default function Home() {
                     <span className="hidden sm:inline">Map</span>
                   </button>
                 </div>
+
+                {/* Query understanding — compact inline summary */}
+                {data?.queryUnderstanding?.intent && (
+                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 truncate">
+                    <span className="truncate">
+                      {data.queryUnderstanding.location
+                        ? `${data.queryUnderstanding.intent} in ${data.queryUnderstanding.location}`
+                        : data.queryUnderstanding.intent}
+                    </span>
+                    {data.queryUnderstanding.attributes?.serviceFormat?.map(f => (
+                      <span key={f} className="shrink-0 px-1.5 py-0.5 rounded-md bg-primary/8 text-primary text-[11px] font-medium">{f}</span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
