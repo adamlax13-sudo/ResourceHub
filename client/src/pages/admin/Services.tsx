@@ -94,7 +94,7 @@ export default function Services() {
   }, [urlSelectedId]);
 
   // Parse sortBy into sort and order params
-  const [sortCol, sortDir] = sortBy.split("-") as [string, string];
+  const [sortCol = "name", sortDir = "asc"] = sortBy.split("-");
 
   // Build query string
   const queryParams = new URLSearchParams();

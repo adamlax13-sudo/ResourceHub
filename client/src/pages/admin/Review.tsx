@@ -435,7 +435,7 @@ export default function Review() {
                     <div key={key} className="flex gap-2 py-0.5">
                       <span className="text-xs text-muted-foreground w-32 flex-shrink-0">{key}</span>
                       <span className="text-sm text-muted-foreground break-words">
-                        {val == null ? "(empty)" : typeof val === "object" ? JSON.stringify(val) : String(val)}
+                        {val == null || val === "" ? <span className="italic text-muted-foreground/50">(empty)</span> : typeof val === "object" ? JSON.stringify(val).slice(0, 200) : String(val).slice(0, 200)}
                       </span>
                     </div>
                   ))}

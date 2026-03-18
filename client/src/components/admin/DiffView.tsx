@@ -7,10 +7,17 @@ interface DiffViewProps {
 }
 
 function formatValue(val: unknown): string {
-  if (val === null || val === undefined) return "(empty)";
-  if (Array.isArray(val)) return val.join(", ");
-  if (typeof val === "object") return JSON.stringify(val, null, 2);
-  return String(val);
+  if (val === null || val === undefined || val === "") return "(empty)";
+  if (Array.isArray(val)) {
+    if (val.length === 0) return "(empty)";
+    return val.map((v, i) => typeof v === "string" ? `${i + 1}. ${v}` : JSON.stringify(v)).join("\n");
+  }
+  if (typeof val === "object") {
+    const str = JSON.stringify(val, null, 2);
+    return str.length > 500 ? str.slice(0, 500) + "…" : str;
+  }
+  const str = String(val);
+  return str.length > 500 ? str.slice(0, 500) + "…" : str;
 }
 
 export function DiffView({ changes, className }: DiffViewProps) {
@@ -30,15 +37,15 @@ export function DiffView({ changes, className }: DiffViewProps) {
               {field}
             </div>
             <div className="divide-y divide-border">
-              <div className="px-3 py-2 bg-red-50/50">
+              <div className="px-3 py-2 bg-red-50/30 max-h-40 overflow-auto">
                 <span className="text-xs text-red-500 mr-2 font-mono">-</span>
-                <span className="text-sm text-red-700 whitespace-pre-wrap break-words">
+                <span className="text-sm text-red-700/80 whitespace-pre-wrap break-words">
                   {formatValue(oldVal)}
                 </span>
               </div>
-              <div className="px-3 py-2 bg-emerald-50/50">
+              <div className="px-3 py-2 bg-emerald-50/30 max-h-40 overflow-auto">
                 <span className="text-xs text-emerald-500 mr-2 font-mono">+</span>
-                <span className="text-sm text-emerald-700 whitespace-pre-wrap break-words">
+                <span className="text-sm text-emerald-700/80 whitespace-pre-wrap break-words">
                   {formatValue(newVal)}
                 </span>
               </div>

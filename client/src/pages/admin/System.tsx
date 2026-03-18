@@ -129,7 +129,7 @@ export default function System() {
     onSuccess: (data) => {
       toast({
         title: "Purge preview",
-        description: `Would delete ${data.rowsToDelete} records older than ${data.cutoffDate?.split("T")[0]}`,
+        description: `Would delete ${data.rowsToDelete} records older than ${data.cutoffDate ? new Date(data.cutoffDate).toLocaleDateString() : "unknown"}`,
       });
     },
     onError: (err) => {

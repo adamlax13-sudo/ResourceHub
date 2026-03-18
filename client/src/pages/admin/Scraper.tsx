@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -149,7 +149,7 @@ export default function Scraper() {
                         const isExpanded = expandedId === run.id;
                         const hasErrors = (run.errorCount ?? 0) > 0 || (run.errors?.length ?? 0) > 0;
                         return (
-                          <React.Fragment key={run.id}>
+                          <Fragment key={run.id}>
                             <tr
                               className={cn(
                                 "border-t border-border cursor-pointer hover:bg-muted",
@@ -201,7 +201,7 @@ export default function Scraper() {
                                 </td>
                               </tr>
                             )}
-                          </React.Fragment>
+                          </Fragment>
                         );
                       })}
                     </tbody>

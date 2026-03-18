@@ -98,7 +98,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
                       {item.label}
                       {item.label === "Review" && !!pendingReviews && pendingReviews > 0 && (
                         <span className="ml-auto text-[10px] bg-primary text-white dark:text-gray-950 font-semibold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-                          {pendingReviews}
+                          {pendingReviews > 99 ? "99+" : pendingReviews}
                         </span>
                       )}
                       {item.label === "Feedback" && !!newFeedback && newFeedback > 0 && (

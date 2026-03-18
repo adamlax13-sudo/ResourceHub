@@ -166,7 +166,7 @@ export default function Feedback() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-foreground text-base">
-                User Messages {messagesData?.total ? `(${messagesData.total})` : ""}
+                User Messages {messagesData ? `(${messagesData.total ?? 0})` : ""}
               </CardTitle>
               {/* Filter Bar */}
               <div className="flex gap-2">

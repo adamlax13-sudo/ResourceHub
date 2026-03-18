@@ -354,7 +354,7 @@ export default function Quality() {
         <StatCard
           icon={<AlertTriangle className="h-4 w-4" />}
           label="Services with Issues"
-          value={loading ? "--" : String(issuesData?.total ?? allIssues.length)}
+          value={loading ? "--" : String(issuesData?.total ?? 0)}
           loading={loading}
           color="amber"
           titleExtra={<InfoTip text="Services missing critical data like phone, email, website, or description. These may appear incomplete to users." />}
