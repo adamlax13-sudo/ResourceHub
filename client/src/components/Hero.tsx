@@ -360,6 +360,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    setShowSuggestions(false);
 
     const detectedLocation = extractQueryLocation(query);
     // If query mentions a location that differs from the dropdown, sync it.
