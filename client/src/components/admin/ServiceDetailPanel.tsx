@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   History,
   Trash2,
@@ -116,6 +124,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   const [showHistory, setShowHistory] = useState(false);
   const [flagReason, setFlagReason] = useState("");
   const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [showDuplicates, setShowDuplicates] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
   const [isDirty, setIsDirty] = useState(false);
@@ -442,7 +451,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => deactivateMutation.mutate()}
+                onClick={() => setShowDeactivateConfirm(true)}
                 disabled={deactivateMutation.isPending}
                 className="text-red-500 hover:text-red-700"
               >
@@ -466,7 +475,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
 
         {/* Duplicate banner */}
         {service.duplicateOf && (
-          <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
+          <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-amber-50/60 border border-amber-200/60">
             <div className="flex items-center gap-2">
               <GitCompare className="h-4 w-4 text-orange-500 flex-shrink-0" />
               <p className="text-sm text-orange-700">
@@ -592,7 +601,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
           )}
           {/* Duplicate check results */}
           {showDuplicates && (
-            <Card className="bg-amber-50/50 border-amber-200 shadow-sm rounded-xl mt-3">
+            <Card className="bg-amber-50/40 border-amber-200/60 shadow-sm rounded-xl mt-3">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-amber-700 flex items-center gap-2">
                   <GitCompare className="h-4 w-4" />
@@ -741,6 +750,34 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
           </>
         )}
       </div>
+
+      {/* Deactivate confirmation dialog */}
+      <Dialog open={showDeactivateConfirm} onOpenChange={setShowDeactivateConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Deactivate Service?</DialogTitle>
+            <DialogDescription>
+              This will remove <strong>{service?.name}</strong> from search results. The service data is preserved and can be restored later.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setShowDeactivateConfirm(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => {
+                deactivateMutation.mutate();
+                setShowDeactivateConfirm(false);
+              }}
+              disabled={deactivateMutation.isPending}
+            >
+              {deactivateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              Deactivate
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

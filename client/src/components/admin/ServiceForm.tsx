@@ -223,7 +223,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     <form onSubmit={handleSubmit} className="space-y-4 p-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <Label className="text-foreground">Name *</Label>
+          <Label className="text-foreground">Name <span className="text-red-400">*</span></Label>
           <Input
             required
             value={form.name}
@@ -233,7 +233,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
 
         <div>
-          <Label className="text-foreground">Category *</Label>
+          <Label className="text-foreground">Category <span className="text-red-400">*</span></Label>
           <select
             required
             value={form.category}
@@ -411,6 +411,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
                 type="button"
                 onClick={() => removeDoc(i)}
                 className="text-amber-400 hover:text-red-500 transition-colors"
+                aria-label="Remove document"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -445,7 +446,8 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
               <button
                 type="button"
                 onClick={() => removeLanguage(i)}
-                className="text-blue-400 hover:text-red-500 transition-colors"
+                className="text-muted-foreground hover:text-red-500 transition-colors"
+                aria-label="Remove language"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -502,6 +504,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
                 type="button"
                 onClick={() => removeTag(i)}
                 className="text-muted-foreground hover:text-red-500 transition-colors"
+                aria-label="Remove tag"
               >
                 <X className="h-3 w-3" />
               </button>

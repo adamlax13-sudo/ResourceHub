@@ -179,10 +179,11 @@ export default function Services() {
             <option value="none">No Source</option>
           </select>
         </div>
+        <div className="flex gap-1.5">
         <select
           value={sortBy}
           onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-          className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground w-full"
+          className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground flex-1"
         >
           <option value="name-asc">Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
@@ -195,6 +196,15 @@ export default function Services() {
           <option value="location-asc">Location (A-Z)</option>
           <option value="enrichmentSource-desc">AI Enriched First</option>
         </select>
+        {(categoryFilter || enrichmentSourceFilter || statusFilter !== 'active') && (
+          <button
+            onClick={() => { setCategoryFilter(''); setEnrichmentSourceFilter(''); setStatusFilter('active'); setSortBy('name-asc'); setPage(1); }}
+            className="h-7 px-2 rounded border border-border bg-card text-[11px] text-muted-foreground hover:text-foreground whitespace-nowrap"
+          >
+            Clear
+          </button>
+        )}
+        </div>
       </div>
   );
 
