@@ -51,8 +51,8 @@ export function AddWidgetModal({ open, onOpenChange, addedWidgetIds, onAdd }: Ad
                 className={cn(
                   "rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors text-left",
                   selectedCategory === cat
-                    ? "bg-teal-50 text-teal-700"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 {cat}
@@ -63,7 +63,7 @@ export function AddWidgetModal({ open, onOpenChange, addedWidgetIds, onAdd }: Ad
           {/* Widget grid — fixed height, scrolls internally */}
           <div className="flex-1 overflow-y-auto p-4">
             {widgetsInCategory.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-8">
+              <p className="text-sm text-muted-foreground text-center py-8">
                 No widgets in this category.
               </p>
             ) : (
@@ -79,26 +79,26 @@ export function AddWidgetModal({ open, onOpenChange, addedWidgetIds, onAdd }: Ad
                       className={cn(
                         "group relative flex flex-col items-start gap-1.5 rounded-lg border p-4 text-left transition-all",
                         isAdded
-                          ? "opacity-50 cursor-default border-gray-200 bg-gray-50"
-                          : "border-gray-200 hover:border-teal-300 hover:shadow-sm hover:bg-teal-50/30 cursor-pointer"
+                          ? "opacity-50 cursor-default border-border bg-muted"
+                          : "border-border hover:border-primary/50 hover:shadow-sm hover:bg-primary/5 cursor-pointer"
                       )}
                     >
                       <div className="flex items-start justify-between w-full gap-2">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-sm font-medium text-foreground">
                           {widget.label}
                         </span>
                         {isAdded ? (
-                          <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-teal-100 text-teal-600">
+                          <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 text-primary">
                             <Check className="w-3 h-3" />
                           </span>
                         ) : (
-                          <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-gray-400 group-hover:text-teal-600 group-hover:bg-teal-100 transition-colors">
+                          <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-muted-foreground group-hover:text-primary group-hover:bg-primary/20 transition-colors">
                             <Plus className="w-3 h-3" />
                           </span>
                         )}
                       </div>
 
-                      <p className="text-xs text-gray-500 leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {widget.description}
                       </p>
 
@@ -106,8 +106,8 @@ export function AddWidgetModal({ open, onOpenChange, addedWidgetIds, onAdd }: Ad
                         className={cn(
                           "inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider mt-1",
                           isAdded
-                            ? "bg-gray-200 text-gray-500"
-                            : "bg-teal-100 text-teal-700"
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-primary/20 text-primary"
                         )}
                       >
                         {SIZE_LABELS[widget.defaultSize]}

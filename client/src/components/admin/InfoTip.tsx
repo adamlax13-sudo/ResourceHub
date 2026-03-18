@@ -6,7 +6,7 @@ export function InfoTip({ text }: { text: string }) {
     <TooltipProvider delayDuration={150}>
     <Tooltip>
       <TooltipTrigger asChild>
-        <HelpCircle className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 inline-block ml-1 cursor-help" />
+        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground inline-block ml-1 cursor-help" />
       </TooltipTrigger>
       <TooltipContent className="max-w-[250px] text-xs">
         {text}

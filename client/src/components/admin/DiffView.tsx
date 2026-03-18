@@ -17,7 +17,7 @@ export function DiffView({ changes, className }: DiffViewProps) {
   const fields = Object.keys(changes);
 
   if (fields.length === 0) {
-    return <p className="text-sm text-gray-400">No changes detected.</p>;
+    return <p className="text-sm text-muted-foreground">No changes detected.</p>;
   }
 
   return (
@@ -25,11 +25,11 @@ export function DiffView({ changes, className }: DiffViewProps) {
       {fields.map((field) => {
         const { old: oldVal, new: newVal } = changes[field];
         return (
-          <div key={field} className="rounded-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 border-b border-gray-200">
+          <div key={field} className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-muted px-3 py-1.5 text-xs font-medium text-foreground border-b border-border">
               {field}
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-border">
               <div className="px-3 py-2 bg-red-50/50">
                 <span className="text-xs text-red-500 mr-2 font-mono">-</span>
                 <span className="text-sm text-red-700 whitespace-pre-wrap break-words">

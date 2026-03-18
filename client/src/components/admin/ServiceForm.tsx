@@ -223,22 +223,22 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     <form onSubmit={handleSubmit} className="space-y-4 p-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <Label className="text-gray-700">Name *</Label>
+          <Label className="text-foreground">Name *</Label>
           <Input
             required
             value={form.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className="mt-1 bg-card border-border text-foreground"
           />
         </div>
 
         <div>
-          <Label className="text-gray-700">Category *</Label>
+          <Label className="text-foreground">Category *</Label>
           <select
             required
             value={form.category}
             onChange={(e) => handleChange("category", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
+            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
           >
             <option value="">Select...</option>
             {CATEGORY_GROUPS.map(group => (
@@ -252,77 +252,77 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         </div>
 
         <div>
-          <Label className="text-gray-700">Location</Label>
+          <Label className="text-foreground">Location</Label>
           <Input
             value={form.location ?? ""}
             onChange={(e) => handleChange("location", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className="mt-1 bg-card border-border text-foreground"
             placeholder="City or region"
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-gray-700">Description</Label>
+        <Label className="text-foreground">Description</Label>
         <Textarea
           value={form.description ?? ""}
           onChange={(e) => handleChange("description", e.target.value)}
-          className={cn("mt-1 bg-white border-gray-300 text-gray-900 min-h-[100px]", hl("description"))}
+          className={cn("mt-1 bg-card border-border text-foreground min-h-[100px]", hl("description"))}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-gray-700">Phone</Label>
+          <Label className="text-foreground">Phone</Label>
           <Input
             value={form.phone ?? ""}
             onChange={(e) => handleChange("phone", e.target.value)}
-            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("phone"))}
+            className={cn("mt-1 bg-card border-border text-foreground", hl("phone"))}
           />
         </div>
         <div>
-          <Label className="text-gray-700">Email</Label>
+          <Label className="text-foreground">Email</Label>
           <Input
             value={form.email ?? ""}
             onChange={(e) => handleChange("email", e.target.value)}
-            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("email"))}
+            className={cn("mt-1 bg-card border-border text-foreground", hl("email"))}
           />
         </div>
       </div>
 
       <div>
-        <Label className="text-gray-700">Address</Label>
+        <Label className="text-foreground">Address</Label>
         <Input
           value={form.address ?? ""}
           onChange={(e) => handleChange("address", e.target.value)}
-          className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("address"))}
+          className={cn("mt-1 bg-card border-border text-foreground", hl("address"))}
         />
       </div>
 
       <div>
-        <Label className="text-gray-700">Website URL</Label>
+        <Label className="text-foreground">Website URL</Label>
         <Input
           value={form.websiteUrl ?? ""}
           onChange={(e) => handleChange("websiteUrl", e.target.value)}
-          className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("websiteUrl"))}
+          className={cn("mt-1 bg-card border-border text-foreground", hl("websiteUrl"))}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-gray-700">Hours of Operation</Label>
+          <Label className="text-foreground">Hours of Operation</Label>
           <Input
             value={form.hoursOfOperation ?? ""}
             onChange={(e) => handleChange("hoursOfOperation", e.target.value)}
-            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("hoursOfOperation"))}
+            className={cn("mt-1 bg-card border-border text-foreground", hl("hoursOfOperation"))}
           />
         </div>
         <div>
-          <Label className="text-gray-700">Eligibility</Label>
+          <Label className="text-foreground">Eligibility</Label>
           <Input
             value={form.eligibility ?? ""}
             onChange={(e) => handleChange("eligibility", e.target.value)}
-            className={cn("mt-1 bg-white border-gray-300 text-gray-900", hl("eligibility"))}
+            className={cn("mt-1 bg-card border-border text-foreground", hl("eligibility"))}
           />
         </div>
       </div>
@@ -330,20 +330,20 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       {/* Wait Times + Service Format */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-gray-700">Wait Times</Label>
+          <Label className="text-foreground">Wait Times</Label>
           <Input
             value={form.waitTimes ?? ""}
             onChange={(e) => handleChange("waitTimes", e.target.value)}
-            className="mt-1 bg-white border-gray-300 text-gray-900"
+            className="mt-1 bg-card border-border text-foreground"
             placeholder="e.g., Walk-in, 2-4 weeks"
           />
         </div>
         <div>
-          <Label className="text-gray-700">Service Format</Label>
+          <Label className="text-foreground">Service Format</Label>
           <select
             value={form.serviceFormat ?? ""}
             onChange={(e) => handleChange("serviceFormat", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
+            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
           >
             <option value="">Not specified</option>
             <option value="in-person">In-person</option>
@@ -358,29 +358,29 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       {/* Process Steps */}
       <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <Label className="text-gray-700">Process Steps</Label>
-          <Button type="button" variant="ghost" size="sm" onClick={addProcessStep} className="h-7 text-teal-600 hover:text-teal-700">
+          <Label className="text-foreground">Process Steps</Label>
+          <Button type="button" variant="ghost" size="sm" onClick={addProcessStep} className="h-7 text-primary hover:text-primary">
             <Plus className="h-3 w-3 mr-1" /> Add Step
           </Button>
         </div>
         {processSteps.length === 0 && (
-          <p className="text-xs text-gray-400 mt-1">No steps yet — click Add Step to describe how to access this service.</p>
+          <p className="text-xs text-muted-foreground mt-1">No steps yet — click Add Step to describe how to access this service.</p>
         )}
         {processSteps.map((step, i) => (
-          <div key={i} className="flex gap-2 items-start mt-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
-            <span className="text-sm font-bold text-teal-600 mt-2 w-5 shrink-0">{i + 1}</span>
+          <div key={i} className="flex gap-2 items-start mt-2 p-3 border border-border rounded-lg bg-muted">
+            <span className="text-sm font-bold text-primary mt-2 w-5 shrink-0">{i + 1}</span>
             <div className="flex-1 space-y-1.5">
               <Input
                 value={step.action}
                 onChange={(e) => updateProcessStep(i, "action", e.target.value)}
                 placeholder="What to do"
-                className="text-sm bg-white border-gray-200 text-gray-900"
+                className="text-sm bg-card border-border text-foreground"
               />
               <Input
                 value={step.details ?? ""}
                 onChange={(e) => updateProcessStep(i, "details", e.target.value)}
                 placeholder="Additional details (optional)"
-                className="text-sm bg-white border-gray-200 text-gray-500"
+                className="text-sm bg-card border-border text-muted-foreground"
               />
             </div>
             <Button
@@ -388,7 +388,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
               variant="ghost"
               size="sm"
               onClick={() => removeProcessStep(i)}
-              className="h-7 w-7 p-0 mt-1 text-gray-400 hover:text-red-500"
+              className="h-7 w-7 p-0 mt-1 text-muted-foreground hover:text-red-500"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -398,8 +398,8 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
       {/* Required Documents */}
       <div className="space-y-1">
-        <Label className="text-gray-700">Required Documents</Label>
-        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+        <Label className="text-foreground">Required Documents</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-border rounded-lg bg-card mt-1">
           {requiredDocs.map((doc, i) => (
             <span
               key={i}
@@ -418,7 +418,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <input
             type="text"
             placeholder={requiredDocs.length === 0 ? "Add document..." : "Add more..."}
-            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.currentTarget.value.trim()) {
                 e.preventDefault();
@@ -428,13 +428,13 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             }}
           />
         </div>
-        <p className="text-xs text-gray-400">Press Enter to add a document</p>
+        <p className="text-xs text-muted-foreground">Press Enter to add a document</p>
       </div>
 
       {/* Languages Supported */}
       <div className="space-y-1">
-        <Label className="text-gray-700">Languages Supported</Label>
-        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+        <Label className="text-foreground">Languages Supported</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-border rounded-lg bg-card mt-1">
           {languagesSupported.map((lang, i) => (
             <span
               key={i}
@@ -454,7 +454,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             type="text"
             list="languages-list"
             placeholder={languagesSupported.length === 0 ? "Add language..." : "Add more..."}
-            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            className="flex-1 min-w-[100px] text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.currentTarget.value.trim()) {
                 e.preventDefault();
@@ -484,23 +484,23 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             <option value="Dene" />
           </datalist>
         </div>
-        <p className="text-xs text-gray-400">Press Enter to add a language</p>
+        <p className="text-xs text-muted-foreground">Press Enter to add a language</p>
       </div>
 
       {/* Tags */}
       <div className="space-y-1">
-        <Label className="text-gray-700">Tags</Label>
-        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-white mt-1">
+        <Label className="text-foreground">Tags</Label>
+        <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-border rounded-lg bg-card mt-1">
           {tags.map((tag, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-muted text-foreground border border-border"
             >
               {tag}
               <button
                 type="button"
                 onClick={() => removeTag(i)}
-                className="text-gray-400 hover:text-red-500 transition-colors"
+                className="text-muted-foreground hover:text-red-500 transition-colors"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -509,7 +509,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <input
             type="text"
             placeholder={tags.length === 0 ? "Add tag..." : "Add more..."}
-            className="flex-1 min-w-[80px] text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400"
+            className="flex-1 min-w-[80px] text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.currentTarget.value.trim()) {
                 e.preventDefault();
@@ -519,16 +519,16 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             }}
           />
         </div>
-        <p className="text-xs text-gray-400">Press Enter to add a tag</p>
+        <p className="text-xs text-muted-foreground">Press Enter to add a tag</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <Label className="text-gray-700">Gender Restriction</Label>
+          <Label className="text-foreground">Gender Restriction</Label>
           <select
             value={form.genderRestriction ?? ""}
             onChange={(e) => handleChange("genderRestriction", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
+            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
           >
             <option value="">None (all genders)</option>
             <option value="male">Male</option>
@@ -536,11 +536,11 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           </select>
         </div>
         <div>
-          <Label className="text-gray-700">Age Group</Label>
+          <Label className="text-foreground">Age Group</Label>
           <select
             value={form.ageGroup ?? ""}
             onChange={(e) => handleChange("ageGroup", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900"
+            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
           >
             <option value="">All ages</option>
             <option value="youth">Youth</option>
@@ -551,7 +551,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       <div className="flex gap-6 pt-2">
-        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
           <input
             type="checkbox"
             checked={form.isFaithBased ?? false}
@@ -560,7 +560,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           />
           Faith-based
         </label>
-        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
           <input
             type="checkbox"
             checked={form.is12Step ?? false}
@@ -569,7 +569,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           />
           12-Step
         </label>
-        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
           <input
             type="checkbox"
             checked={form.is24_7 ?? false}
@@ -581,7 +581,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       <div className="pt-4 flex justify-end">
-        <Button type="submit" disabled={isPending} className="bg-teal-600 hover:bg-teal-700 text-white">
+        <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/80 text-white">
           {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {submitLabel}
         </Button>

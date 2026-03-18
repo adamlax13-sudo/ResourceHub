@@ -25,7 +25,7 @@ export function MasterDetailLayout({
   return (
     <div className={cn("flex h-[calc(100vh-4rem)] gap-0", className)}>
       {/* Left panel — 45% */}
-      <div className="w-[45%] min-w-[320px] border-r border-gray-200 flex flex-col">
+      <div className="w-[45%] min-w-[320px] border-r border-border flex flex-col">
         {listHeader && (
           <div className="flex-shrink-0 overflow-visible relative z-10">
             {listHeader}
@@ -39,7 +39,7 @@ export function MasterDetailLayout({
         {detail ? (
           <ScrollArea className="flex-1">{detail}</ScrollArea>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+          <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
             {placeholder}
           </div>
         )}

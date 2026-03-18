@@ -394,7 +394,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
     return (
       <div className="p-4">
         <div className="flex justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       </div>
     );
@@ -404,7 +404,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   if (!service) {
     return (
       <div className="p-4">
-        <p className="text-sm text-gray-400 text-center py-8">Service not found</p>
+        <p className="text-sm text-muted-foreground text-center py-8">Service not found</p>
       </div>
     );
   }
@@ -418,11 +418,11 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
         {/* Header with action buttons */}
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="text-lg font-semibold text-foreground">{service.name}</h3>
+            <p className="text-sm text-muted-foreground">
               ID: {service.id} {service.serviceId ? `/ ${service.serviceId}` : ""}
               {service.lastUpdated && (
-                <span className="ml-2 text-gray-400">
+                <span className="ml-2 text-muted-foreground">
                   · Edited {formatRelativeTime(service.lastUpdated)}
                 </span>
               )}
@@ -433,7 +433,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               variant="ghost"
               size="sm"
               onClick={() => setShowHistory(!showHistory)}
-              className="text-gray-500 hover:text-gray-900"
+              className="text-muted-foreground hover:text-foreground"
             >
               <History className="h-4 w-4 mr-1" />
               History
@@ -500,19 +500,19 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
 
         {/* Actions */}
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-700">Actions</p>
+          <p className="text-sm font-medium text-foreground">Actions</p>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => geocodeMutation.mutate()}
               disabled={geocodeMutation.isPending || !service.address}
-              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="flex-1 border-border text-foreground hover:bg-muted"
               title={!service.address ? "Service has no address" : undefined}
             >
               {geocodeMutation.isPending
-                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
-                : <MapPin className="h-4 w-4 mr-1.5 text-teal-600" />
+                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-primary" />
+                : <MapPin className="h-4 w-4 mr-1.5 text-primary" />
               }
               Geocode
             </Button>
@@ -521,11 +521,11 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               size="sm"
               onClick={() => regenEmbeddingMutation.mutate()}
               disabled={regenEmbeddingMutation.isPending}
-              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="flex-1 border-border text-foreground hover:bg-muted"
             >
               {regenEmbeddingMutation.isPending
-                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
-                : <RefreshCw className="h-4 w-4 mr-1.5 text-teal-600" />
+                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-primary" />
+                : <RefreshCw className="h-4 w-4 mr-1.5 text-primary" />
               }
               Regenerate Embedding
             </Button>
@@ -547,11 +547,11 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               size="sm"
               onClick={() => checkDuplicatesMutation.mutate()}
               disabled={checkDuplicatesMutation.isPending}
-              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="flex-1 border-border text-foreground hover:bg-muted"
             >
               {checkDuplicatesMutation.isPending
-                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-teal-600" />
-                : <GitCompare className="h-4 w-4 mr-1.5 text-teal-600" />
+                ? <Loader2 className="h-4 w-4 animate-spin mr-1.5 text-primary" />
+                : <GitCompare className="h-4 w-4 mr-1.5 text-primary" />
               }
               Check Duplicates
             </Button>
@@ -564,7 +564,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                 value={flagReason}
                 onChange={(e) => setFlagReason(e.target.value)}
                 placeholder="e.g. Phone number may be outdated"
-                className="w-full text-sm border border-amber-200 rounded px-2 py-1.5 bg-white text-gray-900 placeholder-gray-400"
+                className="w-full text-sm border border-amber-200 rounded px-2 py-1.5 bg-card text-foreground placeholder-muted-foreground"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") flagReviewMutation.mutate(flagReason);
                   if (e.key === "Escape") { setShowFlagDialog(false); setFlagReason(""); }
@@ -583,7 +583,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                   variant="ghost"
                   size="sm"
                   onClick={() => { setShowFlagDialog(false); setFlagReason(""); }}
-                  className="flex-1 text-gray-500"
+                  className="flex-1 text-muted-foreground"
                 >
                   Cancel
                 </Button>
@@ -601,16 +601,16 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               </CardHeader>
               <CardContent>
                 {duplicates.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-2">No duplicates found.</p>
+                  <p className="text-sm text-muted-foreground py-2">No duplicates found.</p>
                 ) : (
                   duplicates.map((dup: any) => (
                     <div key={dup.id} className="flex items-center justify-between py-2 border-b border-amber-100 last:border-0">
                       <div>
-                        <p className="text-sm text-gray-900">{dup.name}</p>
+                        <p className="text-sm text-foreground">{dup.name}</p>
                         <div className="flex gap-2 mt-0.5">
                           <Badge className={cn(getCategoryColor(dup.category), "text-[10px]")}>{dup.category}</Badge>
                           <Badge className="bg-amber-100 text-amber-700 text-[10px]">Match: {dup.match_type}</Badge>
-                          {!dup.is_active && <Badge className="bg-gray-100 text-gray-500 text-[10px]">Inactive</Badge>}
+                          {!dup.is_active && <Badge className="bg-muted text-muted-foreground text-[10px]">Inactive</Badge>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -624,7 +624,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                           Mark as Duplicate
                         </Button>
                         <Link href={`/admin/services?selected=${dup.id}`}>
-                          <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900" />
+                          <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
                         </Link>
                       </div>
                     </div>
@@ -638,15 +638,15 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
         {/* History or Edit Form */}
         {showHistory ? (
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-700">Change History</h4>
+            <h4 className="text-sm font-medium text-foreground">Change History</h4>
             {historyLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             ) : !historyData?.history?.length ? (
-              <p className="text-sm text-gray-400">No history found</p>
+              <p className="text-sm text-muted-foreground">No history found</p>
             ) : (
               <div className="space-y-2">
                 {historyData.history.map((entry) => (
-                  <div key={entry.id} className="p-3 rounded-lg bg-white border border-gray-200">
+                  <div key={entry.id} className="p-3 rounded-lg bg-card border border-border">
                     <div className="flex items-center justify-between">
                       <Badge className={cn(
                         "text-[10px]",
@@ -656,13 +656,13 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                       )}>
                         {entry.changeType}
                       </Badge>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(entry.recordedAt).toLocaleString()}
                       </span>
                     </div>
-                    {entry.changedFields && (entry.changedFields as any).source && <p className="text-xs text-gray-400 mt-1">Source: {(entry.changedFields as any).source}</p>}
+                    {entry.changedFields && (entry.changedFields as any).source && <p className="text-xs text-muted-foreground mt-1">Source: {(entry.changedFields as any).source}</p>}
                     {entry.changedFields && (
-                      <pre className="mt-2 text-xs text-gray-500 overflow-auto max-h-32">
+                      <pre className="mt-2 text-xs text-muted-foreground overflow-auto max-h-32">
                         {JSON.stringify(entry.changedFields, null, 2)}
                       </pre>
                     )}
@@ -710,7 +710,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                   {enrichmentData.enrichment.aiDescription && (
                     <div>
                       <p className="text-xs font-medium text-violet-600 mb-1">AI Description</p>
-                      <p className="text-gray-700 bg-white rounded p-2 border border-violet-100">
+                      <p className="text-foreground bg-card rounded p-2 border border-violet-100">
                         {enrichmentData.enrichment.aiDescription}
                       </p>
                     </div>
@@ -718,7 +718,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                   {enrichmentData.enrichment.aiEligibility && (
                     <div>
                       <p className="text-xs font-medium text-violet-600 mb-1">AI Eligibility</p>
-                      <p className="text-gray-700 bg-white rounded p-2 border border-violet-100">
+                      <p className="text-foreground bg-card rounded p-2 border border-violet-100">
                         {enrichmentData.enrichment.aiEligibility}
                       </p>
                     </div>
@@ -726,7 +726,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                   {enrichmentData.enrichment.aiProcessSteps != null && (
                     <div>
                       <p className="text-xs font-medium text-violet-600 mb-1">AI Process Steps</p>
-                      <pre className="text-gray-700 bg-white rounded p-2 border border-violet-100 text-xs whitespace-pre-wrap overflow-auto max-h-48">
+                      <pre className="text-foreground bg-card rounded p-2 border border-violet-100 text-xs whitespace-pre-wrap overflow-auto max-h-48">
                         {JSON.stringify(enrichmentData.enrichment.aiProcessSteps, null, 2)}
                       </pre>
                     </div>
