@@ -6,6 +6,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loader2, LayoutDashboard, Database, ClipboardCheck, BarChart3, Activity, Bot, Search, Settings, LogOut, Plus, Upload, HelpCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/hooks/useTheme";
+import { ThemeToggle } from "@/components/admin/ThemeToggle";
 
 // Lazy-load all admin pages
 const Dashboard = lazy(() => import("./Dashboard"));
@@ -129,6 +131,11 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
         </Link>
       </div>
 
+      {/* Theme Toggle */}
+      <div className="px-2 py-2 border-t border-border">
+        <ThemeToggle />
+      </div>
+
       {/* Bottom section */}
       <div className="p-2 border-t border-gray-100 space-y-0.5">
         <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400">
@@ -207,6 +214,7 @@ export default function AdminLayout() {
   };
 
   return (
+    <ThemeProvider>
     <div className="min-h-screen bg-gray-50">
       {isDev && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-amber-400 text-amber-900 text-[11px] font-medium text-center py-0.5">
@@ -237,5 +245,6 @@ export default function AdminLayout() {
         </Suspense>
       </main>
     </div>
+    </ThemeProvider>
   );
 }
