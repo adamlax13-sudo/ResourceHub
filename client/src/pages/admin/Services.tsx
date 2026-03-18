@@ -4,7 +4,7 @@ import { useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
 import { ServiceDetailPanel } from "@/components/admin/ServiceDetailPanel";
-import { CATEGORY_GROUPS } from "@/components/RefinePanel";
+import { CATEGORY_GROUPS } from "@/lib/category-groups";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

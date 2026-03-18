@@ -71,12 +71,7 @@ export function getPchadServiceFull(): FullService {
   };
 }
 
-/**
- * Get the lite PCHAD service for search results
- */
-export function getPchadServiceLite(): LiteService {
-  return SEARCH_CONFIG.pchad.pinnedServiceLite as LiteService;
-}
+
 
 /**
  * Check if a service ID is the PCHAD service

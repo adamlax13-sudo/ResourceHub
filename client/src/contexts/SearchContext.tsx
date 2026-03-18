@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { ServiceSummary, SearchFilters } from "@shared/routes";
-import { CATEGORY_GROUPS } from "../components/RefinePanel";
+import { CATEGORY_GROUPS } from "../lib/category-groups";
 
 interface UserCoords {
   lat: number;

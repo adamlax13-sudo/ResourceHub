@@ -160,7 +160,7 @@ export function FeedbackModal({ open, onClose, serviceId, serviceName, searchQue
   const canSubmit = selectedType === "service_closed"
     || (selectedType === "incorrect_info" && (message.trim().length > 0 || wrongFields.size > 0))
     || (selectedType === "missing_service" && missingServiceName.trim().length > 0 && message.trim().length > 0)
-    || (selectedType !== "service_closed" && selectedType !== "incorrect_info" && selectedType !== "missing_service" && message.trim().length > 0);
+    || (selectedType !== "incorrect_info" && selectedType !== "missing_service" && message.trim().length > 0);
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>

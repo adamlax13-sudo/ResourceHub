@@ -18,7 +18,6 @@ import type { SearchFilters } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 
 const ServiceModal = lazy(() => import("@/components/ServiceModal").then(m => ({ default: m.ServiceModal })));
-const WelcomeModal = lazy(() => import("@/components/WelcomeModal").then(m => ({ default: m.WelcomeModal })));
 const MapView = lazy(() => import("@/components/MapView"));
 
 interface FilterChip {
@@ -278,9 +277,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
-      <Suspense fallback={null}>
-        <WelcomeModal />
-      </Suspense>
       <Hero
         onSearch={handleSearch}
         isLoading={isPending}

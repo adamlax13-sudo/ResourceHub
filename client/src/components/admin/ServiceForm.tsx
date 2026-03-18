@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, X, Plus } from "lucide-react";
-import { CATEGORY_GROUPS } from "@/components/RefinePanel";
+import { CATEGORY_GROUPS } from "@/lib/category-groups";
 
 export interface ServiceFormData {
   name: string;

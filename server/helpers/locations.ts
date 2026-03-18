@@ -110,33 +110,6 @@ export function extractLocationContext(query: string): LocationContext {
   return { specifiedLocation: null, isProvinceWide };
 }
 
-/**
- * Check if a service's location matches the specified location or is province-wide
- */
-export function matchesLocation(serviceLocation: string, specifiedLocation: string): 'exact' | 'province-wide' | 'none' {
-  const locLower = serviceLocation.toLowerCase();
-
-  // Check for province-wide services (should always be included)
-  if (PROVINCE_WIDE_TERMS.some(term => locLower.includes(term)) ||
-      locLower.includes('canada-wide') ||
-      locLower.includes('nationwide') ||
-      locLower.includes('all regions')) {
-    return 'province-wide';
-  }
-
-  // Check for exact location match
-  if (locLower.includes(specifiedLocation)) {
-    return 'exact';
-  }
-
-  // Check location aliases
-  const canonical = LOCATION_ALIASES[specifiedLocation];
-  if (canonical && locLower.includes(canonical)) {
-    return 'exact';
-  }
-
-  return 'none';
-}
 
 /**
  * Format location name nicely (capitalize first letter of each word)

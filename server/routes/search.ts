@@ -7,12 +7,11 @@ import { z } from "zod";
 import { api, serviceSummarySchema } from "@shared/routes";
 import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
-import { createErrorResponse } from "../helpers/errors";
+import { asyncHandler, createErrorResponse } from "../helpers/errors";
 
 export function registerSearchRoutes(app: Express): void {
   // ============= SEARCH ENDPOINT =============
-  app.post(api.search.query.path, strictLimiter, async (req: Request, res: Response) => {
-    try {
+  app.post(api.search.query.path, strictLimiter, asyncHandler(async (req: Request, res: Response) => {
       const input = api.search.query.input.parse(req.body);
 
       // Honeypot check: bots fill hidden fields, humans don't
@@ -50,20 +49,11 @@ export function registerSearchRoutes(app: Express): void {
       // Strip internal fields (rrfScore, matchType, filter flags) from response
       const strippedServices = result.services.map((s) => serviceSummarySchema.parse(s));
       res.json({ ...result, services: strippedServices });
-    } catch (err) {
-      console.error("Search error:", err);
-      // Don't expose internal error details to clients in production
-      const errorMessage = process.env.NODE_ENV === 'production'
-        ? undefined
-        : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Search failed", errorMessage));
-    }
-  });
+  }));
 
   // ============= SERVICE DETAIL ENDPOINT =============
   // Get full service details by ID (loaded when user expands a card)
-  app.get("/api/services/:id", async (req: Request, res: Response) => {
-    try {
+  app.get("/api/services/:id", asyncHandler(async (req: Request, res: Response) => {
       // Validate service ID parameter
       const idSchema = z.string().min(1).max(200).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid service ID format');
       const parseResult = idSchema.safeParse(req.params.id);
@@ -79,9 +69,5 @@ export function registerSearchRoutes(app: Express): void {
       }
 
       res.json(serviceDetails);
-    } catch (err) {
-      console.error("Service detail error:", err);
-      res.status(500).json(createErrorResponse("Failed to fetch service details"));
-    }
-  });
+  }));
 }

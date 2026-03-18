@@ -23,7 +23,7 @@ import { enhanceIntentWithLLM } from './llm-intent';
 import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
-import { pinCrisisService, boostCrisisServices, filterToCrisisOnly, buildCrisisResults, getCrisisServiceFull, isCrisisServiceId } from './crisis';
+import { pinCrisisService, buildCrisisResults, getCrisisServiceFull, isCrisisServiceId } from './crisis';
 import { isPchadQuery, pinPchadService, getPchadServiceFull, isPchadServiceId } from './pchad';
 import {
   isFamilyAddictionQuery,

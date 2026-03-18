@@ -32,31 +32,6 @@ export async function withTimeout<T>(
   }
 }
 
-/**
- * Wraps a promise with a timeout, returning a default value on timeout
- * @param promise The promise to wrap
- * @param timeoutMs Timeout in milliseconds
- * @param defaultValue Value to return on timeout
- * @param operation Name of the operation for logging
- * @returns The result of the promise, or defaultValue if timeout
- */
-export async function withTimeoutDefault<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  defaultValue: T,
-  operation: string = 'Operation'
-): Promise<T> {
-  try {
-    return await withTimeout(promise, timeoutMs, operation);
-  } catch (err) {
-    if (err instanceof Error && err.message.includes('timed out')) {
-      console.warn(`[Timeout] ${operation} timed out after ${timeoutMs}ms, using default`);
-      return defaultValue;
-    }
-    throw err;
-  }
-}
-
 // Default timeouts for different operations
 export const TIMEOUTS = {
   // Database operations

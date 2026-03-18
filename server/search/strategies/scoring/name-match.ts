@@ -8,6 +8,7 @@
 import { SCORING_CONFIG } from '../../config';
 import type { LiteService, LiteServiceWithDebug, ScoreExplanation } from '../../types';
 import { searchLog } from '../../logger';
+import { truncName } from '../../../helpers';
 
 /** Options for boost functions */
 export interface BoostOptions {
@@ -106,14 +107,14 @@ export function boostByNameMatch(
     // Tier 1: Exact name match
     if (queryLower === nameLower) {
       addFactor('nameMatch.exact', cfg.nameMatch.exact, `Exact name match: "${svc.name}"`);
-      searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.exact} exact name match`);
+      searchLog.debug(`[NameMatch] "${truncName(svc.name)}" +${cfg.nameMatch.exact} exact name match`);
     }
     // Tier 2: Alias match
     else if (serviceAliases.has(svc.id)) {
       const aliases = serviceAliases.get(svc.id)!;
       if (aliases.has(queryLower)) {
         addFactor('nameMatch.alias', cfg.nameMatch.alias, `Alias match: "${queryLower}" -> "${svc.name}"`);
-        searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.alias} alias match for "${queryLower}"`);
+        searchLog.debug(`[NameMatch] "${truncName(svc.name)}" +${cfg.nameMatch.alias} alias match for "${queryLower}"`);
       }
     }
 
@@ -122,7 +123,7 @@ export function boostByNameMatch(
       const allMatch = nonStoplistWords.every(w => nameLower.includes(w));
       if (allMatch) {
         addFactor('nameMatch.partial', cfg.nameMatch.partial, `Partial name match: all ${nonStoplistWords.length} words in name`);
-        searchLog.debug(`[NameMatch] "${svc.name.substring(0, 40)}" +${cfg.nameMatch.partial} partial match (${nonStoplistWords.join(', ')})`);
+        searchLog.debug(`[NameMatch] "${truncName(svc.name)}" +${cfg.nameMatch.partial} partial match (${nonStoplistWords.join(', ')})`);
       }
     }
 

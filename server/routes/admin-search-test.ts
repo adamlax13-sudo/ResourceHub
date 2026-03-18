@@ -5,7 +5,7 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { adminAuth, adminWriteLimiter } from "../middleware/adminAuth";
-import { createErrorResponse } from "../helpers/errors";
+import { asyncHandler, createErrorResponse } from "../helpers/errors";
 import { diagnoseQuery } from "../search/diagnose";
 
 const searchTestSchema = z.object({
@@ -15,8 +15,7 @@ const searchTestSchema = z.object({
 
 export function registerAdminSearchTestRoutes(app: Express): void {
   // ============= SEARCH DIAGNOSIS =============
-  app.post("/api/admin/search-test", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
+  app.post("/api/admin/search-test", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
       const parsed = searchTestSchema.safeParse(req.body);
       if (!parsed.success) {
         return res.status(400).json(
@@ -28,10 +27,5 @@ export function registerAdminSearchTestRoutes(app: Express): void {
       const result = await diagnoseQuery(query, filters);
 
       res.json({ success: true, ...result });
-    } catch (err) {
-      console.error("Search test error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Search test failed", errorMessage));
-    }
-  });
+  }));
 }

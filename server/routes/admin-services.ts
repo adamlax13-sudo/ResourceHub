@@ -12,7 +12,7 @@ import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { storage } from "../storage";
 import { adminAuth, adminReadLimiter, adminWriteLimiter } from "../middleware/adminAuth";
-import { createErrorResponse } from "../helpers/errors";
+import { asyncHandler, createErrorResponse } from "../helpers/errors";
 import { getOpenAI } from "../helpers/openai";
 import { db } from "../db";
 import { eq, sql } from "drizzle-orm";
@@ -143,164 +143,128 @@ function servicesToCsv(serviceList: any[]): string {
 
 export function registerAdminServiceRoutes(app: Express): void {
   // ============= LIST SERVICES =============
-  app.get("/api/admin/services", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const params = {
-        q: req.query.q as string | undefined,
-        category: req.query.category as string | undefined,
-        status: req.query.status as 'active' | 'inactive' | 'all' | undefined,
-        location: req.query.location as string | undefined,
-        hasEmbedding: req.query.hasEmbedding === 'true' ? true : req.query.hasEmbedding === 'false' ? false : undefined,
-        hasGeocoding: req.query.hasGeocoding === 'true' ? true : req.query.hasGeocoding === 'false' ? false : undefined,
-        enrichmentSource: req.query.enrichmentSource as string | undefined,
-        page: req.query.page ? Number(req.query.page) : undefined,
-        limit: req.query.limit ? Number(req.query.limit) : undefined,
-        sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | 'enrichmentSource' | undefined,
-        order: req.query.order as 'asc' | 'desc' | undefined,
-      };
+  app.get("/api/admin/services", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const params = {
+      q: req.query.q as string | undefined,
+      category: req.query.category as string | undefined,
+      status: req.query.status as 'active' | 'inactive' | 'all' | undefined,
+      location: req.query.location as string | undefined,
+      hasEmbedding: req.query.hasEmbedding === 'true' ? true : req.query.hasEmbedding === 'false' ? false : undefined,
+      hasGeocoding: req.query.hasGeocoding === 'true' ? true : req.query.hasGeocoding === 'false' ? false : undefined,
+      enrichmentSource: req.query.enrichmentSource as string | undefined,
+      page: req.query.page ? Number(req.query.page) : undefined,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      sort: req.query.sort as 'name' | 'category' | 'confidence' | 'lastUpdated' | 'clickCount' | 'location' | 'enrichmentSource' | undefined,
+      order: req.query.order as 'asc' | 'desc' | undefined,
+    };
 
-      const result = await storage.getAdminServices(params);
-      res.json({ success: true, ...result });
-    } catch (err) {
-      console.error("Admin services list error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to fetch services", errorMessage));
-    }
-  });
+    const result = await storage.getAdminServices(params);
+    res.json({ success: true, ...result });
+  }));
 
   // ============= EXPORT SERVICES (named route — before :id) =============
-  app.get("/api/admin/services/export", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const format = req.query.format === 'json' ? 'json' : 'csv';
-      const result = await storage.getAdminServices({ limit: 10000 });
+  app.get("/api/admin/services/export", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const format = req.query.format === 'json' ? 'json' : 'csv';
+    const result = await storage.getAdminServices({ limit: 10000 });
 
-      if (format === 'json') {
-        res.setHeader('Content-Disposition', 'attachment; filename=services.json');
-        res.json(result.services);
-      } else {
-        const csv = servicesToCsv(result.services);
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=services.csv');
-        res.send(csv);
-      }
-    } catch (err) {
-      console.error("Export error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to export services", errorMessage));
+    if (format === 'json') {
+      res.setHeader('Content-Disposition', 'attachment; filename=services.json');
+      res.json(result.services);
+    } else {
+      const csv = servicesToCsv(result.services);
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=services.csv');
+      res.send(csv);
     }
-  });
+  }));
 
   // ============= CREATE SERVICE =============
-  app.post("/api/admin/services", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const parsed = serviceCreateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Invalid service data", undefined, parsed.error.issues)
-        );
-      }
-
-      const service = await storage.createService(parsed.data);
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Create service error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to create service", errorMessage));
+  app.post("/api/admin/services", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const parsed = serviceCreateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Invalid service data", undefined, parsed.error.issues)
+      );
     }
-  });
+
+    const service = await storage.createService(parsed.data);
+    res.json({ success: true, service });
+  }));
 
   // ============= BULK UPDATE (named route — before :id) =============
-  app.post("/api/admin/services/bulk-update", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const parsed = bulkUpdateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Invalid request body", undefined, parsed.error.issues)
-        );
-      }
-
-      const { ids, changes, reason, dryRun } = parsed.data;
-
-      if (dryRun) {
-        return res.json({ success: true, dryRun: true, affected: ids.length, ids, changes });
-      }
-
-      const count = await storage.bulkUpdateServices(ids, changes as any, reason);
-      res.json({ success: true, updated: count });
-    } catch (err) {
-      console.error("Bulk update error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to bulk update services", errorMessage));
+  app.post("/api/admin/services/bulk-update", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const parsed = bulkUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Invalid request body", undefined, parsed.error.issues)
+      );
     }
-  });
+
+    const { ids, changes, reason, dryRun } = parsed.data;
+
+    if (dryRun) {
+      return res.json({ success: true, dryRun: true, affected: ids.length, ids, changes });
+    }
+
+    const count = await storage.bulkUpdateServices(ids, changes as any, reason);
+    res.json({ success: true, updated: count });
+  }));
 
   // ============= BULK DEACTIVATE (named route — before :id) =============
-  app.post("/api/admin/services/bulk-deactivate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const parsed = bulkDeactivateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Invalid request body", undefined, parsed.error.issues)
-        );
-      }
-
-      const { ids, reason, dryRun } = parsed.data;
-
-      if (dryRun) {
-        return res.json({ success: true, dryRun: true, affected: ids.length, ids });
-      }
-
-      const count = await storage.bulkDeactivateServices(ids, reason);
-      res.json({ success: true, deactivated: count });
-    } catch (err) {
-      console.error("Bulk deactivate error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to bulk deactivate services", errorMessage));
+  app.post("/api/admin/services/bulk-deactivate", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const parsed = bulkDeactivateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Invalid request body", undefined, parsed.error.issues)
+      );
     }
-  });
+
+    const { ids, reason, dryRun } = parsed.data;
+
+    if (dryRun) {
+      return res.json({ success: true, dryRun: true, affected: ids.length, ids });
+    }
+
+    const count = await storage.bulkDeactivateServices(ids, reason);
+    res.json({ success: true, deactivated: count });
+  }));
 
   // ============= BULK REGENERATE EMBEDDINGS (named route — before :id) =============
-  app.post("/api/admin/services/bulk-regenerate-embeddings", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const parsed = bulkRegenerateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Invalid request body", undefined, parsed.error.issues)
-        );
-      }
-
-      const { ids } = parsed.data;
-
-      // Fire-and-forget background regeneration
-      (async () => {
-        let successCount = 0;
-        let errorCount = 0;
-        for (const id of ids) {
-          try {
-            const service = await storage.getAdminServiceDetail(id);
-            if (!service) continue;
-
-            const embedding = await generateEmbedding(service);
-            const embeddingStr = `[${embedding.join(',')}]`;
-            await db.execute(
-              sql`UPDATE services SET embedding = ${embeddingStr}::vector, embedding_updated_at = NOW() WHERE id = ${id}`
-            );
-            successCount++;
-          } catch (err) {
-            errorCount++;
-            console.error(`[AdminServices] Embedding regen failed for id=${id}:`, err);
-          }
-        }
-        console.log(`[AdminServices] Bulk embedding regen complete: ${successCount} success, ${errorCount} errors`);
-      })();
-
-      res.json({ success: true, message: `Embedding regeneration started for ${ids.length} services`, queued: ids.length });
-    } catch (err) {
-      console.error("Bulk regenerate embeddings error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to start embedding regeneration", errorMessage));
+  app.post("/api/admin/services/bulk-regenerate-embeddings", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const parsed = bulkRegenerateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Invalid request body", undefined, parsed.error.issues)
+      );
     }
-  });
+
+    const { ids } = parsed.data;
+
+    // Fire-and-forget background regeneration
+    (async () => {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const id of ids) {
+        try {
+          const service = await storage.getAdminServiceDetail(id);
+          if (!service) continue;
+
+          const embedding = await generateEmbedding(service);
+          const embeddingStr = `[${embedding.join(',')}]`;
+          await db.execute(
+            sql`UPDATE services SET embedding = ${embeddingStr}::vector, embedding_updated_at = NOW() WHERE id = ${id}`
+          );
+          successCount++;
+        } catch (err) {
+          errorCount++;
+          console.error(`[AdminServices] Embedding regen failed for id=${id}:`, err);
+        }
+      }
+      console.log(`[AdminServices] Bulk embedding regen complete: ${successCount} success, ${errorCount} errors`);
+    })();
+
+    res.json({ success: true, message: `Embedding regeneration started for ${ids.length} services`, queued: ids.length });
+  }));
 
   // ============= IMPORT SERVICES (named route — before :id) =============
   app.post("/api/admin/services/import", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
@@ -343,332 +307,260 @@ export function registerAdminServiceRoutes(app: Express): void {
   });
 
   // ============= GET SERVICE ENRICHMENT (named sub-route — before :id) =============
-  app.get("/api/admin/services/:id/enrichment", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.getAdminServiceDetail(parseResult.data);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      const enrichment = service.serviceId
-        ? await db.select().from(aiServiceEnrichments).where(eq(aiServiceEnrichments.serviceId, service.serviceId)).limit(1)
-        : [];
-
-      res.json({
-        success: true,
-        enrichment: enrichment[0] || null,
-        enrichmentSource: service.enrichmentSource,
-        enrichmentDate: service.enrichmentDate,
-      });
-    } catch (err) {
-      console.error("Service enrichment error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to fetch enrichment data", errorMessage));
+  app.get("/api/admin/services/:id/enrichment", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.getAdminServiceDetail(parseResult.data);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    const enrichment = service.serviceId
+      ? await db.select().from(aiServiceEnrichments).where(eq(aiServiceEnrichments.serviceId, service.serviceId)).limit(1)
+      : [];
+
+    res.json({
+      success: true,
+      enrichment: enrichment[0] || null,
+      enrichmentSource: service.enrichmentSource,
+      enrichmentDate: service.enrichmentDate,
+    });
+  }));
 
   // ============= MARK DUPLICATE (named sub-route — before :id) =============
-  app.post("/api/admin/services/:id/mark-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-      const id = parseResult.data;
-      const { duplicateOf } = z.object({ duplicateOf: z.number().int() }).parse(req.body);
-
-      const service = await storage.updateService(id, { duplicateOf } as any);
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Mark duplicate error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to mark service as duplicate", errorMessage));
+  app.post("/api/admin/services/:id/mark-duplicate", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+    const id = parseResult.data;
+    const { duplicateOf } = z.object({ duplicateOf: z.number().int() }).parse(req.body);
+
+    const service = await storage.updateService(id, { duplicateOf } as any);
+    res.json({ success: true, service });
+  }));
 
   // ============= CLEAR DUPLICATE (named sub-route — before :id) =============
-  app.post("/api/admin/services/:id/clear-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-      const id = parseResult.data;
-      await db.update(services).set({ duplicateOf: null as any }).where(eq(services.id, id));
-      res.json({ success: true });
-    } catch (err) {
-      console.error("Clear duplicate error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to clear duplicate flag", errorMessage));
+  app.post("/api/admin/services/:id/clear-duplicate", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+    const id = parseResult.data;
+    await db.update(services).set({ duplicateOf: null as any }).where(eq(services.id, id));
+    res.json({ success: true });
+  }));
 
   // ============= CHECK DUPLICATES (named sub-route — before :id) =============
-  app.get("/api/admin/services/:id/duplicates", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const id = parseResult.data;
-      const service = await storage.getAdminServiceDetail(id);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      // Build name prefix for ILIKE matching (first 3 significant words before em-dash)
-      const namePrefix = (service.name || '').split('\u2014')[0].trim().split(' ').slice(0, 3).join(' ');
-
-      const duplicates = await db.execute(sql`
-        SELECT id, service_id, name, category, phone, email, address, location,
-               is_active, confidence_score,
-               CASE
-                 WHEN phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'} THEN 'phone'
-                 WHEN email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}) THEN 'email'
-                 WHEN address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'} THEN 'address'
-                 ELSE 'name'
-               END AS match_type
-        FROM services
-        WHERE id != ${id}
-          AND (
-            (phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'})
-            OR (email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}))
-            OR (address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'})
-            OR (LOWER(name) ILIKE ${`%${namePrefix.toLowerCase()}%`})
-          )
-        ORDER BY
-          CASE WHEN is_active THEN 0 ELSE 1 END,
-          confidence_score DESC
-        LIMIT 20
-      `);
-
-      res.json({
-        success: true,
-        duplicates: duplicates.rows,
-        sourceService: { id: service.id, name: service.name },
-      });
-    } catch (err) {
-      console.error("Check duplicates error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to check duplicates", errorMessage));
+  app.get("/api/admin/services/:id/duplicates", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const id = parseResult.data;
+    const service = await storage.getAdminServiceDetail(id);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    // Build name prefix for ILIKE matching (first 3 significant words before em-dash)
+    const namePrefix = (service.name || '').split('\u2014')[0].trim().split(' ').slice(0, 3).join(' ');
+
+    const duplicates = await db.execute(sql`
+      SELECT id, service_id, name, category, phone, email, address, location,
+             is_active, confidence_score,
+             CASE
+               WHEN phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'} THEN 'phone'
+               WHEN email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}) THEN 'email'
+               WHEN address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'} THEN 'address'
+               ELSE 'name'
+             END AS match_type
+      FROM services
+      WHERE id != ${id}
+        AND (
+          (phone IS NOT NULL AND phone != '' AND phone = ${service.phone || '__NOMATCH__'})
+          OR (email IS NOT NULL AND email != '' AND LOWER(email) = LOWER(${service.email || '__NOMATCH__'}))
+          OR (address IS NOT NULL AND address != '' AND address = ${service.address || '__NOMATCH__'})
+          OR (LOWER(name) ILIKE ${`%${namePrefix.toLowerCase()}%`})
+        )
+      ORDER BY
+        CASE WHEN is_active THEN 0 ELSE 1 END,
+        confidence_score DESC
+      LIMIT 20
+    `);
+
+    res.json({
+      success: true,
+      duplicates: duplicates.rows,
+      sourceService: { id: service.id, name: service.name },
+    });
+  }));
 
   // ============= GET SERVICE DETAIL (parameterized :id) =============
-  app.get("/api/admin/services/:id", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.getAdminServiceDetail(parseResult.data);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Service detail error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to fetch service", errorMessage));
+  app.get("/api/admin/services/:id", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.getAdminServiceDetail(parseResult.data);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    res.json({ success: true, service });
+  }));
 
   // ============= UPDATE SERVICE =============
-  app.patch("/api/admin/services/:id", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const parsed = serviceUpdateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Invalid service data", undefined, parsed.error.issues)
-        );
-      }
-
-      const service = await storage.updateService(parseResult.data, parsed.data as any);
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Update service error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to update service", errorMessage));
+  app.patch("/api/admin/services/:id", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const parsed = serviceUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Invalid service data", undefined, parsed.error.issues)
+      );
+    }
+
+    const service = await storage.updateService(parseResult.data, parsed.data as any);
+    res.json({ success: true, service });
+  }));
 
   // ============= DEACTIVATE SERVICE =============
-  app.post("/api/admin/services/:id/deactivate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const reasonSchema = z.object({ reason: z.string().min(1).max(1000).trim() });
-      const parsed = reasonSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json(
-          createErrorResponse("Reason is required", undefined, parsed.error.issues)
-        );
-      }
-
-      const service = await storage.deactivateService(parseResult.data, parsed.data.reason);
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Deactivate service error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to deactivate service", errorMessage));
+  app.post("/api/admin/services/:id/deactivate", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const reasonSchema = z.object({ reason: z.string().min(1).max(1000).trim() });
+    const parsed = reasonSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(
+        createErrorResponse("Reason is required", undefined, parsed.error.issues)
+      );
+    }
+
+    const service = await storage.deactivateService(parseResult.data, parsed.data.reason);
+    res.json({ success: true, service });
+  }));
 
   // ============= RESTORE SERVICE =============
-  app.post("/api/admin/services/:id/restore", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.restoreService(parseResult.data);
-      res.json({ success: true, service });
-    } catch (err) {
-      console.error("Restore service error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to restore service", errorMessage));
+  app.post("/api/admin/services/:id/restore", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.restoreService(parseResult.data);
+    res.json({ success: true, service });
+  }));
 
   // ============= REGENERATE SINGLE EMBEDDING =============
-  app.post("/api/admin/services/:id/regenerate-embedding", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.getAdminServiceDetail(parseResult.data);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      const embedding = await generateEmbedding(service);
-      const embeddingStr = `[${embedding.join(',')}]`;
-      await db.execute(
-        sql`UPDATE services SET embedding = ${embeddingStr}::vector, embedding_updated_at = NOW() WHERE id = ${parseResult.data}`
-      );
-
-      res.json({ success: true, message: `Embedding regenerated for service ${parseResult.data}` });
-    } catch (err) {
-      console.error("Regenerate embedding error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to regenerate embedding", errorMessage));
+  app.post("/api/admin/services/:id/regenerate-embedding", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.getAdminServiceDetail(parseResult.data);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    const embedding = await generateEmbedding(service);
+    const embeddingStr = `[${embedding.join(',')}]`;
+    await db.execute(
+      sql`UPDATE services SET embedding = ${embeddingStr}::vector, embedding_updated_at = NOW() WHERE id = ${parseResult.data}`
+    );
+
+    res.json({ success: true, message: `Embedding regenerated for service ${parseResult.data}` });
+  }));
 
   // ============= GEOCODE SERVICE =============
-  app.post("/api/admin/services/:id/geocode", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.getAdminServiceDetail(parseResult.data);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      const address = service.address || service.location;
-      if (!address) {
-        return res.status(400).json(createErrorResponse("Service has no address or location to geocode"));
-      }
-
-      const coords = await geocodeAddress(address);
-      if (!coords) {
-        return res.status(404).json(createErrorResponse("Could not geocode address"));
-      }
-
-      const updated = await storage.updateService(parseResult.data, {
-        latitude: coords.lat,
-        longitude: coords.lng,
-      } as any);
-
-      res.json({ success: true, service: updated, coordinates: coords });
-    } catch (err) {
-      console.error("Geocode service error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to geocode service", errorMessage));
+  app.post("/api/admin/services/:id/geocode", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.getAdminServiceDetail(parseResult.data);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    const address = service.address || service.location;
+    if (!address) {
+      return res.status(400).json(createErrorResponse("Service has no address or location to geocode"));
+    }
+
+    const coords = await geocodeAddress(address);
+    if (!coords) {
+      return res.status(404).json(createErrorResponse("Could not geocode address"));
+    }
+
+    const updated = await storage.updateService(parseResult.data, {
+      latitude: coords.lat,
+      longitude: coords.lng,
+    } as any);
+
+    res.json({ success: true, service: updated, coordinates: coords });
+  }));
 
   // ============= FLAG FOR REVIEW =============
-  app.post("/api/admin/services/:id/flag-review", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const service = await storage.getAdminServiceDetail(parseResult.data);
-      if (!service) {
-        return res.status(404).json(createErrorResponse("Service not found"));
-      }
-
-      const { reason } = (req.body as { reason?: string }) || {};
-
-      await storage.createChangeRequest({
-        serviceId: parseResult.data,
-        changeType: 'update',
-        proposedChanges: service as any,
-        previousValues: service as any,
-        source: 'admin',
-        status: 'pending',
-        reviewNotes: reason || 'Flagged for review by admin',
-      });
-
-      res.json({ success: true, message: "Service flagged for review" });
-    } catch (err) {
-      console.error("Flag for review error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to flag service for review", errorMessage));
+  app.post("/api/admin/services/:id/flag-review", adminWriteLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const service = await storage.getAdminServiceDetail(parseResult.data);
+    if (!service) {
+      return res.status(404).json(createErrorResponse("Service not found"));
+    }
+
+    const { reason } = (req.body as { reason?: string }) || {};
+
+    await storage.createChangeRequest({
+      serviceId: parseResult.data,
+      changeType: 'update',
+      proposedChanges: service as any,
+      previousValues: service as any,
+      source: 'admin',
+      status: 'pending',
+      reviewNotes: reason || 'Flagged for review by admin',
+    });
+
+    res.json({ success: true, message: "Service flagged for review" });
+  }));
 
   // ============= SERVICE HISTORY =============
-  app.get("/api/admin/services/:id/history", adminReadLimiter, adminAuth, async (req: Request, res: Response) => {
-    try {
-      const idSchema = z.coerce.number().int().min(1);
-      const parseResult = idSchema.safeParse(req.params.id);
-      if (!parseResult.success) {
-        return res.status(400).json(createErrorResponse("Invalid service ID"));
-      }
-
-      const history = await storage.getServiceHistory(parseResult.data);
-      res.json({ success: true, history });
-    } catch (err) {
-      console.error("Service history error:", err);
-      const errorMessage = process.env.NODE_ENV === 'production' ? undefined : (err instanceof Error ? err.message : undefined);
-      res.status(500).json(createErrorResponse("Failed to fetch service history", errorMessage));
+  app.get("/api/admin/services/:id/history", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
+    const idSchema = z.coerce.number().int().min(1);
+    const parseResult = idSchema.safeParse(req.params.id);
+    if (!parseResult.success) {
+      return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
-  });
+
+    const history = await storage.getServiceHistory(parseResult.data);
+    res.json({ success: true, history });
+  }));
 }

@@ -104,16 +104,3 @@ export function ensureLegalAidInResults(services: LiteService[]): LiteService[] 
   return services;
 }
 
-/**
- * Check if a service ID is Al-Anon
- */
-export function isAlAnonServiceId(serviceId: string): boolean {
-  return serviceId === 'al-anon-family-groups-edmonton-24-7-edmonton-area';
-}
-
-/**
- * Check if a service ID is the legal aid service
- */
-export function isLegalAidServiceId(serviceId: string): boolean {
-  return serviceId === 'edmonton-community-legal-centre-10020-100-street-nw-edmonton-ab-t5j-0n3';
-}

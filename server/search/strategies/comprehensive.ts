@@ -54,7 +54,7 @@ import {
   applyAgeFilter,
   applyExclusionFilter,
   filterChristianForIndigenous,
-} from './filters';
+} from './post-filters';
 
 import {
   mergeResults,

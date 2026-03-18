@@ -528,21 +528,6 @@ export function getExpandedKeywords(analysis: QueryAnalysis): string[] {
 }
 
 /**
- * Get stemmed keywords for fuzzy matching
- */
-export function getStemmedKeywords(keywords: string[]): Set<string> {
-  const stemmed = new Set<string>();
-  for (const kw of keywords) {
-    stemmed.add(kw);
-    const s = stem(kw);
-    if (s !== kw && s.length >= 3) {
-      stemmed.add(s);
-    }
-  }
-  return stemmed;
-}
-
-/**
  * Extract negative terms from query (words user wants to exclude)
  * Handles patterns like "not X", "without X", "no X", "except X"
  * Also handles multi-word phrases like "12 step", "faith based"

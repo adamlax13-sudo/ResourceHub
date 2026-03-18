@@ -9,6 +9,7 @@
 import { SCORING_CONFIG } from '../../config';
 import type { LiteService, LiteServiceWithDebug, ScoreExplanation } from '../../types';
 import { searchLog } from '../../logger';
+import { truncName } from '../../../helpers';
 import type { BoostOptions } from './name-match';
 
 /**
@@ -57,7 +58,7 @@ export function applyNegativePenalty(
               reason: `Matches excluded "${term}" pattern`
             });
           }
-          searchLog.debug(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-${cfg.semanticMatch}) for "${term}" pattern match`);
+          searchLog.debug(`[NegativeKeyword] Penalizing "${truncName(service.name)}" (-${cfg.semanticMatch}) for "${term}" pattern match`);
         }
       } else {
         // Direct term match
@@ -70,7 +71,7 @@ export function applyNegativePenalty(
               reason: `Contains excluded term "${term}"`
             });
           }
-          searchLog.debug(`[NegativeKeyword] Penalizing "${service.name.substring(0, 40)}" (-${cfg.directMatch}) for containing "${term}"`);
+          searchLog.debug(`[NegativeKeyword] Penalizing "${truncName(service.name)}" (-${cfg.directMatch}) for containing "${term}"`);
         }
       }
     }

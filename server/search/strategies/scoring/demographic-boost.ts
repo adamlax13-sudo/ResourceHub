@@ -8,6 +8,7 @@
 import { SCORING_CONFIG } from '../../config';
 import type { LiteService } from '../../types';
 import { searchLog } from '../../logger';
+import { truncName } from '../../../helpers';
 import type { StudentContext } from '../detectors';
 
 /** Callback type used to accumulate scoring factors */
@@ -57,11 +58,11 @@ export function applyAgeGroupBoost(
   } else if (ageGroup.ageGroup === 'adult') {
     if (isYouthService && !isAdultService) {
       addFactor('ageGroup.adultForYouthPenalty', cfg.ageGroup.adultForYouthPenalty, `Youth-only service for adult query`);
-      searchLog.debug(`[AgeBoost] "${svc.name.substring(0, 40)}" ${cfg.ageGroup.adultForYouthPenalty} penalty for youth service (adult query)`);
+      searchLog.debug(`[AgeBoost] "${truncName(svc.name)}" ${cfg.ageGroup.adultForYouthPenalty} penalty for youth service (adult query)`);
     }
     if (isAdultService) {
       addFactor('ageGroup.adultMatch', cfg.ageGroup.adultMatch, `Adult service matches adult query`);
-      searchLog.debug(`[AgeBoost] "${svc.name.substring(0, 40)}" +${cfg.ageGroup.adultMatch} for adult service (adult query)`);
+      searchLog.debug(`[AgeBoost] "${truncName(svc.name)}" +${cfg.ageGroup.adultMatch} for adult service (adult query)`);
     }
     if (isSeniorService) addFactor('ageGroup.adultForSeniorPenalty', cfg.ageGroup.adultForSeniorPenalty, `Senior service for adult query`);
   } else if (ageGroup.ageGroup === 'senior') {
@@ -104,12 +105,12 @@ export function applyNoWaitlistBoost(
   if (isNoWaitlistQuery) {
     if (/walk-?in|no appointment|same day|drop-?in|immediate access|no wait|open now|24\/7|24 hour/i.test(textLower)) {
       addFactor('exclusion.noWaitlistBoost', cfg.exclusion.noWaitlistBoost, `Walk-in/immediate access for no-waitlist query`);
-      searchLog.debug(`[NoWaitlistBoost] "${svc.name.substring(0, 40)}" +${cfg.exclusion.noWaitlistBoost} for immediate access`);
+      searchLog.debug(`[NoWaitlistBoost] "${truncName(svc.name)}" +${cfg.exclusion.noWaitlistBoost} for immediate access`);
     }
     // Penalize services that explicitly mention waitlists
     if (/waitlist|waiting list|wait time|intake process|referral required/i.test(textLower)) {
       addFactor('exclusion.waitlist', cfg.exclusion.waitlist, `Has waitlist for no-waitlist query`);
-      searchLog.debug(`[NoWaitlistPenalty] "${svc.name.substring(0, 40)}" ${cfg.exclusion.waitlist} for waitlist mention`);
+      searchLog.debug(`[NoWaitlistPenalty] "${truncName(svc.name)}" ${cfg.exclusion.waitlist} for waitlist mention`);
     }
   }
 }
@@ -210,13 +211,13 @@ export function applyStudentBoost(
     const institutionPattern = institutionServicePatterns[studentContext.institution];
     if (institutionPattern && institutionPattern.test(textLower)) {
       addFactor('student.institutionMatch', cfg.student.institutionMatch, `${studentContext.institution} institution match`);
-      searchLog.debug(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted for ${studentContext.institution} (institution match)`);
+      searchLog.debug(`[StudentBoost] "${truncName(svc.name)}" boosted for ${studentContext.institution} (institution match)`);
     } else if (isStudentService) {
       addFactor('student.genericStudent', cfg.student.genericStudent, `Generic student service`);
     }
   } else if (isStudentService) {
     addFactor('student.studentService', cfg.student.studentService, `Student service`);
-    searchLog.debug(`[StudentBoost] "${svc.name.substring(0, 40)}" boosted as student service`);
+    searchLog.debug(`[StudentBoost] "${truncName(svc.name)}" boosted as student service`);
   } else if (isYouthService) {
     addFactor('student.youthService', cfg.student.youthService, `Youth service for student query`);
   }
@@ -250,7 +251,7 @@ export function applyLanguageBoost(
   const langPattern = langBoostPatterns[languagePref];
   if (langPattern && langPattern.test(textLower)) {
     addFactor('language.langMatch', cfg.language.langMatch, `${languagePref} language match`);
-    searchLog.debug(`[LanguageBoost] "${svc.name.substring(0, 40)}" boosted for ${languagePref}`);
+    searchLog.debug(`[LanguageBoost] "${truncName(svc.name)}" boosted for ${languagePref}`);
   }
   if (/\b(interpreter|multilingual|translation|multiple languages)\b/i.test(textLower)) {
     addFactor('language.multilingual', cfg.language.multilingual, `Multilingual service`);
@@ -272,7 +273,7 @@ export function applyFamilyContextBoost(
 
   if (isFamilySupportService) {
     addFactor('familyContext.familySupport', cfg.familyContext.familySupport, `Family support service`);
-    searchLog.debug(`[FamilyBoost] "${svc.name.substring(0, 40)}" boosted as family support`);
+    searchLog.debug(`[FamilyBoost] "${truncName(svc.name)}" boosted as family support`);
   }
   if (isInterventionService) {
     addFactor('familyContext.intervention', cfg.familyContext.intervention, `Intervention/family therapy service`);

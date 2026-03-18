@@ -118,6 +118,7 @@ function StatCard({
   subtitle,
   loading,
   color = "teal",
+  titleExtra,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -125,6 +126,7 @@ function StatCard({
   subtitle?: string;
   loading: boolean;
   color?: "teal" | "red" | "amber" | "emerald";
+  titleExtra?: React.ReactNode;
 }) {
   const iconColors: Record<string, string> = {
     teal: "text-teal-500",
@@ -138,7 +140,7 @@ function StatCard({
         <div className="flex items-center gap-2 mb-2">
           <div className={iconColors[color]}>{icon}</div>
           <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-            {label}
+            {label}{titleExtra}
           </span>
         </div>
         {loading ? (

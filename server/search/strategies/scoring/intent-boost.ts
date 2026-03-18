@@ -13,6 +13,7 @@ import { SCORING_CONFIG, SEARCH_CONFIG } from '../../config';
 import type { QueryIntent } from '../../config';
 import type { LiteService, LiteServiceWithDebug, QueryAnalysis, ScoreExplanation, ScoredIntent } from '../../types';
 import { searchLog } from '../../logger';
+import { truncName } from '../../../helpers';
 import {
   detectGenderPreference,
   detectAgeGroup,
@@ -306,7 +307,7 @@ export function boostByIntent(
     if (intent === 'location_only') {
       if (/\b(211|information|referral|directory|helpline|help line|community services)\b/i.test(textLower)) {
         addFactor('locationOnly.generalInfo', cfg.locationOnly.generalInfo, `General information/referral service`);
-        searchLog.debug(`[LocationBoost] "${svc.name.substring(0, 40)}" +${cfg.locationOnly.generalInfo} for general information service`);
+        searchLog.debug(`[LocationBoost] "${truncName(svc.name)}" +${cfg.locationOnly.generalInfo} for general information service`);
       }
       if (/\b(family|community|social services|resource|multi-?service|community centre|community center)\b/i.test(textLower)) {
         addFactor('locationOnly.multiService', cfg.locationOnly.multiService, `Multi-service agency`);
@@ -341,26 +342,26 @@ export function boostByIntent(
     if (isDisabilityQuery) {
       if (/\b(autis|autism|autistic|ASD|asperger|on the spectrum)\b/i.test(textLower)) {
         addFactor('disability.autismMatch', cfg.disability.autismMatch, `Autism/ASD service match`);
-        searchLog.debug(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +${cfg.disability.autismMatch} for autism match`);
+        searchLog.debug(`[DisabilityBoost] "${truncName(svc.name)}" +${cfg.disability.autismMatch} for autism match`);
       }
       if (/\b(disability|disabled|AISH|PDD|developmental|persons with disabilities|accessibility|accommodations?)\b/i.test(textLower)) {
         addFactor('disability.disabilityServices', cfg.disability.disabilityServices, `Disability services match`);
-        searchLog.debug(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +${cfg.disability.disabilityServices} for disability services`);
+        searchLog.debug(`[DisabilityBoost] "${truncName(svc.name)}" +${cfg.disability.disabilityServices} for disability services`);
       }
       if (/\b(neurodivergent|neurodiverse|ADHD|ADD|attention deficit|sensory processing|learning disability|executive function)\b/i.test(textLower)) {
         addFactor('disability.neurodivergentMatch', cfg.disability.neurodivergentMatch, `Neurodivergent service match`);
-        searchLog.debug(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +${cfg.disability.neurodivergentMatch} for neurodivergent match`);
+        searchLog.debug(`[DisabilityBoost] "${truncName(svc.name)}" +${cfg.disability.neurodivergentMatch} for neurodivergent match`);
       }
       if (hasSocialIsolation && /\b(social skills|social support|support group|peer support|life skills|community|friends|friendship|social program)\b/i.test(textLower)) {
         addFactor('disability.socialSupport', cfg.disability.socialSupport, `Social support for disability + isolation query`);
-        searchLog.debug(`[DisabilityBoost] "${svc.name.substring(0, 40)}" +${cfg.disability.socialSupport} for social support (disability + isolation query)`);
+        searchLog.debug(`[DisabilityBoost] "${truncName(svc.name)}" +${cfg.disability.socialSupport} for social support (disability + isolation query)`);
       }
       if (/\b(support group|peer support|community program|drop-in|meetup)\b/i.test(textLower)) {
         addFactor('disability.supportGroup', cfg.disability.supportGroup, `Support group/peer support`);
       }
       if (boost === 0 && /\b(mental health|counselling|therapy|psycholog)\b/i.test(textLower)) {
         addFactor('disability.genericMentalHealthPenalty', cfg.disability.genericMentalHealthPenalty, `Generic mental health for disability query`);
-        searchLog.debug(`[DisabilityBoost] "${svc.name.substring(0, 40)}" ${cfg.disability.genericMentalHealthPenalty} for generic mental health (disability query)`);
+        searchLog.debug(`[DisabilityBoost] "${truncName(svc.name)}" ${cfg.disability.genericMentalHealthPenalty} for generic mental health (disability query)`);
       }
     }
 
@@ -368,24 +369,24 @@ export function boostByIntent(
     if (isADHDQuery) {
       if (/\b(ADHD|ADD|attention deficit|hyperactivity|executive function)\b/i.test(textLower)) {
         addFactor('adhd.adhdSpecific', cfg.adhd.adhdSpecific, `ADHD-specific service`);
-        searchLog.debug(`[ADHDBoost] "${svc.name.substring(0, 40)}" +${cfg.adhd.adhdSpecific} for ADHD-specific`);
+        searchLog.debug(`[ADHDBoost] "${truncName(svc.name)}" +${cfg.adhd.adhdSpecific} for ADHD-specific`);
       }
       if (/\b(psychological.*assessment|psych.*assessment|neuropsych|cognitive assessment|diagnostic)\b/i.test(textLower)) {
         addFactor('adhd.assessmentServices', cfg.adhd.assessmentServices, `Assessment/diagnostic services`);
-        searchLog.debug(`[ADHDBoost] "${svc.name.substring(0, 40)}" +${cfg.adhd.assessmentServices} for assessment services`);
+        searchLog.debug(`[ADHDBoost] "${truncName(svc.name)}" +${cfg.adhd.assessmentServices} for assessment services`);
       }
       if (/\b(coaching|life skills|executive.*coaching|organization|time management)\b/i.test(textLower)) {
         addFactor('adhd.coachingSkills', cfg.adhd.coachingSkills, `Coaching/skills training`);
-        searchLog.debug(`[ADHDBoost] "${svc.name.substring(0, 40)}" +${cfg.adhd.coachingSkills} for coaching/skills`);
+        searchLog.debug(`[ADHDBoost] "${truncName(svc.name)}" +${cfg.adhd.coachingSkills} for coaching/skills`);
       }
       if (/\b(psychiatr|psychiatric|medication|prescription)\b/i.test(textLower)) {
         addFactor('adhd.psychiatry', cfg.adhd.psychiatry, `Psychiatric/medication services`);
-        searchLog.debug(`[ADHDBoost] "${svc.name.substring(0, 40)}" +${cfg.adhd.psychiatry} for psychiatry`);
+        searchLog.debug(`[ADHDBoost] "${truncName(svc.name)}" +${cfg.adhd.psychiatry} for psychiatry`);
       }
       if (/\b(eating disorder|substance|addiction|domestic violence|shelter)\b/i.test(textLower)) {
         if (!/\b(ADHD|ADD|attention|neurodivergent)\b/i.test(textLower)) {
           addFactor('adhd.unrelatedPenalty', cfg.adhd.unrelatedPenalty, `Unrelated service for ADHD query`);
-          searchLog.debug(`[ADHDBoost] "${svc.name.substring(0, 40)}" ${cfg.adhd.unrelatedPenalty} penalty (not ADHD related)`);
+          searchLog.debug(`[ADHDBoost] "${truncName(svc.name)}" ${cfg.adhd.unrelatedPenalty} penalty (not ADHD related)`);
         }
       }
     }
@@ -397,15 +398,15 @@ export function boostByIntent(
     if (isCrisisQuery) {
       if (/\b(988|crisis|suicide|helpline|hotline|distress|prevention)\b/i.test(textLower)) {
         addFactor('crisis.crisisHelpline', cfg.crisis.crisisHelpline, `Crisis/suicide helpline service`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" +${cfg.crisis.crisisHelpline} for crisis services`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" +${cfg.crisis.crisisHelpline} for crisis services`);
       }
       if (/\bcris(is|es)\b/i.test(svc.category || '')) {
         addFactor('crisis.crisisCategory', cfg.crisis.crisisCategory, `Crisis category service`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" +${cfg.crisis.crisisCategory} for Crisis category`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" +${cfg.crisis.crisisCategory} for Crisis category`);
       }
       if (/\b(crisis.*line|crisis.*team|crisis.*support|mental.*crisis|immediate.*help|24.?7|24.*hour)\b/i.test(textLower)) {
         addFactor('crisis.crisisSupport', cfg.crisis.crisisSupport, `24/7 crisis support`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" +${cfg.crisis.crisisSupport} for crisis support`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" +${cfg.crisis.crisisSupport} for crisis support`);
       }
       if (/\b(counsell?ing|mental health|therapy|psycholog)\b/i.test(textLower) && !/\b(grief|bereavement|loss|mourning)\b/i.test(textLower)) {
         addFactor('crisis.mentalHealthCrisis', cfg.crisis.mentalHealthCrisis, `Mental health service for crisis`);
@@ -413,19 +414,19 @@ export function boostByIntent(
       if (/\b(grief|bereavement|loss|mourning|hospice|palliative|funeral|memorial|widows?|survivors of loss)\b/i.test(textLower) &&
           !/\b(crisis|suicide|helpline|hotline|distress)\b/i.test(textLower)) {
         addFactor('crisis.griefPenalty', cfg.crisis.griefPenalty, `Grief service for crisis query`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" ${cfg.crisis.griefPenalty} penalty for grief service (crisis query)`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" ${cfg.crisis.griefPenalty} penalty for grief service (crisis query)`);
       }
       if (/\b(detox|rehab|residential treatment|recovery house)\b/i.test(textLower)) {
         addFactor('crisis.addictionTreatmentPenalty', cfg.crisis.addictionTreatmentPenalty, `Addiction treatment for crisis query`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" ${cfg.crisis.addictionTreatmentPenalty} penalty for addiction treatment (crisis query)`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" ${cfg.crisis.addictionTreatmentPenalty} penalty for addiction treatment (crisis query)`);
       }
       if (/\b(gambling|casino|lottery|gaming|wagering)\b/i.test(textLower)) {
         addFactor('crisis.gamblingPenalty', cfg.crisis.gamblingPenalty, `Gambling service for crisis query`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" ${cfg.crisis.gamblingPenalty} penalty for gambling service (crisis query)`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" ${cfg.crisis.gamblingPenalty} penalty for gambling service (crisis query)`);
       }
       if (/\b(day hospital|day program|outpatient program)\b/i.test(textLower) && !/\bcris(is|es)\b/i.test(textLower)) {
         addFactor('crisis.dayProgramPenalty', cfg.crisis.dayProgramPenalty, `Day program for crisis query`);
-        searchLog.debug(`[CrisisBoost] "${svc.name.substring(0, 40)}" ${cfg.crisis.dayProgramPenalty} penalty for day program (crisis query)`);
+        searchLog.debug(`[CrisisBoost] "${truncName(svc.name)}" ${cfg.crisis.dayProgramPenalty} penalty for day program (crisis query)`);
       }
     }
 
@@ -445,22 +446,22 @@ export function boostByIntent(
     if (isGriefQuery) {
       if (/\b(grief|bereavement|loss|mourning|hospice|palliative|widow|memorial|funeral|survivors?|violent loss)\b/i.test(textLower)) {
         addFactor('grief.generalGrief', cfg.grief.generalGrief, `Grief/bereavement service`);
-        searchLog.debug(`[GriefBoost] "${svc.name.substring(0, 40)}" +${cfg.grief.generalGrief} for grief support`);
+        searchLog.debug(`[GriefBoost] "${truncName(svc.name)}" +${cfg.grief.generalGrief} for grief support`);
       }
       if (isMiscarriageQuery) {
         if (/\b(miscarriage|stillbirth|pregnancy loss|infant loss|perinatal|SIDS|baby loss|perinatal)\b/i.test(textLower)) {
           addFactor('grief.pregnancyInfantLoss', cfg.grief.pregnancyInfantLoss, `Pregnancy/infant loss support`);
-          searchLog.debug(`[GriefBoost] "${svc.name.substring(0, 40)}" +${cfg.grief.pregnancyInfantLoss} for pregnancy/infant loss match`);
+          searchLog.debug(`[GriefBoost] "${truncName(svc.name)}" +${cfg.grief.pregnancyInfantLoss} for pregnancy/infant loss match`);
         }
         if (/\b(pregnancy|prenatal|postpartum|maternal|maternity)\b/i.test(textLower) && /\b(loss|grief|bereavement|support)\b/i.test(textLower)) {
           addFactor('grief.generalGrief', cfg.grief.generalGrief, `Pregnancy loss support`);
-          searchLog.debug(`[GriefBoost] "${svc.name.substring(0, 40)}" +${cfg.grief.generalGrief} for pregnancy loss support`);
+          searchLog.debug(`[GriefBoost] "${truncName(svc.name)}" +${cfg.grief.generalGrief} for pregnancy loss support`);
         }
       }
       if (isPetLossQuery) {
         if (/\b(pet loss|pet bereavement|pet grief|animal loss|companion animal)\b/i.test(textLower)) {
           addFactor('grief.petLoss', cfg.grief.petLoss, `Pet loss support`);
-          searchLog.debug(`[GriefBoost] "${svc.name.substring(0, 40)}" +${cfg.grief.petLoss} for pet loss match`);
+          searchLog.debug(`[GriefBoost] "${truncName(svc.name)}" +${cfg.grief.petLoss} for pet loss match`);
         }
         if (/\b(grief|bereavement|loss support|counsell?ing)\b/i.test(textLower)) {
           addFactor('grief.supportGroup', cfg.grief.supportGroup, `Grief support group`);
@@ -471,7 +472,7 @@ export function boostByIntent(
       }
       if (isViolentLossQuery && /\b(violent loss|homicide|survivors|trauma|violent crime|victim)\b/i.test(textLower)) {
         addFactor('grief.violentLoss', cfg.grief.violentLoss, `Violent loss/homicide survivor support`);
-        searchLog.debug(`[GriefBoost] "${svc.name.substring(0, 40)}" +${cfg.grief.violentLoss} for violent loss support`);
+        searchLog.debug(`[GriefBoost] "${truncName(svc.name)}" +${cfg.grief.violentLoss} for violent loss support`);
       }
       if (/\b(support group|peer support|counsell?ing)\b/i.test(textLower)) {
         addFactor('grief.supportGroup', cfg.grief.supportGroup, `Grief support/counselling`);
@@ -486,15 +487,15 @@ export function boostByIntent(
     if (isPostpartumQuery) {
       if (/\b(postpartum|post-?partum|PPD|perinatal|maternal|baby blues)\b/i.test(textLower)) {
         addFactor('postpartum.postpartumSpecific', cfg.postpartum.postpartumSpecific, `Postpartum-specific service`);
-        searchLog.debug(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +${cfg.postpartum.postpartumSpecific} for postpartum-specific`);
+        searchLog.debug(`[PostpartumBoost] "${truncName(svc.name)}" +${cfg.postpartum.postpartumSpecific} for postpartum-specific`);
       }
       if (/\b(women'?s.*mental|maternal.*mental|women'?s.*health|perinatal.*program)\b/i.test(textLower)) {
         addFactor('postpartum.womensMentalHealth', cfg.postpartum.womensMentalHealth, `Women's mental health service`);
-        searchLog.debug(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +${cfg.postpartum.womensMentalHealth} for women's mental health`);
+        searchLog.debug(`[PostpartumBoost] "${truncName(svc.name)}" +${cfg.postpartum.womensMentalHealth} for women's mental health`);
       }
       if (/\b(pregnancy|pregnant|birth|baby|newborn|infant|new mom|new mother)\b/i.test(textLower) && /\b(depression|anxiety|mental|counsell?ing|support)\b/i.test(textLower)) {
         addFactor('postpartum.pregnancyMentalHealth', cfg.postpartum.pregnancyMentalHealth, `Pregnancy + mental health service`);
-        searchLog.debug(`[PostpartumBoost] "${svc.name.substring(0, 40)}" +${cfg.postpartum.pregnancyMentalHealth} for pregnancy + mental health`);
+        searchLog.debug(`[PostpartumBoost] "${truncName(svc.name)}" +${cfg.postpartum.pregnancyMentalHealth} for pregnancy + mental health`);
       }
       if (/\b(mental health|counsell?ing|therapy|depression|anxiety)\b/i.test(textLower)) {
         addFactor('postpartum.generalMentalHealth', cfg.postpartum.generalMentalHealth, `General mental health service`);
@@ -502,7 +503,7 @@ export function boostByIntent(
       if (/\b(addiction|substance|alcohol|drug|shelter|homeless|detox|residential treatment)\b/i.test(textLower)) {
         if (!/\b(postpartum|perinatal|women'?s|maternal|pregnancy)\b/i.test(textLower)) {
           addFactor('postpartum.unrelatedPenalty', cfg.postpartum.unrelatedPenalty, `Unrelated service for postpartum query`);
-          searchLog.debug(`[PostpartumBoost] "${svc.name.substring(0, 40)}" ${cfg.postpartum.unrelatedPenalty} penalty (not postpartum related)`);
+          searchLog.debug(`[PostpartumBoost] "${truncName(svc.name)}" ${cfg.postpartum.unrelatedPenalty} penalty (not postpartum related)`);
         }
       }
     }
@@ -512,7 +513,7 @@ export function boostByIntent(
     if (isSeniorQuery) {
       if (/\b(senior|elderly|aging|older adult|65\+|retirement|dementia|alzheimer|home care|geriatric)\b/i.test(textLower)) {
         addFactor('senior.seniorServices', cfg.senior.seniorServices, `Senior/elderly service`);
-        searchLog.debug(`[SeniorBoost] "${svc.name.substring(0, 40)}" +${cfg.senior.seniorServices} for senior services`);
+        searchLog.debug(`[SeniorBoost] "${truncName(svc.name)}" +${cfg.senior.seniorServices} for senior services`);
       }
       if (/\b(meals on wheels|senior center|senior centre|elder|assisted living)\b/i.test(textLower)) {
         addFactor('senior.additionalSenior', cfg.senior.additionalSenior, `Additional senior service match`);
@@ -530,31 +531,31 @@ export function boostByIntent(
       if (isTenantEvictionQuery) {
         if (/\b(tenant|eviction|landlord|renter|rental|housing.*rights|residential tenancies|rtdrs|lease)\b/i.test(textLower)) {
           addFactor('legal.tenantEviction', cfg.legal.tenantEviction, `Tenant/eviction legal service`);
-          searchLog.debug(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +${cfg.legal.tenantEviction} for tenant/eviction legal`);
+          searchLog.debug(`[TenantLegalBoost] "${truncName(svc.name)}" +${cfg.legal.tenantEviction} for tenant/eviction legal`);
         }
         if (/\b(legal aid|pro bono|free legal|legal clinic|student legal|community legal)\b/i.test(textLower)) {
           addFactor('legal.legalAidEviction', cfg.legal.legalAidEviction, `Legal aid for eviction query`);
-          searchLog.debug(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +${cfg.legal.legalAidEviction} for legal aid (eviction query)`);
+          searchLog.debug(`[TenantLegalBoost] "${truncName(svc.name)}" +${cfg.legal.legalAidEviction} for legal aid (eviction query)`);
         }
         if (/\b(housing|landlord.*tenant|residential|civil law|housing connect)\b/i.test(textLower)) {
           addFactor('legal.housingLegal', cfg.legal.housingLegal, `Housing legal service`);
-          searchLog.debug(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +${cfg.legal.housingLegal} for housing legal`);
+          searchLog.debug(`[TenantLegalBoost] "${truncName(svc.name)}" +${cfg.legal.housingLegal} for housing legal`);
         }
         if (isUrgentEvictionQuery) {
           if (/\b(emergency.*legal|urgent.*legal|immediate|same.*day)\b/i.test(textLower)) {
             addFactor('legal.urgentEviction', cfg.legal.urgentEviction, `Urgent eviction legal service`);
-            searchLog.debug(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" +${cfg.legal.urgentEviction} for urgent eviction legal`);
+            searchLog.debug(`[TenantLegalBoost] "${truncName(svc.name)}" +${cfg.legal.urgentEviction} for urgent eviction legal`);
           }
         }
         if (/\b(emergency shelter|homeless shelter|beds.*available|overnight|sleep)\b/i.test(textLower) &&
             !/\b(legal|rights|tenant|eviction)\b/i.test(textLower)) {
           addFactor('legal.shelterInTenantPenalty', cfg.legal.shelterInTenantPenalty, `Shelter for tenant rights query`);
-          searchLog.debug(`[TenantLegalBoost] "${svc.name.substring(0, 40)}" ${cfg.legal.shelterInTenantPenalty} penalty for shelter (tenant rights query)`);
+          searchLog.debug(`[TenantLegalBoost] "${truncName(svc.name)}" ${cfg.legal.shelterInTenantPenalty} penalty for shelter (tenant rights query)`);
         }
       }
       if (/\b(legal aid|pro bono|free legal|low cost legal|lawyer referral)\b/i.test(textLower)) {
         addFactor('legal.legalAid', cfg.legal.legalAid, `Legal aid service`);
-        searchLog.debug(`[LegalBoost] "${svc.name.substring(0, 40)}" +${cfg.legal.legalAid} for legal aid`);
+        searchLog.debug(`[LegalBoost] "${truncName(svc.name)}" +${cfg.legal.legalAid} for legal aid`);
       }
       if (/\b(lawyer|attorney|law.*society|legal.*services|court)\b/i.test(textLower)) {
         addFactor('legal.lawyerGeneral', cfg.legal.lawyerGeneral, `General legal/lawyer service`);
@@ -566,7 +567,7 @@ export function boostByIntent(
     if (isCounsellingQuery && !isLegalQuery) {
       if (/\b(legal aid|pro bono|lawyer|law society|court|legal services)\b/i.test(textLower)) {
         addFactor('legal.legalInCounsellingPenalty', cfg.legal.legalInCounsellingPenalty, `Legal service for counselling query`);
-        searchLog.debug(`[LegalPenalty] "${svc.name.substring(0, 40)}" ${cfg.legal.legalInCounsellingPenalty} for legal service in counselling query`);
+        searchLog.debug(`[LegalPenalty] "${truncName(svc.name)}" ${cfg.legal.legalInCounsellingPenalty} for legal service in counselling query`);
       }
     }
 
@@ -576,7 +577,7 @@ export function boostByIntent(
     if (isEmploymentQuery) {
       if (/\b(employment|job.*training|career|workforce|resume|interview|employment services)\b/i.test(textLower)) {
         addFactor('employment.employmentSupport', cfg.employment.employmentSupport, `Employment support service`);
-        searchLog.debug(`[EmploymentBoost] "${svc.name.substring(0, 40)}" +${cfg.employment.employmentSupport} for employment support`);
+        searchLog.debug(`[EmploymentBoost] "${truncName(svc.name)}" +${cfg.employment.employmentSupport} for employment support`);
       }
       if (/\b(apprentice|skills training|job search|employment insurance|EI)\b/i.test(textLower)) {
         addFactor('employment.additionalEmployment', cfg.employment.additionalEmployment, `Additional employment service match`);
@@ -589,11 +590,11 @@ export function boostByIntent(
     if (isYouthQuery) {
       if (isYouthShelterQuery && /\b(youth.*shelter|youth.*housing|teen.*shelter|runaway.*shelter|emergency.*shelter|shelter)\b/i.test(textLower)) {
         addFactor('youth.youthShelter', cfg.youth.youthShelter, `Youth shelter service`);
-        searchLog.debug(`[YouthBoost] "${svc.name.substring(0, 40)}" +${cfg.youth.youthShelter} for youth shelter`);
+        searchLog.debug(`[YouthBoost] "${truncName(svc.name)}" +${cfg.youth.youthShelter} for youth shelter`);
       }
       if (/\b(youth|teen|adolescent|young adult|under 25|kids help phone|runaway)\b/i.test(textLower)) {
         addFactor('youth.youthServices', cfg.youth.youthServices, `Youth service`);
-        searchLog.debug(`[YouthBoost] "${svc.name.substring(0, 40)}" +${cfg.youth.youthServices} for youth services`);
+        searchLog.debug(`[YouthBoost] "${truncName(svc.name)}" +${cfg.youth.youthServices} for youth services`);
       }
       if (/\b(senior only|65\+|elderly only|seniors only)\b/i.test(textLower)) {
         addFactor('youth.seniorOnlyPenalty', cfg.youth.seniorOnlyPenalty, `Senior-only service for youth query`);
@@ -608,7 +609,7 @@ export function boostByIntent(
     if (isNewcomerQuery) {
       if (/\b(immigrant|refugee|newcomer|settlement|ESL|language|citizenship|sponsorship)\b/i.test(textLower)) {
         addFactor('newcomer.newcomerServices', cfg.newcomer.newcomerServices, `Newcomer/immigrant service`);
-        searchLog.debug(`[NewcomerBoost] "${svc.name.substring(0, 40)}" +${cfg.newcomer.newcomerServices} for newcomer services`);
+        searchLog.debug(`[NewcomerBoost] "${truncName(svc.name)}" +${cfg.newcomer.newcomerServices} for newcomer services`);
       }
       if (/\b(work permit|visa|immigration|asylum|refugee services)\b/i.test(textLower)) {
         addFactor('newcomer.additionalNewcomer', cfg.newcomer.additionalNewcomer, `Additional newcomer service match`);
@@ -625,23 +626,23 @@ export function boostByIntent(
     if (isFamilyAddictionQuery) {
       if (/\b(al-?anon|nar-?anon)\b/i.test(textLower)) {
         addFactor('familyAddiction.alAnon', cfg.familyAddiction.alAnon, `Al-Anon/Nar-Anon service`);
-        searchLog.debug(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +${cfg.familyAddiction.alAnon} for Al-Anon/Nar-Anon`);
+        searchLog.debug(`[FamilyAddictionBoost] "${truncName(svc.name)}" +${cfg.familyAddiction.alAnon} for Al-Anon/Nar-Anon`);
       }
       if (/\b(family.*support|loved one.*support|concerned.*persons?|codependent|family.*addiction|support.*famil|family group)\b/i.test(textLower)) {
         addFactor('familyAddiction.familySupport', cfg.familyAddiction.familySupport, `Family addiction support service`);
-        searchLog.debug(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +${cfg.familyAddiction.familySupport} for family addiction support`);
+        searchLog.debug(`[FamilyAddictionBoost] "${truncName(svc.name)}" +${cfg.familyAddiction.familySupport} for family addiction support`);
       }
       if (/\b(support group|peer support|meeting|fellowship)\b/i.test(textLower)) {
         addFactor('familyAddiction.supportGroup', cfg.familyAddiction.supportGroup, `Support group/peer support`);
-        searchLog.debug(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" +${cfg.familyAddiction.supportGroup} for support group`);
+        searchLog.debug(`[FamilyAddictionBoost] "${truncName(svc.name)}" +${cfg.familyAddiction.supportGroup} for support group`);
       }
       if (/\b(detox|rehab|residential treatment|treatment center|inpatient|recovery house|treatment program|withdrawal|outpatient treatment)\b/i.test(textLower)) {
         addFactor('familyAddiction.treatmentPenalty', cfg.familyAddiction.treatmentPenalty, `Treatment service for family support query`);
-        searchLog.debug(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" ${cfg.familyAddiction.treatmentPenalty} penalty for treatment (wrong target)`);
+        searchLog.debug(`[FamilyAddictionBoost] "${truncName(svc.name)}" ${cfg.familyAddiction.treatmentPenalty} penalty for treatment (wrong target)`);
       }
       if (/\b(opioid|methadone|suboxone|naloxone|harm reduction|safer.*use|needle|syringe)\b/i.test(textLower)) {
         addFactor('familyAddiction.harmReductionPenalty', cfg.familyAddiction.harmReductionPenalty, `Harm reduction for family support query`);
-        searchLog.debug(`[FamilyAddictionBoost] "${svc.name.substring(0, 40)}" ${cfg.familyAddiction.harmReductionPenalty} penalty for harm reduction (wrong target)`);
+        searchLog.debug(`[FamilyAddictionBoost] "${truncName(svc.name)}" ${cfg.familyAddiction.harmReductionPenalty} penalty for harm reduction (wrong target)`);
       }
     }
 
@@ -657,12 +658,12 @@ export function boostByIntent(
       if (/\b(addiction|addictions|substance|detox|rehab|recovery house|sober living|treatment centre|treatment center)\b/i.test(textLower) &&
           /\b(treatment|program|recovery|residential|counsell?ing|support)\b/i.test(textLower)) {
         addFactor('substanceAbuse.addictionService', cfg.substanceAbuse.addictionService, `Addiction treatment/recovery service`);
-        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.addictionService} for addiction service`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${truncName(svc.name)}" +${cfg.substanceAbuse.addictionService} for addiction service`);
       }
       // Extra boost for residential treatment — only when query specifically asks for residential
       if (isResidentialQuery && isResidentialService) {
         addFactor('substanceAbuse.residentialTreatment', cfg.substanceAbuse.residentialTreatment, `Residential addiction treatment`);
-        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.residentialTreatment} for residential treatment`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${truncName(svc.name)}" +${cfg.substanceAbuse.residentialTreatment} for residential treatment`);
       }
       // Penalize non-residential services when query specifically asks for residential
       if (isResidentialQuery && !isResidentialService) {
@@ -674,66 +675,66 @@ export function boostByIntent(
             ? cfg.substanceAbuse.nonResidentialPenalty
             : Math.round(cfg.substanceAbuse.nonResidentialPenalty * 0.6);
           addFactor('substanceAbuse.nonResidentialPenalty', penalty, `Non-residential service for residential query`);
-          searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${penalty} non-residential for residential query`);
+          searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${penalty} non-residential for residential query`);
         }
       }
       // Boost harm reduction
       if (/\b(harm reduction|needle|syringe|naloxone|safe consumption|supervised|opioid agonist|methadone|suboxone)\b/i.test(textLower)) {
         addFactor('substanceAbuse.harmReduction', cfg.substanceAbuse.harmReduction, `Harm reduction service`);
-        searchLog.debug(`[SubstanceAbuseBoost] "${svc.name.substring(0, 40)}" +${cfg.substanceAbuse.harmReduction} for harm reduction`);
+        searchLog.debug(`[SubstanceAbuseBoost] "${truncName(svc.name)}" +${cfg.substanceAbuse.harmReduction} for harm reduction`);
       }
       // Penalty for clearly unrelated categories
       if (/\b(disability|autism|ASD|developmental|FASD|brain injury|AISH|PDD)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery|dual diagnosis)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Disability service for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for disability (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for disability (addiction query)`);
       }
       if (/\b(food bank|pantry|hamper|grocery|meals on wheels|food map)\b/i.test(textLower) &&
           !/\b(addiction|recovery|treatment|residential)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Food service for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for food (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for food (addiction query)`);
       }
       if (/\b(senior|elderly|aging|dementia|alzheimer|geriatric|club 36)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Senior service for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for senior (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for senior (addiction query)`);
       }
       if (/\b(legal aid|lawyer|law society|court|legal services|social benefits advocacy)\b/i.test(textLower) &&
           !/\b(drug court|addiction|substance|DUI)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Legal service for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for legal (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for legal (addiction query)`);
       }
       if (/\b(immigration|settlement|newcomer|ESL|refugee|citizenship|sponsorship)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Newcomer service for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for newcomer (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for newcomer (addiction query)`);
       }
       if (/\b(eating disorder|anorexia|bulimia|binge eating)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Eating disorder for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for eating disorder (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for eating disorder (addiction query)`);
       }
       if (/\b(mentoring|big brothers|big sisters|youth mentor)\b/i.test(textLower) &&
           !/\b(addiction|recovery|substance)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Mentoring for addiction query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for mentoring (addiction query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for mentoring (addiction query)`);
       }
       // Gambling services are a separate intent — penalize when query is about substances
       if (/\b(gambling|casino|slots|poker|betting|gambler|lottery|VLT|wagering|problem gambling)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery|dual diagnosis)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Gambling service for substance abuse query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for gambling (substance query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for gambling (substance query)`);
       }
       // Employment/job services unrelated to addiction recovery
       if (/\b(employment|job training|career|resume|workforce|interview skills|job search|job readiness)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery|treatment|sober)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Employment service for substance abuse query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for employment (substance query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for employment (substance query)`);
       }
       // General healthcare/medical clinics not related to addiction
       if (/\b(medical clinic|walk-?in clinic|health clinic|youth clinic|family doctor|physician|family medicine|primary care)\b/i.test(textLower) &&
           !/\b(addiction|substance|recovery|methadone|suboxone|opioid|detox|withdrawal|RAAM)\b/i.test(textLower)) {
         addFactor('substanceAbuse.unrelatedPenalty', cfg.substanceAbuse.unrelatedPenalty, `Healthcare for substance abuse query`);
-        searchLog.debug(`[SubstanceAbusePenalty] "${svc.name.substring(0, 40)}" ${cfg.substanceAbuse.unrelatedPenalty} for healthcare (substance query)`);
+        searchLog.debug(`[SubstanceAbusePenalty] "${truncName(svc.name)}" ${cfg.substanceAbuse.unrelatedPenalty} for healthcare (substance query)`);
       }
     }
 
@@ -743,11 +744,11 @@ export function boostByIntent(
     if (isFinancialQuery) {
       if (/\b(credit counsell?ing|financial counsell?ing|debt.*counsell?ing|money management|budget.*counsel|debt relief)\b/i.test(textLower)) {
         addFactor('financial.creditCounselling', cfg.financial.creditCounselling, `Credit/financial counselling service`);
-        searchLog.debug(`[FinancialBoost] "${svc.name.substring(0, 40)}" +${cfg.financial.creditCounselling} for credit/financial counselling`);
+        searchLog.debug(`[FinancialBoost] "${truncName(svc.name)}" +${cfg.financial.creditCounselling} for credit/financial counselling`);
       }
       if (/\b(financial|debt|bankruptcy|money management|budget|financial literacy)\b/i.test(textLower)) {
         addFactor('financial.financialSupport', cfg.financial.financialSupport, `Financial support service`);
-        searchLog.debug(`[FinancialBoost] "${svc.name.substring(0, 40)}" +${cfg.financial.financialSupport} for financial support`);
+        searchLog.debug(`[FinancialBoost] "${truncName(svc.name)}" +${cfg.financial.financialSupport} for financial support`);
       }
       if (/\b(payday loan|collections?|bills|utilities assistance)\b/i.test(textLower)) {
         addFactor('financial.additional', cfg.financial.additional, `Additional financial service match`);
@@ -755,7 +756,7 @@ export function boostByIntent(
       if (isCreditCounsellingQuery && /\b(mental health|psychological|therapy|psycholog|emotion|depression|anxiety)\b/i.test(textLower)) {
         if (!/\b(financial|debt|credit|money|budget)\b/i.test(textLower)) {
           addFactor('financial.mentalHealthPenalty', cfg.financial.mentalHealthPenalty, `Mental health for credit counselling query`);
-          searchLog.debug(`[FinancialBoost] "${svc.name.substring(0, 40)}" ${cfg.financial.mentalHealthPenalty} penalty for mental health in credit query`);
+          searchLog.debug(`[FinancialBoost] "${truncName(svc.name)}" ${cfg.financial.mentalHealthPenalty} penalty for mental health in credit query`);
         }
       }
     }
@@ -766,11 +767,11 @@ export function boostByIntent(
     if (isCaregiverQuery) {
       if (/\b(caregiver|respite|family caregiver|caregiver support|caregiver burnout)\b/i.test(textLower)) {
         addFactor('caregiver.caregiverSupport', cfg.caregiver.caregiverSupport, `Caregiver support service`);
-        searchLog.debug(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +${cfg.caregiver.caregiverSupport} for caregiver support`);
+        searchLog.debug(`[CaregiverBoost] "${truncName(svc.name)}" +${cfg.caregiver.caregiverSupport} for caregiver support`);
       }
       if (/\b(adult day|day program|respite care|respite service)\b/i.test(textLower)) {
         addFactor('caregiver.dayProgramRespite', cfg.caregiver.dayProgramRespite, `Day program/respite service`);
-        searchLog.debug(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +${cfg.caregiver.dayProgramRespite} for day program/respite`);
+        searchLog.debug(`[CaregiverBoost] "${truncName(svc.name)}" +${cfg.caregiver.dayProgramRespite} for day program/respite`);
       }
       if (/\b(caring for|looking after|support for families|family support)\b/i.test(textLower)) {
         addFactor('caregiver.familySupport', cfg.caregiver.familySupport, `Family support service`);
@@ -778,11 +779,11 @@ export function boostByIntent(
       if (isCaregiverBurnoutQuery) {
         if (/\b(counsell?ing|therapy|mental health|support group)\b/i.test(textLower) && /\b(caregiver|family|stress)\b/i.test(textLower)) {
           addFactor('caregiver.caregiverCounselling', cfg.caregiver.caregiverCounselling, `Caregiver counselling service`);
-          searchLog.debug(`[CaregiverBoost] "${svc.name.substring(0, 40)}" +${cfg.caregiver.caregiverCounselling} for caregiver counselling`);
+          searchLog.debug(`[CaregiverBoost] "${truncName(svc.name)}" +${cfg.caregiver.caregiverCounselling} for caregiver counselling`);
         }
         if (/\b(bereavement|grief counsell?ing|loss of|mourning)\b/i.test(textLower) && !/\b(caregiver|respite)\b/i.test(textLower)) {
           addFactor('caregiver.griefPenalty', cfg.caregiver.griefPenalty, `Grief service for caregiver burnout query`);
-          searchLog.debug(`[CaregiverBoost] "${svc.name.substring(0, 40)}" ${cfg.caregiver.griefPenalty} penalty for grief (burnout query)`);
+          searchLog.debug(`[CaregiverBoost] "${truncName(svc.name)}" ${cfg.caregiver.griefPenalty} penalty for grief (burnout query)`);
         }
       }
     }
@@ -794,7 +795,7 @@ export function boostByIntent(
     if (isLgbtqQuery) {
       if (/\b(lgbtq|lgbt|queer|trans|transgender|gay|lesbian|bisexual|non-?binary|pride|2slgbtq)\b/i.test(textLower)) {
         addFactor('lgbtq.lgbtqServices', cfg.lgbtq.lgbtqServices, `LGBTQ+ service`);
-        searchLog.debug(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +${cfg.lgbtq.lgbtqServices} for LGBTQ+ services`);
+        searchLog.debug(`[LGBTQBoost] "${truncName(svc.name)}" +${cfg.lgbtq.lgbtqServices} for LGBTQ+ services`);
       }
       if (/\b(gender affirming|hormone therapy|coming out|pride center|pride centre)\b/i.test(textLower)) {
         addFactor('lgbtq.genderAffirming', cfg.lgbtq.genderAffirming, `Gender affirming service`);
@@ -802,21 +803,21 @@ export function boostByIntent(
       if (isLgbtqSeniorQuery) {
         if (/\b(senior|elderly|aging|older adult|65\+)\b/i.test(textLower) && /\b(lgbtq|lgbt|queer|trans|gay|lesbian|pride)\b/i.test(textLower)) {
           addFactor('lgbtq.lgbtqSenior', cfg.lgbtq.lgbtqSenior, `LGBTQ+ senior service`);
-          searchLog.debug(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +${cfg.lgbtq.lgbtqSenior} for LGBTQ+ senior services`);
+          searchLog.debug(`[LGBTQBoost] "${truncName(svc.name)}" +${cfg.lgbtq.lgbtqSenior} for LGBTQ+ senior services`);
         }
         if (/\b(senior|elderly).*\b(housing|living|care)\b/i.test(textLower)) {
           addFactor('lgbtq.seniorHousing', cfg.lgbtq.seniorHousing, `Senior housing for LGBTQ+ query`);
-          searchLog.debug(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +${cfg.lgbtq.seniorHousing} for senior housing (LGBTQ query)`);
+          searchLog.debug(`[LGBTQBoost] "${truncName(svc.name)}" +${cfg.lgbtq.seniorHousing} for senior housing (LGBTQ query)`);
         }
         if (/\b(youth only|under 25|teen|young adult)\b/i.test(textLower)) {
           addFactor('lgbtq.youthOnlyPenalty', cfg.lgbtq.youthOnlyPenalty, `Youth-only for LGBTQ+ senior query`);
-          searchLog.debug(`[LGBTQBoost] "${svc.name.substring(0, 40)}" ${cfg.lgbtq.youthOnlyPenalty} penalty for youth-only (senior query)`);
+          searchLog.debug(`[LGBTQBoost] "${truncName(svc.name)}" ${cfg.lgbtq.youthOnlyPenalty} penalty for youth-only (senior query)`);
         }
       }
       if (isLgbtqHousingQuery) {
         if (/\b(housing|shelter|residence|supportive housing|safe house)\b/i.test(textLower)) {
           addFactor('lgbtq.lgbtqHousing', cfg.lgbtq.lgbtqHousing, `LGBTQ+ housing service`);
-          searchLog.debug(`[LGBTQBoost] "${svc.name.substring(0, 40)}" +${cfg.lgbtq.lgbtqHousing} for LGBTQ+ housing`);
+          searchLog.debug(`[LGBTQBoost] "${truncName(svc.name)}" +${cfg.lgbtq.lgbtqHousing} for LGBTQ+ housing`);
         }
       }
     }
@@ -828,15 +829,15 @@ export function boostByIntent(
     if (isVeteranQuery) {
       if (/\b(veteran|veterans?|VAC|veterans affairs|OSISS|OSI-CAN|operational stress|legion|royal canadian legion|VETS Canada|wounded warriors)\b/i.test(textLower)) {
         addFactor('veteran.veteranServices', cfg.veteran.veteranServices, `Veteran service`);
-        searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" +${cfg.veteran.veteranServices} for veteran services`);
+        searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" +${cfg.veteran.veteranServices} for veteran services`);
       }
       if (/\b(military|armed forces|canadian forces|CAF|CFB|combat|deployment|service member|first responder)\b/i.test(textLower)) {
         addFactor('veteran.militaryServices', cfg.veteran.militaryServices, `Military service`);
-        searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" +${cfg.veteran.militaryServices} for military services`);
+        searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" +${cfg.veteran.militaryServices} for military services`);
       }
       if (/\b(PTSD|post-?traumatic|traumatic stress|combat stress|operational stress)\b/i.test(textLower)) {
         addFactor('veteran.ptsdServices', cfg.veteran.ptsdServices, `PTSD/trauma service`);
-        searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" +${cfg.veteran.ptsdServices} for PTSD services`);
+        searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" +${cfg.veteran.ptsdServices} for PTSD services`);
       }
       if (/\b(peer support|support group)\b/i.test(textLower)) {
         addFactor('veteran.peerSupport', cfg.veteran.peerSupport, `Peer support service`);
@@ -844,25 +845,25 @@ export function boostByIntent(
       if (isHomelessVeteranQuery) {
         if (/\b(veteran|military)\b/i.test(textLower) && /\b(housing|shelter|homeless|supportive housing)\b/i.test(textLower)) {
           addFactor('veteran.homelessVeteranHousing', cfg.veteran.homelessVeteranHousing, `Homeless veteran housing`);
-          searchLog.debug(`[HomelessVeteranBoost] "${svc.name.substring(0, 40)}" +${cfg.veteran.homelessVeteranHousing} for homeless veteran housing`);
+          searchLog.debug(`[HomelessVeteranBoost] "${truncName(svc.name)}" +${cfg.veteran.homelessVeteranHousing} for homeless veteran housing`);
         }
         if (/\b(emergency shelter|homeless shelter|housing.*first|supportive housing|transitional housing|shelter)\b/i.test(textLower)) {
           addFactor('veteran.generalShelter', cfg.veteran.generalShelter, `General shelter for veteran query`);
-          searchLog.debug(`[HomelessVeteranBoost] "${svc.name.substring(0, 40)}" +${cfg.veteran.generalShelter} for shelter (homeless veteran query)`);
+          searchLog.debug(`[HomelessVeteranBoost] "${truncName(svc.name)}" +${cfg.veteran.generalShelter} for shelter (homeless veteran query)`);
         }
       } else {
         if (isVeteranPTSDQuery && /\b(sexual assault|sexual violence|rape|sexual abuse|SART|women'?s.*trauma)\b/i.test(textLower)) {
           addFactor('veteran.sexualViolencePenalty', cfg.veteran.sexualViolencePenalty, `Sexual violence for veteran PTSD query`);
-          searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" ${cfg.veteran.sexualViolencePenalty} penalty for sexual violence (not veteran trauma)`);
+          searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" ${cfg.veteran.sexualViolencePenalty} penalty for sexual violence (not veteran trauma)`);
         }
         if (isVeteranPTSDQuery && /\b(domestic violence|domestic abuse|intimate partner|spousal abuse|abusive relationship|women'?s shelter|battered|family violence)\b/i.test(textLower)) {
           addFactor('veteran.domesticViolencePenalty', cfg.veteran.domesticViolencePenalty, `Domestic violence for veteran PTSD query`);
-          searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" ${cfg.veteran.domesticViolencePenalty} penalty for domestic violence (not veteran trauma)`);
+          searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" ${cfg.veteran.domesticViolencePenalty} penalty for domestic violence (not veteran trauma)`);
         }
         if (isVeteranPTSDQuery && /\b(women'?s|for women|female only|women only)\b/i.test(textLower) &&
             !/\b(veteran|military)\b/i.test(textLower)) {
           addFactor('veteran.womenSpecificPenalty', cfg.veteran.womenSpecificPenalty, `Women-specific for veteran query`);
-          searchLog.debug(`[VeteranBoost] "${svc.name.substring(0, 40)}" ${cfg.veteran.womenSpecificPenalty} penalty for women-specific (veteran query)`);
+          searchLog.debug(`[VeteranBoost] "${truncName(svc.name)}" ${cfg.veteran.womenSpecificPenalty} penalty for women-specific (veteran query)`);
         }
       }
     }
@@ -1268,7 +1269,7 @@ export function boostByIntent(
     if (exclusions.twelveStep) {
       if (/\b(SMART Recovery|cognitive behavio|evidence.?based|secular|non.?religious|harm reduction|medication.?assisted|MAT\b)\b/i.test(textLower)) {
         addFactor('exclusion.secularBoost', cfg.exclusion.secularBoost, `Secular/evidence-based alternative`);
-        searchLog.debug(`[SecularBoost] "${svc.name.substring(0, 40)}" +${cfg.exclusion.secularBoost} for secular alternative`);
+        searchLog.debug(`[SecularBoost] "${truncName(svc.name)}" +${cfg.exclusion.secularBoost} for secular alternative`);
       }
     }
 
@@ -1277,21 +1278,21 @@ export function boostByIntent(
     if (isNon12StepQuery) {
       if (/SMART/i.test(svc.name) || /\bSMART\b/i.test(textLower)) {
         addFactor('non12Step.smartRecovery', cfg.non12Step.smartRecovery, `SMART Recovery (exact match)`);
-        searchLog.debug(`[Non12StepBoost] "${svc.name.substring(0, 40)}" +${cfg.non12Step.smartRecovery} for SMART Recovery (exact match)`);
+        searchLog.debug(`[Non12StepBoost] "${truncName(svc.name)}" +${cfg.non12Step.smartRecovery} for SMART Recovery (exact match)`);
       }
       if (/\b(medication.?assisted|MAT\b|suboxone|methadone|harm reduction|evidence.?based|CBT|cognitive|secular)\b/i.test(textLower)) {
         addFactor('non12Step.evidenceBased', cfg.non12Step.evidenceBased, `Evidence-based treatment`);
-        searchLog.debug(`[Non12StepBoost] "${svc.name.substring(0, 40)}" +${cfg.non12Step.evidenceBased} for evidence-based treatment`);
+        searchLog.debug(`[Non12StepBoost] "${truncName(svc.name)}" +${cfg.non12Step.evidenceBased} for evidence-based treatment`);
       }
       const isYouthQueryLocal = /\b(youth|teen|adolescent|young|under 18|minor|child)\b/i.test(queryLower);
       if (!isYouthQueryLocal && /\b(youth|adolescent|teen|young people|children|kids|under 18|minor)\b/i.test(textLower)) {
         addFactor('non12Step.youthPenalty', cfg.non12Step.youthPenalty, `Youth-specific for adult query`);
-        searchLog.debug(`[Non12StepBoost] "${svc.name.substring(0, 40)}" ${cfg.non12Step.youthPenalty} for youth-specific (not requested)`);
+        searchLog.debug(`[Non12StepBoost] "${truncName(svc.name)}" ${cfg.non12Step.youthPenalty} for youth-specific (not requested)`);
       }
       if (/\b(residential|treatment centre|treatment center|recovery house)\b/i.test(textLower) &&
           !/\b(SMART|secular|evidence.?based|non.?12|MAT|harm reduction)\b/i.test(textLower)) {
         addFactor('non12Step.unclearMethodology', cfg.non12Step.unclearMethodology, `Unclear methodology`);
-        searchLog.debug(`[Non12StepBoost] "${svc.name.substring(0, 40)}" ${cfg.non12Step.unclearMethodology} for unclear methodology`);
+        searchLog.debug(`[Non12StepBoost] "${truncName(svc.name)}" ${cfg.non12Step.unclearMethodology} for unclear methodology`);
       }
     }
 
@@ -1299,7 +1300,7 @@ export function boostByIntent(
     if (hasIntent(analysis, 'indigenous_services', intent)) {
       if (/\b(indigenous|first nations?|métis|metis|inuit|native|aboriginal)\b/i.test(textLower)) {
         addFactor('indigenous.indigenousService', cfg.indigenous.indigenousService, `Indigenous service`);
-        searchLog.debug(`[IndigenousBoost] "${svc.name.substring(0, 40)}" boosted as indigenous service`);
+        searchLog.debug(`[IndigenousBoost] "${truncName(svc.name)}" boosted as indigenous service`);
       }
       if (/\b(elder|ceremony|smudging|sweat lodge|traditional healing|medicine wheel)\b/i.test(textLower)) {
         addFactor('indigenous.traditionalHealing', cfg.indigenous.traditionalHealing, `Traditional healing service`);
@@ -1315,7 +1316,7 @@ export function boostByIntent(
 
       if (/\b(pregnant|pregnancy|prenatal|postpartum|baby|infant|newborn|parenting|parent support)\b/i.test(textLower)) {
         addFactor('parenting.parentingSupport', cfg.parenting.parentingSupport, `Parenting support service`);
-        searchLog.debug(`[ParentingBoost] "${svc.name.substring(0, 40)}" boosted as parenting support`);
+        searchLog.debug(`[ParentingBoost] "${truncName(svc.name)}" boosted as parenting support`);
       }
       if (/\b(formula|diapers|baby supplies|car seat|crib|stroller|breastfeeding|lactation)\b/i.test(textLower)) {
         addFactor('parenting.babySupplies', cfg.parenting.babySupplies, `Baby supplies service`);
@@ -1325,16 +1326,16 @@ export function boostByIntent(
       }
       if (/\b(childcare|daycare|child care)\b/i.test(textLower)) {
         addFactor('parenting.childcare', cfg.parenting.childcare, `Childcare service`);
-        searchLog.debug(`[ParentingBoost] "${svc.name.substring(0, 40)}" +${cfg.parenting.childcare} for childcare`);
+        searchLog.debug(`[ParentingBoost] "${truncName(svc.name)}" +${cfg.parenting.childcare} for childcare`);
       }
       if (/\b(childcare.*subsid|daycare.*subsid|subsid.*childcare|subsid.*daycare|childcare.*assist|daycare.*assist|childcare.*afford|ACCB|child.*benefit)\b/i.test(textLower)) {
         addFactor('parenting.childcareSubsidy', cfg.parenting.childcareSubsidy, `Childcare subsidy/assistance`);
-        searchLog.debug(`[ParentingBoost] "${svc.name.substring(0, 40)}" +${cfg.parenting.childcareSubsidy} for childcare subsidy/assistance`);
+        searchLog.debug(`[ParentingBoost] "${truncName(svc.name)}" +${cfg.parenting.childcareSubsidy} for childcare subsidy/assistance`);
       }
       if (isChildcareCostsQuery) {
         if (/\b(financial|subsidy|benefit|assistance|affordable|low cost|free|help.*pay)\b/i.test(textLower)) {
           addFactor('parenting.financialChildcare', cfg.parenting.financialChildcare, `Financial childcare help`);
-          searchLog.debug(`[ParentingBoost] "${svc.name.substring(0, 40)}" +${cfg.parenting.financialChildcare} for financial childcare help`);
+          searchLog.debug(`[ParentingBoost] "${truncName(svc.name)}" +${cfg.parenting.financialChildcare} for financial childcare help`);
         }
         if (/\b(diapers|formula|breastfeeding|car seat|crib)\b/i.test(textLower) && !/\b(childcare|daycare)\b/i.test(textLower)) {
           addFactor('parenting.babySuppliesPenalty', cfg.parenting.babySuppliesPenalty, `Baby supplies for childcare cost query`);
@@ -1350,18 +1351,18 @@ export function boostByIntent(
 
       if (isUCalgaryQuery && /\b(ucalgary|university of calgary|u of c|calgary)\b/i.test(textLower) && /\b(student|campus|wellness|counsell)/i.test(textLower)) {
         addFactor('studentServices.universityMatch', cfg.studentServices.universityMatch, `UCalgary-specific service`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +${cfg.studentServices.universityMatch} for UCalgary-specific service`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" +${cfg.studentServices.universityMatch} for UCalgary-specific service`);
       } else if (isUAlbertaQuery && /\b(ualberta|university of alberta|u of a)\b/i.test(textLower) && /\b(student|campus|wellness|counsell)/i.test(textLower)) {
         addFactor('studentServices.universityMatch', cfg.studentServices.universityMatch, `UAlberta-specific service`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +${cfg.studentServices.universityMatch} for UAlberta-specific service`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" +${cfg.studentServices.universityMatch} for UAlberta-specific service`);
       } else if (isMRUQuery && /\b(mount royal|mru)\b/i.test(textLower)) {
         addFactor('studentServices.universityMatch', cfg.studentServices.universityMatch, `MRU-specific service`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +${cfg.studentServices.universityMatch} for MRU-specific service`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" +${cfg.studentServices.universityMatch} for MRU-specific service`);
       }
 
       if (/\b(campus|university|college|student)\b/i.test(textLower) && /\b(counsell?ing|wellness|mental health|support|services)\b/i.test(textLower)) {
         addFactor('studentServices.campusService', cfg.studentServices.campusService, `Campus service`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" +${cfg.studentServices.campusService} for campus service`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" +${cfg.studentServices.campusService} for campus service`);
       }
 
       if (/\b(student.*counsell?ing|student.*wellness|student.*services|campus.*health|campus.*mental)\b/i.test(textLower)) {
@@ -1371,23 +1372,23 @@ export function boostByIntent(
       if ((isUCalgaryQuery || isUAlbertaQuery || isMRUQuery) &&
           !/\b(campus|university|college|student|u of c|u of a|ucalgary|ualberta|mru|mount royal)\b/i.test(textLower)) {
         addFactor('studentServices.nonCampusPenalty', cfg.studentServices.nonCampusPenalty, `Non-campus for university query`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" ${cfg.studentServices.nonCampusPenalty} for non-campus service (university query)`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" ${cfg.studentServices.nonCampusPenalty} for non-campus service (university query)`);
       }
 
       if (isUCalgaryQuery && /\b(ualberta|university of alberta|u of a|edmonton)\b/i.test(textLower)) {
         addFactor('studentServices.wrongUniversityPenalty', cfg.studentServices.wrongUniversityPenalty, `Wrong university (UAlberta for UCalgary query)`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" ${cfg.studentServices.wrongUniversityPenalty} for wrong university (UCalgary query, UAlberta service)`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" ${cfg.studentServices.wrongUniversityPenalty} for wrong university (UCalgary query, UAlberta service)`);
       }
       if (isUAlbertaQuery && /\b(ucalgary|university of calgary|u of c)\b/i.test(textLower)) {
         addFactor('studentServices.wrongUniversityPenalty', cfg.studentServices.wrongUniversityPenalty, `Wrong university (UCalgary for UAlberta query)`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" ${cfg.studentServices.wrongUniversityPenalty} for wrong university (UAlberta query, UCalgary service)`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" ${cfg.studentServices.wrongUniversityPenalty} for wrong university (UAlberta query, UCalgary service)`);
       }
 
       const isGeneralMentalHealthQuery = /\b(mental health|counsell?ing|therapy|depression|anxiety|stress)\b/i.test(queryLower) &&
                                          !/\b(addiction|substance|alcohol|drug|recovery)\b/i.test(queryLower);
       if (isGeneralMentalHealthQuery && /\b(addiction|substance|harm reduction|detox|recovery|alcohol|drug)\b/i.test(textLower)) {
         addFactor('studentServices.addictionFocusPenalty', cfg.studentServices.addictionFocusPenalty, `Addiction focus for mental health query`);
-        searchLog.debug(`[StudentIntentBoost] "${svc.name.substring(0, 40)}" ${cfg.studentServices.addictionFocusPenalty} for addiction focus (general mental health query)`);
+        searchLog.debug(`[StudentIntentBoost] "${truncName(svc.name)}" ${cfg.studentServices.addictionFocusPenalty} for addiction focus (general mental health query)`);
       }
     }
 
@@ -1397,7 +1398,7 @@ export function boostByIntent(
       const serviceSubstance = detectServiceSubstanceType(svc.name, svc.description, svc.category);
 
       if (serviceSubstance) {
-        searchLog.debug(`[SubstanceBoost] "${svc.name.substring(0, 40)}" → ${serviceSubstance}, query wants: ${querySubstance}`);
+        searchLog.debug(`[SubstanceBoost] "${truncName(svc.name)}" → ${serviceSubstance}, query wants: ${querySubstance}`);
       }
 
       if (querySubstance && serviceSubstance) {

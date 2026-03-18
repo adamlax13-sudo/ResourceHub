@@ -359,33 +359,6 @@ export function expandKeywords(keywords: string[]): string[] {
   return Array.from(expanded);
 }
 
-// Query intent classification types
-export type QueryIntent = 'crisis' | 'specific_service' | 'category_browse' | 'location_search' | 'general';
-
-/**
- * Classify the intent of a search query
- */
-export function classifyQueryIntent(query: string): QueryIntent {
-  const q = query.toLowerCase();
-
-  // Crisis indicators (highest priority)
-  if (/\b(suicide|suicidal|kill myself|end my life|crisis|emergency|overdose|od['']?d|dying|help me)\b/.test(q)) {
-    return 'crisis';
-  }
-
-  // Specific service lookup (looking for a named organization by acronym or name)
-  if (/\b(cmha|211|988|aa|na|smart recovery|distress centre|salvation army|mustard seed|inn from the cold)\b/i.test(q)) {
-    return 'specific_service';
-  }
-
-  // Category browsing (user wants a list)
-  if (/\b(list of|all|show me|what are the|find all|every)\b/.test(q)) {
-    return 'category_browse';
-  }
-
-  return 'general';
-}
-
 // ============= PHONETIC MATCHING =============
 // Catches typos that sound right but are spelled wrong (e.g., "fud bank" → "food bank")
 
