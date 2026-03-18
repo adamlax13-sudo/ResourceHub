@@ -22,7 +22,7 @@ import type {
   SemanticSearchResult,
 } from '../types';
 import { storage } from '../../storage';
-import OpenAI from 'openai';
+import { getOpenAI } from '../../helpers/openai';
 import { mergeForLiteView } from '../../helpers/enrichment';
 import { LRUCache } from 'lru-cache';
 
@@ -81,19 +81,6 @@ interface EnhancedQuery {
   rewritten: string;
   categories: string[];
   keywords: string[];
-}
-
-// OpenAI client (initialized lazily)
-let openaiClient: OpenAI | null = null;
-
-function getOpenAI(): OpenAI {
-  if (!openaiClient) {
-    openaiClient = new OpenAI({
-      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-    });
-  }
-  return openaiClient;
 }
 
 // Cache for embeddings availability check

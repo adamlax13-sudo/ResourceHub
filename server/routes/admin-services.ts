@@ -55,7 +55,7 @@ const serviceUpdateSchema = serviceCreateSchema.partial();
 
 const bulkUpdateSchema = z.object({
   ids: z.array(z.number().int().min(1)).min(1).max(50),
-  changes: z.record(z.unknown()),
+  changes: serviceUpdateSchema,
   reason: z.string().min(1).max(1000).trim(),
   dryRun: z.boolean().default(true),
 });
@@ -376,7 +376,12 @@ export function registerAdminServiceRoutes(app: Express): void {
   // ============= MARK DUPLICATE (named sub-route — before :id) =============
   app.post("/api/admin/services/:id/mark-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
     try {
-      const id = Number(req.params.id);
+      const idSchema = z.coerce.number().int().min(1);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+      const id = parseResult.data;
       const { duplicateOf } = z.object({ duplicateOf: z.number().int() }).parse(req.body);
 
       const service = await storage.updateService(id, { duplicateOf } as any);
@@ -391,7 +396,12 @@ export function registerAdminServiceRoutes(app: Express): void {
   // ============= CLEAR DUPLICATE (named sub-route — before :id) =============
   app.post("/api/admin/services/:id/clear-duplicate", adminWriteLimiter, adminAuth, async (req: Request, res: Response) => {
     try {
-      const id = Number(req.params.id);
+      const idSchema = z.coerce.number().int().min(1);
+      const parseResult = idSchema.safeParse(req.params.id);
+      if (!parseResult.success) {
+        return res.status(400).json(createErrorResponse("Invalid service ID"));
+      }
+      const id = parseResult.data;
       await db.update(services).set({ duplicateOf: null as any }).where(eq(services.id, id));
       res.json({ success: true });
     } catch (err) {

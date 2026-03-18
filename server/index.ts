@@ -14,6 +14,17 @@ import { registerHealthRoutes } from "./routes/health";
 import { apiLimiter } from "./middleware/rateLimiter";
 import { pool } from "./db";
 
+// ============= STARTUP ENV VALIDATION =============
+const RECOMMENDED_ENV_VARS = ['ADMIN_API_KEY', 'AI_INTEGRATIONS_OPENAI_API_KEY', 'MAPBOX_PUBLIC_TOKEN', 'MAPBOX_SECRET_TOKEN'];
+for (const envVar of RECOMMENDED_ENV_VARS) {
+  if (!process.env[envVar]) {
+    console.warn(`[Startup] WARNING: ${envVar} is not set — related features will be disabled`);
+  }
+}
+if (process.env.ADMIN_API_KEY && !process.env.ADMIN_SESSION_SECRET) {
+  console.warn('[Startup] WARNING: ADMIN_SESSION_SECRET not set — falling back to ADMIN_API_KEY for session signing');
+}
+
 const app = express();
 
 // Trust the first proxy (Render, Heroku, etc.) for rate limiting
@@ -63,7 +74,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 app.use(cors({
   origin: allowedOrigins,
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PATCH'],
   credentials: true,
   maxAge: 86400, // Cache preflight for 24 hours
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-Id', 'X-CSRF-Token', 'X-Correlation-Id'],

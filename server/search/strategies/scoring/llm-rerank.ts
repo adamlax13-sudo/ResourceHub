@@ -137,7 +137,7 @@ export async function llmRerank(
       if (parts.length) attrLine = `\n${parts.join(' | ')}`;
     }
 
-    const userPrompt = `Query: "${sanitizedQuery}"\n${intentContext}\n${subIntentsLine}${semanticLine}${attrLine}\n\nServices:\n${serviceList}`;
+    const contextBlock = `${intentContext}\n${subIntentsLine}${semanticLine}${attrLine}\n\nServices:\n${serviceList}`;
 
     // Call LLM with timeout
     const controller = new AbortController();
@@ -146,8 +146,8 @@ export async function llmRerank(
     const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: userPrompt },
+        { role: 'system', content: `${SYSTEM_PROMPT}\n\n${contextBlock}` },
+        { role: 'user', content: sanitizedQuery },
       ],
       temperature: 0,
       max_tokens: 500,

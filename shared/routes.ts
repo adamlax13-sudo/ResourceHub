@@ -86,8 +86,6 @@ export const api = {
         // Pagination parameters (defaults applied server-side)
         page: z.number().int().min(1).optional(),
         pageSize: z.number().int().min(1).max(50).optional(),
-        // Debug mode - includes score explanations in response
-        debug: z.boolean().optional(),
         // Emergency mode - forces crisis service prioritization (used by "I need help right now" button)
         emergency: z.boolean().optional(),
         // User location for distance-based sorting/filtering

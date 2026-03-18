@@ -10,6 +10,7 @@ import type { Express, Request, Response } from "express";
 import { createHmac, timingSafeEqual, createHash } from "crypto";
 import { z } from "zod";
 import { createErrorResponse } from "../helpers/errors";
+import { authLimiter } from "../middleware/rateLimiter";
 
 const COOKIE_NAME = "admin_session";
 const COOKIE_MAX_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours
@@ -19,7 +20,11 @@ const COOKIE_MAX_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours
  * Never exposed outside this module.
  */
 function getSessionSecret(): string {
-  return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY || "";
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY;
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET or ADMIN_API_KEY must be set for session signing");
+  }
+  return secret;
 }
 
 /**
@@ -59,7 +64,7 @@ const loginSchema = z.object({
 
 export function registerAdminAuthRoutes(app: Express): void {
   // ============= POST /api/admin/auth/login =============
-  app.post("/api/admin/auth/login", (req: Request, res: Response) => {
+  app.post("/api/admin/auth/login", authLimiter, (req: Request, res: Response) => {
     const adminApiKey = process.env.ADMIN_API_KEY;
     if (!adminApiKey) {
       console.warn("[AdminAuth] ADMIN_API_KEY not configured");

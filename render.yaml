@@ -20,6 +20,14 @@ services:
         sync: false  # Set this in Render dashboard
       - key: AI_INTEGRATIONS_OPENAI_BASE_URL
         value: https://api.openai.com/v1
+      - key: ADMIN_API_KEY
+        sync: false  # Set this in Render dashboard
+      - key: ADMIN_SESSION_SECRET
+        sync: false  # Set this in Render dashboard
+      - key: MAPBOX_PUBLIC_TOKEN
+        sync: false  # Set this in Render dashboard
+      - key: MAPBOX_SECRET_TOKEN
+        sync: false  # Set this in Render dashboard
 
   # Monthly scraper cron job — runs on the 1st of each month at 2 AM UTC
   - type: cron

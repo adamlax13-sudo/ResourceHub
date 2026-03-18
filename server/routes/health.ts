@@ -74,7 +74,14 @@ export function registerHealthRoutes(router: Router): void {
     }
 
     const statusCode = health.status === 'unhealthy' ? 503 : 200;
-    res.status(statusCode).json(health);
+    res.status(statusCode).json({
+      status: health.status,
+      timestamp: health.timestamp,
+      checks: {
+        database: { status: health.checks.database.status },
+        memory: { status: health.checks.memory.status },
+      },
+    });
   });
 
   /**
