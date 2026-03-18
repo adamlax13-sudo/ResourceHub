@@ -148,6 +148,12 @@ export interface IStorage {
   // Batch coordinate lookup for distance calculations
   getServiceCoordinates(serviceIds: string[]): Promise<Map<string, { lat: number; lng: number }>>;
 
+  // Popular queries for autocomplete suggestions
+  getPopularQueries(limit: number, days: number): Promise<string[]>;
+
+  // Fetch active services from same organization (by name prefix before " — ")
+  getServicesByOrg(orgPrefix: string): Promise<Service[]>;
+
   // Check if materialized view exists (for graceful fallback)
   hasOptimizedSearch(): Promise<boolean>;
 
@@ -603,6 +609,27 @@ export class DatabaseStorage implements IStorage {
     return result.map(r => ({ query: r.query, count: Number(r.count) }));
   }
 
+  /**
+   * Get popular queries for autocomplete suggestions.
+   * Returns unique normalized queries from the last N days, ordered by frequency.
+   */
+  async getPopularQueries(limit: number = 100, days: number = 30): Promise<string[]> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    const result = await db
+      .select({
+        query: searchAnalytics.normalizedQuery,
+      })
+      .from(searchAnalytics)
+      .where(gte(searchAnalytics.createdAt, cutoff))
+      .groupBy(searchAnalytics.normalizedQuery)
+      .orderBy(sql`COUNT(*) DESC`)
+      .limit(limit);
+
+    return result.map(r => r.query);
+  }
+
   // ============= CLICK-THROUGH AFFINITIES =============
   async getQueryAffinities(normalizedQuery: string): Promise<{ serviceId: string; clickScore: number; voteScore: number }[]> {
     try {
@@ -890,23 +917,52 @@ export class DatabaseStorage implements IStorage {
   /**
    * Batch fetch confidence scores for data quality boosting.
    * Returns a Map of serviceId -> confidenceScore (only non-null entries).
+   * Uses an in-memory cache (1-hour TTL) since scores only change on scraper runs.
    */
+  private _confidenceCache: Map<string, number> | null = null;
+  private _confidenceCacheTime = 0;
+  private _confidenceCachePromise: Promise<Map<string, number>> | null = null;
+  private static readonly CONFIDENCE_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
   async getConfidenceScores(serviceIds: string[]): Promise<Map<string, number>> {
     if (serviceIds.length === 0) return new Map();
 
-    const result = await db
-      .select({
-        serviceId: services.serviceId,
-        confidenceScore: services.confidenceScore,
-      })
-      .from(services)
-      .where(inArray(services.serviceId, serviceIds));
-
-    const map = new Map<string, number>();
-    for (const row of result) {
-      if (row.confidenceScore !== null) {
-        map.set(row.serviceId, row.confidenceScore);
+    // Refresh full cache if stale
+    const now = Date.now();
+    if (!this._confidenceCache || (now - this._confidenceCacheTime) > DatabaseStorage.CONFIDENCE_CACHE_TTL) {
+      if (!this._confidenceCachePromise) {
+        this._confidenceCachePromise = (async () => {
+          try {
+            const result = await db
+              .select({
+                serviceId: services.serviceId,
+                confidenceScore: services.confidenceScore,
+              })
+              .from(services)
+              .where(isNotNull(services.confidenceScore));
+            const map = new Map<string, number>();
+            for (const row of result) {
+              if (row.confidenceScore !== null) {
+                map.set(row.serviceId, row.confidenceScore);
+              }
+            }
+            this._confidenceCache = map;
+            this._confidenceCacheTime = Date.now();
+            return map;
+          } finally {
+            this._confidenceCachePromise = null;
+          }
+        })();
       }
+      await this._confidenceCachePromise;
+    }
+
+    // Filter to requested IDs from the full cache
+    const full = this._confidenceCache!;
+    const map = new Map<string, number>();
+    for (const id of serviceIds) {
+      const score = full.get(id);
+      if (score !== undefined) map.set(id, score);
     }
     return map;
   }
@@ -930,6 +986,23 @@ export class DatabaseStorage implements IStorage {
       }
     }
     return map;
+  }
+
+  /**
+   * Fetch active services from the same organization (name prefix before " — ").
+   * Used for "similar services" feature when a user searches for a specific org.
+   */
+  async getServicesByOrg(orgPrefix: string): Promise<Service[]> {
+    return db
+      .select()
+      .from(services)
+      .where(
+        and(
+          eq(services.isActive, true),
+          ilike(services.name, `${orgPrefix} — %`),
+        )
+      )
+      .limit(10);
   }
 
   /**
@@ -1689,9 +1762,21 @@ export class DatabaseStorage implements IStorage {
       case 'update': {
         if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for update`);
         // When approving, always activate the service (review pipeline = approving for go-live)
-        // Remove isActive from proposed to avoid overwriting with false
-        const { isActive: _ignored, ...updateFields } = proposed;
-        resultService = await this.updateService(req.serviceId, { ...updateFields, isActive: true });
+        // Strip non-column fields and map form fields to DB columns
+        const allowedFields = new Set([
+          'name', 'category', 'description', 'location', 'contact', 'eligibility',
+          'processSteps', 'waitTimes', 'requiredDocs', 'hoursOfOperation',
+          'languagesSupported', 'serviceFormat', 'websiteUrl', 'phone', 'email',
+          'address', 'genderRestriction', 'ageGroup', 'isFaithBased', 'is12Step',
+          'is24_7', 'tags', 'confidenceScore',
+        ]);
+        const updateFields: Record<string, any> = { isActive: true };
+        for (const [key, val] of Object.entries(proposed)) {
+          if (allowedFields.has(key) && val !== undefined) {
+            updateFields[key] = val;
+          }
+        }
+        resultService = await this.updateService(req.serviceId, updateFields as Partial<Service>);
         break;
       }
       case 'deactivate': {
