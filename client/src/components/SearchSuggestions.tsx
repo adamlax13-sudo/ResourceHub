@@ -136,7 +136,7 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
                 role="option"
                 aria-selected={selectedIndex === idx}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'
+                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
                 }`}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 onMouseDown={(e) => { e.preventDefault(); onSelect(cat); }}
@@ -163,7 +163,7 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
                 role="option"
                 aria-selected={selectedIndex === idx}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'
+                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
                 }`}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 onMouseDown={(e) => { e.preventDefault(); onSelect(svc); }}
@@ -190,7 +190,7 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
                 role="option"
                 aria-selected={selectedIndex === idx}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50'
+                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
                 }`}
                 onMouseEnter={() => setSelectedIndex(idx)}
                 onMouseDown={(e) => { e.preventDefault(); onSelect(q); }}
