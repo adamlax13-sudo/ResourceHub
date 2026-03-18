@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface QuickExitButtonProps {
   className?: string;
@@ -49,50 +48,16 @@ export function QuickExitButton({ className = '', floating = false }: QuickExitB
   );
 }
 
-/** Floating version that tracks mouse Y on desktop, fixed position on mobile */
+/** Floating version fixed to the bottom-right corner */
 function FloatingExitButton({ onExit, label }: { onExit: () => void; label: string }) {
-  const [mouseY, setMouseY] = useState<number | null>(null);
-  const rafRef = useRef<number>(0);
-  const latestY = useRef<number | null>(null);
-
-  // Track mouse position with rAF throttling for smooth movement
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    latestY.current = e.clientY;
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(() => {
-        setMouseY(latestY.current);
-        rafRef.current = 0;
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    // Only track mouse on non-touch devices
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouch) return;
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [handleMouseMove]);
-
-  // On mobile/touch: fixed center-right. On desktop: track mouse Y.
-  const topStyle = mouseY !== null
-    ? { top: `clamp(80px, ${mouseY}px, calc(100vh - 60px))` }
-    : { top: '50%' };
-
   return (
     <button
       onClick={onExit}
       style={{
         position: 'fixed',
         right: '16px',
-        ...topStyle,
-        transform: 'translateY(-50%)',
-        zIndex: 9999,
-        transition: mouseY !== null ? 'top 0.15s ease-out' : 'none',
+        bottom: '24px',
+        zIndex: 50,
       }}
       className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-sm shadow-lg shadow-red-600/30 hover:shadow-xl hover:shadow-red-600/40 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
       aria-label={label || "Quick exit - leave this site immediately"}
