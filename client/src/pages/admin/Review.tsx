@@ -152,11 +152,13 @@ export default function Review() {
     },
   });
 
-  // Edit & Approve
+  // Edit & Approve — saves form edits to proposedChanges, then approves (activates)
   const editApproveMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: ServiceFormData }) => {
-      // Update the proposed changes, then approve
-      await apiRequest("PATCH", `/api/admin/review/${id}`, { proposedChanges: data });
+      // Merge form data with existing proposed changes so we don't lose fields the form doesn't cover
+      const existing = request?.proposedChanges ?? {};
+      const merged = { ...existing, ...data };
+      await apiRequest("PATCH", `/api/admin/review/${id}`, { proposedChanges: merged });
       const res = await apiRequest("POST", `/api/admin/review/${id}/approve`, {});
       return res.json();
     },
@@ -397,17 +399,8 @@ export default function Review() {
                 submitLabel="Save & Activate"
                 changedFields={Object.keys(diffChanges).filter(k => k !== "id" && k !== "isActive")}
               />
-              {/* Action buttons */}
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
-                <Button
-                  onClick={() => approveMutation.mutate(request.id)}
-                  disabled={approveMutation.isPending}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
-                >
-                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  Approve & Activate
-                </Button>
+              {/* Action bar: reject + utility buttons */}
+              <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-border">
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
@@ -458,15 +451,6 @@ export default function Review() {
                 submitLabel="Save & Activate"
               />
               <div className="flex gap-2 pt-4 border-t border-border">
-                <Button
-                  onClick={() => approveMutation.mutate(request.id)}
-                  disabled={approveMutation.isPending}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
-                >
-                  {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  Approve & Activate
-                </Button>
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
