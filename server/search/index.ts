@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v157';
+const CACHE_VERSION = 'v158';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -20,7 +20,6 @@ import type {
 } from './types';
 import { analyzeQuery, buildCacheKey } from './analyzer';
 import { enhanceIntentWithLLM } from './llm-intent';
-import { normalizeForCache } from '../helpers/keywords';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, buildCrisisResults, getCrisisServiceFull, isCrisisServiceId } from './crisis';
@@ -42,12 +41,78 @@ import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
 import type { QueryIntent } from './config';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
-import { applyClickAffinityBoost } from './strategies/scoring/click-affinity-boost';
 import { applySubIntentBoost, SUB_INTENT_CATEGORY_OVERRIDE } from './strategies/scoring/sub-intent-boost';
 import { attachDistances, sortByDistance, filterByMaxDistance } from './distance';
 
 // Single search strategy - comprehensive mode only
 const searchStrategy = new ComprehensiveSearchStrategy();
+
+/**
+ * Lightweight per-stage timing tracker.
+ * Logged as structured JSON at the end of each search for observability.
+ */
+interface SearchTimings {
+  analysis_ms: number;
+  cache_lookup_ms: number;
+  search_ms: number;
+  scoring_ms: number;
+  distance_ms: number;
+  total_ms: number;
+}
+
+function logTimings(query: string, tier: string, timings: SearchTimings) {
+  console.log(`[SearchPerf] ${JSON.stringify({ query: query.substring(0, 50), tier, stages: timings })}`);
+}
+
+/**
+ * In-memory cache hit/miss counters, logged periodically.
+ * Exported for the admin search-quality endpoint.
+ */
+export const cacheStats = {
+  hits: 0,
+  misses: 0,
+  recentMisses: [] as string[], // last 20 cache-miss queries (candidates for precomputation)
+  lastReset: Date.now(),
+};
+
+const DEBUG_SEARCH = process.env.DEBUG_SEARCH === 'true';
+
+/**
+ * Log the impact of a scoring module when DEBUG_SEARCH is enabled.
+ * Compares scores before/after to show how many services were affected and by how much.
+ */
+function logScoringImpact(module: string, before: LiteService[], after: LiteService[]) {
+  if (!DEBUG_SEARCH) return;
+  let affected = 0;
+  let totalBoost = 0;
+  for (let i = 0; i < before.length && i < after.length; i++) {
+    const bScore = before[i].rrfScore ?? 0;
+    const aScore = after[i].rrfScore ?? 0;
+    if (bScore !== aScore && bScore > 0) {
+      affected++;
+      totalBoost += aScore / bScore;
+    }
+  }
+  const avgBoost = affected > 0 ? (totalBoost / affected).toFixed(3) : 'n/a';
+  console.log(`[ScoringDebug] ${JSON.stringify({ module, services_affected: affected, avg_boost: avgBoost })}`);
+}
+
+function trackCacheHit(hit: boolean, query: string) {
+  if (hit) {
+    cacheStats.hits++;
+  } else {
+    cacheStats.misses++;
+    cacheStats.recentMisses.push(query);
+    if (cacheStats.recentMisses.length > 20) cacheStats.recentMisses.shift();
+  }
+
+  // Log summary every 100 searches
+  const total = cacheStats.hits + cacheStats.misses;
+  if (total > 0 && total % 100 === 0) {
+    const rate = ((cacheStats.hits / total) * 100).toFixed(1);
+    console.log(`[CacheStats] ${cacheStats.hits}/${total} hits (${rate}%) since ${new Date(cacheStats.lastReset).toISOString()}`);
+  }
+}
 
 /**
  * Attach coordinates to services (always — needed for map view).
@@ -254,82 +319,20 @@ function deriveImplicitFilters(attributes: import('./types').QueryAttributes | u
 export async function search(input: SearchInput): Promise<SearchResponse> {
   const startTime = Date.now();
 
-  // Normalize query for precomputed cache lookup
-  const normalizedQuery = normalizeForCache(input.query);
+  const timings: Partial<SearchTimings> = {};
 
   // Load active service IDs for filtering stale cache entries
   const servicesCache = await refreshServicesCache();
   const databaseHash = servicesCache.hash;
 
-  // ============= CHECK PRECOMPUTED CACHE FIRST =============
-  // Popular queries have precomputed results for instant response (<10ms)
-  const precomputed = await storage.getPrecomputedSearch(normalizedQuery);
-  if (precomputed && precomputed.results.length > 0) {
-    console.log(`[SearchOrchestrator] Precomputed HIT for: "${normalizedQuery}" (${precomputed.resultCount} results)`);
-    // Filter out any deactivated services from precomputed cache
-    let services = filterActiveServices((precomputed.results as LiteService[]).map(s => ({ ...s })), servicesCache.activeIds);
-
-    // For crisis queries: direct crisis replaces results, situational crisis pins 988
-    const analysis = analyzeQuery(input.query, input.location);
-    const isEmergency = input.emergency === true;
-    const isDirectCrisisPrecomputed = analysis.intent === 'crisis' || isEmergency;
-    if (isDirectCrisisPrecomputed) {
-      const dbCrisisLines = await storage.getCrisisLines();
-      services = buildCrisisResults(dbCrisisLines, analysis.location.specified || input.location || null);
-    } else if (analysis.isCrisis) {
-      // Situational crisis (DV, homelessness): pin 988, keep search results
-      pinCrisisService(services);
-    }
-    if (isPchadQuery(input.query)) {
-      pinPchadService(services);
-    }
-    if (isFamilyAddictionQuery(input.query)) {
-      pinAlAnonService(services);
-    }
-    if (isTenantLegalQuery(input.query) || isCustodyLegalQuery(input.query)) {
-      ensureLegalAidInResults(services);
-    }
-
-    // Location hard filter — exclude services from other cities
-    // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
-    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisPrecomputed);
-
-    // Merge implicit demographic filters from query text with explicit UI filters
-    const precomputedFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
-    if (precomputedFilters && !isDirectCrisisPrecomputed) {
-      services = applyHardFilters(services, precomputedFilters);
-      services = await supplementCategories(services, precomputedFilters, analysis.location.specified || input.location);
-      services = applyPreferenceBoosts(services, precomputedFilters);
-      services = applyFilterMatchBoosts(services, precomputedFilters);
-    }
-
-    // Data quality boost applies regardless of filters
-    const precomputedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
-    services = applyDataQualityBoost(services, precomputedConfScores);
-
-    // Apply negative term penalty for exclusion queries (e.g., "shelter not religious")
-    if (analysis.negativeTerms?.length) {
-      services = applyNegativePenalty(services, analysis.negativeTerms);
-    }
-
-    // Sub-intent scoring boost
-    services = applySubIntentBoost(services, analysis.subIntents || []);
-
-    // Click-through affinity boost — also on precomputed path
-    services = await applyClickAffinityBoost(services, normalizedQuery);
-
-    // Distance processing — attach distances, filter, sort
-    services = await applyDistanceProcessing(services, input);
-
-    return formatResponse(services, '', input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
-  }
-
   // Load alias map for query analysis
   const aliasMap = await storage.getAliasLookup();
 
   // Analyze the query (regex-based, then enhance with LLM)
+  const analysisStart = Date.now();
   let analysis = analyzeQuery(input.query, input.location, aliasMap);
   analysis = await enhanceIntentWithLLM(analysis);
+  timings.analysis_ms = Date.now() - analysisStart;
 
   // SAFETY: If LLM escalated to crisis, ensure isCrisis flag is synced
   // (applyLLMIntents sets it, but this is a belt-and-suspenders guard)
@@ -347,10 +350,12 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}${attrLog}`);
 
   // Check regular cache - include version, substance type, and secondary intent in key
+  const cacheStart = Date.now();
   const substanceKey = analysis.substanceType ? `:sub:${analysis.substanceType}` : '';
   const secondaryKey = analysis.intents.secondary ? `:sec:${analysis.intents.secondary.intent}` : '';
   const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}${substanceKey}${secondaryKey}`;
   const cached = await storage.getSearchByQuery(cacheKey);
+  timings.cache_lookup_ms = Date.now() - cacheStart;
   if (cached) {
     console.log(`[SearchOrchestrator] Cache HIT for: ${cacheKey.substring(0, 60)}...`);
     const cachedResults = cached.results as { services: LiteService[]; summary: string };
@@ -381,6 +386,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached);
 
     // Merge implicit demographic filters from query text with explicit UI filters
+    const scoringStart = Date.now();
     const cachedFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
     if (cachedFilters && !isDirectCrisisCached) {
       services = applyHardFilters(services, cachedFilters);
@@ -391,7 +397,9 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     // Data quality boost applies regardless of filters
     const cachedConfScores = await storage.getConfidenceScores(services.map(s => s.id));
+    const beforeQualityCached = DEBUG_SEARCH ? [...services] : services;
     services = applyDataQualityBoost(services, cachedConfScores);
+    logScoringImpact('quality-boost', beforeQualityCached, services);
 
     // Apply negative term penalty for exclusion queries (e.g., "shelter not religious")
     if (analysis.negativeTerms?.length) {
@@ -399,25 +407,34 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
 
     // Sub-intent scoring boost
+    const beforeSubIntentCached = DEBUG_SEARCH ? [...services] : services;
     services = applySubIntentBoost(services, analysis.subIntents || []);
-
-    // Click-through affinity boost — also on cached path
-    // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
-    services = await applyClickAffinityBoost(services, normalizedQuery);
+    logScoringImpact('sub-intent-boost', beforeSubIntentCached, services);
+    timings.scoring_ms = Date.now() - scoringStart;
 
     // Distance processing — attach distances, filter, sort
+    const distStart = Date.now();
     services = await applyDistanceProcessing(services, input);
+    timings.distance_ms = Date.now() - distStart;
+
+    timings.search_ms = 0; // cache hit — no search executed
+    timings.total_ms = Date.now() - startTime;
+    logTimings(input.query, 'cached', timings as SearchTimings);
+    trackCacheHit(true, input.query);
 
     return formatResponse(services, cachedResults.summary, input, startTime, true, undefined, undefined, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
   }
   console.log(`[SearchOrchestrator] Cache MISS - executing fresh search`);
+  trackCacheHit(false, input.query);
 
   // Execute search with timeout protection
+  const searchStart = Date.now();
   const result = await withTimeout(
     searchStrategy.search(analysis, input),
     TIMEOUTS.SEARCH_TOTAL,
     'Search operation'
   );
+  timings.search_ms = Date.now() - searchStart;
 
   // ============= LOG FAILED QUERIES =============
   // Track zero-result queries for analysis and coverage improvement
@@ -483,6 +500,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Apply hard filters AFTER caching — filters are re-applied on cache hits too
   // Merge implicit demographic filters from query text with explicit UI filters
   // SAFETY: skip hard filters for direct crisis — never filter out crisis hotlines
+  const freshScoringStart = Date.now();
   const freshFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
   if (freshFilters && !isDirectCrisisFresh) {
     const beforeFilter = result.services.length;
@@ -497,17 +515,23 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
   // Data quality boost applies regardless of filters
   const freshConfScores = await storage.getConfidenceScores(result.services.map(s => s.id));
+  const beforeQuality = DEBUG_SEARCH ? [...result.services] : result.services;
   result.services = applyDataQualityBoost(result.services, freshConfScores);
+  logScoringImpact('quality-boost', beforeQuality, result.services);
 
   // Sub-intent scoring boost
+  const beforeSubIntent = DEBUG_SEARCH ? [...result.services] : result.services;
   result.services = applySubIntentBoost(result.services, analysis.subIntents || []);
-
-  // Click-through affinity boost — learn from user behavior over time
-  // Use normalizedQuery (raw input) to match how clicks are stored in search_analytics
-  result.services = await applyClickAffinityBoost(result.services, normalizedQuery);
+  logScoringImpact('sub-intent-boost', beforeSubIntent, result.services);
+  timings.scoring_ms = Date.now() - freshScoringStart;
 
   // Distance processing — attach distances, filter, sort
+  const freshDistStart = Date.now();
   result.services = await applyDistanceProcessing(result.services, input);
+  timings.distance_ms = Date.now() - freshDistStart;
+
+  timings.total_ms = Date.now() - startTime;
+  logTimings(input.query, 'fresh', timings as SearchTimings);
 
   return formatResponse(result.services, result.summary, input, startTime, false, result.searchType, result.servicesWithDebug, analysis.intent, analysis.intents.secondary?.intent, analysis.subIntents, analysis.impliedNeeds);
 }

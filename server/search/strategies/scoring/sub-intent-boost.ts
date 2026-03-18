@@ -36,7 +36,7 @@ export const SUB_INTENT_CATEGORY_OVERRIDE: Record<string, Set<string>> = {
   'basic_needs.transportation':           new Set(['Transportation Assistance']),
   'basic_needs.pet_support':              new Set(['Basic Needs & Material Aid']),
   'indigenous_services.status_card':      new Set(['Indigenous Services']),
-  'parenting_support.kinship_care':       new Set(['Parenting & Baby Resources']),
+  'parenting_support.kinship_care':       new Set(['Family & Parenting Support']),
   'criminal_justice.reentry':             new Set(['Criminal Justice Reintegration']),
   'criminal_justice.drug_court':          new Set(['Criminal Justice Reintegration']),
   'criminal_justice.restorative_justice': new Set(['Criminal Justice Reintegration']),

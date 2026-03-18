@@ -145,6 +145,11 @@ Example response:
  * Falls back to original analysis on any failure.
  */
 export async function enhanceIntentWithLLM(analysis: QueryAnalysis): Promise<QueryAnalysis> {
+  // Kill switch: disable all LLM calls (cost control / local dev)
+  if (process.env.SEARCH_LLM_ENABLED === 'false') {
+    return analysis;
+  }
+
   // Skip for alias (exact match, no ambiguity)
   if (analysis.intent === 'alias') {
     return analysis;

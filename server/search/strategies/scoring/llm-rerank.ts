@@ -79,6 +79,11 @@ export async function llmRerank(
   boostOptions?: BoostOptions,
   enhancedQuery?: EnhancedQueryContext | null
 ): Promise<LiteService[]> {
+  // Kill switch: disable all LLM calls (cost control / local dev)
+  if (process.env.SEARCH_LLM_ENABLED === 'false') {
+    return boostByIntent(services, analysis.intent, query, analysis, boostOptions);
+  }
+
   // Skip LLM for crisis queries (safety-critical, regex is well-tested)
   if (analysis.intent === 'crisis' || analysis.intent === 'alias') {
     return boostByIntent(services, analysis.intent, query, analysis, boostOptions);

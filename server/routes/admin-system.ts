@@ -142,16 +142,6 @@ export function registerAdminSystemRoutes(app: Express): void {
     });
   }));
 
-  // ============= RECOMPUTE AFFINITIES =============
-  app.post("/api/admin/system/recompute-affinities", adminWriteLimiter, adminAuth, asyncHandler(async (_req, res) => {
-    // Placeholder — log that it would run the compute-click-affinities job
-    console.log("[AdminSystem] Affinity recomputation requested (placeholder — run scripts/compute-click-affinities.mjs)");
-    res.json({
-      success: true,
-      message: "Affinity recomputation requested. In production, run: node scripts/compute-click-affinities.mjs",
-    });
-  }));
-
   // ============= PURGE OLD ANALYTICS =============
   app.post("/api/admin/system/purge-analytics", adminWriteLimiter, adminAuth, asyncHandler(async (req, res) => {
     const schema = z.object({
@@ -187,5 +177,59 @@ export function registerAdminSystemRoutes(app: Express): void {
 
     console.log(`[AdminSystem] Purged ${deletedCount} analytics rows older than ${olderThanDays} days`);
     res.json({ success: true, deleted: deletedCount, cutoffDate: cutoff.toISOString() });
+  }));
+
+  // ============= SEARCH QUALITY DASHBOARD =============
+  app.get("/api/admin/search-quality", adminReadLimiter, adminAuth, asyncHandler(async (_req, res) => {
+    const { cacheStats } = await import('../search/index');
+
+    // Search volume from recent analytics
+    const volumeResult = await db.execute(sql`
+      SELECT
+        COUNT(*)::int AS "totalSearches",
+        COUNT(DISTINCT query)::int AS "uniqueQueries"
+      FROM search_analytics
+      WHERE created_at > NOW() - INTERVAL '24 hours'
+    `);
+
+    // Top queries without clicks (last 7 days)
+    const noClickResult = await db.execute(sql`
+      SELECT query, COUNT(*)::int AS searches
+      FROM search_analytics
+      WHERE created_at > NOW() - INTERVAL '7 days'
+        AND clicked_service_id IS NULL
+        AND query IS NOT NULL
+      GROUP BY query
+      ORDER BY searches DESC
+      LIMIT 10
+    `);
+
+    // DB cache entry count
+    const dbCacheResult = await db.execute(sql`
+      SELECT COUNT(*)::int AS "cachedQueries"
+      FROM searches
+    `);
+
+    const total = cacheStats.hits + cacheStats.misses;
+    const hitRate = total > 0 ? ((cacheStats.hits / total) * 100).toFixed(1) : 'n/a';
+
+    res.json({
+      success: true,
+      volume: volumeResult.rows[0] || {},
+      cache: {
+        dbEntries: (dbCacheResult.rows[0] as any)?.cachedQueries || 0,
+        inMemory: {
+          hits: cacheStats.hits,
+          misses: cacheStats.misses,
+          hitRate: `${hitRate}%`,
+          since: new Date(cacheStats.lastReset).toISOString(),
+        },
+        recentMisses: cacheStats.recentMisses,
+      },
+      llm: {
+        enabled: process.env.SEARCH_LLM_ENABLED !== 'false',
+      },
+      topQueriesWithoutClicks: noClickResult.rows,
+    });
   }));
 }

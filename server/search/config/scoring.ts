@@ -3,6 +3,41 @@
  *
  * Centralized scoring boost/penalty configuration.
  * All numeric values used in scoring logic are defined here for easy tuning.
+ *
+ * ## How scoring works
+ *
+ * These values are ADDITIVE boosts/penalties applied to RRF scores (typically 0-100 range).
+ * They're applied in `intent-boost.ts` via `boostByIntent()` for regex scoring (Tier 2 / cached)
+ * or as fallback when LLM reranking fails (Tier 3).
+ *
+ * ## Parameter scale guide
+ *
+ * |  Range   | Effect at RRF ~50 | Use for                                    |
+ * |----------|-------------------|--------------------------------------------|
+ * |  1–15    | Subtle tiebreaker | Preferences (gender, urgency, community)   |
+ * | 50–100   | Noticeable shift  | Moderate relevance signals (age, category) |
+ * | 100–250  | Strong signal     | Core intent matches (addiction, housing)    |
+ * | 300–500  | Dominant signal   | Must-rank-first (crisis, name match, alias) |
+ * | 500–800  | Override          | Pinned services (Al-Anon, SMART Recovery)  |
+ * | Negative | Demotion          | Same scale inverted — pushes down results   |
+ *
+ * ## When LLM reranking is active (Tier 3 fresh searches)
+ *
+ * These regex boosts are NOT applied — LLM scores replace them (60/40 LLM/RRF blend).
+ * They only fire as fallback when LLM reranking fails or times out.
+ * Multiplicative modules (sub-intent 1.15x, quality 1.0-1.25x, dual-intent 1.2-1.5x)
+ * always apply regardless of tier.
+ *
+ * ## Per-intent sections
+ *
+ * Each intent section (crisis, grief, veteran, etc.) uses the same pattern:
+ * - High positive boosts for on-topic services
+ * - Moderate positive boosts for adjacent services
+ * - Negative penalties to demote off-topic services that leak via keyword overlap
+ *
+ * The `unrelatedPenalty` value (-100 to -150) is consistent across most intents.
+ * Only specialized intents (crisis, veteran, familyAddiction) use stronger penalties
+ * because wrong results are more harmful in those contexts.
  */
 
 export const SCORING_CONFIG = {

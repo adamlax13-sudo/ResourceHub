@@ -70,11 +70,9 @@ pytest tests/ -v                     # Run scraper tests
 | `server/helpers/openai.ts` | Shared OpenAI singleton (`getOpenAI()`) + `extractJSON()` helper |
 | `server/search/llm-intent.ts` | LLM intent classification (enhances regex, LRU cached 24h) |
 | `server/search/strategies/scoring/llm-rerank.ts` | LLM reranking of top 20 RRF candidates for Tier 3 searches |
-| `server/search/strategies/scoring/click-affinity-boost.ts` | Click-through affinity boost (1.0-1.3x, LRU cached 1h) |
 | `server/evaluation/ci_runner.mjs` | CI test runner — 52 queries with per-intent thresholds |
 | `scripts/data/service-gaps-report.json` | 20 real Alberta orgs identified as data gaps (dental, LGBTQ, caregiver) |
 | `.github/workflows/search-eval.yml` | GitHub Actions CI for search quality regression testing |
-| `scripts/compute-click-affinities.mjs` | Batch job: compute (query, service) affinity scores from click data |
 | `server/search/distance.ts` | Haversine distance + attachDistances/sortByDistance/filterByMaxDistance |
 | `server/routes/location.ts` | `/api/mapbox-token` + `/api/geocode` endpoints |
 | `client/src/components/MapView.tsx` | Lazy-loaded Mapbox map component (in separate ~1.7MB chunk) |
@@ -118,7 +116,7 @@ All scripts use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply.
 2. Analyze intent via regex (`analyzeQuery()`) + extract service attributes
 3. Enhance with LLM structured understanding (`enhanceIntentWithLLM()` — returns intents + attributes + semantic rewrite)
 4. **Crisis routing**: Direct crisis (suicidal ideation) → full helpline replacement. Situational crisis (DV, homelessness) → pin 988 + keep search results. Third-party crisis ("my teen is self-harming") → pin 988 + route to relevant services (youth/mental health).
-5. Check precomputed cache for popular queries
+5. Check regular cache (skip to post-cache scoring if hit)
 6. Stage 1: Fast SQL search (indexed, uses expanded keywords)
 7. Stage 2: Semantic search (pgvector embeddings, uses LLM semantic rewrite if available)
 8. Merge results via Reciprocal Rank Fusion
@@ -126,11 +124,10 @@ All scripts use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply.
 10. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
     **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
 11. Apply data quality boost (confidence score, description richness)
-12. Apply sub-intent boost (`applySubIntentBoost()` — 1.15x for sub-intent text/category matches, on all 3 cache paths)
-13. Apply click-through affinity boost (`applyClickAffinityBoost()` — on all 3 cache paths)
-14. Apply distance processing if user coords provided (`applyDistanceProcessing()` — on all 3 cache paths)
-15. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue + sub-intent narrowing + impliedNeeds expansion, clamp to [13, 50])
-16. Return paginated results with summary
+12. Apply sub-intent boost (`applySubIntentBoost()` — 1.15x for sub-intent text/category matches)
+13. Apply distance processing if user coords provided (`applyDistanceProcessing()`)
+14. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue + sub-intent narrowing + impliedNeeds expansion, clamp to [13, 50])
+15. Return paginated results with summary
 
 ### Search Caching
 - Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
@@ -142,7 +139,7 @@ All scripts use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply.
 - `service_history` — change log for every modification
 - `ai_service_enrichments` — cached AI-generated descriptions
 - `search_analytics` — click tracking for ranking improvements
-- `query_service_affinities` — computed (query, service) click affinity scores (populated by `scripts/compute-click-affinities.mjs`)
+- `query_service_affinities` — computed (query, service) click affinity scores (unused, table kept for future use at 1K+ clicks)
 - `service_field_source` — tracks which scraper provided each field
 
 ### Scraper Pipeline (v2)

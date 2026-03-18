@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, RefreshCw, Database, Trash2, Activity } from "lucide-react";
+import { Loader2, RefreshCw, Database, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SystemStatus {
@@ -34,7 +34,7 @@ interface SystemStatus {
   } | null;
 }
 
-type ConfirmAction = "refresh" | "persist" | "recompute" | "purge" | null;
+type ConfirmAction = "refresh" | "persist" | "purge" | null;
 
 const CONFIRM_CONFIG: Record<string, { title: string; description: string; variant: "default" | "destructive" }> = {
   refresh: {
@@ -45,11 +45,6 @@ const CONFIRM_CONFIG: Record<string, { title: string; description: string; varia
   persist: {
     title: "Persist Enrichments?",
     description: "This will copy AI-generated descriptions, eligibility, and process steps into service records where those fields are currently empty. Existing data will NOT be overwritten.",
-    variant: "default",
-  },
-  recompute: {
-    title: "Recompute Click Affinities?",
-    description: "This will recalculate query-service affinity scores from click analytics data. This may take a few minutes and will affect search ranking.",
     variant: "default",
   },
   purge: {
@@ -103,20 +98,6 @@ export default function System() {
     },
   });
 
-  const recomputeAffinitiesMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/system/recompute-affinities", {});
-      return res.json();
-    },
-    onSuccess: (data) => {
-      toast({ title: "Affinities recomputed", description: data.message });
-      setConfirmAction(null);
-    },
-    onError: (err) => {
-      toast({ title: "Recomputation failed", description: err.message, variant: "destructive" });
-      setConfirmAction(null);
-    },
-  });
 
   const [purgeDays, setPurgeDays] = useState(180);
   const purgeAnalyticsMutation = useMutation({
@@ -160,7 +141,6 @@ export default function System() {
     switch (confirmAction) {
       case "refresh": refreshSearchMutation.mutate(); break;
       case "persist": persistEnrichmentsMutation.mutate(); break;
-      case "recompute": recomputeAffinitiesMutation.mutate(); break;
       case "purge": purgeAnalyticsMutation.mutate(); break;
     }
   };
@@ -168,7 +148,6 @@ export default function System() {
   const isConfirmPending =
     refreshSearchMutation.isPending ||
     persistEnrichmentsMutation.isPending ||
-    recomputeAffinitiesMutation.isPending ||
     purgeAnalyticsMutation.isPending;
 
   const config = confirmAction ? CONFIRM_CONFIG[confirmAction] : null;
@@ -300,21 +279,6 @@ export default function System() {
               </Button>
             }
           />
-          <JobRow
-            icon={Activity}
-            title="Recompute Affinities"
-            description="Recompute query-service click affinity scores from search analytics."
-            action={
-              <Button
-                size="sm"
-                onClick={() => setConfirmAction("recompute")}
-                className="bg-primary hover:bg-primary/80 text-white"
-              >
-                Recompute
-              </Button>
-            }
-          />
-
           {/* Purge Analytics — special layout with days selector */}
           <div className="flex items-start justify-between gap-4 py-3 border-t border-border">
             <div className="flex items-start gap-3">
