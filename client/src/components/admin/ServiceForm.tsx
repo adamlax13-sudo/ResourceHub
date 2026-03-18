@@ -41,8 +41,10 @@ interface ServiceFormProps {
   onNameChange?: (name: string) => void;
   /** Called with current form data whenever any field changes */
   onChange?: (data: ServiceFormData) => void;
-  /** Field keys to highlight as needing attention (e.g. missing data) */
+  /** Field keys to highlight as needing attention (e.g. missing data) — amber ring */
   highlightFields?: string[];
+  /** Field keys to highlight as changed/updated — emerald ring */
+  changedFields?: string[];
 }
 
 /** Normalize requiredDocs — DB may store string[] or {name: string}[] */
@@ -72,9 +74,12 @@ function normalizeProcessSteps(raw: unknown): Array<{ step: number; action: stri
   });
 }
 
-export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, onChange, highlightFields }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "Save", onDirtyChange, onNameChange, onChange, highlightFields, changedFields }: ServiceFormProps) {
   const highlightSet = new Set(highlightFields ?? []);
-  const hl = (field: string) => highlightSet.has(field) ? "ring-2 ring-amber-300 bg-amber-50/50" : "";
+  const changedSet = new Set(changedFields ?? []);
+  const hl = (field: string) =>
+    changedSet.has(field) ? "ring-2 ring-emerald-400 bg-emerald-50/30 dark:bg-emerald-950/20" :
+    highlightSet.has(field) ? "ring-2 ring-amber-300 bg-amber-50/50" : "";
   const [form, setForm] = useState<ServiceFormData>({
     name: "",
     category: "",
@@ -256,7 +261,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             required
             value={form.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="mt-1 bg-card border-border text-foreground"
+            className={cn("mt-1 bg-card border-border text-foreground", hl("name"))}
           />
         </div>
 
@@ -266,7 +271,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             required
             value={form.category}
             onChange={(e) => handleChange("category", e.target.value)}
-            className="mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+            className={cn("mt-1 w-full h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground", hl("category"))}
           >
             <option value="">Select...</option>
             {CATEGORY_GROUPS.map(group => (
@@ -284,7 +289,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           <Input
             value={form.location ?? ""}
             onChange={(e) => handleChange("location", e.target.value)}
-            className="mt-1 bg-card border-border text-foreground"
+            className={cn("mt-1 bg-card border-border text-foreground", hl("location"))}
             placeholder="City or region"
           />
         </div>
@@ -384,7 +389,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       {/* Process Steps */}
-      <div className="space-y-1">
+      <div className={cn("space-y-1 rounded-lg p-2 -mx-2", hl("processSteps"))}>
         <div className="flex items-center justify-between">
           <Label className="text-foreground">Process Steps</Label>
           <Button type="button" variant="ghost" size="sm" onClick={addProcessStep} className="h-7 text-primary hover:text-primary">

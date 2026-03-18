@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
-import { DiffView } from "@/components/admin/DiffView";
 import { ServiceForm, type ServiceFormData } from "@/components/admin/ServiceForm";
 import { ServiceDetailPanel } from "@/components/admin/ServiceDetailPanel";
 import { Button } from "@/components/ui/button";
@@ -355,23 +354,22 @@ export default function Review() {
             </>
           ) : request.changeType === "update" ? (
             <>
-              {/* Show diff of what changed at the top */}
+              {/* Legend + editable form with changed fields highlighted */}
               {Object.keys(diffChanges).length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-foreground">Changed Fields</h4>
-                  <DiffView changes={diffChanges} />
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/50 border border-border">
+                  <span className="inline-block w-3 h-3 rounded ring-2 ring-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 flex-shrink-0" />
+                  <span className="text-xs text-muted-foreground">
+                    Highlighted fields have been updated ({Object.keys(diffChanges).filter(k => k !== "id" && k !== "isActive").length} changes)
+                  </span>
                 </div>
               )}
-              {/* Editable form with full proposed data — user can review all fields, edit if needed, and approve */}
-              <div className="border-t border-border pt-4">
-                <h4 className="text-sm font-medium text-foreground px-4 mb-2">Full Service Data</h4>
-                <ServiceForm
-                  initialData={request.proposedChanges as any}
-                  onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
-                  isPending={editApproveMutation.isPending}
-                  submitLabel="Save & Activate"
-                />
-              </div>
+              <ServiceForm
+                initialData={request.proposedChanges as any}
+                onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
+                isPending={editApproveMutation.isPending}
+                submitLabel="Save & Activate"
+                changedFields={Object.keys(diffChanges).filter(k => k !== "id" && k !== "isActive")}
+              />
               {/* Action buttons */}
               <div className="flex gap-2 pt-4 border-t border-border">
                 <Button
