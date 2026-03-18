@@ -18,11 +18,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw, ClipboardCheck, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getCategoryColor } from "@/lib/category-colors";
 
 interface ChangeRequest {
   id: number;
   serviceId?: number;
   serviceName?: string;
+  category?: string | null;
+  location?: string | null;
+  confidenceScore?: number | null;
   changeType: string;
   source?: string;
   status: string;
@@ -259,13 +263,36 @@ export default function Review() {
                 onClick={(e) => e.stopPropagation()}
               />
               <div className="min-w-0 flex-1" onClick={() => setSelectedId(cr.id)}>
-                <div className="flex items-center gap-2">
-                  <ChangeTypeBadge type={cr.changeType} />
-                  <p className="text-sm text-foreground truncate">
-                    {cr.serviceName || (typeof (cr.proposedChanges as any)?.name === "string" ? (cr.proposedChanges as any).name : null) || `Change #${cr.id}`}
-                  </p>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <ChangeTypeBadge type={cr.changeType} />
+                      <p className="text-sm text-foreground truncate">
+                        {cr.serviceName || (typeof (cr.proposedChanges as any)?.name === "string" ? (cr.proposedChanges as any).name : null) || `Change #${cr.id}`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      {cr.category && (
+                        <Badge className={cn(getCategoryColor(cr.category), "text-[10px] px-1.5")}>
+                          {cr.category}
+                        </Badge>
+                      )}
+                      {cr.location && (
+                        <span className="text-[10px] text-muted-foreground truncate">{cr.location}</span>
+                      )}
+                    </div>
+                  </div>
+                  {cr.confidenceScore != null && (
+                    <span className={cn(
+                      "text-xs font-mono flex-shrink-0",
+                      cr.confidenceScore >= 70 ? "text-emerald-500" :
+                      cr.confidenceScore >= 40 ? "text-amber-500" : "text-red-500"
+                    )}>
+                      {cr.confidenceScore}
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-2 mt-0.5 text-[10px] text-muted-foreground">
                   {cr.source && <span>{cr.source}</span>}
                   <span>{formatRelativeTime(cr.createdAt)}</span>
                 </div>

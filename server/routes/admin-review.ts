@@ -40,26 +40,38 @@ export function registerAdminReviewRoutes(app: Express): void {
 
     const result = await storage.getChangeRequests(params);
 
-    // Join service names for display
+    // Join service metadata for display
     const serviceIds = result.requests
       .map((r) => r.serviceId)
       .filter((id): id is number => id != null);
-    const serviceNames: Record<number, string> = {};
+    const serviceMeta: Record<number, { name: string; category: string | null; location: string | null; confidenceScore: number | null }> = {};
     if (serviceIds.length > 0) {
-      const nameRows = await db
-        .select({ id: services.id, name: services.name })
+      const rows = await db
+        .select({
+          id: services.id,
+          name: services.name,
+          category: services.category,
+          location: services.location,
+          confidenceScore: services.confidenceScore,
+        })
         .from(services)
         .where(sql`${services.id} IN ${serviceIds}`);
-      for (const row of nameRows) {
-        serviceNames[row.id] = row.name;
+      for (const row of rows) {
+        serviceMeta[row.id] = row;
       }
     }
 
-    const changeRequests = result.requests.map((r) => ({
-      ...r,
-      serviceName: r.serviceId ? serviceNames[r.serviceId] ?? null : null,
-      createdAt: r.submittedAt,
-    }));
+    const changeRequests = result.requests.map((r) => {
+      const meta = r.serviceId ? serviceMeta[r.serviceId] : null;
+      return {
+        ...r,
+        serviceName: meta?.name ?? null,
+        category: meta?.category ?? (r.proposedChanges as any)?.category ?? null,
+        location: meta?.location ?? (r.proposedChanges as any)?.location ?? null,
+        confidenceScore: meta?.confidenceScore ?? null,
+        createdAt: r.submittedAt,
+      };
+    });
 
     res.json({ success: true, changeRequests, total: result.total });
   }));
