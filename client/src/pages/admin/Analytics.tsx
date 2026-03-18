@@ -1297,7 +1297,7 @@ export default function Analytics() {
                 <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
                 Reset
               </Button>
-              <Button onClick={() => setEditMode(false)} className="bg-primary hover:bg-primary/90 text-primary-foreground" size="sm">
+              <Button onClick={() => setEditMode(false)} className="bg-emerald-700 hover:bg-emerald-800 text-white" size="sm">
                 <Check className="h-4 w-4 mr-1.5" />
                 Done
               </Button>

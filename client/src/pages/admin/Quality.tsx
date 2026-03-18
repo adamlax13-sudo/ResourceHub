@@ -675,14 +675,14 @@ export default function Quality() {
                               className={cn(
                                 "transition-colors",
                                 flaggedIds.has(issue.service.id)
-                                  ? "text-primary cursor-default"
+                                  ? "text-amber-500 cursor-default"
                                   : "text-muted-foreground hover:text-amber-500 cursor-pointer"
                               )}
                             >
                               {flaggingId === issue.service.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               ) : (
-                                <Flag className={cn("h-3.5 w-3.5", flaggedIds.has(issue.service.id) && "fill-primary")} />
+                                <Flag className={cn("h-3.5 w-3.5", flaggedIds.has(issue.service.id) && "fill-amber-500")} />
                               )}
                             </button>
                             <Link href={`/admin/services?selected=${issue.service.id}`}>

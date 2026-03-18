@@ -178,7 +178,7 @@ export default function System() {
               variant={config?.variant === "destructive" ? "destructive" : "default"}
               onClick={handleConfirm}
               disabled={isConfirmPending}
-              className={config?.variant !== "destructive" ? "bg-primary hover:bg-primary/80 text-white" : ""}
+              className={config?.variant !== "destructive" ? "bg-emerald-700 hover:bg-emerald-800 text-white" : ""}
             >
               {isConfirmPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
               {isConfirmPending ? "Running..." : "Yes, proceed"}
@@ -259,7 +259,7 @@ export default function System() {
               <Button
                 size="sm"
                 onClick={() => setConfirmAction("refresh")}
-                className="bg-primary hover:bg-primary/80 text-white"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
               >
                 Refresh
               </Button>
@@ -273,7 +273,7 @@ export default function System() {
               <Button
                 size="sm"
                 onClick={() => setConfirmAction("persist")}
-                className="bg-primary hover:bg-primary/80 text-white"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
               >
                 Persist
               </Button>

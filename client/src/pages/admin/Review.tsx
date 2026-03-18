@@ -303,7 +303,7 @@ export default function Review() {
 
           {/* Duplicate Warning */}
           {detailData?.duplicateWarning && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50/60 border border-amber-200/60">
               <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
               <p className="text-sm text-amber-700">
                 Possible duplicate: {detailData.duplicateWarning.serviceName}
@@ -321,7 +321,7 @@ export default function Review() {
                 onSaveSuccess={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/review"] })}
                 banner={
                   missingFields.length > 0 ? (
-                    <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                    <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-amber-50/60 border border-amber-200/60">
                       <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
                       <span className="text-sm text-amber-700 font-medium">Missing fields:</span>
                       {missingFields.map((f) => (

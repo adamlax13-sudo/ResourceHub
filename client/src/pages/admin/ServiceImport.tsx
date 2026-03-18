@@ -121,7 +121,7 @@ export default function ServiceImport() {
             <Button
               onClick={() => importMutation.mutate()}
               disabled={!isValidJson || !preview || importMutation.isPending}
-              className="bg-primary hover:bg-primary/80 text-white"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
             >
               {importMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
               Import

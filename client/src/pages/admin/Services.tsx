@@ -239,7 +239,7 @@ export default function Services() {
                       <p className="text-sm text-foreground truncate">{svc.name}</p>
                       {svc.enrichmentSource && (
                         <span title={`Enrichment: ${svc.enrichmentSource}`}>
-                          <Sparkles className="h-3 w-3 flex-shrink-0 text-violet-400" />
+                          <Sparkles className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
                         </span>
                       )}
                     </div>
@@ -251,7 +251,10 @@ export default function Services() {
                         <span className="text-[10px] text-muted-foreground truncate">{svc.location}</span>
                       )}
                       {svc.lastUpdated && (
-                        <span className="text-[10px] text-muted-foreground ml-auto flex-shrink-0">
+                        <span
+                          className="text-[10px] text-muted-foreground ml-auto flex-shrink-0"
+                          title={new Date(svc.lastUpdated).toLocaleString()}
+                        >
                           Edited {formatRelativeTime(svc.lastUpdated)}
                         </span>
                       )}

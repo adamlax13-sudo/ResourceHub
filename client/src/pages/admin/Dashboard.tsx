@@ -151,7 +151,7 @@ function SortableWidget({
                   className={cn(
                     "w-6 h-6 rounded-full text-[10px] font-bold transition-all",
                     size === s
-                      ? "bg-primary text-white shadow-sm"
+                      ? "bg-foreground text-background shadow-sm"
                       : sizes.includes(s)
                         ? "text-muted-foreground hover:bg-muted hover:text-foreground"
                         : "text-muted-foreground/40 cursor-not-allowed",
@@ -169,6 +169,7 @@ function SortableWidget({
               <button
                 onClick={onRemove}
                 className="p-1 text-muted-foreground hover:text-red-500 transition-colors"
+                aria-label="Remove widget"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -399,7 +400,7 @@ export default function Dashboard() {
             <Button
               size="sm"
               onClick={() => setEditMode(false)}
-              className="bg-primary hover:bg-primary/80 text-white"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
             >
               <Check className="h-4 w-4 mr-1.5" /> Done
             </Button>

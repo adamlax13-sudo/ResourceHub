@@ -159,7 +159,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
 function AdminPageLoader() {
   return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
     </div>
   );
 }
@@ -201,7 +201,7 @@ export default function AdminLayout() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }

@@ -103,7 +103,7 @@ export default function SearchTest() {
                 autoFocus
               />
             </div>
-            <Button type="submit" disabled={!query.trim() || testMutation.isPending} className="bg-primary hover:bg-primary/80 text-white">
+            <Button type="submit" disabled={!query.trim() || testMutation.isPending} className="bg-emerald-700 hover:bg-emerald-800 text-white">
               {testMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Test
             </Button>
