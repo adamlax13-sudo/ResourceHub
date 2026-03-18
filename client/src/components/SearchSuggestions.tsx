@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Layers, TrendingUp, ArrowUpRight } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { Search, Layers, ArrowUpRight } from 'lucide-react';
 
 interface SuggestResponse {
   services: string[];
@@ -36,10 +37,32 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
   const [suggestions, setSuggestions] = useState<SuggestResponse | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevQueryRef = useRef('');
+
+  // Position the portal dropdown beneath the anchor element
+  useLayoutEffect(() => {
+    if (!isVisible || !anchorRef.current) return;
+    const updatePos = () => {
+      const rect = anchorRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPosition({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    };
+    updatePos();
+    window.addEventListener('scroll', updatePos, true);
+    window.addEventListener('resize', updatePos);
+    return () => {
+      window.removeEventListener('scroll', updatePos, true);
+      window.removeEventListener('resize', updatePos);
+    };
+  }, [isVisible, anchorRef, suggestions]);
 
   // Build flat list — interleave: categories first, then services, then queries
   // No section headers, just differentiated by icon (Google-style)
@@ -150,10 +173,11 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
     }
   };
 
-  return (
+  return createPortal(
     <div
       ref={containerRef}
-      className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-border/40 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+      style={{ position: 'absolute', top: position.top, left: position.left, width: position.width }}
+      className="bg-white rounded-2xl shadow-2xl border border-border/40 z-[9999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
       role="listbox"
     >
       <div className="py-1.5">
@@ -184,6 +208,7 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
           );
         })}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
