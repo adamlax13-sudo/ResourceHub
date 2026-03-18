@@ -369,7 +369,7 @@ export default function Review() {
                   initialData={request.proposedChanges as any}
                   onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
                   isPending={editApproveMutation.isPending}
-                  submitLabel="Save & Approve"
+                  submitLabel="Save & Activate"
                 />
               </div>
               {/* Action buttons */}
@@ -381,7 +381,7 @@ export default function Review() {
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
-                  Approve As-Is
+                  Approve & Activate
                 </Button>
                 <Button
                   variant="outline"
@@ -400,7 +400,7 @@ export default function Review() {
                 initialData={request.proposedChanges as any}
                 onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
                 isPending={editApproveMutation.isPending}
-                submitLabel="Save & Approve"
+                submitLabel="Save & Activate"
               />
               <div className="flex gap-2 pt-4 border-t border-border">
                 <Button
@@ -410,7 +410,7 @@ export default function Review() {
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
-                  Approve As-Is
+                  Approve & Activate
                 </Button>
                 <Button
                   variant="outline"

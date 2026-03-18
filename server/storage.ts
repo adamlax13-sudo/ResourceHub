@@ -1688,7 +1688,10 @@ export class DatabaseStorage implements IStorage {
       }
       case 'update': {
         if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for update`);
-        resultService = await this.updateService(req.serviceId, proposed);
+        // When approving, always activate the service (review pipeline = approving for go-live)
+        // Remove isActive from proposed to avoid overwriting with false
+        const { isActive: _ignored, ...updateFields } = proposed;
+        resultService = await this.updateService(req.serviceId, { ...updateFields, isActive: true });
         break;
       }
       case 'deactivate': {
