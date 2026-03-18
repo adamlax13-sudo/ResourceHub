@@ -129,15 +129,15 @@ export default function Services() {
   const totalPages = listData?.total ? Math.ceil(listData.total / pageSize) : 1;
 
   const listHeader = (
-      <div className="p-3 border-b border-gray-200 space-y-1.5">
+      <div className="p-3 border-b border-border space-y-1.5">
         <form onSubmit={handleSearch}>
           <div className="relative">
-            <Search className="absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search services..."
-              className="pl-8 bg-white border-gray-300 text-gray-900 text-sm h-8"
+              className="pl-8 bg-card border-border text-foreground text-sm h-8"
             />
           </div>
         </form>
@@ -145,7 +145,7 @@ export default function Services() {
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
+            className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -154,7 +154,7 @@ export default function Services() {
           <select
             value={categoryFilter}
             onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
+            className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
           >
             <option value="">All Categories</option>
             {CATEGORY_GROUPS.map(group => (
@@ -168,7 +168,7 @@ export default function Services() {
           <select
             value={enrichmentSourceFilter}
             onChange={(e) => { setEnrichmentSourceFilter(e.target.value); setPage(1); }}
-            className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-900"
+            className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
           >
             <option value="">All Sources</option>
             <option value="ai_enriched">AI Enriched</option>
@@ -182,7 +182,7 @@ export default function Services() {
         <select
           value={sortBy}
           onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-          className="h-7 rounded border border-gray-200 bg-white px-1.5 text-[11px] text-gray-700 w-full"
+          className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground w-full"
         >
           <option value="name-asc">Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
@@ -202,7 +202,7 @@ export default function Services() {
     <div className="flex flex-col h-full">
       {listLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       ) : (
         <>
@@ -217,16 +217,16 @@ export default function Services() {
                   setSelectedId(svc.id);
                 }}
                 className={cn(
-                  "px-3 py-2.5 border-b border-gray-100 cursor-pointer transition-colors",
+                  "px-3 py-2.5 border-b border-border cursor-pointer transition-colors",
                   selectedId === svc.id
-                    ? "bg-teal-50"
-                    : "hover:bg-gray-50"
+                    ? "bg-primary/10"
+                    : "hover:bg-muted"
                 )}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="flex items-center gap-1">
-                      <p className="text-sm text-gray-900 truncate">{svc.name}</p>
+                      <p className="text-sm text-foreground truncate">{svc.name}</p>
                       {svc.enrichmentSource && (
                         <span title={`Enrichment: ${svc.enrichmentSource}`}>
                           <Sparkles className="h-3 w-3 flex-shrink-0 text-violet-400" />
@@ -238,10 +238,10 @@ export default function Services() {
                         {svc.category}
                       </Badge>
                       {svc.location && (
-                        <span className="text-[10px] text-gray-400 truncate">{svc.location}</span>
+                        <span className="text-[10px] text-muted-foreground truncate">{svc.location}</span>
                       )}
                       {svc.lastUpdated && (
-                        <span className="text-[10px] text-gray-400 ml-auto flex-shrink-0">
+                        <span className="text-[10px] text-muted-foreground ml-auto flex-shrink-0">
                           Edited {formatRelativeTime(svc.lastUpdated)}
                         </span>
                       )}
@@ -260,14 +260,14 @@ export default function Services() {
               </div>
             ))}
             {listData?.services?.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-8">No services found</p>
+              <p className="text-sm text-muted-foreground text-center py-8">No services found</p>
             )}
           </div>
 
           {/* Pagination */}
           {listData && (
-            <div className="border-t border-gray-200 px-3 py-2 space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-gray-400">
+            <div className="border-t border-border px-3 py-2 space-y-1.5">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
                   {listData.total > 0
                     ? `Page ${page} of ${totalPages} (${listData.total} total)`
@@ -279,7 +279,7 @@ export default function Services() {
                     size="sm"
                     onClick={() => setPage((p: number) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="h-7 px-2 text-gray-500"
+                    className="h-7 px-2 text-muted-foreground"
                   >
                     <ChevronLeft className="h-3 w-3" />
                   </Button>
@@ -288,18 +288,18 @@ export default function Services() {
                     size="sm"
                     onClick={() => setPage((p: number) => p + 1)}
                     disabled={page >= totalPages}
-                    className="h-7 px-2 text-gray-500"
+                    className="h-7 px-2 text-muted-foreground"
                   >
                     <ChevronRight className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Show</span>
                 <select
                   value={pageSize}
                   onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-                  className="border border-gray-200 rounded px-1.5 py-0.5 text-xs bg-white text-gray-700"
+                  className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>

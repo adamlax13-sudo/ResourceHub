@@ -53,7 +53,7 @@ const SEVERITY_COLORS: Record<string, string> = {
   critical: "bg-red-50 text-red-700 border-red-200",
   high: "bg-orange-50 text-orange-700 border-orange-200",
   medium: "bg-amber-50 text-amber-700 border-amber-200",
-  low: "bg-gray-50 text-gray-500 border-gray-200",
+  low: "bg-muted text-muted-foreground border-border",
 };
 
 const SEVERITY_BAR_COLORS: Record<string, string> = {
@@ -96,14 +96,14 @@ interface IssueEntry {
 // ---------- Helpers ----------
 
 function barColor(pct: number): string {
-  if (pct >= 95) return "bg-teal-500";
+  if (pct >= 95) return "bg-primary";
   if (pct >= 80) return "bg-emerald-500";
   if (pct >= 50) return "bg-amber-500";
   return "bg-red-500";
 }
 
 function barTextColor(pct: number): string {
-  if (pct >= 95) return "text-teal-700";
+  if (pct >= 95) return "text-primary";
   if (pct >= 80) return "text-emerald-700";
   if (pct >= 50) return "text-amber-700";
   return "text-red-700";
@@ -129,27 +129,27 @@ function StatCard({
   titleExtra?: React.ReactNode;
 }) {
   const iconColors: Record<string, string> = {
-    teal: "text-teal-500",
+    teal: "text-primary",
     red: "text-red-500",
     amber: "text-amber-500",
     emerald: "text-emerald-500",
   };
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-2">
           <div className={iconColors[color]}>{icon}</div>
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             {label}{titleExtra}
           </span>
         </div>
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-gray-300" />
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/50" />
         ) : (
           <>
-            <p className="text-2xl font-semibold text-gray-900 tabular-nums">{value}</p>
+            <p className="text-2xl font-semibold text-foreground tabular-nums">{value}</p>
             {subtitle && (
-              <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
             )}
           </>
         )}
@@ -324,9 +324,9 @@ export default function Quality() {
     <div className="p-6 space-y-6">
       {/* Page header */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">Data Quality</h2>
+        <h2 className="text-xl font-semibold text-foreground">Data Quality</h2>
         {dataUpdatedAt > 0 && (
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
           </p>
         )}
@@ -370,16 +370,16 @@ export default function Quality() {
       </div>
 
       {/* 2. Field Coverage */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-gray-900 text-base">Field Coverage</CardTitle>
-            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
+            <CardTitle className="text-foreground text-base">Field Coverage</CardTitle>
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={hideComplete}
                 onChange={(e) => setHideComplete(e.target.checked)}
-                className="rounded border-gray-300"
+                className="rounded border-border"
               />
               Hide complete fields
             </label>
@@ -388,10 +388,10 @@ export default function Quality() {
         <CardContent>
           {summaryLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : displayBars.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-sm text-muted-foreground text-center py-4">
               {hideComplete ? "All fields at 100% coverage." : "No field data available."}
             </p>
           ) : (
@@ -403,12 +403,12 @@ export default function Quality() {
                     key={bar.key}
                     className={cn(
                       "space-y-1 cursor-pointer rounded px-2 py-1.5 -mx-2 transition-colors",
-                      fieldFilter === bar.key ? "bg-teal-50 ring-1 ring-teal-200" : "hover:bg-gray-50"
+                      fieldFilter === bar.key ? "bg-primary/10 ring-1 ring-primary/20" : "hover:bg-muted"
                     )}
                     onClick={() => handleFieldClick(bar.key)}
                   >
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 font-medium">
+                      <span className="text-muted-foreground font-medium">
                         {bar.label}
                         {bar.key === "embeddingFresh" && (
                           <InfoTip text="Percentage of embedded services whose embedding is up-to-date (generated after last data update)." />
@@ -417,7 +417,7 @@ export default function Quality() {
                           <InfoTip text="Percentage of geocoded services whose coordinates were set after the last data update." />
                         )}
                         {issueCount > 0 && (
-                          <span className="ml-2 text-xs text-gray-400 font-normal">
+                          <span className="ml-2 text-xs text-muted-foreground font-normal">
                             {issueCount} {issueCount === 1 ? "service" : "services"}
                           </span>
                         )}
@@ -426,7 +426,7 @@ export default function Quality() {
                         {bar.pct}%
                       </span>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className={cn("h-full rounded-full transition-all", barColor(bar.pct))}
                         style={{ width: `${bar.pct}%` }}
@@ -442,9 +442,9 @@ export default function Quality() {
 
       {/* 3. Severity Breakdown */}
       {totalSeverity > 0 && (
-        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+        <Card className="bg-card border-border shadow-sm rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-gray-900 text-base">Severity Breakdown</CardTitle>
+            <CardTitle className="text-foreground text-base">Severity Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Severity labels */}
@@ -459,7 +459,7 @@ export default function Quality() {
                       "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded transition-colors cursor-pointer",
                       severityFilter === severity
                         ? SEVERITY_COLORS[severity] + " ring-1 ring-offset-1"
-                        : "text-gray-600 hover:bg-gray-50"
+                        : "text-muted-foreground hover:bg-muted"
                     )}
                     onClick={() => handleSeverityClick(severity)}
                   >
@@ -467,14 +467,14 @@ export default function Quality() {
                       className={cn("w-2.5 h-2.5 rounded-sm", SEVERITY_BAR_COLORS[severity])}
                     />
                     <span className="capitalize">{severity}</span>
-                    <span className="text-gray-400">({count})</span>
+                    <span className="text-muted-foreground">({count})</span>
                   </button>
                 );
               })}
             </div>
 
             {/* Stacked bar */}
-            <div className="h-4 bg-gray-100 rounded-full overflow-hidden flex">
+            <div className="h-4 bg-muted rounded-full overflow-hidden flex">
               {(["critical", "high", "medium"] as const).map((severity) => {
                 const count = severityCounts[severity];
                 if (count === 0) return null;
@@ -485,7 +485,7 @@ export default function Quality() {
                     className={cn(
                       "h-full transition-all cursor-pointer hover:opacity-80",
                       SEVERITY_BAR_COLORS[severity],
-                      severityFilter === severity && "ring-2 ring-offset-1 ring-gray-400"
+                      severityFilter === severity && "ring-2 ring-offset-1 ring-muted-foreground"
                     )}
                     style={{ width: `${pct}%` }}
                     onClick={() => handleSeverityClick(severity)}
@@ -499,13 +499,13 @@ export default function Quality() {
       )}
 
       {/* 4. Issues Table */}
-      <Card id="issues-section" className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card id="issues-section" className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-gray-900 text-base">
+            <CardTitle className="text-foreground text-base">
               Issues{" "}
               {searchedIssues.length > 0 && (
-                <span className="text-gray-400 font-normal">
+                <span className="text-muted-foreground font-normal">
                   ({searchedIssues.length}
                   {(fieldFilter || severityFilter || issueSearch) ? ` of ${issuesData?.total ?? allIssues.length}` : ""})
                 </span>
@@ -514,12 +514,12 @@ export default function Quality() {
             <div className="flex gap-2 flex-wrap">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search services..."
                   value={issueSearch}
                   onChange={(e) => setIssueSearch(e.target.value)}
-                  className="h-7 pl-7 pr-2 w-44 text-xs border-gray-300"
+                  className="h-7 pl-7 pr-2 w-44 text-xs border-border"
                 />
               </div>
 
@@ -527,7 +527,7 @@ export default function Quality() {
               <select
                 value={fieldFilter}
                 onChange={(e) => setFieldFilter(e.target.value)}
-                className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
+                className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
               >
                 {FIELD_FILTER_OPTIONS.map((opt) => {
                   const count = opt.value ? fieldIssueCounts[opt.value] ?? 0 : 0;
@@ -543,7 +543,7 @@ export default function Quality() {
               <select
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value)}
-                className="h-7 rounded border border-gray-300 bg-white px-1.5 text-[11px] text-gray-700"
+                className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
               >
                 <option value="">All Severity</option>
                 <option value="critical">Critical ({severityCounts.critical})</option>
@@ -556,7 +556,7 @@ export default function Quality() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2 text-xs text-gray-500"
+                  className="h-7 px-2 text-xs text-muted-foreground"
                   onClick={() => {
                     setFieldFilter("");
                     setSeverityFilter("");
@@ -572,33 +572,33 @@ export default function Quality() {
         <CardContent>
           {issuesLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : !searchedIssues.length ? (
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-sm text-muted-foreground text-center py-4">
               {fieldFilter || severityFilter || issueSearch
                 ? "No issues match the selected filters."
                 : "No quality issues found."}
             </p>
           ) : (
             <>
-              <div className="border border-gray-200 rounded-lg overflow-hidden max-h-[600px] overflow-y-auto">
+              <div className="border border-border rounded-lg overflow-hidden max-h-[600px] overflow-y-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                    <tr className="bg-muted">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                         Service
                       </th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                         Category
                       </th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                         Severity
                       </th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                         Missing Fields
                       </th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                         Confidence
                         <InfoTip text="Source confidence score -- how reliable the data source is, not how complete the data is." />
                       </th>
@@ -609,9 +609,9 @@ export default function Quality() {
                     {searchedIssues.map((issue) => (
                       <tr
                         key={issue.service.id}
-                        className="border-t border-gray-200 hover:bg-gray-50"
+                        className="border-t border-border hover:bg-muted"
                       >
-                        <td className="px-3 py-2 text-gray-900 max-w-[180px] truncate" title={issue.service.name}>
+                        <td className="px-3 py-2 text-foreground max-w-[180px] truncate" title={issue.service.name}>
                           {issue.service.name}
                         </td>
                         <td className="px-3 py-2">
@@ -642,7 +642,7 @@ export default function Quality() {
                                 className={cn(
                                   "text-[10px] cursor-pointer",
                                   fieldFilter === field
-                                    ? "bg-teal-50 text-teal-700 border-teal-200"
+                                    ? "bg-primary/10 text-primary border-primary/20"
                                     : "bg-red-50 text-red-600 border-red-200"
                                 )}
                                 onClick={() => handleFieldClick(field)}
@@ -675,18 +675,18 @@ export default function Quality() {
                               className={cn(
                                 "transition-colors",
                                 flaggedIds.has(issue.service.id)
-                                  ? "text-teal-500 cursor-default"
-                                  : "text-gray-400 hover:text-amber-500 cursor-pointer"
+                                  ? "text-primary cursor-default"
+                                  : "text-muted-foreground hover:text-amber-500 cursor-pointer"
                               )}
                             >
                               {flaggingId === issue.service.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               ) : (
-                                <Flag className={cn("h-3.5 w-3.5", flaggedIds.has(issue.service.id) && "fill-teal-500")} />
+                                <Flag className={cn("h-3.5 w-3.5", flaggedIds.has(issue.service.id) && "fill-primary")} />
                               )}
                             </button>
                             <Link href={`/admin/services?selected=${issue.service.id}`}>
-                              <ExternalLink className="h-3.5 w-3.5 text-gray-400 hover:text-gray-900 cursor-pointer" />
+                              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer" />
                             </Link>
                           </div>
                         </td>
@@ -698,15 +698,15 @@ export default function Quality() {
 
               {/* Pagination controls */}
               {issuesData && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                   <div className="flex items-center gap-3">
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {Math.min((issuePage - 1) * issuesPerPage + 1, issuesData.total)}–{Math.min(issuePage * issuesPerPage, issuesData.total)} of {issuesData.total} services
                     </p>
                     <select
                       value={issuesPerPage}
                       onChange={(e) => { setIssuesPerPage(Number(e.target.value)); setIssuePage(1); }}
-                      className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 bg-white"
+                      className="text-xs border border-border rounded px-1.5 py-1 text-muted-foreground bg-card"
                     >
                       <option value={25}>25 per page</option>
                       <option value={50}>50 per page</option>
@@ -724,7 +724,7 @@ export default function Quality() {
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
                     </Button>
-                    <span className="text-xs text-gray-500 px-2 tabular-nums">
+                    <span className="text-xs text-muted-foreground px-2 tabular-nums">
                       {issuePage} / {Math.ceil(issuesData.total / issuesPerPage)}
                     </span>
                     <Button
@@ -746,9 +746,9 @@ export default function Quality() {
 
       {/* 5. Category Quality Breakdown */}
       {categoryBreakdown.length > 0 && (
-        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+        <Card className="bg-card border-border shadow-sm rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-gray-900 text-base">
+            <CardTitle className="text-foreground text-base">
               Quality by Category
               <InfoTip text="Categories sorted by number of data quality issues. Categories with more issues may need enrichment or manual review." />
             </CardTitle>
@@ -770,11 +770,11 @@ export default function Quality() {
                           {category}
                         </Badge>
                       </div>
-                      <span className="text-xs text-gray-400 shrink-0 ml-2 tabular-nums">
+                      <span className="text-xs text-muted-foreground shrink-0 ml-2 tabular-nums">
                         {count} {count === 1 ? "issue" : "issues"}
                       </span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
                         className={cn(
                           "h-full rounded-full transition-all",

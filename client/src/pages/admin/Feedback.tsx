@@ -51,7 +51,7 @@ const TYPE_BADGE_COLORS: Record<string, string> = {
   service_closed: "bg-orange-100 text-orange-700 border-orange-200",
   missing_service: "bg-purple-100 text-purple-700 border-purple-200",
   bad_search: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  general: "bg-gray-100 text-gray-600 border-gray-200",
+  general: "bg-muted text-muted-foreground border-border",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -129,18 +129,18 @@ export default function Feedback() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">Feedback</h2>
+        <h2 className="text-xl font-semibold text-foreground">Feedback</h2>
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-border">
         <button
           onClick={() => { setActiveTab("messages"); setPage(1); }}
           className={cn(
             "px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px",
             activeTab === "messages"
-              ? "border-teal-500 text-teal-700"
-              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
           )}
         >
           <MessageSquare className="h-4 w-4 inline-block mr-1.5 -mt-0.5" />
@@ -151,8 +151,8 @@ export default function Feedback() {
           className={cn(
             "px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px",
             activeTab === "votes"
-              ? "border-teal-500 text-teal-700"
-              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
           )}
         >
           <ThumbsUp className="h-4 w-4 inline-block mr-1.5 -mt-0.5" />
@@ -162,10 +162,10 @@ export default function Feedback() {
 
       {/* Messages Tab */}
       {activeTab === "messages" && (
-        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+        <Card className="bg-card border-border shadow-sm rounded-xl">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-gray-900 text-base">
+              <CardTitle className="text-foreground text-base">
                 User Messages {messagesData?.total ? `(${messagesData.total})` : ""}
               </CardTitle>
               {/* Filter Bar */}
@@ -173,7 +173,7 @@ export default function Feedback() {
                 <select
                   value={typeFilter}
                   onChange={handleFilterChange(setTypeFilter)}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1.5 text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-teal-400"
+                  className="text-xs border border-border rounded-md px-2 py-1.5 text-muted-foreground bg-card focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {FEEDBACK_TYPE_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -182,7 +182,7 @@ export default function Feedback() {
                 <select
                   value={statusFilter}
                   onChange={handleFilterChange(setStatusFilter)}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1.5 text-gray-600 bg-white focus:outline-none focus:ring-1 focus:ring-teal-400"
+                  className="text-xs border border-border rounded-md px-2 py-1.5 text-muted-foreground bg-card focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {FEEDBACK_STATUS_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -194,39 +194,39 @@ export default function Feedback() {
           <CardContent>
             {messagesLoading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : !messagesData?.messages?.length ? (
-              <p className="text-sm text-gray-400 text-center py-8">No feedback messages found.</p>
+              <p className="text-sm text-muted-foreground text-center py-8">No feedback messages found.</p>
             ) : (
               <>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-gray-50">
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-28">Type</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-44">Service</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Message</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-28">Status</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-36">Date</th>
+                      <tr className="bg-muted">
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-28">Type</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-44">Service</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Message</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-28">Status</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-36">Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {messagesData.messages.map((msg) => (
-                        <tr key={msg.id} className="border-t border-gray-200 hover:bg-gray-50">
+                        <tr key={msg.id} className="border-t border-border hover:bg-muted">
                           <td className="px-3 py-2.5">
                             <Badge className={cn("text-[10px] px-1.5 border", TYPE_BADGE_COLORS[msg.type] || TYPE_BADGE_COLORS.general)}>
                               {TYPE_LABELS[msg.type] || msg.type}
                             </Badge>
                           </td>
-                          <td className="px-3 py-2.5 text-gray-700 truncate max-w-[180px]">
+                          <td className="px-3 py-2.5 text-foreground truncate max-w-[180px]">
                             {msg.serviceName ? (
                               msg.serviceId ? (
                                 <a
                                   href={`/services/${msg.serviceId}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-teal-600 hover:underline"
+                                  className="text-primary hover:underline"
                                 >
                                   {msg.serviceName}
                                 </a>
@@ -234,13 +234,13 @@ export default function Feedback() {
                                 msg.serviceName
                               )
                             ) : (
-                              <span className="text-gray-300">&mdash;</span>
+                              <span className="text-muted-foreground/40">&mdash;</span>
                             )}
                           </td>
-                          <td className="px-3 py-2.5 text-gray-700">
+                          <td className="px-3 py-2.5 text-foreground">
                             <p className="line-clamp-2">{msg.message}</p>
                             {msg.searchQuery && (
-                              <p className="text-[10px] text-gray-400 mt-0.5">Search: "{msg.searchQuery}"</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Search: "{msg.searchQuery}"</p>
                             )}
                           </td>
                           <td className="px-3 py-2.5">
@@ -248,7 +248,7 @@ export default function Feedback() {
                               value={msg.status}
                               onChange={(e) => statusMutation.mutate({ id: msg.id, status: e.target.value })}
                               className={cn(
-                                "text-[11px] font-medium border rounded px-1.5 py-0.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-teal-400",
+                                "text-[11px] font-medium border rounded px-1.5 py-0.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary",
                                 STATUS_COLORS[msg.status] || STATUS_COLORS.new
                               )}
                             >
@@ -257,7 +257,7 @@ export default function Feedback() {
                               <option value="resolved">Resolved</option>
                             </select>
                           </td>
-                          <td className="px-3 py-2.5 text-gray-400 text-xs">
+                          <td className="px-3 py-2.5 text-muted-foreground text-xs">
                             {new Date(msg.createdAt).toLocaleDateString(undefined, {
                               month: "short",
                               day: "numeric",
@@ -274,7 +274,7 @@ export default function Feedback() {
 
                 {/* Pagination */}
                 {messagesData.totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-3 text-xs text-gray-400">
+                  <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
                     <span>
                       Page {messagesData.page} of {messagesData.totalPages} ({messagesData.total} total)
                     </span>
@@ -284,7 +284,7 @@ export default function Feedback() {
                         size="sm"
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page <= 1}
-                        className="h-7 px-2 text-gray-500"
+                        className="h-7 px-2 text-muted-foreground"
                       >
                         <ChevronLeft className="h-3 w-3" />
                       </Button>
@@ -293,7 +293,7 @@ export default function Feedback() {
                         size="sm"
                         onClick={() => setPage((p) => p + 1)}
                         disabled={page >= (messagesData.totalPages || 1)}
-                        className="h-7 px-2 text-gray-500"
+                        className="h-7 px-2 text-muted-foreground"
                       >
                         <ChevronRight className="h-3 w-3" />
                       </Button>
@@ -308,39 +308,39 @@ export default function Feedback() {
 
       {/* Votes Tab */}
       {activeTab === "votes" && (
-        <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+        <Card className="bg-card border-border shadow-sm rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-gray-900 text-base">
+            <CardTitle className="text-foreground text-base">
               Service Votes {votesData?.votes?.length ? `(${votesData.votes.length} services)` : ""}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {votesLoading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : !votesData?.votes?.length ? (
-              <p className="text-sm text-gray-400 text-center py-8">No service votes yet.</p>
+              <p className="text-sm text-muted-foreground text-center py-8">No service votes yet.</p>
             ) : (
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="border border-border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Service</th>
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-44">Category</th>
-                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                    <tr className="bg-muted">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Service</th>
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-44">Category</th>
+                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                         <ThumbsUp className="h-3 w-3 inline-block" />
                       </th>
-                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                         <ThumbsDown className="h-3 w-3 inline-block" />
                       </th>
-                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">Total</th>
+                      <th className="text-center px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {votesData.votes.map((vote) => (
-                      <tr key={vote.service_id} className="border-t border-gray-200 hover:bg-gray-50">
-                        <td className="px-3 py-2.5 text-gray-900 max-w-[250px] truncate">{vote.service_name}</td>
+                      <tr key={vote.service_id} className="border-t border-border hover:bg-muted">
+                        <td className="px-3 py-2.5 text-foreground max-w-[250px] truncate">{vote.service_name}</td>
                         <td className="px-3 py-2.5">
                           <Badge className={cn(getCategoryColor(vote.category), "text-[10px] px-1.5")}>
                             {vote.category}
@@ -352,7 +352,7 @@ export default function Feedback() {
                         <td className="px-3 py-2.5 text-center">
                           <span className="text-red-500 font-medium">{Number(vote.thumbs_down)}</span>
                         </td>
-                        <td className="px-3 py-2.5 text-center text-gray-700 font-medium">{Number(vote.total_votes)}</td>
+                        <td className="px-3 py-2.5 text-center text-foreground font-medium">{Number(vote.total_votes)}</td>
                       </tr>
                     ))}
                   </tbody>

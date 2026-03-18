@@ -178,7 +178,7 @@ export default function System() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">System</h2>
+      <h2 className="text-xl font-semibold text-foreground">System</h2>
 
       {/* Confirmation Dialog */}
       <Dialog open={!!confirmAction} onOpenChange={(open) => { if (!open && !isConfirmPending) setConfirmAction(null); }}>
@@ -199,7 +199,7 @@ export default function System() {
               variant={config?.variant === "destructive" ? "destructive" : "default"}
               onClick={handleConfirm}
               disabled={isConfirmPending}
-              className={config?.variant !== "destructive" ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
+              className={config?.variant !== "destructive" ? "bg-primary hover:bg-primary/80 text-white" : ""}
             >
               {isConfirmPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
               {isConfirmPending ? "Running..." : "Yes, proceed"}
@@ -209,15 +209,15 @@ export default function System() {
       </Dialog>
 
       {/* System Status */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-gray-900 text-base">System Status</CardTitle>
+            <CardTitle className="text-foreground text-base">System Status</CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => refetchStatus()}
-              className="text-gray-400 hover:text-gray-900 h-7"
+              className="text-muted-foreground hover:text-foreground h-7"
             >
               <RefreshCw className="h-3.5 w-3.5" />
             </Button>
@@ -226,40 +226,40 @@ export default function System() {
         <CardContent>
           {statusLoading ? (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-1">
-                <p className="text-xs text-gray-400">Database</p>
+                <p className="text-xs text-muted-foreground">Database</p>
                 <div className="flex items-center gap-2">
                   <div className={cn(
                     "h-2 w-2 rounded-full",
                     db?.connected ? "bg-emerald-400" : "bg-red-400"
                   )} />
-                  <span className="text-sm text-gray-900">
+                  <span className="text-sm text-foreground">
                     {db?.connected ? "Connected" : "Disconnected"}
                   </span>
                 </div>
                 {db?.pingMs != null && (
-                  <p className="text-xs text-gray-400">{db.pingMs}ms ping</p>
+                  <p className="text-xs text-muted-foreground">{db.pingMs}ms ping</p>
                 )}
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-gray-400">Services</p>
-                <p className="text-sm text-gray-900">{svcs?.activeServices ?? 0} active</p>
-                <p className="text-xs text-gray-400">{svcs?.inactiveServices ?? 0} inactive</p>
+                <p className="text-xs text-muted-foreground">Services</p>
+                <p className="text-sm text-foreground">{svcs?.activeServices ?? 0} active</p>
+                <p className="text-xs text-muted-foreground">{svcs?.inactiveServices ?? 0} inactive</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-gray-400">Embeddings</p>
-                <p className="text-sm text-gray-900">{svcs?.servicesWithEmbedding ?? 0}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">Embeddings</p>
+                <p className="text-sm text-foreground">{svcs?.servicesWithEmbedding ?? 0}</p>
+                <p className="text-xs text-muted-foreground">
                   of {svcs?.totalServices ?? 0} total
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-gray-400">Cache</p>
-                <p className="text-sm text-gray-900">{status?.cache?.cachedQueries ?? 0} queries</p>
+                <p className="text-xs text-muted-foreground">Cache</p>
+                <p className="text-sm text-foreground">{status?.cache?.cachedQueries ?? 0} queries</p>
               </div>
             </div>
           )}
@@ -267,9 +267,9 @@ export default function System() {
       </Card>
 
       {/* Maintenance Jobs */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-gray-900 text-base">Maintenance</CardTitle>
+          <CardTitle className="text-foreground text-base">Maintenance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <JobRow
@@ -280,7 +280,7 @@ export default function System() {
               <Button
                 size="sm"
                 onClick={() => setConfirmAction("refresh")}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
+                className="bg-primary hover:bg-primary/80 text-white"
               >
                 Refresh
               </Button>
@@ -294,7 +294,7 @@ export default function System() {
               <Button
                 size="sm"
                 onClick={() => setConfirmAction("persist")}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
+                className="bg-primary hover:bg-primary/80 text-white"
               >
                 Persist
               </Button>
@@ -308,7 +308,7 @@ export default function System() {
               <Button
                 size="sm"
                 onClick={() => setConfirmAction("recompute")}
-                className="bg-teal-600 hover:bg-teal-700 text-white"
+                className="bg-primary hover:bg-primary/80 text-white"
               >
                 Recompute
               </Button>
@@ -316,14 +316,14 @@ export default function System() {
           />
 
           {/* Purge Analytics — special layout with days selector */}
-          <div className="flex items-start justify-between gap-4 py-3 border-t border-gray-200">
+          <div className="flex items-start justify-between gap-4 py-3 border-t border-border">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-red-50 p-2 mt-0.5">
                 <Trash2 className="h-4 w-4 text-red-500" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">Purge Analytics</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-sm font-medium text-foreground">Purge Analytics</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Permanently delete old search analytics data.
                 </p>
               </div>
@@ -332,7 +332,7 @@ export default function System() {
               <select
                 value={purgeDays}
                 onChange={(e) => setPurgeDays(Number(e.target.value))}
-                className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900"
+                className="h-8 rounded-md border border-border bg-card px-2 text-xs text-foreground"
               >
                 <option value={30}>30 days</option>
                 <option value={90}>90 days</option>
@@ -344,7 +344,7 @@ export default function System() {
                 variant="outline"
                 onClick={() => purgePreviewMutation.mutate()}
                 disabled={purgePreviewMutation.isPending}
-                className="border-gray-300 text-xs"
+                className="border-border text-xs"
               >
                 {purgePreviewMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                 Preview
@@ -376,14 +376,14 @@ function JobRow({
   action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-3 border-t border-gray-200 first:border-0 first:pt-0">
+    <div className="flex items-start justify-between gap-4 py-3 border-t border-border first:border-0 first:pt-0">
       <div className="flex items-start gap-3">
-        <div className="rounded-lg bg-teal-50 p-2 mt-0.5">
-          <Icon className="h-4 w-4 text-teal-600" />
+        <div className="rounded-lg bg-primary/10 p-2 mt-0.5">
+          <Icon className="h-4 w-4 text-primary" />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-900">{title}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+          <p className="text-sm font-medium text-foreground">{title}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
       {action}

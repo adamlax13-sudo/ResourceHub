@@ -43,40 +43,40 @@ export default function Scraper() {
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Scraper</h2>
+      <h2 className="text-xl font-semibold text-foreground">Scraper</h2>
 
       {/* Last Run Summary */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-gray-900 text-base">Last Run</CardTitle>
+          <CardTitle className="text-foreground text-base">Last Run</CardTitle>
         </CardHeader>
         <CardContent>
           {isPending ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : !latestRun ? (
-            <p className="text-sm text-gray-400">No scraper runs found.</p>
+            <p className="text-sm text-muted-foreground">No scraper runs found.</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-gray-400">Status</p>
+                <p className="text-xs text-muted-foreground">Status</p>
                 <StatusBadge status={latestRun.status} />
               </div>
               <div>
-                <p className="text-xs text-gray-400">Started</p>
-                <p className="text-sm text-gray-900">
+                <p className="text-xs text-muted-foreground">Started</p>
+                <p className="text-sm text-foreground">
                   {new Date(latestRun.startedAt).toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">Duration</p>
-                <p className="text-sm text-gray-900">
+                <p className="text-xs text-muted-foreground">Duration</p>
+                <p className="text-sm text-foreground">
                   {formatDuration(latestRun.duration, latestRun.startedAt, latestRun.completedAt)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">Results</p>
+                <p className="text-xs text-muted-foreground">Results</p>
                 <div className="flex gap-3 text-sm">
                   {latestRun.servicesCreated != null && (
                     <span className="text-emerald-500">+{latestRun.servicesCreated}</span>
@@ -95,28 +95,28 @@ export default function Scraper() {
       </Card>
 
       {/* Run History */}
-      <Card className="bg-white border-gray-200 shadow-sm rounded-xl">
+      <Card className="bg-card border-border shadow-sm rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-gray-900 text-base">Run History</CardTitle>
+            <CardTitle className="text-foreground text-base">Run History</CardTitle>
             <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={hideFailed}
                 onChange={(e) => setHideFailed(e.target.checked)}
-                className="rounded border-gray-300"
+                className="rounded border-border"
               />
-              <span className="text-xs text-gray-500">Hide failed (0ms)</span>
+              <span className="text-xs text-muted-foreground">Hide failed (0ms)</span>
             </label>
           </div>
         </CardHeader>
         <CardContent>
           {isPending ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : !data?.runs?.length ? (
-            <p className="text-sm text-gray-400 text-center py-4">No runs recorded.</p>
+            <p className="text-sm text-muted-foreground text-center py-4">No runs recorded.</p>
           ) : (() => {
             // Filter stale zero-duration failed runs when toggle is on
             const filtered = hideFailed
@@ -131,17 +131,17 @@ export default function Scraper() {
 
             return (
               <>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-gray-50">
+                      <tr className="bg-muted">
                         <th className="w-8" />
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Status</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Started</th>
-                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Duration</th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Created</th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Updated</th>
-                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">Errors</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Status</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Started</th>
+                        <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Duration</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Created</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Updated</th>
+                        <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Errors</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -152,26 +152,26 @@ export default function Scraper() {
                           <React.Fragment key={run.id}>
                             <tr
                               className={cn(
-                                "border-t border-gray-200 cursor-pointer hover:bg-gray-50",
-                                isExpanded && "bg-gray-50"
+                                "border-t border-border cursor-pointer hover:bg-muted",
+                                isExpanded && "bg-muted"
                               )}
                               onClick={() => setExpandedId(isExpanded ? null : run.id)}
                             >
                               <td className="px-2 py-2">
                                 {hasErrors ? (
                                   isExpanded ?
-                                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> :
-                                    <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+                                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> :
+                                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                                 ) : <span className="w-3.5" />}
                               </td>
                               <td className="px-3 py-2"><StatusBadge status={run.status} /></td>
-                              <td className="px-3 py-2 text-gray-700">
+                              <td className="px-3 py-2 text-foreground">
                                 {new Date(run.startedAt).toLocaleDateString()}{" "}
-                                <span className="text-gray-400">
+                                <span className="text-muted-foreground">
                                   {new Date(run.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                 </span>
                               </td>
-                              <td className="px-3 py-2 text-gray-500">
+                              <td className="px-3 py-2 text-muted-foreground">
                                 {formatDuration(run.duration, run.startedAt, run.completedAt)}
                               </td>
                               <td className="px-3 py-2 text-right text-emerald-500">
@@ -186,14 +186,14 @@ export default function Scraper() {
                             </tr>
                             {isExpanded && hasErrors && (
                               <tr>
-                                <td colSpan={7} className="px-6 py-3 bg-gray-50">
-                                  <p className="text-xs font-medium text-gray-500 mb-2">Errors:</p>
+                                <td colSpan={7} className="px-6 py-3 bg-muted">
+                                  <p className="text-xs font-medium text-muted-foreground mb-2">Errors:</p>
                                   <div className="space-y-1 max-h-48 overflow-auto">
                                     {(run.errors ?? []).map((err, i) => (
                                       <p key={i} className="text-xs text-red-500 font-mono">{err}</p>
                                     ))}
                                     {!run.errors?.length && (
-                                      <p className="text-xs text-gray-400">
+                                      <p className="text-xs text-muted-foreground">
                                         {run.errorCount} error(s) occurred. See server logs for details.
                                       </p>
                                     )}
@@ -208,12 +208,12 @@ export default function Scraper() {
                   </table>
                 </div>
                 {hasMore && (
-                  <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
+                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                     <span>Showing {displayed.length} of {filtered.length} runs</span>
                     <button
                       type="button"
                       onClick={() => setShowAll((v) => !v)}
-                      className="text-teal-600 hover:text-teal-700 font-medium"
+                      className="text-primary hover:text-primary/80 font-medium"
                     >
                       {showAll ? "Show less" : `Show all ${filtered.length}`}
                     </button>
@@ -265,7 +265,7 @@ function StatusBadge({ status }: { status: string }) {
       </Badge>
     );
   }
-  return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{status}</Badge>;
+  return <Badge className="bg-muted text-muted-foreground border-border text-xs">{status}</Badge>;
 }
 
 function formatMs(ms: number): string {
