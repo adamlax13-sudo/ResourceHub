@@ -199,6 +199,7 @@ export default function Review() {
           >
             <option value="">All Sources</option>
             <option value="scraper">Scraper</option>
+            <option value="enrichment-audit">Enrichment Audit</option>
             <option value="import">Import</option>
             <option value="admin">Admin</option>
           </select>

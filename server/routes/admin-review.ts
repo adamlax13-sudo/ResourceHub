@@ -166,12 +166,25 @@ export function registerAdminReviewRoutes(app: Express): void {
       }
     }
 
-    // For review-flagged items, include current service data for editing
+    // For review-flagged and update items, include current service data for diffing/editing
     let currentServiceData: Record<string, any> | null = null;
-    if (request.changeType === 'review' && request.serviceId) {
+    if ((request.changeType === 'review' || request.changeType === 'update') && request.serviceId) {
       const [svc] = await db.select().from(services).where(eq(services.id, request.serviceId)).limit(1);
       if (svc) {
-        currentServiceData = svc as Record<string, any>;
+        currentServiceData = {
+          id: svc.id,
+          name: svc.name,
+          category: svc.category,
+          description: svc.description || '',
+          location: svc.location || '',
+          eligibility: svc.eligibility || '',
+          processSteps: svc.processSteps,
+          hoursOfOperation: svc.hoursOfOperation || '',
+          phone: svc.phone || '',
+          email: svc.email || '',
+          websiteUrl: svc.websiteUrl || '',
+          address: svc.address || '',
+        };
       }
     }
 
@@ -184,7 +197,7 @@ export function registerAdminReviewRoutes(app: Express): void {
 
     res.json({
       success: true,
-      request: { ...request, serviceName, createdAt: request.submittedAt, currentServiceData },
+      request: { ...request, serviceName, createdAt: request.submittedAt, currentServiceData, currentData: currentServiceData },
       duplicateWarning,
     });
   }));

@@ -1296,6 +1296,58 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    // Admin edit upgrades: when key fields are manually edited, promote confidence
+    // and clear AI-inferred flags so the service reflects human-verified data.
+    const contentFields = new Set(['description', 'eligibility', 'processSteps', 'hoursOfOperation', 'phone', 'email', 'websiteUrl', 'address']);
+    const editedContentFields = Object.keys(changedFields).filter(k => contentFields.has(k));
+
+    if (editedContentFields.length > 0) {
+      // Recalculate confidence based on field completeness after this edit
+      const merged = { ...current, ...changes };
+      let score = 50; // base
+      if (merged.phone) score += 10;
+      if (merged.email) score += 5;
+      if (merged.websiteUrl) score += 5;
+      if (merged.description && String(merged.description).length > 50) score += 10;
+      if (merged.eligibility) score += 5;
+      if (merged.processSteps && JSON.stringify(merged.processSteps) !== '[]' && JSON.stringify(merged.processSteps) !== 'null') score += 5;
+      if (merged.hoursOfOperation) score += 5;
+      if (merged.address) score += 5;
+      changes.confidenceScore = Math.min(100, score);
+
+      // Clear process_steps_inferred if admin edited process steps
+      if ('processSteps' in changedFields) {
+        (changes as any).processStepsInferred = false;
+      }
+
+      // Clear AI enrichment fields that the admin has overwritten
+      const aiFieldMap: Record<string, string> = {
+        description: 'ai_description',
+        eligibility: 'ai_eligibility',
+        processSteps: 'ai_process_steps',
+        hoursOfOperation: 'ai_wait_times', // closest AI field
+      };
+      const aiClears: string[] = [];
+      for (const field of editedContentFields) {
+        if (aiFieldMap[field]) aiClears.push(aiFieldMap[field]);
+      }
+      if (aiClears.length > 0) {
+        // Clear AI fields that admin has overwritten — use allowlisted column names only
+        // ai_description and ai_process_steps are NOT NULL, so use empty/[] instead of NULL
+        const notNullCols = new Set(['ai_description', 'ai_process_steps']);
+        const allowedCols = new Set(['ai_description', 'ai_eligibility', 'ai_process_steps', 'ai_wait_times']);
+        const safeCols = aiClears.filter(c => allowedCols.has(c));
+        if (safeCols.length > 0) {
+          const setClauses = safeCols.map(f =>
+            notNullCols.has(f)
+              ? (f === 'ai_process_steps' ? `${f} = '[]'::json` : `${f} = ''`)
+              : `${f} = NULL`
+          ).join(', ');
+          await db.execute(sql`UPDATE ai_service_enrichments SET ${sql.raw(setClauses)} WHERE service_id = ${current.serviceId}`);
+        }
+      }
+    }
+
     // Apply update
     const [updated] = await db.update(services)
       .set({ ...changes, lastUpdated: now })
@@ -1570,7 +1622,7 @@ export class DatabaseStorage implements IStorage {
     limit?: number;
   }): Promise<{ requests: ServiceChangeRequest[]; total: number }> {
     const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const limit = params.limit ?? 500;
     const offset = (page - 1) * limit;
 
     const conditions: SQL[] = [];
