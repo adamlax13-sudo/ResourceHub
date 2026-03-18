@@ -14,10 +14,12 @@ import type { BoostOptions } from './name-match';
 import { getOpenAI, extractJSON } from '../../../helpers/openai';
 
 // How many services to send to the LLM for reranking
-const RERANK_TOP_N = 20;
+// Increased from 20 to 30 — the 20% trim cutoff kills non-reranked services,
+// so a larger pool ensures more relevant services survive the cut.
+const RERANK_TOP_N = 30;
 
 // Timeout for the LLM call (ms) — falls back to regex boostByIntent() on timeout
-const RERANK_TIMEOUT_MS = 3000;
+const RERANK_TIMEOUT_MS = 4000;
 
 // Scale factor for LLM scores — chosen to overshoot typical RRF range (~50-100)
 // so LLM relevance signal has strong sorting influence
