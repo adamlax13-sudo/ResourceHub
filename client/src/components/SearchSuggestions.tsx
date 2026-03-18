@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Tag, TrendingUp } from 'lucide-react';
+import { Search, Layers, TrendingUp, ArrowUpRight } from 'lucide-react';
 
 interface SuggestResponse {
   services: string[];
@@ -12,19 +12,38 @@ interface SearchSuggestionsProps {
   isVisible: boolean;
   onSelect: (suggestion: string) => void;
   onDismiss: () => void;
-  /** Anchor element for positioning */
   anchorRef: React.RefObject<HTMLElement | null>;
+}
+
+/** Highlight the portion of text that matches the query */
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  const lower = text.toLowerCase();
+  const qLower = query.toLowerCase().trim();
+  const idx = lower.indexOf(qLower);
+
+  if (idx === -1 || !qLower) return <>{text}</>;
+
+  return (
+    <>
+      {text.slice(0, idx)}
+      <span className="font-semibold text-foreground">{text.slice(idx, idx + qLower.length)}</span>
+      {text.slice(idx + qLower.length)}
+    </>
+  );
 }
 
 export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, anchorRef }: SearchSuggestionsProps) {
   const [suggestions, setSuggestions] = useState<SuggestResponse | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevQueryRef = useRef('');
 
-  // Build flat list for keyboard navigation
-  const flatList: { text: string; type: string }[] = [];
+  // Build flat list — interleave: categories first, then services, then queries
+  // No section headers, just differentiated by icon (Google-style)
+  const flatList: { text: string; type: 'category' | 'service' | 'query' }[] = [];
   if (suggestions) {
     suggestions.categories.forEach(c => flatList.push({ text: c, type: 'category' }));
     suggestions.services.forEach(s => flatList.push({ text: s, type: 'service' }));
@@ -34,11 +53,16 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
   // Fetch suggestions with debounce
   useEffect(() => {
     if (!isVisible || query.trim().length < 2) {
-      setSuggestions(null);
+      // Don't clear immediately — keep showing previous results briefly to avoid flicker
+      if (query.trim().length < 2) setSuggestions(null);
       return;
     }
 
+    // Skip if query hasn't meaningfully changed
+    if (query.trim() === prevQueryRef.current) return;
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    setIsLoading(true);
 
     debounceRef.current = setTimeout(async () => {
       if (abortRef.current) abortRef.current.abort();
@@ -53,11 +77,14 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
           const hasResults = data.services.length + data.categories.length + data.queries.length > 0;
           setSuggestions(hasResults ? data : null);
           setSelectedIndex(-1);
+          prevQueryRef.current = query.trim();
         }
       } catch {
-        // Aborted or network error — ignore
+        // Aborted or network error
+      } finally {
+        setIsLoading(false);
       }
-    }, 200);
+    }, 150);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -104,104 +131,59 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
 
   if (!isVisible || !suggestions || flatList.length === 0) return null;
 
-  const typeIcon = (type: string) => {
+  const iconForType = (type: string, isSelected: boolean) => {
+    const cls = `w-4 h-4 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground/60'}`;
     switch (type) {
-      case 'category': return <Tag className="w-4 h-4 text-primary/60" />;
-      case 'service': return <Search className="w-4 h-4 text-muted-foreground" />;
-      case 'query': return <TrendingUp className="w-4 h-4 text-muted-foreground" />;
-      default: return null;
+      case 'category': return <Layers className={cls} />;
+      case 'service': return <ArrowUpRight className={cls} />;
+      case 'query': return <Search className={cls} />;
+      default: return <Search className={cls} />;
     }
   };
 
-  let itemIndex = -1;
+  const labelForType = (type: string) => {
+    switch (type) {
+      case 'category': return 'Category';
+      case 'service': return 'Service';
+      case 'query': return 'Search';
+      default: return '';
+    }
+  };
 
   return (
     <div
       ref={containerRef}
-      className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-border/50 z-50 overflow-hidden"
+      className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-border/40 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
       role="listbox"
     >
-      {suggestions.categories.length > 0 && (
-        <div>
-          <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
-            Categories
-          </div>
-          {suggestions.categories.map(cat => {
-            itemIndex++;
-            const idx = itemIndex;
-            return (
-              <button
-                key={`cat-${cat}`}
-                type="button"
-                role="option"
-                aria-selected={selectedIndex === idx}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
-                }`}
-                onMouseEnter={() => setSelectedIndex(idx)}
-                onMouseDown={(e) => { e.preventDefault(); onSelect(cat); }}
-              >
-                {typeIcon('category')}
-                <span>{cat}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-      {suggestions.services.length > 0 && (
-        <div>
-          <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
-            Services
-          </div>
-          {suggestions.services.map(svc => {
-            itemIndex++;
-            const idx = itemIndex;
-            return (
-              <button
-                key={`svc-${svc}`}
-                type="button"
-                role="option"
-                aria-selected={selectedIndex === idx}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
-                }`}
-                onMouseEnter={() => setSelectedIndex(idx)}
-                onMouseDown={(e) => { e.preventDefault(); onSelect(svc); }}
-              >
-                {typeIcon('service')}
-                <span className="truncate">{svc}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-      {suggestions.queries.length > 0 && (
-        <div>
-          <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
-            Popular Searches
-          </div>
-          {suggestions.queries.map(q => {
-            itemIndex++;
-            const idx = itemIndex;
-            return (
-              <button
-                key={`q-${q}`}
-                type="button"
-                role="option"
-                aria-selected={selectedIndex === idx}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
-                  selectedIndex === idx ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted/50'
-                }`}
-                onMouseEnter={() => setSelectedIndex(idx)}
-                onMouseDown={(e) => { e.preventDefault(); onSelect(q); }}
-              >
-                {typeIcon('query')}
-                <span>{q}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <div className="py-1.5">
+        {flatList.map((item, idx) => {
+          const isSelected = selectedIndex === idx;
+          return (
+            <button
+              key={`${item.type}-${item.text}`}
+              type="button"
+              role="option"
+              aria-selected={isSelected}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100 ${
+                isSelected
+                  ? 'bg-primary/8'
+                  : 'hover:bg-muted/40'
+              }`}
+              onMouseEnter={() => setSelectedIndex(idx)}
+              onMouseDown={(e) => { e.preventDefault(); onSelect(item.text); }}
+            >
+              {iconForType(item.type, isSelected)}
+              <span className={`flex-1 text-sm leading-tight ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                <HighlightMatch text={item.text} query={query} />
+              </span>
+              <span className={`text-[11px] shrink-0 ${isSelected ? 'text-primary/50' : 'text-muted-foreground/40'}`}>
+                {labelForType(item.type)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

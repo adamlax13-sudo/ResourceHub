@@ -410,16 +410,20 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* Query understanding — compact inline summary */}
+                {/* Query understanding — pill-style summary */}
                 {data?.queryUnderstanding?.intent && (
-                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 truncate">
-                    <span className="truncate">
-                      {data.queryUnderstanding.location
-                        ? `${data.queryUnderstanding.intent} in ${data.queryUnderstanding.location}`
-                        : data.queryUnderstanding.intent}
+                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/60 border border-border/50">
+                    <span className="text-xs font-medium text-muted-foreground capitalize">
+                      {data.queryUnderstanding.intent}
                     </span>
+                    {data.queryUnderstanding.location && (
+                      <>
+                        <span className="text-muted-foreground/30">|</span>
+                        <span className="text-xs text-foreground/70">{data.queryUnderstanding.location}</span>
+                      </>
+                    )}
                     {data.queryUnderstanding.attributes?.serviceFormat?.map(f => (
-                      <span key={f} className="shrink-0 px-1.5 py-0.5 rounded-md bg-primary/8 text-primary text-[11px] font-medium">{f}</span>
+                      <span key={f} className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-medium">{f}</span>
                     ))}
                   </div>
                 )}
