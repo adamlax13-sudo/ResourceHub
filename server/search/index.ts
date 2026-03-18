@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v159';
+const CACHE_VERSION = 'v160';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -287,8 +287,9 @@ async function insertOrgSiblings(services: LiteService[], query: string): Promis
   if (!top.rrfScore || !top.name) return services;
 
   // Check trigram similarity between query and top result name
+  // Threshold 0.5 = strong name match only (e.g., "CMHA" matching "CMHA — Programs")
   const similarity = trigramSimilarity(query, top.name);
-  if (similarity < 0.3) return services;
+  if (similarity < 0.5) return services;
 
   // Check if top result is significantly ahead of #2 (strong match signal)
   const second = services[1];

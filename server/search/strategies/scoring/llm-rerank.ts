@@ -19,7 +19,7 @@ import { getOpenAI, extractJSON } from '../../../helpers/openai';
 const RERANK_TOP_N = 30;
 
 // Timeout for the LLM call (ms) — falls back to regex boostByIntent() on timeout
-const RERANK_TIMEOUT_MS = 4000;
+const RERANK_TIMEOUT_MS = 6000;
 
 // Scale factor for LLM scores — chosen to overshoot typical RRF range (~50-100)
 // so LLM relevance signal has strong sorting influence
