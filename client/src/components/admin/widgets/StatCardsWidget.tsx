@@ -29,7 +29,7 @@ export function StatCardsWidget() {
         {Array.from({ length: 3 }).map((_, i) => (
           <Card
             key={i}
-            className="bg-white border-gray-100 shadow-sm rounded-xl animate-pulse h-[100px]"
+            className="bg-card border-border shadow-sm rounded-xl animate-pulse h-[100px]"
           >
             <CardContent className="p-5" />
           </Card>

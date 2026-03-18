@@ -30,9 +30,9 @@ export function AnalyticsCategoriesWidget({ compact }: { compact?: boolean }) {
   const maxClicks = displayCategories.length > 0 ? displayCategories[0].clicks : 1;
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium text-gray-900">
+        <CardTitle className="text-base font-medium text-foreground">
           Category Distribution
           <InfoTip text="Which service categories users click on most in search results." />
         </CardTitle>
@@ -40,28 +40,28 @@ export function AnalyticsCategoriesWidget({ compact }: { compact?: boolean }) {
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : categories.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No category data available.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">No category data available.</p>
         ) : (
           <div className={cn("space-y-2 pr-1", compact ? "" : "max-h-[300px] overflow-y-auto")}>
             {displayCategories.map((cat) => {
               const pct = Math.round((cat.clicks / maxClicks) * 100);
               const colorClasses = getCategoryColor(cat.category);
-              const textColor = colorClasses.split(" ").find((c) => c.startsWith("text-")) ?? "text-gray-600";
-              const bgColor = colorClasses.split(" ").find((c) => c.startsWith("bg-")) ?? "bg-gray-100";
+              const textColor = colorClasses.split(" ").find((c) => c.startsWith("text-")) ?? "text-muted-foreground";
+              const bgColor = colorClasses.split(" ").find((c) => c.startsWith("bg-")) ?? "bg-muted";
               return (
                 <div key={cat.category} className="group">
                   <div className="flex items-center justify-between mb-0.5">
                     <span className={cn("text-xs font-medium truncate max-w-[200px]", textColor)}>
                       {cat.category}
                     </span>
-                    <span className="text-xs text-gray-400 ml-2 tabular-nums">
+                    <span className="text-xs text-muted-foreground ml-2 tabular-nums">
                       {cat.clicks}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-50 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className={cn("h-2 rounded-full transition-all", bgColor)}
                       style={{ width: `${Math.max(pct, 2)}%` }}

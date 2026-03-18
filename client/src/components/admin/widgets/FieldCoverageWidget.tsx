@@ -20,17 +20,17 @@ export function FieldCoverageWidget() {
   const percentage = totalFields > 0 ? Math.round((fieldsAbove80 / totalFields) * 100) : 0;
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-gray-900">Field Coverage</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">Field Coverage</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !data?.summary ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No coverage data available</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No coverage data available</p>
         ) : (
           <div className="flex flex-col items-center py-2">
             {/* Ring visualization */}
@@ -56,13 +56,13 @@ export function FieldCoverageWidget() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-2xl font-bold text-foreground">
                   {fieldsAbove80}
-                  <span className="text-sm font-normal text-gray-400"> / {totalFields}</span>
+                  <span className="text-sm font-normal text-muted-foreground"> / {totalFields}</span>
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 text-center">fields above 80%</p>
+            <p className="text-sm text-muted-foreground text-center">fields above 80%</p>
           </div>
         )}
       </CardContent>

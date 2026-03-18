@@ -31,17 +31,17 @@ export function ScraperStatusWidget() {
   const run = data?.runs?.[0];
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-gray-900 text-base">Scraper Status</CardTitle>
+        <CardTitle className="text-foreground text-base">Scraper Status</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !run ? (
-          <div className="flex flex-col items-center py-6 text-gray-400">
+          <div className="flex flex-col items-center py-6 text-muted-foreground">
             <Bot className="h-8 w-8 mb-2 opacity-40" />
             <p className="text-sm">No scraper runs recorded</p>
           </div>
@@ -50,7 +50,7 @@ export function ScraperStatusWidget() {
             {/* Status + date */}
             <div className="flex items-center justify-between">
               <StatusBadge status={run.status} />
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-muted-foreground">
                 {run.startedAt ? formatDate(run.startedAt) : "Unknown date"}
               </span>
             </div>
@@ -65,7 +65,7 @@ export function ScraperStatusWidget() {
 
             {/* Duration */}
             {run.durationSeconds != null && (
-              <p className="text-xs text-gray-400 text-right">
+              <p className="text-xs text-muted-foreground text-right">
                 Duration: {formatDuration(run.durationSeconds)}
               </p>
             )}
@@ -87,14 +87,14 @@ function StatusBadge({ status }: { status: string | null }) {
   if (s === "failed" || s === "error") {
     return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">Failed</Badge>;
   }
-  return <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{status ?? "Unknown"}</Badge>;
+  return <Badge className="bg-muted text-muted-foreground border-border text-xs">{status ?? "Unknown"}</Badge>;
 }
 
 function MiniStat({ label, value, warn }: { label: string; value: number; warn?: boolean }) {
   return (
-    <div className="text-center py-2 rounded-lg bg-gray-50">
-      <p className={`text-lg font-semibold ${warn ? "text-red-600" : "text-gray-900"}`}>{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
+    <div className="text-center py-2 rounded-lg bg-muted">
+      <p className={`text-lg font-semibold ${warn ? "text-red-600" : "text-foreground"}`}>{value}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );
 }

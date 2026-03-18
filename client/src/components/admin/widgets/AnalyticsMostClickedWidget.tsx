@@ -32,9 +32,9 @@ export function AnalyticsMostClickedWidget({ compact }: { compact?: boolean }) {
   const displayServices = compact ? services.slice(0, 5) : services.slice(0, 10);
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium text-gray-900">
+        <CardTitle className="text-base font-medium text-foreground">
           Most Clicked Services
           <InfoTip text="Services that get the most clicks from search results." />
         </CardTitle>
@@ -42,25 +42,25 @@ export function AnalyticsMostClickedWidget({ compact }: { compact?: boolean }) {
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : services.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No service click data available.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">No service click data available.</p>
         ) : (
-          <div className="border border-gray-100 rounded-lg overflow-hidden overflow-x-auto">
+          <div className="border border-border rounded-lg overflow-hidden overflow-x-auto">
             <div className={cn(compact ? "" : "max-h-[300px] overflow-y-auto")}>
               <table className="w-full text-sm">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-gray-50">
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                  <tr className="bg-muted">
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                       Service
                     </th>
                     {!compact && (
-                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-32">
+                      <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-32">
                         Category
                       </th>
                     )}
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                       Clicks
                     </th>
                   </tr>
@@ -69,9 +69,9 @@ export function AnalyticsMostClickedWidget({ compact }: { compact?: boolean }) {
                   {displayServices.map((s, i) => (
                     <tr
                       key={i}
-                      className="border-t border-gray-100 hover:bg-gray-50/50"
+                      className="border-t border-border hover:bg-muted/50"
                     >
-                      <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
+                      <td className="px-3 py-2 text-foreground truncate max-w-[200px]">
                         {s.serviceName || `Service ${s.serviceId}`}
                       </td>
                       {!compact && (
@@ -86,11 +86,11 @@ export function AnalyticsMostClickedWidget({ compact }: { compact?: boolean }) {
                               {s.category}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-300">--</span>
+                            <span className="text-xs text-muted-foreground/40">--</span>
                           )}
                         </td>
                       )}
-                      <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                      <td className="px-3 py-2 text-right text-muted-foreground tabular-nums">
                         {s.clickCount}
                       </td>
                     </tr>

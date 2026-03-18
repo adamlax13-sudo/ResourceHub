@@ -28,17 +28,17 @@ export function RecentActivityWidget() {
   });
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-gray-900 text-base">Recent Activity</CardTitle>
+        <CardTitle className="text-foreground text-base">Recent Activity</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !data?.activity?.length ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No recent activity</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No recent activity</p>
         ) : (
           <ScrollArea className="h-[220px]">
             <div className="space-y-1">
@@ -48,24 +48,24 @@ export function RecentActivityWidget() {
                   : null;
 
                 const content = (
-                  <div className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
+                  <div className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-muted transition-colors cursor-pointer group">
                     <div className="flex items-center gap-3 min-w-0">
                       <ChangeTypeBadge type={entry.changeType} />
                       <div className="min-w-0">
-                        <p className="text-sm text-gray-900 truncate group-hover:text-teal-700 transition-colors">
+                        <p className="text-sm text-foreground truncate group-hover:text-primary transition-colors">
                           {entry.name || "Unknown service"}
                         </p>
                         {entry.category && (
-                          <p className="text-xs text-gray-400">{entry.category}</p>
+                          <p className="text-xs text-muted-foreground">{entry.category}</p>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {formatRelativeTime(entry.recordedAt)}
                       </span>
                       {href && (
-                        <ExternalLink className="h-3 w-3 text-gray-300 group-hover:text-teal-500 transition-colors" />
+                        <ExternalLink className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />
                       )}
                     </div>
                   </div>
@@ -105,7 +105,7 @@ function ChangeTypeBadge({ type }: { type: string }) {
     return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">DEL</Badge>;
   }
   return (
-    <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{type || "?"}</Badge>
+    <Badge className="bg-muted text-muted-foreground border-border text-xs">{type || "?"}</Badge>
   );
 }
 

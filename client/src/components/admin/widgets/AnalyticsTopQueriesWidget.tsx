@@ -30,9 +30,9 @@ export function AnalyticsTopQueriesWidget({ compact }: { compact?: boolean }) {
   const displaySearches = compact ? searches.slice(0, 5) : searches;
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium text-gray-900">
+        <CardTitle className="text-base font-medium text-foreground">
           Top Search Queries
           <InfoTip text="Most popular search queries with click-through rates." />
         </CardTitle>
@@ -40,27 +40,27 @@ export function AnalyticsTopQueriesWidget({ compact }: { compact?: boolean }) {
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : searches.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No search data available.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">No search data available.</p>
         ) : (
-          <div className="border border-gray-100 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             <div className={cn(compact ? "" : "max-h-[240px] overflow-y-auto")}>
               <table className="w-full text-sm">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-gray-50">
-                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                  <tr className="bg-muted">
+                    <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">
                       Query
                     </th>
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                       Searches
                     </th>
-                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-20">
+                    <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-20">
                       Clicks
                     </th>
                     {!compact && (
-                      <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-gray-500 font-medium w-16">
+                      <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground font-medium w-16">
                         CTR
                         <InfoTip text="Click-Through Rate -- percentage of searches that resulted in a click." />
                       </th>
@@ -76,19 +76,19 @@ export function AnalyticsTopQueriesWidget({ compact }: { compact?: boolean }) {
                     return (
                       <tr
                         key={i}
-                        className="border-t border-gray-100 hover:bg-gray-50/50"
+                        className="border-t border-border hover:bg-muted/50"
                       >
-                        <td className="px-3 py-2 text-gray-900 truncate max-w-[220px]">
+                        <td className="px-3 py-2 text-foreground truncate max-w-[220px]">
                           {s.query || "(empty)"}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                        <td className="px-3 py-2 text-right text-muted-foreground tabular-nums">
                           {s.searchCount}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-600 tabular-nums">
+                        <td className="px-3 py-2 text-right text-muted-foreground tabular-nums">
                           {s.clickCount}
                         </td>
                         {!compact && (
-                          <td className="px-3 py-2 text-right text-gray-400 tabular-nums">
+                          <td className="px-3 py-2 text-right text-muted-foreground tabular-nums">
                             {ctr}%
                           </td>
                         )}

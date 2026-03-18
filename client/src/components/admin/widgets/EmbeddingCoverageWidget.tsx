@@ -26,17 +26,17 @@ export function EmbeddingCoverageWidget() {
   const pct = Math.round(coverage);
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-gray-900">Embedding Coverage</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">Embedding Coverage</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !data?.status ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No status data available</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No status data available</p>
         ) : (
           <div className="flex flex-col items-center py-2">
             {/* Ring visualization */}
@@ -62,10 +62,10 @@ export function EmbeddingCoverageWidget() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-900">{pct}%</span>
+                <span className="text-2xl font-bold text-foreground">{pct}%</span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 text-center">services with embeddings</p>
+            <p className="text-sm text-muted-foreground text-center">services with embeddings</p>
           </div>
         )}
       </CardContent>

@@ -29,10 +29,10 @@ export function PendingReviewsWidget() {
   const displayItems = pendingReviews.slice(0, 5);
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium text-gray-900">Pending Reviews</CardTitle>
+          <CardTitle className="text-base font-medium text-foreground">Pending Reviews</CardTitle>
           {pendingReviews.length > 0 && (
             <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
               {pendingReviews.length}
@@ -43,26 +43,26 @@ export function PendingReviewsWidget() {
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : displayItems.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No pending reviews</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No pending reviews</p>
         ) : (
           <div className="space-y-1">
             {displayItems.map((review) => (
               <Link key={review.id} href="/admin/review">
-                <div className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
+                <div className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-muted transition-colors cursor-pointer group">
                   <div className="flex items-center gap-3 min-w-0">
                     <ChangeTypeBadge type={review.changeType} />
-                    <p className="text-sm text-gray-900 truncate group-hover:text-teal-700 transition-colors">
+                    <p className="text-sm text-foreground truncate group-hover:text-primary transition-colors">
                       {review.serviceName || "Unknown service"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {formatRelativeTime(review.createdAt)}
                     </span>
-                    <ExternalLink className="h-3 w-3 text-gray-300 group-hover:text-teal-500 transition-colors" />
+                    <ExternalLink className="h-3 w-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />
                   </div>
                 </div>
               </Link>
@@ -88,7 +88,7 @@ function ChangeTypeBadge({ type }: { type: string }) {
     return <Badge className="bg-red-50 text-red-700 border-red-200 text-xs">DEL</Badge>;
   }
   return (
-    <Badge className="bg-gray-50 text-gray-500 border-gray-200 text-xs">{type || "?"}</Badge>
+    <Badge className="bg-muted text-muted-foreground border-border text-xs">{type || "?"}</Badge>
   );
 }
 

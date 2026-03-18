@@ -131,18 +131,18 @@ function SortableWidget({
         "hover:ring-teal-400"
       )}>
         {/* Floating control bar */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 px-1.5 py-0.5">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 bg-card rounded-full shadow-md border border-border px-1.5 py-0.5">
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-700 transition-colors"
+            className="cursor-grab active:cursor-grabbing p-1 text-muted-foreground hover:text-foreground transition-colors"
           >
             <GripVertical className="h-3.5 w-3.5" />
           </button>
 
           {!sizeLocked && (
             <>
-              <div className="w-px h-4 bg-gray-200" />
+              <div className="w-px h-4 bg-border" />
               {(["small", "medium", "large"] as const).map((s) => (
                 <button
                   key={s}
@@ -151,10 +151,10 @@ function SortableWidget({
                   className={cn(
                     "w-6 h-6 rounded-full text-[10px] font-bold transition-all",
                     size === s
-                      ? "bg-teal-500 text-white shadow-sm"
+                      ? "bg-primary text-white shadow-sm"
                       : sizes.includes(s)
-                        ? "text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                        : "text-gray-200 cursor-not-allowed",
+                        ? "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-muted-foreground/40 cursor-not-allowed",
                   )}
                 >
                   {s[0].toUpperCase()}
@@ -165,10 +165,10 @@ function SortableWidget({
 
           {!pinned && (
             <>
-              <div className="w-px h-4 bg-gray-200" />
+              <div className="w-px h-4 bg-border" />
               <button
                 onClick={onRemove}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-1 text-muted-foreground hover:text-red-500 transition-colors"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -247,7 +247,7 @@ function DashboardWidgetGrid({
               <div className="col-span-1">
                 <button
                   onClick={onAddWidget}
-                  className="w-full h-full min-h-[140px] rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 hover:bg-teal-50/50 transition-all flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-teal-600 cursor-pointer"
+                  className="w-full h-full min-h-[140px] rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary cursor-pointer"
                 >
                   <Plus className="h-8 w-8" />
                   <span className="text-sm font-medium">Add Widget</span>
@@ -258,11 +258,11 @@ function DashboardWidgetGrid({
         </SortableContext>
         <DragOverlay dropAnimation={null}>
           {activeId ? (
-            <div className="bg-white border-2 border-teal-400 rounded-xl shadow-2xl px-4 py-3 w-56 pointer-events-none">
-              <p className="text-sm font-medium text-gray-900 truncate">
+            <div className="bg-card border-2 border-primary rounded-xl shadow-2xl px-4 py-3 w-56 pointer-events-none">
+              <p className="text-sm font-medium text-foreground truncate">
                 {getCatalogWidget(activeId)?.label || activeId}
               </p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Drop to place here</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Drop to place here</p>
             </div>
           ) : null}
         </DragOverlay>
@@ -377,9 +377,9 @@ export default function Dashboard() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+          <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
           {dataUpdatedAt > 0 && (
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
               Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
             </p>
           )}
@@ -390,7 +390,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset
             </Button>
@@ -399,7 +399,7 @@ export default function Dashboard() {
             <Button
               size="sm"
               onClick={() => setEditMode(false)}
-              className="bg-teal-600 hover:bg-teal-700 text-white"
+              className="bg-primary hover:bg-primary/80 text-white"
             >
               <Check className="h-4 w-4 mr-1.5" /> Done
             </Button>
@@ -408,7 +408,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={() => setEditMode(true)}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-muted-foreground hover:text-foreground"
             >
               <Pencil className="h-4 w-4 mr-1.5" /> Edit Layout
             </Button>
@@ -418,8 +418,8 @@ export default function Dashboard() {
 
       {/* Edit mode banner */}
       {editMode && (
-        <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-2 flex items-center gap-2 text-sm text-teal-700">
-          <Pencil className="h-4 w-4 text-teal-600 flex-shrink-0" />
+        <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2 flex items-center gap-2 text-sm text-primary">
+          <Pencil className="h-4 w-4 text-primary flex-shrink-0" />
           Drag to reorder — Resize with S/M/L — Remove with X — Add widgets with +
         </div>
       )}

@@ -25,32 +25,32 @@ export function RecentFeedbackWidget() {
   const items = data?.feedback?.slice(0, 5) ?? [];
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-gray-900">Recent Feedback</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">Recent Feedback</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center py-6 text-gray-400">
+          <div className="flex flex-col items-center py-6 text-muted-foreground">
             <MessageSquare className="h-8 w-8 mb-2 opacity-40" />
             <p className="text-sm">No feedback yet</p>
           </div>
         ) : (
           <div className="space-y-3">
             {items.map((item) => (
-              <div key={item.id} className="py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <p className="text-sm text-gray-900 line-clamp-2">{item.message}</p>
+              <div key={item.id} className="py-2.5 px-3 rounded-lg hover:bg-muted transition-colors">
+                <p className="text-sm text-foreground line-clamp-2">{item.message}</p>
                 <div className="flex items-center gap-2 mt-1.5">
                   {item.category && (
                     <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
                       {item.category}
                     </Badge>
                   )}
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {formatRelativeTime(item.createdAt)}
                   </span>
                 </div>

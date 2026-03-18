@@ -27,29 +27,29 @@ export function VoteSummaryWidget() {
   const needsAttention = [...votes].sort((a, b) => b.thumbsDown - a.thumbsDown).slice(0, 3);
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-gray-900">Vote Summary</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">Vote Summary</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : votes.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No vote data available</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No vote data available</p>
         ) : (
           <div className="space-y-4">
             {/* Top Rated */}
             <div>
-              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">Top Rated</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Top Rated</p>
               <div className="space-y-1.5">
                 {topRated.map((item) => (
                   <div
                     key={`up-${item.serviceId}`}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted transition-colors"
                   >
-                    <p className="text-sm text-gray-900 truncate mr-3">{item.serviceName}</p>
+                    <p className="text-sm text-foreground truncate mr-3">{item.serviceName}</p>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <ThumbsUp className="h-3.5 w-3.5 text-emerald-500" />
                       <span className="text-sm font-medium text-emerald-600">{item.thumbsUp}</span>
@@ -61,14 +61,14 @@ export function VoteSummaryWidget() {
 
             {/* Needs Attention */}
             <div>
-              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">Needs Attention</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Needs Attention</p>
               <div className="space-y-1.5">
                 {needsAttention.map((item) => (
                   <div
                     key={`down-${item.serviceId}`}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted transition-colors"
                   >
-                    <p className="text-sm text-gray-900 truncate mr-3">{item.serviceName}</p>
+                    <p className="text-sm text-foreground truncate mr-3">{item.serviceName}</p>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <ThumbsDown className="h-3.5 w-3.5 text-red-500" />
                       <span className="text-sm font-medium text-red-600">{item.thumbsDown}</span>

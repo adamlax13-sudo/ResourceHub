@@ -40,17 +40,17 @@ export function QualityOverviewWidget() {
   });
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-gray-900 text-base">Quality Overview</CardTitle>
+        <CardTitle className="text-foreground text-base">Quality Overview</CardTitle>
       </CardHeader>
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : !data?.summary ? (
-          <p className="text-sm text-gray-400 py-4 text-center">No quality data available</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">No quality data available</p>
         ) : (
           <LowestFields summary={data.summary} />
         )}
@@ -66,7 +66,7 @@ function LowestFields({ summary }: { summary: Record<string, number> }) {
     .slice(0, 5);
 
   if (sorted.length === 0) {
-    return <p className="text-sm text-gray-400 py-4 text-center">All fields fully covered</p>;
+    return <p className="text-sm text-muted-foreground py-4 text-center">All fields fully covered</p>;
   }
 
   return (
@@ -74,10 +74,10 @@ function LowestFields({ summary }: { summary: Record<string, number> }) {
       {sorted.map(([field, pct]) => (
         <div key={field}>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-gray-600">{toLabel(field)}</span>
-            <span className="text-sm font-medium text-gray-900">{pct}%</span>
+            <span className="text-sm text-muted-foreground">{toLabel(field)}</span>
+            <span className="text-sm font-medium text-foreground">{pct}%</span>
           </div>
-          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all"
               style={{

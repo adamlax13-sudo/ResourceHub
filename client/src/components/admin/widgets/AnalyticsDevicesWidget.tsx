@@ -34,9 +34,9 @@ export function AnalyticsDevicesWidget({ compact }: { compact?: boolean }) {
   const total = devices.reduce((sum, d) => sum + d.clicks, 0) || 1;
 
   return (
-    <Card className="bg-white border-gray-100 shadow-sm rounded-xl">
+    <Card className="bg-card border-border shadow-sm rounded-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium text-gray-900">
+        <CardTitle className="text-base font-medium text-foreground">
           Device Breakdown
           <InfoTip text="Mobile vs desktop vs tablet usage based on user-agent strings." />
         </CardTitle>
@@ -44,10 +44,10 @@ export function AnalyticsDevicesWidget({ compact }: { compact?: boolean }) {
       <CardContent>
         {isPending ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : devices.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No device data available.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">No device data available.</p>
         ) : (
           <div className="space-y-4">
             {/* Stacked bar */}
@@ -68,11 +68,11 @@ export function AnalyticsDevicesWidget({ compact }: { compact?: boolean }) {
                   <div key={d.device_type} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className={cn("w-3 h-3 rounded-sm", DEVICE_COLORS[d.device_type] ?? "bg-gray-400")} />
-                      <span className="text-sm text-gray-700">{d.device_type}</span>
+                      <span className="text-sm text-foreground">{d.device_type}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      {!compact && <span className="text-sm text-gray-500 tabular-nums">{d.clicks}</span>}
-                      <span className="text-sm font-medium text-gray-700 tabular-nums w-14 text-right">{pct}%</span>
+                      {!compact && <span className="text-sm text-muted-foreground tabular-nums">{d.clicks}</span>}
+                      <span className="text-sm font-medium text-foreground tabular-nums w-14 text-right">{pct}%</span>
                     </div>
                   </div>
                 );
