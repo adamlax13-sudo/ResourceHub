@@ -64,18 +64,18 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
   }
 
   return (
-    <aside className={cn("w-56 bg-white border-r border-gray-200 flex flex-col min-h-screen fixed left-0 top-0 z-40", isDev && "top-6")}>
+    <aside className={cn("w-56 bg-sidebar border-r border-sidebar-border flex flex-col min-h-screen fixed left-0 top-0 z-40", isDev && "top-6")}>
       {/* Brand */}
-      <div className="px-4 py-5 border-b border-gray-100">
-        <h1 className="text-lg font-bold text-teal-600">ResourceHub</h1>
-        <p className="text-xs text-gray-400 mt-0.5">Admin Panel</p>
+      <div className="px-4 py-5 border-b border-border">
+        <h1 className="text-lg font-bold text-primary">ResourceHub</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">Admin Panel</p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-2 px-2 overflow-y-auto">
         {Object.entries(sections).map(([sectionName, items]) => (
           <div key={sectionName}>
-            <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium px-3 mt-4 mb-2">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium px-3 mt-4 mb-2">
               {sectionName}
             </p>
             <div className="space-y-0.5">
@@ -87,17 +87,17 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors",
                         active
-                          ? "bg-teal-50 text-teal-700 font-medium"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
                       {active && (
-                        <span className="absolute left-0 w-1 h-6 bg-teal-500 rounded-r-full" />
+                        <span className="absolute left-0 w-1 h-6 bg-primary rounded-r-full" />
                       )}
-                      <item.icon className={cn("h-4 w-4 flex-shrink-0", active ? "text-teal-600" : "text-gray-400")} />
+                      <item.icon className={cn("h-4 w-4 flex-shrink-0", active ? "text-primary" : "text-muted-foreground")} />
                       {item.label}
                       {item.label === "Review" && !!pendingReviews && pendingReviews > 0 && (
-                        <span className="ml-auto text-[10px] bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                        <span className="ml-auto text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                           {pendingReviews}
                         </span>
                       )}
@@ -116,15 +116,15 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
       </nav>
 
       {/* Quick Actions */}
-      <div className="px-2 py-2 border-t border-gray-100 space-y-0.5">
+      <div className="px-2 py-2 border-t border-border space-y-0.5">
         <Link href="/admin/services/new">
-          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-muted rounded-md cursor-pointer transition-colors">
             <Plus className="h-3 w-3" />
             New Service
           </div>
         </Link>
         <Link href="/admin/services/import">
-          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-muted rounded-md cursor-pointer transition-colors">
             <Upload className="h-3 w-3" />
             Import
           </div>
@@ -137,8 +137,8 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
       </div>
 
       {/* Bottom section */}
-      <div className="p-2 border-t border-gray-100 space-y-0.5">
-        <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400">
+      <div className="p-2 border-t border-border space-y-0.5">
+        <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground">
           <HelpCircle className="h-3 w-3" />
           Help
         </div>
@@ -146,7 +146,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
           variant="ghost"
           size="sm"
           onClick={onLogout}
-          className="w-full justify-start text-gray-400 hover:text-gray-700 hover:bg-gray-50"
+          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <LogOut className="h-4 w-4 mr-2" />
           Logout
@@ -159,7 +159,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
 function AdminPageLoader() {
   return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
+      <Loader2 className="h-6 w-6 animate-spin text-primary" />
     </div>
   );
 }
@@ -200,8 +200,8 @@ export default function AdminLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -215,9 +215,9 @@ export default function AdminLayout() {
 
   return (
     <ThemeProvider>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {isDev && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-amber-400 text-amber-900 text-[11px] font-medium text-center py-0.5">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-amber-400 text-amber-900 dark:bg-amber-700 dark:text-amber-100 text-[11px] font-medium text-center py-0.5">
           Development Environment
         </div>
       )}
@@ -237,7 +237,7 @@ export default function AdminLayout() {
             <Route path="/admin/search-test" component={SearchTest} />
             <Route path="/admin/system" component={System} />
             <Route>
-              <div className="flex items-center justify-center h-64 text-gray-400">
+              <div className="flex items-center justify-center h-64 text-muted-foreground">
                 Page not found
               </div>
             </Route>
