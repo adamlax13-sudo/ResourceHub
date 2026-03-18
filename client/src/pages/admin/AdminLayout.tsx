@@ -102,7 +102,7 @@ function Sidebar({ onLogout, pendingReviews, newFeedback }: { onLogout: () => vo
                         </span>
                       )}
                       {item.label === "Feedback" && !!newFeedback && newFeedback > 0 && (
-                        <span className="ml-auto text-[10px] bg-blue-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                        <span className="ml-auto text-[10px] bg-amber-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                           {newFeedback}
                         </span>
                       )}

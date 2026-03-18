@@ -699,9 +699,9 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
             />
             {/* AI-Inferred Data section */}
             {enrichmentData?.enrichment && (
-              <Card className="bg-violet-50/50 border-violet-200 shadow-sm rounded-xl mt-4">
+              <Card className="bg-muted/40 border-border shadow-sm rounded-xl mt-4">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-violet-700 flex items-center gap-2">
+                  <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
                     AI-Inferred Data
                   </CardTitle>
@@ -709,29 +709,29 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
                 <CardContent className="space-y-3 text-sm">
                   {enrichmentData.enrichment.aiDescription && (
                     <div>
-                      <p className="text-xs font-medium text-violet-600 mb-1">AI Description</p>
-                      <p className="text-foreground bg-card rounded p-2 border border-violet-100">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">AI Description</p>
+                      <p className="text-foreground bg-card rounded p-2 border border-border text-sm">
                         {enrichmentData.enrichment.aiDescription}
                       </p>
                     </div>
                   )}
                   {enrichmentData.enrichment.aiEligibility && (
                     <div>
-                      <p className="text-xs font-medium text-violet-600 mb-1">AI Eligibility</p>
-                      <p className="text-foreground bg-card rounded p-2 border border-violet-100">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">AI Eligibility</p>
+                      <p className="text-foreground bg-card rounded p-2 border border-border text-sm">
                         {enrichmentData.enrichment.aiEligibility}
                       </p>
                     </div>
                   )}
                   {enrichmentData.enrichment.aiProcessSteps != null && (
                     <div>
-                      <p className="text-xs font-medium text-violet-600 mb-1">AI Process Steps</p>
-                      <pre className="text-foreground bg-card rounded p-2 border border-violet-100 text-xs whitespace-pre-wrap overflow-auto max-h-48">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">AI Process Steps</p>
+                      <pre className="text-foreground bg-card rounded p-2 border border-border text-xs whitespace-pre-wrap overflow-auto max-h-48">
                         {JSON.stringify(enrichmentData.enrichment.aiProcessSteps, null, 2)}
                       </pre>
                     </div>
                   )}
-                  <p className="text-xs text-violet-400">
+                  <p className="text-xs text-muted-foreground/60">
                     Source: {enrichmentData.enrichmentSource || 'AI enrichment'}
                     {enrichmentData.enrichmentDate && ` \u2022 ${new Date(enrichmentData.enrichmentDate).toLocaleDateString()}`}
                   </p>

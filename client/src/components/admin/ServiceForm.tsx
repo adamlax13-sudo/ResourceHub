@@ -389,6 +389,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
               size="sm"
               onClick={() => removeProcessStep(i)}
               className="h-7 w-7 p-0 mt-1 text-muted-foreground hover:text-red-500"
+              aria-label="Remove step"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -438,7 +439,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
           {languagesSupported.map((lang, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-200"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground border border-border"
             >
               {lang}
               <button
@@ -581,7 +582,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
       </div>
 
       <div className="pt-4 flex justify-end">
-        <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/80 text-white">
+        <Button type="submit" disabled={isPending} className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm">
           {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {submitLabel}
         </Button>

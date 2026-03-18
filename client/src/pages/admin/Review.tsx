@@ -220,7 +220,7 @@ export default function Review() {
             size="sm"
             onClick={() => bulkApproveMutation.mutate(Array.from(selectedIds))}
             disabled={bulkApproveMutation.isPending}
-            className="w-full bg-primary hover:bg-primary/80 text-white"
+            className="w-full bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
           >
             {bulkApproveMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
             Approve Selected ({selectedIds.size})
@@ -337,7 +337,7 @@ export default function Review() {
                 <Button
                   onClick={() => approveMutation.mutate(request.id)}
                   disabled={approveMutation.isPending}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -346,7 +346,7 @@ export default function Review() {
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
-                  className="border-red-300 text-red-500 hover:bg-red-50"
+                  className="border-red-300/60 text-red-400 hover:bg-red-50/50"
                 >
                   <XCircle className="h-4 w-4 mr-1" />
                   Dismiss
@@ -377,7 +377,7 @@ export default function Review() {
                 <Button
                   onClick={() => approveMutation.mutate(request.id)}
                   disabled={approveMutation.isPending}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -386,7 +386,7 @@ export default function Review() {
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
-                  className="border-red-300 text-red-500 hover:bg-red-50"
+                  className="border-red-300/60 text-red-400 hover:bg-red-50/50"
                 >
                   <XCircle className="h-4 w-4 mr-1" />
                   Reject
@@ -406,7 +406,7 @@ export default function Review() {
                 <Button
                   onClick={() => approveMutation.mutate(request.id)}
                   disabled={approveMutation.isPending}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -415,7 +415,7 @@ export default function Review() {
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
-                  className="border-red-300 text-red-500 hover:bg-red-50"
+                  className="border-red-300/60 text-red-400 hover:bg-red-50/50"
                 >
                   <XCircle className="h-4 w-4 mr-1" />
                   Reject
@@ -445,7 +445,7 @@ export default function Review() {
                 <Button
                   onClick={() => approveMutation.mutate(request.id)}
                   disabled={approveMutation.isPending}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm"
                 >
                   {approveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -454,7 +454,7 @@ export default function Review() {
                 <Button
                   variant="outline"
                   onClick={() => setRejectDialogOpen(true)}
-                  className="border-red-300 text-red-500 hover:bg-red-50"
+                  className="border-red-300/60 text-red-400 hover:bg-red-50/50"
                 >
                   <XCircle className="h-4 w-4 mr-1" />
                   Reject

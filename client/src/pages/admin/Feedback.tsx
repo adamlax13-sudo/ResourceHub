@@ -63,9 +63,9 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "text-blue-700 bg-blue-50 border-blue-200",
-  reviewed: "text-amber-700 bg-amber-50 border-amber-200",
-  resolved: "text-emerald-700 bg-emerald-50 border-emerald-200",
+  new: "text-sky-700 bg-sky-50/60 border-sky-200/60",
+  reviewed: "text-amber-700 bg-amber-50/60 border-amber-200/60",
+  resolved: "text-emerald-700 bg-emerald-50/60 border-emerald-200/60",
 };
 
 export default function Feedback() {
@@ -147,7 +147,7 @@ export default function Feedback() {
           User Messages
         </button>
         <button
-          onClick={() => setActiveTab("votes")}
+          onClick={() => { setActiveTab("votes"); setPage(1); }}
           className={cn(
             "px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px",
             activeTab === "votes"
