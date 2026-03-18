@@ -215,7 +215,7 @@ export function mergeForLiteView(
       : (enrichment?.aiDescription || searchResult.description || ''),
 
     location: hasLocation
-      ? (searchResult.address || searchResult.location || '')
+      ? (searchResult.location || searchResult.address || '')
       : (enrichment?.aiLocation || searchResult.location || ''),
 
     waitTimes: hasWaitTimes
