@@ -58,8 +58,9 @@ server/evaluation/reports/
 
 # Pip install output (accidental)
 =*
-# Superpowers brainstorm sessions
+# Superpowers brainstorm sessions + plans
 .superpowers/
+docs/superpowers/
 
 # Scraper intermediate data
 scraper/crawled_inactive_services.json
