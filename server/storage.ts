@@ -967,6 +967,12 @@ export class DatabaseStorage implements IStorage {
     return map;
   }
 
+  /** Invalidate the confidence score cache — call after admin edits that change scores */
+  invalidateConfidenceCache(): void {
+    this._confidenceCache = null;
+    this._confidenceCacheTime = 0;
+  }
+
   async getServiceCoordinates(serviceIds: string[]): Promise<Map<string, { lat: number; lng: number }>> {
     if (serviceIds.length === 0) return new Map();
 
@@ -1362,6 +1368,7 @@ export class DatabaseStorage implements IStorage {
       ageGroup: data.ageGroup ?? 'all_ages',
       isFaithBased: data.isFaithBased ?? false,
       is12Step: data.is12Step ?? false,
+      is24_7: data.is24_7 ?? false,
       latitude: data.latitude ?? null,
       longitude: data.longitude ?? null,
     }).returning();
@@ -1390,7 +1397,7 @@ export class DatabaseStorage implements IStorage {
     return created;
   }
 
-  async updateService(id: number, changes: Partial<Service>): Promise<Service> {
+  async updateService(id: number, changes: Partial<Service>, reason?: string): Promise<Service> {
     // Get current service to detect which fields actually changed
     const [current] = await db.select().from(services).where(eq(services.id, id));
     if (!current) throw new Error(`Service with id ${id} not found`);
@@ -1409,7 +1416,7 @@ export class DatabaseStorage implements IStorage {
 
     // Admin edit upgrades: when key fields are manually edited, promote confidence
     // and clear AI-inferred flags so the service reflects human-verified data.
-    const contentFields = new Set(['description', 'eligibility', 'processSteps', 'hoursOfOperation', 'phone', 'email', 'websiteUrl', 'address']);
+    const contentFields = new Set(['name', 'description', 'eligibility', 'processSteps', 'hoursOfOperation', 'phone', 'email', 'websiteUrl', 'address']);
     const editedContentFields = Object.keys(changedFields).filter(k => contentFields.has(k));
 
     if (editedContentFields.length > 0) {
@@ -1425,6 +1432,7 @@ export class DatabaseStorage implements IStorage {
       if (merged.hoursOfOperation) score += 5;
       if (merged.address) score += 5;
       changes.confidenceScore = Math.min(100, score);
+      this.invalidateConfidenceCache();
 
       // Clear process_steps_inferred if admin edited process steps
       if ('processSteps' in changedFields) {
@@ -1482,7 +1490,7 @@ export class DatabaseStorage implements IStorage {
         languagesSupported: updated.languagesSupported,
         serviceFormat: updated.serviceFormat,
         websiteUrl: updated.websiteUrl,
-        changedFields,
+        changedFields: reason ? { ...changedFields, _reason: reason } : changedFields,
         changeType: 'updated',
         confidenceScore: updated.confidenceScore,
       });
@@ -1529,6 +1537,9 @@ export class DatabaseStorage implements IStorage {
       confidenceScore: updated.confidenceScore,
     });
 
+    // Refresh search infrastructure — remove deactivated service from results
+    this._refreshSearchInfrastructure(updated.id, updated.serviceId, false).catch(() => {});
+
     return updated;
   }
 
@@ -1558,9 +1569,12 @@ export class DatabaseStorage implements IStorage {
       serviceFormat: updated.serviceFormat,
       websiteUrl: updated.websiteUrl,
       changedFields: { isActive: { from: false, to: true } },
-      changeType: 'updated',
+      changeType: 'restored',
       confidenceScore: updated.confidenceScore,
     });
+
+    // Refresh search infrastructure — re-include restored service in results
+    this._refreshSearchInfrastructure(updated.id, updated.serviceId, false).catch(() => {});
 
     return updated;
   }
@@ -1703,7 +1717,7 @@ export class DatabaseStorage implements IStorage {
     let successCount = 0;
     for (const id of ids) {
       try {
-        await this.updateService(id, changes);
+        await this.updateService(id, changes, reason);
         successCount++;
       } catch (err) {
         console.warn(`[Admin] bulkUpdateServices: failed to update service ${id}:`, err);
@@ -1836,6 +1850,8 @@ export class DatabaseStorage implements IStorage {
         resultService = await this.deactivateService(req.serviceId, proposed.reason || 'Approved via review queue');
         break;
       }
+      case 'review':
+        throw new Error(`Review requests (id ${id}) cannot be approved directly — edit the service and resolve the review manually`);
       default:
         throw new Error(`Unknown changeType: ${req.changeType}`);
     }

@@ -105,10 +105,12 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
   const initialDataRef = useRef(initialData);
   const hasMounted = useRef(false);
+  const localDirtyRef = useRef(false);
 
-  // Sync if initialData changes (e.g., detail load)
+  // Sync if initialData changes (e.g., detail load or post-save refetch)
   useEffect(() => {
     if (initialData) {
+      localDirtyRef.current = false; // form matches server data — not dirty
       setForm((prev) => ({ ...prev, ...initialData }));
       initialDataRef.current = initialData;
       hasMounted.current = false; // reset dirty tracking on new data
@@ -129,12 +131,14 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     const trimmed = tag.trim();
     if (trimmed && !tags.includes(trimmed)) {
       setTags((prev) => [...prev, trimmed]);
+      localDirtyRef.current = true;
       onDirtyChange?.(true);
     }
   };
 
   const removeTag = (index: number) => {
     setTags((prev) => prev.filter((_, i) => i !== index));
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
@@ -151,6 +155,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
 
   const addProcessStep = () => {
     setProcessSteps((prev) => [...prev, { step: prev.length + 1, action: "", details: "" }]);
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
@@ -158,6 +163,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     setProcessSteps((prev) =>
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
     );
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
@@ -167,6 +173,7 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
         .filter((_, i) => i !== index)
         .map((s, i) => ({ ...s, step: i + 1 }))
     );
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
@@ -185,12 +192,14 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     const trimmed = doc.trim();
     if (trimmed && !requiredDocs.includes(trimmed)) {
       setRequiredDocs((prev) => [...prev, trimmed]);
+      localDirtyRef.current = true;
       onDirtyChange?.(true);
     }
   };
 
   const removeDoc = (index: number) => {
     setRequiredDocs((prev) => prev.filter((_, i) => i !== index));
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
@@ -209,27 +218,33 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
     const trimmed = lang.trim();
     if (trimmed && !languagesSupported.includes(trimmed)) {
       setLanguagesSupported((prev) => [...prev, trimmed]);
+      localDirtyRef.current = true;
       onDirtyChange?.(true);
     }
   };
 
   const removeLanguage = (index: number) => {
     setLanguagesSupported((prev) => prev.filter((_, i) => i !== index));
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
   };
 
-  // Report form data changes to parent for draft persistence
+  // Report form data changes to parent for draft persistence.
+  // Only fires when the form is dirty from user interaction — not from
+  // server data re-initialization (which would create ghost drafts).
   useEffect(() => {
     if (!hasMounted.current) {
       hasMounted.current = true;
       return;
     }
+    if (!localDirtyRef.current) return;
     onChange?.({ ...form, tags, processSteps, requiredDocs, languagesSupported });
   }, [form, tags, processSteps, requiredDocs, languagesSupported]);
 
   // --- General field change ---
   const handleChange = (field: keyof ServiceFormData, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    localDirtyRef.current = true;
     onDirtyChange?.(true);
     if (field === 'name' && typeof value === 'string') {
       onNameChange?.(value);
@@ -321,6 +336,16 @@ export function ServiceForm({ initialData, onSubmit, isPending, submitLabel = "S
             className={cn("mt-1 bg-card border-border text-foreground", hl("email"))}
           />
         </div>
+      </div>
+
+      <div>
+        <Label className="text-foreground">Contact Info (legacy)</Label>
+        <Input
+          value={form.contact ?? ""}
+          onChange={(e) => handleChange("contact", e.target.value)}
+          className={cn("mt-1 bg-card border-border text-foreground text-xs text-muted-foreground", hl("contact"))}
+          placeholder="Combined contact info (prefer phone/email fields above)"
+        />
       </div>
 
       <div>

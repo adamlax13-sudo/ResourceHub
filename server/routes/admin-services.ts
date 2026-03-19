@@ -338,8 +338,8 @@ export function registerAdminServiceRoutes(app: Express): void {
       return res.status(400).json(createErrorResponse("Invalid service ID"));
     }
     const id = parseResult.data;
-    await db.update(services).set({ duplicateOf: null as any }).where(eq(services.id, id));
-    res.json({ success: true });
+    const service = await storage.updateService(id, { duplicateOf: null } as any);
+    res.json({ success: true, service });
   }));
 
   // ============= CHECK DUPLICATES (named sub-route — before :id) =============
@@ -504,6 +504,8 @@ export function registerAdminServiceRoutes(app: Express): void {
     const updated = await storage.updateService(parseResult.data, {
       latitude: coords.lat,
       longitude: coords.lng,
+      geocodeSource: 'mapbox',
+      geocodedAt: new Date(),
     } as any);
 
     res.json({ success: true, service: updated, coordinates: coords });
@@ -526,8 +528,8 @@ export function registerAdminServiceRoutes(app: Express): void {
 
     await storage.createChangeRequest({
       serviceId: parseResult.data,
-      changeType: 'update',
-      proposedChanges: service as any,
+      changeType: 'review',
+      proposedChanges: {} as any,
       previousValues: service as any,
       source: 'admin',
       status: 'pending',

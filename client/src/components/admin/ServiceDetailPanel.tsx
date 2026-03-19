@@ -6,6 +6,7 @@ import { ServiceForm, type ServiceFormData } from "@/components/admin/ServiceFor
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -125,6 +126,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
   const [flagReason, setFlagReason] = useState("");
   const [showFlagDialog, setShowFlagDialog] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [deactivateReason, setDeactivateReason] = useState("");
   const [showDuplicates, setShowDuplicates] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
   const [isDirty, setIsDirty] = useState(false);
@@ -265,6 +267,10 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
       setDraft(null);
       toast({ title: "Service updated successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      // Re-fetch after async embedding regen completes so stale-embedding warning clears
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/services", serviceId] });
+      }, 5000);
       onSaveSuccess?.();
     },
     onError: (err) => {
@@ -274,15 +280,17 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
 
   // Deactivate mutation
   const deactivateMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (reason: string) => {
       const res = await apiRequest("POST", `/api/admin/services/${serviceId}/deactivate`, {
-        reason: "Deactivated via admin panel",
+        reason: reason || "Deactivated via admin panel",
       });
       return res.json();
     },
     onSuccess: () => {
       toast({ title: "Service deactivated" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services", serviceId] });
+      setDeactivateReason("");
     },
     onError: (err) => {
       toast({ title: "Deactivation failed", description: err.message, variant: "destructive" });
@@ -298,6 +306,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
     onSuccess: () => {
       toast({ title: "Service restored" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/services", serviceId] });
     },
     onError: (err) => {
       toast({ title: "Restore failed", description: err.message, variant: "destructive" });
@@ -760,6 +769,12 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
               This will remove <strong>{service?.name}</strong> from search results. The service data is preserved and can be restored later.
             </DialogDescription>
           </DialogHeader>
+          <Textarea
+            value={deactivateReason}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDeactivateReason(e.target.value)}
+            placeholder="Why is this service being deactivated? (optional)"
+            className="mt-2 min-h-[60px]"
+          />
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setShowDeactivateConfirm(false)}>
               Cancel
@@ -767,7 +782,7 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
             <Button
               className="bg-red-600 hover:bg-red-700 text-white"
               onClick={() => {
-                deactivateMutation.mutate();
+                deactivateMutation.mutate(deactivateReason);
                 setShowDeactivateConfirm(false);
               }}
               disabled={deactivateMutation.isPending}
