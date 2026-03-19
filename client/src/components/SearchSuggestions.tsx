@@ -176,6 +176,7 @@ export function SearchSuggestions({ query, isVisible, onSelect, onDismiss, ancho
   return createPortal(
     <div
       ref={containerRef}
+      onMouseLeave={onDismiss}
       style={{ position: 'absolute', top: position.top, left: position.left, width: position.width }}
       className="bg-white rounded-2xl shadow-2xl border border-border/40 z-[9999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
       role="listbox"
