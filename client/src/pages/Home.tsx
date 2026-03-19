@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon, Search } from "lucide-react";
+import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -70,7 +70,7 @@ function buildContextLine(qu: {
     line += ` · ${formats.join(", ")}`;
   }
 
-  return line;
+  return `Showing results for "${line}"`;
 }
 
 function buildFilterChips(filters: SearchFilters): FilterChip[] {
@@ -346,6 +346,7 @@ export default function Home() {
         onNearMe={handleNearMe}
         isLocating={isLocating}
         openFeedback={() => setFeedbackContext({})}
+        contextLine={data?.queryUnderstanding ? buildContextLine(data.queryUnderstanding) : null}
       />
 
       <div className={`container mx-auto px-4 relative z-20 pb-20 ${(displayServices || isPending || error) ? '-mt-6 sm:-mt-20' : ''}`}>
@@ -421,21 +422,6 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {data?.queryUnderstanding && (() => {
-                const contextLine = buildContextLine(data.queryUnderstanding);
-                return contextLine ? (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3"
-                  >
-                    <Search className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                    {contextLine}
-                  </motion.p>
-                ) : null;
-              })()}
-
               {/* Results toolbar: view toggle, action buttons */}
               <div className="flex items-center justify-between gap-2 mb-4">
                 {/* List/Map toggle */}

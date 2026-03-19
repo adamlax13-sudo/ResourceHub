@@ -50,6 +50,7 @@ interface HeroProps {
   onNearMe: () => void;
   isLocating: boolean;
   openFeedback?: () => void;
+  contextLine?: string | null;
 }
 
 // Custom Location Dropdown Component with Portal
@@ -327,7 +328,7 @@ function useVoiceSearch() {
   return { isSupported, isListening, startListening, stopListening };
 }
 
-export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback }: HeroProps) {
+export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locations, onLocationChange, onEmergencySearch, onOpenWizard, onOpenRefinePanel, activeFilterCount, userCoords, onNearMe, isLocating, openFeedback, contextLine }: HeroProps) {
   const [query, setQuery] = useState(initialQuery);
   const [hp, setHp] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -795,6 +796,12 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
             ) : null}
           </div>
         </motion.form>
+
+        {contextLine && (
+          <p className="text-center text-sm text-white/80 mt-1">
+            {contextLine}
+          </p>
+        )}
       </div>
     </div>
   );
