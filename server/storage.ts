@@ -1414,6 +1414,16 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    // No actual changes — return current service without bumping lastUpdated
+    if (Object.keys(changedFields).length === 0) {
+      return current;
+    }
+
+    // Ensure geocodedAt uses the same timestamp as lastUpdated so quality checks pass
+    if ('geocodedAt' in changes) {
+      (changes as any).geocodedAt = now;
+    }
+
     // Admin edit upgrades: when key fields are manually edited, promote confidence
     // and clear AI-inferred flags so the service reflects human-verified data.
     const contentFields = new Set(['name', 'description', 'eligibility', 'processSteps', 'hoursOfOperation', 'phone', 'email', 'websiteUrl', 'address']);
