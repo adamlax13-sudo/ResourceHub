@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon } from "lucide-react";
+import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon, Search } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -24,6 +24,53 @@ const MapView = lazy(() => import("@/components/MapView"));
 interface FilterChip {
   key: string;
   label: string;
+}
+
+function buildContextLine(qu: {
+  intent?: string;
+  location?: string;
+  attributes?: {
+    demographic?: string;
+    serviceFormat?: string[];
+  };
+}): string | null {
+  const parts: string[] = [];
+
+  if (qu.intent) {
+    const label = qu.intent.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+    parts.push(`${label} services`);
+  }
+
+  if (qu.attributes?.demographic) {
+    parts.push(`for ${qu.attributes.demographic}`);
+  }
+
+  if (qu.location) {
+    parts.push(`near ${qu.location}`);
+  }
+
+  if (parts.length === 0) return null;
+
+  let line: string;
+  if (!qu.intent && qu.location) {
+    line = `Services near ${qu.location}`;
+  } else {
+    line = parts.join(" ");
+  }
+
+  const formatMap: Record<string, string> = {
+    in_person: "In-person",
+    online: "Online",
+    in_person_and_online: "In-person & Online",
+  };
+  const formats = (qu.attributes?.serviceFormat ?? [])
+    .map(f => formatMap[f] ?? f)
+    .filter(Boolean);
+  if (formats.length > 0) {
+    line += ` · ${formats.join(", ")}`;
+  }
+
+  return line;
 }
 
 function buildFilterChips(filters: SearchFilters): FilterChip[] {
@@ -374,7 +421,22 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Results toolbar: view toggle, query summary, action buttons */}
+              {data?.queryUnderstanding && (() => {
+                const contextLine = buildContextLine(data.queryUnderstanding);
+                return contextLine ? (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3"
+                  >
+                    <Search className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                    {contextLine}
+                  </motion.p>
+                ) : null;
+              })()}
+
+              {/* Results toolbar: view toggle, action buttons */}
               <div className="flex items-center justify-between gap-2 mb-4">
                 {/* List/Map toggle */}
                 <div className="inline-flex gap-0.5 p-1 bg-muted rounded-lg border border-border" role="radiogroup" aria-label="View mode">
@@ -409,24 +471,6 @@ export default function Home() {
                     <span className="hidden sm:inline">Map</span>
                   </button>
                 </div>
-
-                {/* Query understanding — pill-style summary */}
-                {data?.queryUnderstanding?.intent && (
-                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/60 border border-border/50">
-                    <span className="text-xs font-medium text-muted-foreground capitalize">
-                      {data.queryUnderstanding.intent}
-                    </span>
-                    {data.queryUnderstanding.location && (
-                      <>
-                        <span className="text-muted-foreground/30">|</span>
-                        <span className="text-xs text-foreground/70">{data.queryUnderstanding.location}</span>
-                      </>
-                    )}
-                    {data.queryUnderstanding.attributes?.serviceFormat?.map(f => (
-                      <span key={f} className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-medium">{f}</span>
-                    ))}
-                  </div>
-                )}
 
                 <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
