@@ -128,8 +128,81 @@ class StorageFacade extends DatabaseStorage {
   override getChangeRequestById = this._reviews.getChangeRequestById.bind(this._reviews);
   override updateChangeRequest = this._reviews.updateChangeRequest.bind(this._reviews);
   override rejectChangeRequest = this._reviews.rejectChangeRequest.bind(this._reviews);
-  // approveChangeRequest + bulkApproveChangeRequests stay on DatabaseStorage
-  // because they call createService/updateService/deactivateService (cross-domain)
+
+  // approveChangeRequest orchestrates across domains (review + service CRUD),
+  // so it lives on the facade to ensure it calls the facade's overridden
+  // createService/updateService/deactivateService (with proper side effects).
+  override async approveChangeRequest(id: number, reviewedBy?: string): Promise<Service> {
+    const req = await this.getChangeRequestById(id);
+    if (!req) throw new Error(`Change request with id ${id} not found`);
+    if (req.status !== 'pending') throw new Error(`Change request ${id} is not pending (status: ${req.status})`);
+
+    let resultService: Service;
+    const proposed = req.proposedChanges as Record<string, any>;
+
+    switch (req.changeType) {
+      case 'create': {
+        resultService = await this.createService({
+          name: proposed.name,
+          category: proposed.category,
+          ...proposed,
+        });
+        break;
+      }
+      case 'update': {
+        if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for update`);
+        const allowedFields = new Set([
+          'name', 'category', 'description', 'location', 'eligibility',
+          'processSteps', 'waitTimes', 'requiredDocs', 'hoursOfOperation',
+          'languagesSupported', 'serviceFormat', 'websiteUrl', 'phone', 'email',
+          'address', 'genderRestriction', 'ageGroup', 'isFaithBased', 'is12Step',
+          'is24_7', 'tags', 'confidenceScore',
+        ]);
+        const constrainedFields = new Set(['ageGroup', 'genderRestriction']);
+        const updateFields: Record<string, any> = { isActive: true };
+        for (const [key, val] of Object.entries(proposed)) {
+          if (!allowedFields.has(key) || val === undefined) continue;
+          if (constrainedFields.has(key) && val === '') {
+            updateFields[key] = null;
+          } else {
+            updateFields[key] = val;
+          }
+        }
+        resultService = await this.updateService(req.serviceId!, updateFields as Partial<Service>);
+        break;
+      }
+      case 'deactivate': {
+        if (!req.serviceId) throw new Error(`Change request ${id} has no serviceId for deactivation`);
+        resultService = await this.deactivateService(req.serviceId!, proposed.reason || 'Approved via review queue');
+        break;
+      }
+      case 'review':
+        throw new Error(`Review requests (id ${id}) cannot be approved directly — edit the service and resolve the review manually`);
+      default:
+        throw new Error(`Unknown changeType: ${req.changeType}`);
+    }
+
+    await this.updateChangeRequest(id, {
+      status: 'approved',
+      reviewedAt: new Date(),
+      reviewedBy: reviewedBy ?? 'admin',
+    });
+
+    return resultService;
+  }
+
+  override async bulkApproveChangeRequests(ids: number[], reviewedBy?: string): Promise<number> {
+    let successCount = 0;
+    for (const id of ids) {
+      try {
+        await this.approveChangeRequest(id, reviewedBy);
+        successCount++;
+      } catch (err) {
+        console.warn(`[Admin] bulkApproveChangeRequests: failed to approve ${id}:`, err);
+      }
+    }
+    return successCount;
+  }
 
   // === Analytics domain delegation ===
 
