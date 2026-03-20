@@ -9,8 +9,6 @@ import {
   Loader2,
   ExternalLink,
   Search,
-  ChevronLeft,
-  ChevronRight,
   AlertTriangle,
   CheckCircle,
   AlertCircle,
@@ -22,6 +20,7 @@ import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
 import { FIELD_LABELS, SEVERITY_COLORS, SEVERITY_BAR_COLORS, confidenceColor } from "@/lib/admin-constants";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { InfoTip } from "@/components/admin/InfoTip";
 import { useToast } from "@/hooks/use-toast";
 
@@ -684,46 +683,16 @@ export default function Quality() {
 
               {/* Pagination controls */}
               {issuesData && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                  <div className="flex items-center gap-3">
-                    <p className="text-xs text-muted-foreground">
-                      {Math.min((issuePage - 1) * issuesPerPage + 1, issuesData.total)}–{Math.min(issuePage * issuesPerPage, issuesData.total)} of {issuesData.total} services
-                    </p>
-                    <select
-                      value={issuesPerPage}
-                      onChange={(e) => { setIssuesPerPage(Number(e.target.value)); setIssuePage(1); }}
-                      className="text-xs border border-border rounded px-1.5 py-1 text-muted-foreground bg-card"
-                    >
-                      <option value={25}>25 per page</option>
-                      <option value={50}>50 per page</option>
-                      <option value={100}>100 per page</option>
-                      <option value={200}>200 per page</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      disabled={issuePage <= 1}
-                      onClick={() => setIssuePage((p) => p - 1)}
-                    >
-                      <ChevronLeft className="h-3.5 w-3.5" />
-                    </Button>
-                    <span className="text-xs text-muted-foreground px-2 tabular-nums">
-                      {issuePage} / {Math.ceil(issuesData.total / issuesPerPage)}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      disabled={issuePage >= Math.ceil(issuesData.total / issuesPerPage)}
-                      onClick={() => setIssuePage((p) => p + 1)}
-                    >
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
+                <AdminPagination
+                  page={issuePage}
+                  totalPages={Math.ceil(issuesData.total / issuesPerPage)}
+                  total={issuesData.total}
+                  pageSize={issuesPerPage}
+                  pageSizeOptions={[25, 50, 100, 200]}
+                  onPageChange={setIssuePage}
+                  onPageSizeChange={(size) => { setIssuesPerPage(size); setIssuePage(1); }}
+                  variant="full"
+                />
               )}
             </>
           )}

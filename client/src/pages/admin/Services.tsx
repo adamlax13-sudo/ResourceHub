@@ -4,6 +4,7 @@ import { useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
 import { ServiceDetailPanel } from "@/components/admin/ServiceDetailPanel";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { CATEGORY_GROUPS } from "@/lib/category-groups";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Loader2,
   Search,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -279,49 +278,14 @@ export default function Services() {
 
           {/* Pagination */}
           {listData && (
-            <div className="border-t border-border px-3 py-2 space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  {listData.total > 0
-                    ? `Page ${page} of ${totalPages} (${listData.total} total)`
-                    : "No results"}
-                </span>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setPage((p: number) => Math.max(1, p - 1))}
-                    disabled={page <= 1}
-                    className="h-7 px-2 text-muted-foreground"
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setPage((p: number) => p + 1)}
-                    disabled={page >= totalPages}
-                    className="h-7 px-2 text-muted-foreground"
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Show</span>
-                <select
-                  value={pageSize}
-                  onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-                  className="border border-border rounded px-1.5 py-0.5 text-xs bg-card text-foreground"
-                >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                <span>per page</span>
-              </div>
-            </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              total={listData.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
+            />
           )}
         </>
       )}
