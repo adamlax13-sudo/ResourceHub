@@ -46,7 +46,7 @@ const IMPLIED_NEEDS: Array<{ pattern: RegExp; needs: string[] }> = [
  * Run all query detectors once and return enriched QueryContext fields.
  * Call this once per query, then merge results into QueryAnalysis.
  */
-export function understandQuery(rawQuery: string, intent?: QueryIntent): Partial<QueryAnalysis> {
+export function computeQueryContext(rawQuery: string, intent?: QueryIntent): Partial<QueryAnalysis> {
   const q = rawQuery;
 
   // Pre-compute all detector results
