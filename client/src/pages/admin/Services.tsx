@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
+import { confidenceColor, formatRelativeTime } from "@/lib/admin-constants";
 
 interface ServiceListItem {
   id: number;
@@ -263,8 +264,7 @@ export default function Services() {
                   {svc.confidenceScore != null && (
                     <span className={cn(
                       "text-xs font-mono flex-shrink-0",
-                      svc.confidenceScore >= 70 ? "text-emerald-500" :
-                      svc.confidenceScore >= 40 ? "text-amber-500" : "text-red-500"
+                      confidenceColor(svc.confidenceScore)
                     )}>
                       {svc.confidenceScore}
                     </span>
@@ -348,17 +348,3 @@ export default function Services() {
   );
 }
 
-function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return "";
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const diffDays = Math.floor(diffHr / 24);
-  if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}

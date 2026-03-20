@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw, ClipboardCheck, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
+import { FIELD_LABELS, confidenceColor, formatRelativeTime } from "@/lib/admin-constants";
 
 interface ChangeRequest {
   id: number;
@@ -39,15 +40,6 @@ interface ChangeRequest {
 interface ChangeRequestDetail extends ChangeRequest {
   reviewNotes?: string;
 }
-
-const FIELD_LABELS: Record<string, string> = {
-  phone: "Phone", email: "Email", websiteUrl: "Website", address: "Address",
-  description: "Description", hoursOfOperation: "Hours", eligibility: "Eligibility",
-  waitTimes: "Wait Times", serviceFormat: "Service Format", processSteps: "Process Steps",
-  requiredDocs: "Required Docs", languagesSupported: "Languages", latitude: "Geocoding",
-  tags: "Tags", embedding: "Embedding", embeddingFresh: "Stale Embedding",
-  geocodingFresh: "Stale Geocoding", staleEmbedding: "Stale Embedding", staleGeocoding: "Stale Geocoding",
-};
 
 export default function Review() {
   const queryClient = useQueryClient();
@@ -287,8 +279,7 @@ export default function Review() {
                   {cr.confidenceScore != null && (
                     <span className={cn(
                       "text-xs font-mono flex-shrink-0",
-                      cr.confidenceScore >= 70 ? "text-emerald-500" :
-                      cr.confidenceScore >= 40 ? "text-amber-500" : "text-red-500"
+                      confidenceColor(cr.confidenceScore)
                     )}>
                       {cr.confidenceScore}
                     </span>
@@ -417,6 +408,8 @@ export default function Review() {
                         try {
                           await apiRequest("POST", `/api/admin/services/${request.serviceId}/geocode`, {});
                           toast({ title: "Geocoded successfully" });
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/summary"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/issues"] });
                         } catch { toast({ title: "Geocode failed", variant: "destructive" }); }
                       }}
                       className="text-muted-foreground hover:text-foreground text-xs"
@@ -430,6 +423,8 @@ export default function Review() {
                         try {
                           await apiRequest("POST", `/api/admin/services/${request.serviceId}/regenerate-embedding`, {});
                           toast({ title: "Embedding regenerated" });
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/summary"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/issues"] });
                         } catch { toast({ title: "Embedding regen failed", variant: "destructive" }); }
                       }}
                       className="text-muted-foreground hover:text-foreground text-xs"
@@ -576,15 +571,3 @@ function ChangeTypeBadge({ type }: { type: string }) {
   return <Badge className="bg-muted text-muted-foreground border-border text-xs">{type}</Badge>;
 }
 
-function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return "";
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const diffDays = Math.floor(diffHr / 24);
-  if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}

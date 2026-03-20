@@ -21,68 +21,37 @@ import {
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
+import { FIELD_LABELS, SEVERITY_COLORS, SEVERITY_BAR_COLORS, confidenceColor } from "@/lib/admin-constants";
 import { InfoTip } from "@/components/admin/InfoTip";
 import { useToast } from "@/hooks/use-toast";
 
-// ---------- Constants ----------
-
-const FIELD_LABELS: Record<string, string> = {
-  phone: "Phone",
-  email: "Email",
-  websiteUrl: "Website",
-  address: "Address",
-  description: "Description",
-  hoursOfOperation: "Hours",
-  eligibility: "Eligibility",
-  waitTimes: "Wait Times",
-  serviceFormat: "Service Format",
-  processSteps: "Process Steps",
-  requiredDocs: "Required Docs",
-  languagesSupported: "Languages",
-  latitude: "Geocoding",
-  tags: "Tags",
-  embedding: "Embedding",
-  embeddingFresh: "Embeddings Fresh",
-  geocodingFresh: "Geocoding Fresh",
-  lowConfidence: "Low Confidence",
-  staleEmbedding: "Stale Embedding",
-  staleGeocoding: "Stale Geocoding",
-};
-
-const SEVERITY_COLORS: Record<string, string> = {
-  critical: "bg-red-50 text-red-700 border-red-200",
-  high: "bg-orange-50 text-orange-700 border-orange-200",
-  medium: "bg-amber-50 text-amber-700 border-amber-200",
-  low: "bg-muted text-muted-foreground border-border",
-};
-
-const SEVERITY_BAR_COLORS: Record<string, string> = {
-  critical: "bg-red-500",
-  high: "bg-orange-500",
-  medium: "bg-amber-400",
-};
-
 const FIELD_FILTER_OPTIONS = [
   { value: "", label: "All Fields" },
-  { value: "phone", label: "Phone" },
-  { value: "email", label: "Email" },
+  { value: "noContact", label: "No Contact (phone + email)" },
+  { value: "name", label: "Title" },
+  { value: "description", label: "Description" },
+  { value: "eligibility", label: "Eligibility" },
   { value: "websiteUrl", label: "Website" },
   { value: "address", label: "Address" },
-  { value: "description", label: "Description" },
   { value: "hoursOfOperation", label: "Hours" },
-  { value: "eligibility", label: "Eligibility" },
   { value: "waitTimes", label: "Wait Times" },
   { value: "serviceFormat", label: "Service Format" },
   { value: "processSteps", label: "Process Steps" },
   { value: "requiredDocs", label: "Required Docs" },
   { value: "languagesSupported", label: "Languages" },
-  { value: "latitude", label: "Geocoding" },
   { value: "tags", label: "Tags" },
-  { value: "embedding", label: "Embedding" },
-  { value: "lowConfidence", label: "Low Confidence" },
-  { value: "staleEmbedding", label: "Stale Embedding" },
-  { value: "staleGeocoding", label: "Stale Geocoding" },
+  { value: "freshEmbedding", label: "Fresh Embedding" },
+  { value: "freshGeocoding", label: "Fresh Geocoding" },
+  { value: "phone", label: "Phone (visibility)" },
+  { value: "email", label: "Email (visibility)" },
+  { value: "lowConfidence", label: "Low Confidence (visibility)" },
 ];
+
+// Coverage bar keys → issue field keys for click-to-filter
+const COVERAGE_TO_ISSUE: Record<string, string> = {
+  geocodingFresh: "freshGeocoding",
+  embeddingFresh: "freshEmbedding",
+};
 
 
 // ---------- Types ----------
@@ -227,9 +196,15 @@ export default function Quality() {
     issues: IssueEntry[];
     total: number;
   }>({
-    queryKey: ["/api/admin/quality/issues", issuePage, issuesPerPage],
+    queryKey: ["/api/admin/quality/issues", issuePage, issuesPerPage, fieldFilter, severityFilter],
     queryFn: async () => {
-      const res = await apiRequest("GET", `/api/admin/quality/issues?page=${issuePage}&limit=${issuesPerPage}`);
+      const params = new URLSearchParams({
+        page: String(issuePage),
+        limit: String(issuesPerPage),
+      });
+      if (fieldFilter) params.set("field", fieldFilter);
+      if (severityFilter) params.set("severity", severityFilter);
+      const res = await apiRequest("GET", `/api/admin/quality/issues?${params}`);
       return res.json();
     },
     staleTime: 60_000,
@@ -288,22 +263,22 @@ export default function Quality() {
     .slice(0, 15);
   const maxCategoryIssues = categoryBreakdown.length > 0 ? categoryBreakdown[0][1] : 1;
 
-  // Filtered + searched issues
-  const filteredIssues = allIssues.filter((issue) => {
+  // Server handles field + severity filtering via query params;
+  // client-side fallback ensures correctness even if server hasn't restarted
+  const searchedIssues = allIssues.filter((issue) => {
     if (fieldFilter && !issue.missingFields.includes(fieldFilter)) return false;
     if (severityFilter && issue.severity !== severityFilter) return false;
+    if (issueSearch && !issue.service.name.toLowerCase().includes(issueSearch.toLowerCase())) return false;
     return true;
   });
-
-  const searchedIssues = filteredIssues.filter((issue) =>
-    !issueSearch || issue.service.name.toLowerCase().includes(issueSearch.toLowerCase())
-  );
 
 
   // ---------- Handlers ----------
 
   const handleFieldClick = (fieldKey: string) => {
-    setFieldFilter(fieldFilter === fieldKey ? "" : fieldKey);
+    const issueKey = COVERAGE_TO_ISSUE[fieldKey] ?? fieldKey;
+    setFieldFilter(fieldFilter === issueKey ? "" : issueKey);
+    setIssuePage(1);
     setTimeout(() => {
       document.getElementById("issues-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -311,6 +286,7 @@ export default function Quality() {
 
   const handleSeverityClick = (severity: string) => {
     setSeverityFilter(severityFilter === severity ? "" : severity);
+    setIssuePage(1);
     setTimeout(() => {
       document.getElementById("issues-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -397,13 +373,16 @@ export default function Quality() {
           ) : (
             <div className="space-y-3">
               {displayBars.map((bar) => {
-                const issueCount = fieldIssueCounts[bar.key] ?? 0;
+                const issueKey = COVERAGE_TO_ISSUE[bar.key] ?? bar.key;
+                const issueCount = fieldIssueCounts[issueKey] ?? fieldIssueCounts[bar.key] ?? 0;
                 return (
                   <div
                     key={bar.key}
                     className={cn(
                       "space-y-1 cursor-pointer rounded px-2 py-1.5 -mx-2 transition-colors",
-                      fieldFilter === bar.key ? "bg-primary/10 ring-1 ring-primary/20" : "hover:bg-muted"
+                      (fieldFilter === bar.key || fieldFilter === COVERAGE_TO_ISSUE[bar.key])
+                        ? "bg-primary/10 ring-1 ring-primary/20"
+                        : "hover:bg-muted"
                     )}
                     onClick={() => handleFieldClick(bar.key)}
                   >
@@ -526,8 +505,13 @@ export default function Quality() {
               {/* Field filter */}
               <select
                 value={fieldFilter}
-                onChange={(e) => setFieldFilter(e.target.value)}
-                className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
+                onChange={(e) => { setFieldFilter(e.target.value); setIssuePage(1); }}
+                className={cn(
+                  "h-7 rounded border px-1.5 text-[11px]",
+                  fieldFilter
+                    ? "border-primary bg-primary/5 text-primary font-medium"
+                    : "border-border bg-card text-foreground"
+                )}
               >
                 {FIELD_FILTER_OPTIONS.map((opt) => {
                   const count = opt.value ? fieldIssueCounts[opt.value] ?? 0 : 0;
@@ -542,8 +526,13 @@ export default function Quality() {
               {/* Severity filter */}
               <select
                 value={severityFilter}
-                onChange={(e) => setSeverityFilter(e.target.value)}
-                className="h-7 rounded border border-border bg-card px-1.5 text-[11px] text-foreground"
+                onChange={(e) => { setSeverityFilter(e.target.value); setIssuePage(1); }}
+                className={cn(
+                  "h-7 rounded border px-1.5 text-[11px]",
+                  severityFilter
+                    ? "border-primary bg-primary/5 text-primary font-medium"
+                    : "border-border bg-card text-foreground"
+                )}
               >
                 <option value="">All Severity</option>
                 <option value="critical">Critical ({severityCounts.critical})</option>
@@ -561,6 +550,7 @@ export default function Quality() {
                     setFieldFilter("");
                     setSeverityFilter("");
                     setIssueSearch("");
+                    setIssuePage(1);
                   }}
                 >
                   Clear
@@ -656,11 +646,7 @@ export default function Quality() {
                           <span
                             className={cn(
                               "text-xs font-mono",
-                              (issue.service.confidenceScore ?? 0) >= 70
-                                ? "text-emerald-500"
-                                : (issue.service.confidenceScore ?? 0) >= 40
-                                  ? "text-amber-500"
-                                  : "text-red-500"
+                              confidenceColor(issue.service.confidenceScore)
                             )}
                           >
                             {issue.service.confidenceScore ?? "N/A"}

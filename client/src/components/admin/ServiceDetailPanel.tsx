@@ -31,6 +31,7 @@ import {
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/category-colors";
+import { formatRelativeTime } from "@/lib/admin-constants";
 
 interface ServiceDetail {
   id: number;
@@ -101,21 +102,6 @@ export interface ServiceDetailPanelProps {
   onDirtyChange?: (dirty: boolean) => void;
   /** Called after a successful service update — lets parent invalidate its own queries */
   onSaveSuccess?: () => void;
-}
-
-function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return "";
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const diffDays = Math.floor(diffHr / 24);
-  if (diffDays < 30) return `${diffDays}d ago`;
-  return new Date(dateStr).toLocaleDateString();
 }
 
 export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirtyChange, onSaveSuccess }: ServiceDetailPanelProps) {
@@ -337,6 +323,8 @@ export function ServiceDetailPanel({ serviceId, highlightFields, banner, onDirty
     onSuccess: () => {
       toast({ title: "Geocoded successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services", serviceId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/summary"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/quality/issues"] });
     },
     onError: (err) => {
       toast({ title: "Geocoding failed", description: err.message, variant: "destructive" });
