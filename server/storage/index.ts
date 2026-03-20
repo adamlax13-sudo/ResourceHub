@@ -4,17 +4,28 @@
  * Single entry point for all database operations. Delegates to domain
  * modules and wires cross-domain side effects between them.
  *
- * Domain modules extracted:
+ * Domain modules:
  * - SearchStorage: search cache, semantic/SQL search, confidence cache, aliases
  * - ServiceStorage: service CRUD, history, admin list/detail
+ * - ReviewStorage: change request CRUD
+ * - AnalyticsStorage: click tracking, search quality metrics, votes
+ * - QualityStorage: data quality summary + issues
+ * - DashboardStorage: dashboard stats, activity, scraper runs
  *
- * Remaining methods still live in DatabaseStorage (storage-impl.ts).
+ * Remaining in DatabaseStorage (storage-impl.ts):
+ * - Feedback, core service queries (getAllActiveServices, getCrisisLines, etc.)
+ * - Enrichment CRUD (getEnrichmentsByServiceIds, upsertEnrichment, etc.)
+ * - approveChangeRequest + bulkApproveChangeRequests (cross-domain orchestration)
  */
 
 import { DatabaseStorage } from './storage-impl';
 import { SearchStorage } from './search-storage';
 import { ServiceStorage, type ServiceSideEffects } from './service-storage';
-import type { Service, ServiceHistory } from "@shared/schema";
+import { ReviewStorage } from './review-storage';
+import { AnalyticsStorage } from './analytics-storage';
+import { QualityStorage } from './quality-storage';
+import { DashboardStorage } from './dashboard-storage';
+import type { Service, ServiceHistory, ServiceChangeRequest, InsertServiceChangeRequest, ScraperLog } from "@shared/schema";
 
 // Re-export types from the implementation
 export type {
@@ -35,6 +46,10 @@ export { DatabaseStorage } from './storage-impl';
 class StorageFacade extends DatabaseStorage {
   private _search = new SearchStorage();
   private _services = new ServiceStorage();
+  private _reviews = new ReviewStorage();
+  private _analytics = new AnalyticsStorage();
+  private _quality = new QualityStorage();
+  private _dashboard = new DashboardStorage();
 
   /** Side-effect callbacks passed to ServiceStorage for cross-domain wiring */
   private get _serviceEffects(): ServiceSideEffects {
@@ -105,6 +120,40 @@ class StorageFacade extends DatabaseStorage {
   override async bulkDeactivateServices(ids: number[], reason: string): Promise<number> {
     return this._services.bulkDeactivateServices(ids, reason, this._serviceEffects);
   }
+
+  // === Review domain delegation ===
+
+  override createChangeRequest = this._reviews.createChangeRequest.bind(this._reviews);
+  override getChangeRequests = this._reviews.getChangeRequests.bind(this._reviews);
+  override getChangeRequestById = this._reviews.getChangeRequestById.bind(this._reviews);
+  override updateChangeRequest = this._reviews.updateChangeRequest.bind(this._reviews);
+  override rejectChangeRequest = this._reviews.rejectChangeRequest.bind(this._reviews);
+  // approveChangeRequest + bulkApproveChangeRequests stay on DatabaseStorage
+  // because they call createService/updateService/deactivateService (cross-domain)
+
+  // === Analytics domain delegation ===
+
+  override trackSearchClick = this._analytics.trackSearchClick.bind(this._analytics);
+  override getClickCountForService = this._analytics.getClickCountForService.bind(this._analytics);
+  override getPopularSearches = this._analytics.getPopularSearches.bind(this._analytics);
+  override getPopularQueries = this._analytics.getPopularQueries.bind(this._analytics);
+  override getQueryAffinities = this._analytics.getQueryAffinities.bind(this._analytics);
+  override createServiceVote = this._analytics.createServiceVote.bind(this._analytics);
+  override recordSearchQuality = this._analytics.recordSearchQuality.bind(this._analytics);
+  override updateSearchQuality = this._analytics.updateSearchQuality.bind(this._analytics);
+  override getSearchQualityReport = this._analytics.getSearchQualityReport.bind(this._analytics);
+
+  // === Quality domain delegation ===
+
+  override getQualitySummary = this._quality.getQualitySummary.bind(this._quality);
+  override getQualityIssues = this._quality.getQualityIssues.bind(this._quality);
+
+  // === Dashboard domain delegation ===
+
+  override getDashboardStats = this._dashboard.getDashboardStats.bind(this._dashboard);
+  override getRecentActivity = this._dashboard.getRecentActivity.bind(this._dashboard);
+  override getScraperRuns = this._dashboard.getScraperRuns.bind(this._dashboard);
+  override getScraperRunById = this._dashboard.getScraperRunById.bind(this._dashboard);
 }
 
 /** Storage singleton — all route/service code imports this */
