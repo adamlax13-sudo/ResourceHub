@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { MasterDetailLayout } from "@/components/admin/MasterDetailLayout";
 import { ServiceDetailPanel } from "@/components/admin/ServiceDetailPanel";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { useSessionFilters } from "@/hooks/useSessionFilters";
 import { CATEGORY_GROUPS } from "@/lib/category-groups";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,32 +30,38 @@ interface ServiceListItem {
 }
 
 export default function Services() {
-  const searchString = useSearch();
+  const { filters, setFilter } = useSessionFilters({
+    storageKey: "admin-services-filters",
+    defaults: {
+      searchQuery: "",
+      statusFilter: "active",
+      categoryFilter: "",
+      enrichmentSourceFilter: "",
+      sortBy: "lastUpdated-desc",
+      pageSize: 25,
+      page: 1,
+      selectedId: null as number | null,
+    },
+    urlOverrides: { selectedId: "selected" },
+  });
 
-  // Parse ?selected=ID from URL (linked from Quality page)
-  const urlParams = new URLSearchParams(searchString);
-  const urlSelectedId = urlParams.get("selected");
+  // Destructure for convenience (all consumers use these directly)
+  const { searchQuery, statusFilter, categoryFilter, enrichmentSourceFilter, sortBy, pageSize, page, selectedId } = filters;
+  const setSearchQuery = useCallback((v: string) => setFilter("searchQuery", v), [setFilter]);
+  const setStatusFilter = useCallback((v: string) => setFilter("statusFilter", v), [setFilter]);
+  const setCategoryFilter = useCallback((v: string) => setFilter("categoryFilter", v), [setFilter]);
+  const setEnrichmentSourceFilter = useCallback((v: string) => setFilter("enrichmentSourceFilter", v), [setFilter]);
+  const setSortBy = useCallback((v: string) => setFilter("sortBy", v), [setFilter]);
+  const setPageSize = useCallback((v: number) => setFilter("pageSize", v), [setFilter]);
+  const setPage = useCallback((v: number | ((prev: number) => number)) => {
+    if (typeof v === "function") {
+      setFilter("page", v(filters.page));
+    } else {
+      setFilter("page", v);
+    }
+  }, [setFilter, filters.page]);
+  const setSelectedId = useCallback((v: number | null) => setFilter("selectedId", v), [setFilter]);
 
-  // Persist filters in sessionStorage so they survive tab switches
-  const STORAGE_KEY = "admin-services-filters";
-  const savedFilters = (() => {
-    try {
-      const saved = sessionStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
-  })();
-
-  // List state — initialize from sessionStorage if available
-  const [searchQuery, setSearchQuery] = useState(savedFilters?.searchQuery ?? "");
-  const [statusFilter, setStatusFilter] = useState<string>(savedFilters?.statusFilter ?? "active");
-  const [categoryFilter, setCategoryFilter] = useState<string>(savedFilters?.categoryFilter ?? "");
-  const [enrichmentSourceFilter, setEnrichmentSourceFilter] = useState<string>(savedFilters?.enrichmentSourceFilter ?? "");
-  const [sortBy, setSortBy] = useState<string>(savedFilters?.sortBy ?? "lastUpdated-desc");
-  const [pageSize, setPageSize] = useState<number>(savedFilters?.pageSize ?? 25);
-  const [page, setPage] = useState(savedFilters?.page ?? 1);
-  const [selectedId, setSelectedId] = useState<number | null>(
-    urlSelectedId ? Number(urlSelectedId) : (savedFilters?.selectedId ?? null)
-  );
   const [isDirty, setIsDirty] = useState(false);
   const isDirtyRef = useRef(false);
 
@@ -74,24 +80,6 @@ export default function Services() {
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, []);
-
-  // Save filters to sessionStorage whenever they change
-  useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-      searchQuery, statusFilter, categoryFilter, enrichmentSourceFilter,
-      sortBy, pageSize, page, selectedId,
-    }));
-  }, [searchQuery, statusFilter, categoryFilter, enrichmentSourceFilter, sortBy, pageSize, page, selectedId]);
-
-  // Sync URL ?selected= param to state
-  useEffect(() => {
-    if (urlSelectedId) {
-      const id = Number(urlSelectedId);
-      if (id && id !== selectedId) {
-        setSelectedId(id);
-      }
-    }
-  }, [urlSelectedId]);
 
   // Parse sortBy into sort and order params
   const [sortCol = "name", sortDir = "asc"] = sortBy.split("-");
