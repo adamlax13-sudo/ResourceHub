@@ -73,7 +73,11 @@ export interface SearchInput {
 
 // === QUERY ANALYSIS ===
 
-export interface QueryAnalysis {
+/**
+ * Synchronous analysis fields — always available after analyzeQuery().
+ * Safe to use for cache key computation (no LLM dependency).
+ */
+export interface BaseAnalysis {
   /** Original query string (PII scrubbed, but NOT typo-corrected) */
   raw: string;
   /** Typo-corrected query (use this for search operations) */
@@ -101,8 +105,6 @@ export interface QueryAnalysis {
   substanceType: SubstanceType;
   /** Terms user wants to exclude (e.g., "not religious" -> ["religious"]) */
   negativeTerms: string[];
-  /** Structured query attributes extracted by LLM understanding (optional, enriches search) */
-  attributes?: QueryAttributes;
   /** Sub-intents detected for the query */
   subIntents?: string[];
 
@@ -134,10 +136,21 @@ export interface QueryAnalysis {
     familyContext: 'immediate' | 'extended' | 'concerned' | null;
     exclusions: Exclusions;
   };
+}
 
+/**
+ * Enhanced analysis — extends BaseAnalysis with LLM-enriched fields.
+ * Available after enhanceIntentWithLLM() resolves. Used by scoring modules.
+ */
+export interface EnhancedAnalysis extends BaseAnalysis {
+  /** Structured query attributes extracted by LLM understanding (optional, enriches search) */
+  attributes?: QueryAttributes;
   /** Which tier resolved this query */
   resolvedBy?: 'pattern' | 'llm';
 }
+
+/** Backward-compatible alias — all existing code continues to use QueryAnalysis unchanged */
+export type QueryAnalysis = EnhancedAnalysis;
 
 /**
  * Structured query attributes extracted by LLM.
