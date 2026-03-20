@@ -20,8 +20,7 @@ import type {
   QueryAnalysis,
   QueryUnderstanding,
 } from './types';
-import { analyzeQuery, buildCacheKey } from './analyzer';
-import { enhanceIntentWithLLM } from './llm-intent';
+import { understandQuery } from './understand';
 import { withTimeout, TIMEOUTS } from '../helpers/timeout';
 import { ComprehensiveSearchStrategy } from './strategies/comprehensive';
 import { pinCrisisService, buildCrisisResults, getCrisisServiceFull, isCrisisServiceId } from './crisis';
@@ -444,14 +443,13 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   // Load alias map for query analysis
   const aliasMap = await storage.getAliasLookup();
 
-  // Analyze the query (regex-based — synchronous, instant)
+  // Analyze query + fire LLM enhancement in parallel + compute cache key
   const analysisStart = Date.now();
-  let analysis = analyzeQuery(input.query, input.location, aliasMap);
+  const understanding = understandQuery(input.query, databaseHash, CACHE_VERSION, input.location, aliasMap);
+  let analysis = understanding.base;
+  const llmIntentPromise = understanding.enhanced;
+  const cacheKey = understanding.cacheKey;
   timings.analysis_ms = Date.now() - analysisStart;
-
-  // Fire LLM intent enhancement in parallel — don't await yet.
-  // Cache check uses regex-only analysis; LLM results merge in later if needed.
-  const llmIntentPromise = enhanceIntentWithLLM(analysis);
 
   const intentLog = analysis.intents.secondary
     ? `${analysis.intent}(${analysis.intents.primary.confidence}), secondary: ${analysis.intents.secondary.intent}(${analysis.intents.secondary.confidence})`
@@ -459,9 +457,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   console.log(`[SearchOrchestrator] Query: "${input.query}", Intent: ${intentLog}, Location: ${analysis.location.specified || 'none'}`);
 
   // Check regular cache — key uses only regex-derived fields (no LLM-dependent fields)
-  // so cache hits are not blocked by LLM latency. LLM enhancement is applied post-cache.
   const cacheStart = Date.now();
-  const cacheKey = `${CACHE_VERSION}:${buildCacheKey(analysis, 'comprehensive', databaseHash)}`;
   const cached = await storage.getSearchByQuery(cacheKey);
   timings.cache_lookup_ms = Date.now() - cacheStart;
   if (cached) {
