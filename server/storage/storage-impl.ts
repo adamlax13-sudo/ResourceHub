@@ -1080,7 +1080,7 @@ export class DatabaseStorage implements IStorage {
    * Re-embeds (if content changed), refreshes the materialized view,
    * and clears the search cache. Runs async — callers should .catch(() => {}).
    */
-  private async _refreshSearchInfrastructure(serviceId: number, serviceStringId: string, contentChanged: boolean): Promise<void> {
+  protected async _refreshSearchInfrastructure(serviceId: number, serviceStringId: string, contentChanged: boolean): Promise<void> {
     try {
       // Re-generate embedding if content changed (name, description, eligibility, etc.)
       if (contentChanged) {
