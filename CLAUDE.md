@@ -40,116 +40,39 @@ pytest tests/ -v                     # Run scraper tests
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `server/routes.ts` | API route definitions — all endpoints registered here |
-| `server/storage.ts` | Database access layer (34KB) — all DB queries |
-| `server/search/index.ts` | Search orchestrator entry point |
-| `server/search/strategies/scoring/index.ts` | Ranking/boosting orchestrator (imports sub-modules) |
-| `server/search/strategies/scoring/quality-boost.ts` | Data quality boost — promotes high-confidence, well-described services |
-| `server/search/strategies/scoring/preference-boost.ts` | Preference boosts for filter toggles (faith-based, 12-step, 24/7) |
-| `server/search/strategies/scoring/filter-match-boost.ts` | Filter-match boosts for explicit DB matches |
-| `server/search/strategies/scoring/sub-intent-boost.ts` | Sub-intent-aware scoring boost (1.15x) + category overrides |
-| `server/search/strategies/comprehensive.ts` | Main search strategy |
-| `server/search/analyzer.ts` | Query analysis, typo correction, intent detection, attribute extraction |
-| `server/search/query-context.ts` | Consolidated query understanding — searcher/targetPerson/impliedNeeds |
-| `server/search/types.ts` | Search type definitions including QueryAttributes, QueryAnalysis |
-| `server/search/config.ts` | Search configuration and thresholds (48KB) |
-| `shared/schema.ts` | Drizzle ORM schema — all table definitions |
-| `shared/routes.ts` | Shared Zod schemas for API request/response types |
-| `scraper/scraper.py` | Scraper pipeline entry point |
-| `scraper/sources/plugin.py` | Source plugin interface (replaces old base.py) |
-| `scraper/upserter.py` | Service upsert logic for discovery phase |
-| `scraper/finalize.py` | Finalize phase: contacts, tags, embeddings, dedup, views |
-| `scraper/pipeline.py` | 3-phase pipeline orchestrator |
-| `server/helpers/keywords.ts` | Typo correction, keyword expansion, stemming |
-| `server/evaluation/deterministic_evaluator.ts` | API-free search quality scoring |
-| `server/evaluation/comprehensive_test_queries.ts` | 96 test queries across all intents |
-| `server/evaluation/run_baseline_api.mjs` | Run baseline eval via production API |
-| `server/evaluation/diagnose_query.ts` | Debug single query through pipeline |
-| `server/helpers/openai.ts` | Shared OpenAI singleton (`getOpenAI()`) + `extractJSON()` helper |
-| `server/search/llm-intent.ts` | LLM intent classification (enhances regex, LRU cached 24h) |
-| `server/search/strategies/scoring/llm-rerank.ts` | LLM reranking of top 20 RRF candidates for Tier 3 searches |
-| `server/evaluation/ci_runner.mjs` | CI test runner — 52 queries with per-intent thresholds |
-| `scripts/data/service-gaps-report.json` | 20 real Alberta orgs identified as data gaps (dental, LGBTQ, caregiver) |
-| `.github/workflows/search-eval.yml` | GitHub Actions CI for search quality regression testing |
-| `server/search/distance.ts` | Haversine distance + attachDistances/sortByDistance/filterByMaxDistance |
-| `server/routes/location.ts` | `/api/mapbox-token` + `/api/geocode` endpoints |
-| `client/src/components/MapView.tsx` | Lazy-loaded Mapbox map component (in separate ~1.7MB chunk) |
-| `scripts/batch-geocode-services.mjs` | Batch geocoding of services via Mapbox API |
-| `server/search/filters.ts` | Hard filter application (categories, gender, age, etc.) |
-| `client/src/components/RefinePanel.tsx` | Filter UI — categories (38 in 7 groups), gender, age, preferences, languages |
-| `server/routes/search.ts` | Search route handler — constructs `activeFilters` from input |
-| `scripts/check-source-urls.mjs` | URL health checker + source_urls backfill for services missing provenance |
-| `scripts/regen-embeddings-by-id.mjs` | Regenerate embeddings for specific service IDs |
-| `scripts/add-services.mjs` | Generic service inserter from JSON data file (dedup, history logging) |
-| `scripts/bulk-update-services.mjs` | Generic field updater — update any fields by ID from JSON |
-| `scripts/deactivate-services.mjs` | Deactivate services by ID with reason logging + optional field merge |
+See `memory-bank/Key-Files.md` for the full file reference (server, search, scoring, evaluation, client, scraper, data scripts).
 
-### Data Scripts
+Essential entry points: `server/routes.ts` (all endpoints), `server/storage.ts` (re-export shim → `server/storage/index.ts` facade), `server/search/index.ts` (search orchestrator), `shared/schema.ts` (DB schema), `scraper/scraper.py` (scraper entry).
 
-**Reusable scripts** in `scripts/` cover all common data operations. Prepare a JSON file with the data, then run:
+### Storage Architecture
 
-```bash
-# Add new services from JSON
-node scripts/add-services.mjs scripts/data/new-services.json
-# Update fields on existing services
-node scripts/bulk-update-services.mjs scripts/data/field-fixes.json
-# Deactivate services (with optional dedup field merge)
-node scripts/deactivate-services.mjs scripts/data/deactivations.json
-# Regenerate embeddings after name/description/tag changes
-node scripts/regen-embeddings-by-id.mjs 123 456 789
-# Refresh materialized view after deactivations
-node scripts/refresh-search-view.mjs
-# Check URL health + backfill source_urls
-node scripts/check-source-urls.mjs
-```
+`server/storage.ts` is a re-export shim. The real implementation lives in `server/storage/`:
 
-All scripts use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply.
+| File | Domain | Key Responsibilities |
+|------|--------|---------------------|
+| `index.ts` | Facade | Instantiates domain modules, wires cross-domain side effects |
+| `storage-impl.ts` | Legacy | DatabaseStorage class — remaining methods not yet extracted |
+| `search-storage.ts` | Search | Confidence cache, alias cache, semantic/SQL search, cache ops |
+| `service-storage.ts` | Services | CRUD with side-effect callbacks (invalidateCache, refreshInfra) |
+| `review-storage.ts` | Reviews | Change request CRUD (approveChangeRequest stays on facade) |
+| `analytics-storage.ts` | Analytics | Click tracking, votes, search quality metrics |
+| `quality-storage.ts` | Quality | Data quality summary + issues |
+| `dashboard-storage.ts` | Dashboard | Stats, recent activity, scraper runs |
 
-**Archive:** 159 one-off scripts in `scripts/archive/`. **If the user asks for a data operation that may have been done before** (e.g., normalize locations, fix names, deduplicate, enrich fields), check `scripts/archive/` first — there may be an existing script to reference or adapt.
+Cross-domain side effects flow through the facade via callback injection — e.g., `updateService()` receives `invalidateConfidenceCache` and `refreshSearchInfrastructure` callbacks from the facade, keeping domain modules decoupled.
+
+**Data scripts** in `scripts/` use `DRY_RUN=true` by default. Run with `DRY_RUN=false` to apply. Check `scripts/archive/` first if a data operation may have been done before.
 
 ## Architecture Notes
 
-### Search Pipeline
-1. Normalize query + correct typos
-2. Analyze intent via regex (`analyzeQuery()`) + extract service attributes
-3. Enhance with LLM structured understanding (`enhanceIntentWithLLM()` — returns intents + attributes + semantic rewrite)
-4. **Crisis routing**: Direct crisis (suicidal ideation) → full helpline replacement. Situational crisis (DV, homelessness) → pin 988 + keep search results. Third-party crisis ("my teen is self-harming") → pin 988 + route to relevant services (youth/mental health).
-5. Check regular cache (skip to post-cache scoring if hit)
-6. Stage 1: Fast SQL search (indexed, uses expanded keywords)
-7. Stage 2: Semantic search (pgvector embeddings, uses LLM semantic rewrite if available)
-8. Merge results via Reciprocal Rank Fusion
-9. Apply filters (age, gender, exclusions, diversity)
-10. **Tier 3 fresh searches:** LLM rerank top 20 candidates (`llmRerank()` → falls back to `boostByIntent()`)
-    **Tier 2 / cached:** Regex-based `boostByIntent()` scoring
-11. Apply data quality boost (confidence score, description richness)
-12. Apply sub-intent boost (`applySubIntentBoost()` — 1.15x for sub-intent text/category matches)
-13. Apply distance processing if user coords provided (`applyDistanceProcessing()`)
-14. Trim to relevant results (`trimToRelevant()` — 20% threshold, category rescue + sub-intent narrowing + impliedNeeds expansion, clamp to [13, 50])
-15. Return paginated results with summary
+See `memory-bank/Architecture.md` for full details (search pipeline, scoring modules, DB schema, scraper pipeline, deployment).
 
-### Search Caching
-- Cache stores **unfiltered** results; UI filters (age, gender, preferences) are applied **post-cache**
+**Key rules to remember every session:**
+- Cache stores **unfiltered** results; UI filters are applied **post-cache**
 - Cache version constant in `server/search/index.ts` must be bumped when changing filter/scoring behavior
-- Scoring sub-modules are in `server/search/strategies/scoring/` (modular files, not one monolith)
-
-### Database Tables (most important)
-- `services` — current service data (name, category, location, contact, etc.)
-- `service_history` — change log for every modification
-- `ai_service_enrichments` — cached AI-generated descriptions
-- `search_analytics` — click tracking for ranking improvements
-- `query_service_affinities` — computed (query, service) click affinity scores (unused, table kept for future use at 1K+ clicks)
-- `service_field_source` — tracks which scraper provided each field
-
-### Scraper Pipeline (v2)
-Three phases: discover → enrich → finalize.
-
-- **Discover**: Source plugins scrape directories (211, AHS, CRA, etc.) with no AI cost.
-- **Enrich**: Claude extracts process steps, eligibility, hours from service websites.
-- **Finalize**: Normalize contacts, geocode services (Mapbox), enhance tags, generate embeddings, deduplicate, refresh views.
-
-Run with `python scraper.py` (all phases) or `--phase discover|enrich|finalize`.
+- Crisis routing is **safety-critical** — false positives are better than false negatives
+- Query understanding pipeline: `server/search/understand.ts` orchestrates `analyzeQuery()` (sync) → `buildCacheKey()` → `enhanceIntentWithLLM()` (async parallel). Types split: `BaseAnalysis` (sync fields) extends to `EnhancedAnalysis` (+ LLM attributes).
+- Admin shared constants: `client/src/lib/admin-constants.ts` has FIELD_LABELS, SEVERITY_COLORS, `confidenceColor()`, `formatRelativeTime()`. `useSessionFilters` hook for filter persistence.
 
 ## Coding Conventions
 
@@ -191,15 +114,8 @@ Render.com with `render.yaml` blueprint. Auto-deploys on push to main. Monthly s
 
 Live URL: https://resourcehub-wwg6.onrender.com
 
-### Build format & ESM/CJS compat
-The server is built with esbuild to **CJS** format (`script/build.ts` → `dist/index.cjs`). The package is `"type": "module"`, so `npm run dev` (tsx) runs in ESM where `__dirname` doesn't exist, but esbuild's CJS output provides it natively.
-
-**Pattern for `__dirname`:** Use the `_currentDir` variable defined in `server/index.ts`:
-```ts
-// @ts-ignore
-const _currentDir: string = typeof __dirname !== 'undefined' ? __dirname : import.meta.dirname;
-```
-This works in both modes. The esbuild warning about `import.meta` is harmless (dead code path in CJS). Use `_currentDir` instead of `__dirname` in `server/index.ts`. Other server files that aren't bundled (e.g. `server/evaluation/`) can use the `fileURLToPath` shim directly.
+### Build format
+Server builds to CJS via esbuild (`dist/index.cjs`). For `__dirname` compatibility in ESM/CJS, see `memory-bank/Learning-ESM-CJS-Dirname-Compat.md`.
 
 ## Git Safety Rules (CRITICAL)
 
@@ -222,6 +138,19 @@ git reset HEAD
 git status  # Should show "nothing to commit, working tree clean"
 ```
 This rebuilds the index from the last commit. Do this **every time** after pushing worktree merges, even if `git status` looks fine — check proactively rather than discovering the corruption later when staging new changes.
+
+## Memory Bank
+
+A structured knowledge base lives in `memory-bank/` at the project root. Notes use Obsidian-style `[[wikilinks]]` and a flat directory structure.
+
+**Before complex tasks:** Read `memory-bank/Project-Overview.md` and follow links to relevant index notes (`Architecture.md`, `Decisions-Index.md`) for context.
+
+**After significant work:**
+- **Architectural decisions** — Create a `Decision-*.md` note and add it to `memory-bank/Decisions-Index.md`
+- **Non-obvious learnings** — Create a `Learning-*.md` note and add it to `memory-bank/Learnings-Index.md`
+- **Major milestones** — Create a `Progress-*.md` note and add it to `memory-bank/Progress-Index.md`
+
+Use the `/memory-bank` skill for full conventions on creating and managing notes.
 
 ## Maintaining This File
 
