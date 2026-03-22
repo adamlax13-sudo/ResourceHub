@@ -17,6 +17,11 @@ function getCacheKey(data: SearchInput): string {
   const parts = [data.query, data.location || '', JSON.stringify(data.categories || [])];
   if (data.genderRestriction) parts.push(data.genderRestriction);
   if (data.ageGroup) parts.push(data.ageGroup);
+  if (data.is24_7) parts.push('24_7');
+  if (data.isFaithBased) parts.push('faith');
+  if (data.is12Step) parts.push('12step');
+  if (data.serviceFormat) parts.push(data.serviceFormat);
+  if (data.languagesSupported?.length) parts.push(data.languagesSupported.sort().join(','));
   return CACHE_KEY_PREFIX + parts.join('|');
 }
 

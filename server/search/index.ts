@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v164';
+const CACHE_VERSION = 'v166';
 
 import { SEARCH_CONFIG } from './config';
 import type {

@@ -1501,11 +1501,44 @@ export function computeRRFScore(sqlRank: number | null, semanticRank: number | n
 }
 
 /**
+ * Standalone off-category penalty — applies AFTER LLM reranking.
+ *
+ * When LLM reranking replaces boostByIntent(), the exclusive category penalties
+ * are lost. This function re-applies them: services whose DB category exclusively
+ * belongs to a different intent get their score reduced by 70%.
+ *
+ * Broad intents (mental_health, general, crisis, healthcare_access) are exempt
+ * since their services legitimately span many categories.
+ */
+const BROAD_INTENTS_SET = new Set<QueryIntent>(['mental_health', 'general', 'crisis', 'healthcare_access']);
+
+export function applyOffCategoryPenalty(services: LiteService[], intent: QueryIntent): LiteService[] {
+  if (BROAD_INTENTS_SET.has(intent)) return services;
+
+  let count = 0;
+  const result = services.map(svc => {
+    if (svc.rrfScore == null) return svc;
+    const categoryLower = svc.category.toLowerCase().trim();
+    const owners = EXCLUSIVE_CATEGORY_INTENTS[categoryLower];
+    if (owners && !owners.includes(intent)) {
+      count++;
+      return { ...svc, rrfScore: Math.round(svc.rrfScore * OFF_CATEGORY_PENALTY * 100) / 100 };
+    }
+    return svc;
+  });
+
+  if (count > 0) {
+    console.log(`[OffCategoryPenalty] ${count} services penalized for intent=${intent}`);
+  }
+  return result;
+}
+
+/**
  * Standalone dual-intent boost — applies AFTER LLM reranking or boostByIntent.
  * Services matching both primary and secondary intent patterns get a multiplicative boost.
  * This runs on ALL cache paths (Tier 2, Tier 3, cached) for consistent behavior.
  */
-export function applyDualIntentBoost(services: LiteService[], analysis: QueryAnalysis): LiteService[] {
+export function applyDualIntentBoost(services: LiteService[], analysis: QueryAnalysis, llmReranked?: boolean): LiteService[] {
   if (!analysis.intents.secondary) return services;
 
   // Skip if secondary is same intent as primary (degenerate case from LLM merge)
@@ -1518,13 +1551,14 @@ export function applyDualIntentBoost(services: LiteService[], analysis: QueryAna
   const secondary = INTENT_SERVICE_MAP[analysis.intents.secondary.intent];
   if (!primary || !secondary) return services;
 
-  // Confidence-scaled boost (inspired by learning-to-rank lambda weighting):
-  // Higher secondary confidence → stronger boost.
-  // When secondary is strong (≥0.55), apply aggressive boost to overcome LLM-reranked
-  // generic services that dominate the top-20 candidate pool.
-  // Range: 1.2x (conf=0.4) to 2.5x (conf=1.0)
+  // Confidence-scaled boost. When LLM reranking is active, use a gentler multiplier
+  // since the LLM already handles dual-intent matching via Rule 4 (sub-intent match).
+  // Without LLM: 1.6x-2.5x (needs to compensate for regex-only scoring).
+  // With LLM: 1.15x-1.30x (just a nudge — LLM already scored dual-match 90-100).
   const secondaryConf = analysis.intents.secondary.confidence;
-  const DUAL_BOOST = 1.0 + 1.5 * secondaryConf; // 0.4→1.6x, 0.55→1.825x, 0.7→2.05x, 1.0→2.5x
+  const DUAL_BOOST = llmReranked
+    ? 1.0 + 0.3 * secondaryConf  // LLM path: 0.4→1.12x, 0.7→1.21x, 1.0→1.30x
+    : 1.0 + 1.5 * secondaryConf; // Regex path: 0.4→1.6x, 0.7→2.05x, 1.0→2.5x
   let boostedCount = 0;
 
   const result = services.map(svc => {

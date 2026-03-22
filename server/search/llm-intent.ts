@@ -52,11 +52,17 @@ const VALID_URGENCY = new Set(['crisis', 'urgent', 'soon', 'flexible']);
 const SYSTEM_PROMPT = `You are a query understanding system for an Alberta social services directory.
 Analyze the user's search query and return a structured JSON object.
 
-SAFETY-CRITICAL: "crisis" intent takes absolute priority. Classify as crisis if the query expresses
-ANY of: suicidal ideation (direct or indirect), desire to not exist, self-harm intent, feelings of
-being a burden, giving up on life, hopelessness about continuing, farewell/goodbye messages,
-method references, or internet euphemisms for suicide (e.g. "unalive", "sewer slide", "off myself",
-"catch the bus", "final yeet"). When in doubt, ALWAYS include crisis. False positives save lives.
+SAFETY-CRITICAL: "crisis" intent is ONLY for genuine danger signals. Classify as crisis if the query
+expresses ANY of: suicidal ideation (direct or indirect), desire to not exist, self-harm intent,
+feelings of being a burden, giving up on life, hopelessness about continuing, farewell/goodbye
+messages, method references, or internet euphemisms for suicide (e.g. "unalive", "sewer slide",
+"off myself", "catch the bus", "final yeet").
+
+IMPORTANT: General emotional distress is NOT crisis. Queries like "I'm sad", "I'm depressed",
+"feeling down", "lonely", "overwhelmed", "struggling with anxiety" are mental_health — NOT crisis.
+These people need counselling and ongoing support, not emergency hotlines. Only classify as crisis
+when there are explicit indicators of self-harm, suicidal ideation, desire to not exist, or
+imminent danger. Depression and sadness alone do NOT meet the crisis threshold.
 
 Return a JSON object with these fields:
 
@@ -94,9 +100,9 @@ Return a JSON object with these fields:
    Examples: "counselling", "food bank", "emergency shelter", "walk-in clinic", "legal aid", "support group"
 
 5. "urgency": How urgent the need is. Values: "crisis", "urgent", "soon", "flexible"
-   - crisis: life-threatening, suicidal, immediate danger
-   - urgent: today/tonight, eviction, fleeing abuse
-   - soon: this week, active need
+   - crisis: life-threatening ONLY — suicidal ideation, self-harm, immediate physical danger
+   - urgent: today/tonight, eviction, fleeing abuse, severe emotional distress
+   - soon: this week, active need, general depression/sadness/anxiety, emotional struggles
    - flexible: general searching, planning ahead
 
 6. "semanticQuery": A clean 3-8 word rewrite capturing the core need (for embedding search).
@@ -317,7 +323,7 @@ function applyLLMIntents(analysis: QueryAnalysis, llmIntents: ScoredIntent[]): Q
   // "feeling really down lately" → no "I/me/my/myself" → LLM should not escalate to crisis.
   // Without this, LLM over-confidently routes colloquial sadness to 988.
   const llmCrisis = llmIntents.find(i => i.intent === 'crisis');
-  const hasFirstPersonSignal = /\b(i\b|i'm|i've|i'll|i'd|me\b|my\b|myself\b)/i.test(analysis.normalized);
+  const hasFirstPersonSignal = /\b(i\b|i'?m\b|i've|i'll|i'd|me\b|my\b|myself\b)/i.test(analysis.normalized);
   // If no first-person signal, block LLM from introducing crisis entirely.
   // If first-person present, use normal confidence bars.
   const crisisBar = !hasFirstPersonSignal ? Infinity

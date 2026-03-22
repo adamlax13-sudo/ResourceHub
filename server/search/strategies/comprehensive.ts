@@ -44,6 +44,7 @@ import {
   applyPreferenceBoosts,
   applyFilterMatchBoosts,
   applyDualIntentBoost,
+  applyOffCategoryPenalty,
   llmRerank,
   type BoostOptions,
 } from './scoring';
@@ -368,7 +369,7 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
 
       // Apply minimal intent boosting and return early
       let boosted = boostByIntent(nameMatched, analysis.intent, analysis.corrected, analysis, boostOptions);
-      boosted = applyDualIntentBoost(boosted, analysis);
+      boosted = applyDualIntentBoost(boosted, analysis, false);
       let final = analysis.negativeTerms?.length
         ? applyNegativePenalty(boosted, analysis.negativeTerms, boostOptions)
         : boosted;
@@ -513,8 +514,13 @@ export class ComprehensiveSearchStrategy extends BaseSearchStrategy {
     // Use LLM reranker for all Tier 3 fresh searches (falls back to regex boostByIntent on failure)
     services = await llmRerank(services, analysis.corrected, analysis, boostOptions, enhancedQuery);
 
-    // Dual-intent boost: services matching both primary + secondary intent get 35% score boost
-    services = applyDualIntentBoost(services, analysis);
+    // Off-category penalty: demote services from exclusive categories that don't match the intent.
+    // This runs inside boostByIntent on the regex path, but must be applied separately after LLM reranking.
+    services = applyOffCategoryPenalty(services, analysis.intent);
+
+    // Dual-intent boost: services matching both primary + secondary intent get score boost
+    // Pass llmReranked=true so the multiplier is gentler (LLM already handles dual-intent via Rule 4)
+    services = applyDualIntentBoost(services, analysis, true);
 
     // Apply negative keyword penalty (e.g., "shelter not religious")
     if (analysis.negativeTerms && analysis.negativeTerms.length > 0) {

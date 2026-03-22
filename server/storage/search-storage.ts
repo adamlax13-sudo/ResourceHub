@@ -114,6 +114,7 @@ export class SearchStorage {
         age_group as "ageGroup",
         is_faith_based as "isFaithBased",
         is_12_step as "is12Step",
+        is_24_7 as "is24_7",
         service_format as "serviceFormat",
         languages_supported as "languagesSupported",
         1 - (embedding <=> ${embeddingStr}::vector) as similarity
@@ -177,6 +178,7 @@ export class SearchStorage {
         ageGroup: row.age_group ?? null,
         isFaithBased: row.is_faith_based ?? null,
         is12Step: row.is_12_step ?? null,
+        is24_7: row.is_24_7 ?? null,
         serviceFormat: row.service_format ?? null,
         languagesSupported: (row.languages_supported as string[] | null) ?? null,
       }));
@@ -261,6 +263,7 @@ export class SearchStorage {
         age_group,
         is_faith_based,
         is_12_step,
+        is_24_7,
         service_format,
         languages_supported,
         (${sql.join(keywordScoring, sql` + `)} + COALESCE(click_count, 0) * 2) as relevance_score
@@ -293,6 +296,7 @@ export class SearchStorage {
       ageGroup: row.age_group ?? null,
       isFaithBased: row.is_faith_based ?? null,
       is12Step: row.is_12_step ?? null,
+      is24_7: row.is_24_7 ?? null,
       serviceFormat: row.service_format ?? null,
       languagesSupported: (row.languages_supported as string[] | null) ?? null,
     }));

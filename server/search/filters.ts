@@ -110,9 +110,17 @@ export function applyHardFilters(services: LiteService[], filters: SearchFilters
     }
 
     // Service format: exclude only the opposite format, keep null and "both"
+    // Normalize DB inconsistencies: "In-person"/"in-person"→"in_person", "virtual"→"online"
     if (filters.serviceFormat) {
-      const f = svc.serviceFormat?.toLowerCase();
-      const requested = filters.serviceFormat.toLowerCase();
+      const rawF = svc.serviceFormat?.toLowerCase();
+      const rawReq = filters.serviceFormat.toLowerCase();
+      const normalize = (v: string) =>
+        v.replace(/^in[- ]person$/i, 'in_person')
+         .replace(/^virtual$/, 'online')
+         .replace(/^hybrid$/, 'both')
+         .replace(/^in_person_and_online$/, 'both');
+      const f = rawF ? normalize(rawF) : rawF;
+      const requested = normalize(rawReq);
       if (requested === 'both') {
         // "both" filter = no exclusion
       } else if (f && f !== requested && f !== 'both') {
