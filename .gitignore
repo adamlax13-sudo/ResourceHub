@@ -56,6 +56,12 @@ server/evaluation/reports/
 .claude/
 .playwright-mcp/
 
+# Firecrawl scraped data
+.firecrawl/
+
+# Memory bank (local knowledge base, not tracked)
+memory-bank/
+
 # Pip install output (accidental)
 =*
 # Superpowers brainstorm sessions + plans
