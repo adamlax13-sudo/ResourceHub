@@ -10,7 +10,7 @@ const isProduction = process.env.NODE_ENV === 'production';
  */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isProduction ? 100 : 500, // Production: 100, Dev/CI: 500
+  max: isProduction ? 200 : 500, // Production: 200, Dev/CI: 500
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers

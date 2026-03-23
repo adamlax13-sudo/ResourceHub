@@ -61,7 +61,7 @@ function constantTimeCompare(a: string, b: string): boolean {
  */
 export const adminReadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: 500,
   message: 'Too many admin requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -72,7 +72,7 @@ export const adminReadLimiter = rateLimit({
  */
 export const adminWriteLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: 50,
   message: 'Too many admin requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
