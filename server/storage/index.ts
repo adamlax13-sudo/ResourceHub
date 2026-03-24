@@ -37,6 +37,32 @@ export type {
 
 export { DatabaseStorage } from './storage-impl';
 
+const VALID_AGE_GROUPS = ['youth', 'youth_and_adult', 'adult', 'senior', 'all_ages', 'children_and_youth'] as const;
+
+/** Normalize freeform ageGroup values from scrapers into valid enum values */
+function normalizeAgeGroup(raw: string | null | undefined): string {
+  if (!raw) return 'all_ages';
+  const lower = raw.toLowerCase().trim();
+  // Already valid
+  if ((VALID_AGE_GROUPS as readonly string[]).includes(lower)) return lower;
+  // Common variants
+  if (lower === 'adults') return 'adult';
+  if (lower === 'seniors') return 'senior';
+  // Freeform detection based on keywords
+  const hasChildren = /child/i.test(raw);
+  const hasYouth = /youth|teen|adolesc/i.test(raw);
+  const hasAdult = /adult/i.test(raw);
+  const hasSenior = /senior|elder|older/i.test(raw);
+  if (hasChildren && hasYouth && !hasAdult) return 'children_and_youth';
+  if (hasChildren && !hasYouth && !hasAdult) return 'children_and_youth';
+  if (hasYouth && hasAdult) return 'youth_and_adult';
+  if (hasYouth && !hasAdult) return 'youth';
+  if (hasSenior) return 'senior';
+  if (hasAdult) return 'adult';
+  // Multiple age ranges or unrecognized → all_ages
+  return 'all_ages';
+}
+
 /**
  * StorageFacade extends DatabaseStorage for backward compat, but
  * overrides extracted methods to delegate to domain modules.
@@ -139,6 +165,11 @@ class StorageFacade extends DatabaseStorage {
 
     let resultService: Service;
     const proposed = req.proposedChanges as Record<string, any>;
+
+    // Normalize ageGroup to valid enum values before DB insert/update
+    if (proposed.ageGroup !== undefined) {
+      proposed.ageGroup = normalizeAgeGroup(proposed.ageGroup);
+    }
 
     switch (req.changeType) {
       case 'create': {
