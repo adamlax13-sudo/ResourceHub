@@ -191,11 +191,22 @@ export function registerAdminReviewRoutes(app: Express): void {
           location: svc.location || '',
           eligibility: svc.eligibility || '',
           processSteps: svc.processSteps,
+          waitTimes: svc.waitTimes || '',
+          requiredDocs: svc.requiredDocs,
           hoursOfOperation: svc.hoursOfOperation || '',
+          languagesSupported: svc.languagesSupported,
+          serviceFormat: svc.serviceFormat || '',
           phone: svc.phone || '',
           email: svc.email || '',
           websiteUrl: svc.websiteUrl || '',
           address: svc.address || '',
+          genderRestriction: svc.genderRestriction || '',
+          ageGroup: svc.ageGroup || '',
+          isFaithBased: svc.isFaithBased,
+          is12Step: svc.is12Step,
+          is24_7: svc.is24_7,
+          tags: svc.tags,
+          confidenceScore: svc.confidenceScore,
         };
       }
     }

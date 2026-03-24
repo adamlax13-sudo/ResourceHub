@@ -384,7 +384,7 @@ export default function Review() {
                 </div>
               )}
               <ServiceForm
-                initialData={request.proposedChanges as any}
+                initialData={{ ...(request.currentData ?? {}), ...(request.proposedChanges as any) }}
                 onSubmit={(data) => editApproveMutation.mutate({ id: request.id, data })}
                 isPending={editApproveMutation.isPending}
                 submitLabel="Save & Activate"
