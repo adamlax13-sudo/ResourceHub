@@ -9,6 +9,7 @@
 import type { LiteService, Exclusions } from '../types';
 import { detectOrganizationSearch, extractOrganization } from './detectors';
 import type { AgeGroupDetection } from './detectors';
+import { isIndigenousIntent } from '../indigenous';
 
 /**
  * Filter configuration for diversity settings
@@ -274,11 +275,7 @@ export function filterChristianForIndigenous(
   primaryIntent: string,
   secondaryIntent?: { intent: string; confidence: number },
 ): LiteService[] {
-  const isIndigenousQuery =
-    primaryIntent === 'indigenous_services' ||
-    (secondaryIntent?.intent === 'indigenous_services' && secondaryIntent.confidence >= 0.5);
-
-  if (!isIndigenousQuery) return services;
+  if (!isIndigenousIntent(primaryIntent, secondaryIntent)) return services;
 
   const before = services.length;
   const filtered = services.filter(svc => {

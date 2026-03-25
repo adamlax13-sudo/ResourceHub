@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v166';
+const CACHE_VERSION = 'v167';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -40,6 +40,8 @@ import { applyPreferenceBoosts } from './strategies/scoring/preference-boost';
 import { applyFilterMatchBoosts } from './strategies/scoring/filter-match-boost';
 import { applyDataQualityBoost } from './strategies/scoring/quality-boost';
 import { applyHardFilters, filterByLocation } from './filters';
+import { isIndigenousService, isIndigenousServiceWithTags, isIndigenousIntent } from './indigenous';
+import type { LocationFilterOpts } from './filters';
 import type { QueryIntent } from './config';
 import { applyNegativePenalty } from './strategies/scoring/penalty';
 import { applySubIntentBoost, SUB_INTENT_CATEGORY_OVERRIDE } from './strategies/scoring/sub-intent-boost';
@@ -164,6 +166,7 @@ async function supplementCategories(
   services: LiteService[],
   filters: SearchFilters,
   location: string | null | undefined,
+  locationOpts?: LocationFilterOpts,
 ): Promise<LiteService[]> {
   if (!filters.categories?.length) return services;
   if (services.length >= SUPPLEMENT_THRESHOLD) return services;
@@ -192,7 +195,7 @@ async function supplementCategories(
   }));
 
   // Apply location filter to supplements
-  supplements = filterByLocation(supplements, location);
+  supplements = filterByLocation(supplements, location, locationOpts);
 
   // Apply non-category hard filters (gender, age, etc.)
   const { categories: _cats, ...otherFilters } = filters;
@@ -207,6 +210,57 @@ async function supplementCategories(
 
   console.log(`[SearchOrchestrator] Category supplement: +${newServices.length} services from DB (${filters.categories.join(', ')})`);
   return [...services, ...newServices];
+}
+
+/**
+ * Supplementary query to recover indigenous services killed by SQL location penalty.
+ * Re-runs fastSearch without location filter, keeps only indigenous matches,
+ * deduplicates against existing results.
+ *
+ * Only runs when indigenous intent is detected AND a location filter is active.
+ */
+async function supplementIndigenousServices(
+  services: LiteService[],
+  query: string,
+  location: string | null | undefined,
+  analysis: QueryAnalysis,
+): Promise<LiteService[]> {
+  if (!isIndigenousIntent(analysis.intent, analysis.intents.secondary)) return services;
+  if (!location) return services;
+
+  const existingIds = new Set(services.map(s => s.id));
+
+  try {
+    const unfiltered = await storage.fastSearch(query, null, false, 50);
+
+    const indigenous = unfiltered
+      .filter(r => !existingIds.has(r.serviceId) && isIndigenousServiceWithTags(r))
+      .map(r => ({
+        id: r.serviceId,
+        name: r.name,
+        category: r.category,
+        description: (r.description || '').slice(0, 300),
+        location: r.address || r.location || '',
+        waitTimes: r.waitTimes || '',
+        phone: r.phone || undefined,
+        is24_7: r.is24_7 ?? undefined,
+        genderRestriction: r.genderRestriction ?? null,
+        ageGroup: r.ageGroup ?? null,
+        isFaithBased: r.isFaithBased ?? null,
+        is12Step: r.is12Step ?? null,
+        serviceFormat: r.serviceFormat ?? null,
+        languagesSupported: r.languagesSupported ?? null,
+        rrfScore: r.relevanceScore / 200,
+      } as LiteService));
+
+    if (indigenous.length > 0) {
+      console.log(`[SearchOrchestrator] Indigenous supplement: +${indigenous.length} services recovered from location penalty`);
+    }
+    return [...services, ...indigenous];
+  } catch (err) {
+    console.warn('[SearchOrchestrator] Indigenous supplement failed:', err);
+    return services;
+  }
 }
 
 // In-memory services cache for generating database hash and active ID set
@@ -489,14 +543,21 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     // Location hard filter — exclude services from other cities
     // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
-    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached ? { skipAll: true } : undefined);
+    const cachedLocationOpts: LocationFilterOpts = isDirectCrisisCached ? { skipAll: true } : {};
+    if (isIndigenousIntent(analysis.intent, analysis.intents.secondary)) {
+      cachedLocationOpts.skipForService = isIndigenousService;
+    }
+    services = filterByLocation(services, analysis.location.specified || input.location, cachedLocationOpts);
+
+    // Recover indigenous services killed by SQL location penalty
+    services = await supplementIndigenousServices(services, analysis.corrected, analysis.location.specified || input.location, analysis);
 
     // Merge implicit demographic filters from query text with explicit UI filters
     const scoringStart = Date.now();
     const cachedFilters = deriveImplicitFilters(analysis.attributes, input.filters) || input.filters;
     if (cachedFilters && !isDirectCrisisCached) {
       services = applyHardFilters(services, cachedFilters);
-      services = await supplementCategories(services, cachedFilters, analysis.location.specified || input.location);
+      services = await supplementCategories(services, cachedFilters, analysis.location.specified || input.location, cachedLocationOpts);
       services = applyPreferenceBoosts(services, cachedFilters);
       services = applyFilterMatchBoosts(services, cachedFilters);
     }
@@ -629,7 +690,14 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
   // Location hard filter — exclude services from other cities
   // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
-  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isDirectCrisisFresh ? { skipAll: true } : undefined);
+  const freshLocationOpts: LocationFilterOpts = isDirectCrisisFresh ? { skipAll: true } : {};
+  if (isIndigenousIntent(analysis.intent, analysis.intents.secondary)) {
+    freshLocationOpts.skipForService = isIndigenousService;
+  }
+  result.services = filterByLocation(result.services, analysis.location.specified || input.location, freshLocationOpts);
+
+  // Recover indigenous services killed by SQL location penalty
+  result.services = await supplementIndigenousServices(result.services, analysis.corrected, analysis.location.specified || input.location, analysis);
 
   // Apply hard filters AFTER caching — filters are re-applied on cache hits too
   // Merge implicit demographic filters from query text with explicit UI filters
@@ -639,7 +707,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
   if (freshFilters && !isDirectCrisisFresh) {
     const beforeFilter = result.services.length;
     result.services = applyHardFilters(result.services, freshFilters);
-    result.services = await supplementCategories(result.services, freshFilters, analysis.location.specified || input.location);
+    result.services = await supplementCategories(result.services, freshFilters, analysis.location.specified || input.location, freshLocationOpts);
     result.services = applyPreferenceBoosts(result.services, freshFilters);
     result.services = applyFilterMatchBoosts(result.services, freshFilters);
     if (result.services.length < beforeFilter) {

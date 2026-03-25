@@ -48,6 +48,7 @@ export interface FastSearchResult {
   address: string | null;
   tags: any;
   relevanceScore: number;
+  is24_7?: boolean | null;
   genderRestriction?: string | null;
   ageGroup?: string | null;
   isFaithBased?: boolean | null;
