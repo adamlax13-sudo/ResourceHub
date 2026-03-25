@@ -14,6 +14,7 @@ import {
   PCHAD_PINNED_SERVICE_LITE,
   PCHAD_PINNED_SERVICE_FULL,
 } from './pinned';
+import { INDIGENOUS_QUERY_PATTERN } from '../indigenous';
 
 export const SEARCH_CONFIG = {
   // === SEARCH SETTINGS ===
@@ -530,6 +531,8 @@ export const SEARCH_CONFIG = {
       /\b(?:residential school|sixties scoop|MMIWG|missing.*murdered.*indigenous)\b/i,
       /\b(?:indigenous|native|aboriginal).*(?:mental health|addiction|healing|wellness)\b/i,
       /\b(?:jordan'?s principle|nihb|non-?insured health benefits)\b/i,
+      /\bfriendship cent(?:re|er)\b/i,  // Indigenous friendship centres
+      INDIGENOUS_QUERY_PATTERN,  // Nation/settlement names trigger indigenous intent
     ],
     // Veteran and military services
     veteran_services: [

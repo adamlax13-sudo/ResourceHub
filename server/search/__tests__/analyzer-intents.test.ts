@@ -224,3 +224,40 @@ describe('Sub-Intent Detection — Remaining Intents', () => {
     expect(analysis.subIntents).toContain('family_addiction_support.parent_of_addict');
   });
 });
+
+describe('Intent Detection — Indigenous nation names', () => {
+  it('detects indigenous_services for "Siksika"', () => {
+    const analysis = analyzeQuery('Siksika');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "Tsuut\'ina wellness"', () => {
+    const analysis = analyzeQuery("Tsuut'ina wellness");
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "Blackfoot health services"', () => {
+    const analysis = analyzeQuery('Blackfoot health services');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "Kainai community"', () => {
+    const analysis = analyzeQuery('Kainai community');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "Ermineskin Cree"', () => {
+    const analysis = analyzeQuery('Ermineskin Cree');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "Mikisew Cree First Nation"', () => {
+    const analysis = analyzeQuery('Mikisew Cree First Nation');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+
+  it('detects indigenous_services for "friendship centre"', () => {
+    const analysis = analyzeQuery('friendship centre');
+    expect(analysis.intent).toBe('indigenous_services');
+  });
+});
