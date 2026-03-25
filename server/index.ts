@@ -31,6 +31,17 @@ const app = express();
 // Trust the first proxy (Render, Heroku, etc.) for rate limiting
 app.set('trust proxy', 1);
 
+// ============= CANONICAL DOMAIN REDIRECT =============
+// Redirect Render subdomain to custom domain (301 for SEO consolidation)
+const CANONICAL_HOST = 'albertaresourcehub.ca';
+app.use((req, res, next) => {
+  const host = req.hostname;
+  if (host && host !== CANONICAL_HOST && host !== `www.${CANONICAL_HOST}` && host.endsWith('.onrender.com')) {
+    return res.redirect(301, `https://${CANONICAL_HOST}${req.originalUrl}`);
+  }
+  next();
+});
+
 // ============= REQUEST CORRELATION IDS =============
 // Add unique correlation ID to each request for debugging
 app.use((req, res, next) => {
@@ -66,6 +77,8 @@ app.use(helmet({
 
 // CORS: restrict API access to known origins (configurable via env var)
 const defaultOrigins = [
+  'https://albertaresourcehub.ca',
+  'https://www.albertaresourcehub.ca',
   'https://resourcehub-wwg6.onrender.com',
   'https://recoveryoncampusalberta.ca',
   'https://www.recoveryoncampusalberta.ca',
