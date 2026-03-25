@@ -23,11 +23,13 @@ import { registerAdminFeedbackRoutes } from "./routes/admin-feedback";
 import { registerAdminRoutes } from "./routes/admin";
 import { registerLocationRoutes } from "./routes/location";
 import { registerSuggestRoutes } from "./routes/suggest";
+import { registerSeoRoutes } from "./routes/seo";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express,
 ): Promise<Server> {
+  registerSeoRoutes(app);
   registerSearchRoutes(app);
   registerFeedbackRoutes(app);
   registerAnalyticsRoutes(app);
