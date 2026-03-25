@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyHardFilters, filterByLocation } from '../filters';
+import { isIndigenousService } from '../indigenous';
 import type { LiteService } from '../types';
 import type { SearchFilters } from '@shared/routes';
 
@@ -286,5 +287,55 @@ describe('applyHardFilters', () => {
       const result = applyHardFilters(svcs, filters);
       expect(result.map(s => s.id)).toEqual(['1', '4']);
     });
+  });
+});
+
+describe('filterByLocation — indigenous service bypass', () => {
+  it('keeps indigenous service from different city when skipForService provided', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Siksika Health Services', location: 'Siksika Nation' }),
+      makeSvc({ id: '2', name: 'Calgary Clinic', location: 'Calgary' }),
+      makeSvc({ id: '3', name: 'Edmonton Shelter', location: 'Edmonton' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary', { skipForService: isIndigenousService });
+    expect(result.map(s => s.id)).toEqual(expect.arrayContaining(['1', '2']));
+    expect(result.map(s => s.id)).not.toContain('3');
+  });
+
+  it('skipAll still works (crisis behavior)', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Edmonton Service', location: 'Edmonton' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary', { skipAll: true });
+    expect(result.map(s => s.id)).toEqual(['1']);
+  });
+
+  it('bypassed indigenous services skip province-wide suppression', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Indigenous Wellness Alberta', location: 'Alberta (province-wide)', category: 'Indigenous Services' }),
+      makeSvc({ id: '2', name: 'Indigenous Wellness Calgary', location: 'Calgary', category: 'Indigenous Services' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary', { skipForService: isIndigenousService });
+    expect(result.map(s => s.id)).toEqual(expect.arrayContaining(['1', '2']));
+  });
+
+  it('non-indigenous province-wide is still suppressed normally', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Alcoholics Anonymous Alberta', location: 'Alberta (province-wide)' }),
+      makeSvc({ id: '2', name: 'Alcoholics Anonymous Calgary', location: 'Calgary' }),
+      makeSvc({ id: '3', name: 'Siksika Health Services', location: 'Siksika Nation' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary', { skipForService: isIndigenousService });
+    expect(result.map(s => s.id)).toEqual(expect.arrayContaining(['2', '3']));
+    expect(result.map(s => s.id)).not.toContain('1');
+  });
+
+  it('no opts behaves same as before', () => {
+    const svcs = [
+      makeSvc({ id: '1', name: 'Calgary Clinic', location: 'Calgary' }),
+      makeSvc({ id: '2', name: 'Edmonton Shelter', location: 'Edmonton' }),
+    ];
+    const result = filterByLocation(svcs, 'calgary');
+    expect(result.map(s => s.id)).toEqual(['1']);
   });
 });

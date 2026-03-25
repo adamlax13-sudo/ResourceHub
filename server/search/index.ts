@@ -489,7 +489,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
     // Location hard filter — exclude services from other cities
     // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
-    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached);
+    services = filterByLocation(services, analysis.location.specified || input.location, isDirectCrisisCached ? { skipAll: true } : undefined);
 
     // Merge implicit demographic filters from query text with explicit UI filters
     const scoringStart = Date.now();
@@ -629,7 +629,7 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
 
   // Location hard filter — exclude services from other cities
   // SAFETY: skip location filter for direct crisis so 988 and hotlines always show
-  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isDirectCrisisFresh);
+  result.services = filterByLocation(result.services, analysis.location.specified || input.location, isDirectCrisisFresh ? { skipAll: true } : undefined);
 
   // Apply hard filters AFTER caching — filters are re-applied on cache hits too
   // Merge implicit demographic filters from query text with explicit UI filters
