@@ -24,6 +24,7 @@ import { registerAdminRoutes } from "./routes/admin";
 import { registerLocationRoutes } from "./routes/location";
 import { registerSuggestRoutes } from "./routes/suggest";
 import { registerSeoRoutes } from "./routes/seo";
+import { registerLandingPageRoutes } from "./routes/landing-pages";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -49,6 +50,9 @@ export async function registerRoutes(
   registerAdminRoutes(app);
   registerLocationRoutes(app);
   registerSuggestRoutes(app);
+
+  // Landing pages last — /:category wildcard must not shadow /api or /admin routes
+  registerLandingPageRoutes(app);
 
   return httpServer;
 }

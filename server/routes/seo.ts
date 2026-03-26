@@ -4,6 +4,7 @@
 
 import type { Express, Request, Response } from "express";
 import { storage } from "../storage";
+import { CATEGORY_PAGES, CITY_PAGES } from "../seo/config";
 
 const BASE_URL = "https://albertaresourcehub.ca";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -39,6 +40,23 @@ async function generateSitemap(): Promise<string> {
   xml += `    <changefreq>daily</changefreq>\n`;
   xml += `    <priority>1.0</priority>\n`;
   xml += `  </url>\n`;
+
+  // Category landing pages
+  for (const cat of CATEGORY_PAGES) {
+    xml += `  <url>\n`;
+    xml += `    <loc>${BASE_URL}/${cat.slug}</loc>\n`;
+    xml += `    <changefreq>weekly</changefreq>\n`;
+    xml += `    <priority>0.9</priority>\n`;
+    xml += `  </url>\n`;
+
+    for (const city of CITY_PAGES) {
+      xml += `  <url>\n`;
+      xml += `    <loc>${BASE_URL}/${cat.slug}/${city.slug}</loc>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.7</priority>\n`;
+      xml += `  </url>\n`;
+    }
+  }
 
   // Service pages
   for (const service of services) {
