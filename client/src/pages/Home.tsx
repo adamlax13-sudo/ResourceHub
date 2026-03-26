@@ -14,6 +14,7 @@ import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
 import { MyShortlist } from "@/components/MyShortlist";
 import { STATIC_CRISIS_LINES } from "@/data/crisis-lines";
+import { nearestCity } from "@/lib/nearest-city";
 import { QuickExitButton } from "@/components/QuickExitButton";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
@@ -237,11 +238,14 @@ export default function Home() {
         const coords = { lat, lng, timestamp: Date.now() };
         setUserCoords(coords);
         setIsLocating(false);
-        // Re-search with distance sorting if a search is already active
+        // Auto-set location dropdown to nearest city
+        const city = nearestCity(pos.coords.latitude, pos.coords.longitude);
+        const newLocations = city ? [city] : [];
+        setLocations(newLocations);
+        // Re-search with distance sorting + location filter
         if (searchStateRef.current.query) {
           const params = buildSearchParams(searchStateRef.current.filters, coords);
-          const locationParam = searchStateRef.current.locations[0] || undefined;
-          search({ query: searchStateRef.current.query, location: locationParam, ...params });
+          search({ query: searchStateRef.current.query, location: city || undefined, ...params });
         }
       },
       (err) => {
@@ -255,7 +259,7 @@ export default function Home() {
       },
       { enableHighAccuracy: true, timeout: 30000, maximumAge: 300000 },
     );
-  }, [searchState.userCoords, setUserCoords, toast, search, buildSearchParams]);
+  }, [searchState.userCoords, setUserCoords, setLocations, toast, search, buildSearchParams]);
 
   const handleSearchWithFilters = useCallback(
     (query: string, locations: string[], filters: SearchFilters) => {
