@@ -165,7 +165,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
     fetch(`/api/services/${encodeURIComponent(serviceId)}${langParam}`, { signal: controller.signal })
       .then(res => {
         if (!res.ok) {
-          throw new Error(res.status === 404 ? 'Service not found' : 'Failed to load service');
+          throw new Error(res.status === 404 ? t('service.notFound') : t('service.loadFailed'));
         }
         return res.json();
       })
@@ -353,7 +353,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">{t('service.waitTime')}</div>
-                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes || "Contact service provider for wait time")}</div>
+                        <div className="font-medium text-foreground mt-0.5 break-words">{linkifyText(service.waitTimes || t('service.waitTimeDefault'))}</div>
                       </div>
                     </div>
 

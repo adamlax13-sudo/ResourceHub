@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   ShieldAlert,
@@ -42,6 +43,7 @@ interface CategoryTilesProps {
 }
 
 export function CategoryTiles({ onSelect }: CategoryTilesProps) {
+  const { t } = useTranslation();
   // Track which categories have been prefetched to avoid duplicate requests
   const prefetchedRef = useRef<Set<string>>(new Set());
 
@@ -65,7 +67,7 @@ export function CategoryTiles({ onSelect }: CategoryTilesProps) {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8">
       <p className="text-center text-foreground/70 mb-6 text-base font-medium">
-        Not sure where to start? Browse by category:
+        {t('hero.browseByCategory')}
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {CATEGORIES.map((cat, i) => {

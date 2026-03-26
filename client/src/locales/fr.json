@@ -17,7 +17,11 @@
   "search": {
     "summary": "Résumé",
     "noResults": "Aucun service trouvé correspondant à vos critères. Essayez un autre terme de recherche.",
-    "error": "Impossible de terminer la recherche"
+    "error": "Impossible de terminer la recherche",
+    "searching": "Recherche de ressources...",
+    "errorGeneric": "Un problème est survenu lors de la recherche. Veuillez réessayer.",
+    "showingResults": "Résultats pour \"{{query}}\"",
+    "nearLocation": "Services près de {{location}}"
   },
   "service": {
     "accessProcess": "Processus d'Accès",
@@ -37,7 +41,14 @@
     "noWebpage": "Aucun site web disponible",
     "externalLink": "Le lien externe s'ouvre dans un nouvel onglet",
     "save": "Sauvegarder",
-    "saved": "Sauvegardé"
+    "saved": "Sauvegardé",
+    "waitTimeDefault": "Contactez le fournisseur de services pour le temps d'attente",
+    "callNow": "Appeler maintenant : {{phone}}",
+    "notFound": "Service non trouvé",
+    "loadFailed": "Échec du chargement du service",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "findMeeting": "Trouver une réunion"
   },
   "myResources": {
     "title": "Mes Ressources",
@@ -185,6 +196,58 @@
     "close": "Fermer",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "apply": "Appliquer",
+    "clearAll": "Tout effacer",
+    "list": "Liste",
+    "map": "Carte",
+    "shortlist": "Favoris",
+    "refine": "Affiner"
+  },
+  "hero": {
+    "allOfAlberta": "Tout Alberta",
+    "selectLocation": "Sélectionner un emplacement",
+    "needHelpNow": "J'ai besoin d'aide maintenant",
+    "locating": "Localisation...",
+    "nearMe": "Près de moi",
+    "notSureSearch": "Vous ne savez pas quoi chercher ? Laissez-nous vous guider →",
+    "browseByCategory": "Vous ne savez pas par où commencer ? Parcourez par catégorie :"
+  },
+  "filters": {
+    "title": "Filtres",
+    "subtitle": "Affinez les résultats pour trouver ce dont vous avez besoin",
+    "applied": "{{count}} appliqués",
+    "gender": "Restriction de genre",
+    "ageGroup": "Groupe d'âge",
+    "availability": "Disponibilité et type de programme",
+    "is24_7": "Disponible 24/7",
+    "faithBased": "Basé sur la foi",
+    "twelveStep": "Programme en 12 étapes",
+    "serviceFormat": "Format de service",
+    "languages": "Langues prises en charge",
+    "browseCategory": "Parcourir par catégorie",
+    "filterByType": "Filtrer par type de service",
+    "applyFilters": "Appliquer les filtres",
+    "selected": "{{count}} sélectionnés",
+    "all": "Tous",
+    "womenOnly": "Femmes uniquement",
+    "menOnly": "Hommes uniquement",
+    "allAges": "Tous les âges",
+    "youth": "Jeunes",
+    "adult": "Adultes",
+    "senior": "Aînés",
+    "inPerson": "En personne",
+    "online": "En ligne",
+    "both": "Les deux"
+  },
+  "location": {
+    "denied": "Accès à la localisation refusé. Vous pouvez utiliser le menu déroulant de localisation.",
+    "unavailable": "Impossible de déterminer votre position. Essayez le menu déroulant de localisation.",
+    "timeout": "La demande de localisation a expiré. Essayez le menu déroulant de localisation.",
+    "error": "Localisation indisponible"
   },
   "quickExit": "Sortie rapide",
   "categories": {

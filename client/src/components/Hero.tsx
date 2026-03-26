@@ -61,6 +61,7 @@ function LocationDropdown({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -148,7 +149,7 @@ function LocationDropdown({
           <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/20 border border-white/50 overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-accent/5">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Location</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('hero.selectLocation')}</p>
             </div>
 
             {/* Options */}
@@ -203,10 +204,10 @@ function LocationDropdown({
                       )}
                     </div>
                     <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>
-                      {location.label}
+                      {location.isDefault ? t('hero.allOfAlberta') : location.label}
                     </span>
                     {location.isDefault && (
-                      <span className="ml-auto text-xs text-gray-400 font-normal">Default</span>
+                      <span className="ml-auto text-xs text-gray-400 font-normal"></span>
                     )}
                   </motion.button>
                 );
@@ -244,7 +245,7 @@ function LocationDropdown({
         aria-controls="location-listbox"
       >
         <MapPin className="w-4 h-4 text-white/80" />
-        <span className="min-w-[100px] text-left">{selectedOption.label}</span>
+        <span className="min-w-[100px] text-left">{selectedOption.isDefault ? t('hero.allOfAlberta') : selectedOption.label}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -635,7 +636,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
               aria-label="Get immediate crisis support"
             >
               <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
-              I need help right now
+              {t('hero.needHelpNow')}
             </button>
 
             {'geolocation' in navigator && (
@@ -664,7 +665,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
                 ) : (
                   <Locate className="w-4 h-4" />
                 )}
-                {isLocating ? 'Locating...' : 'Near me'}
+                {isLocating ? t('hero.locating') : t('hero.nearMe')}
               </button>
             )}
 
@@ -782,7 +783,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
                 className="flex items-center gap-2 text-sm text-white font-medium"
               >
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Searching for resources...</span>
+                <span>{t('search.searching')}</span>
               </motion.div>
             ) : !hasResults ? (
               <>
@@ -797,7 +798,7 @@ export function Hero({ onSearch, isLoading, hasResults, initialQuery = "", locat
                              hover:bg-white/25 hover:text-white
                              transition-all duration-200 text-sm font-medium"
                 >
-                  Not sure what to search for? Let us guide you →
+                  {t('hero.notSureSearch')}
                 </button>
               </>
             ) : null}

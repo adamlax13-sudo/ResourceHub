@@ -18,7 +18,11 @@
   "search": {
     "summary": "Summary",
     "noResults": "No services found matching your criteria. Try a different search term.",
-    "error": "Unable to complete search"
+    "error": "Unable to complete search",
+    "searching": "Searching for resources...",
+    "errorGeneric": "Something went wrong with the search. Please try again.",
+    "showingResults": "Showing results for \"{{query}}\"",
+    "nearLocation": "Services near {{location}}"
   },
   "service": {
     "accessProcess": "Access Process",
@@ -26,6 +30,7 @@
     "noDocsListed": "No specific documents listed. Please contact the provider to confirm.",
     "keyInfo": "Key Information",
     "waitTime": "Estimated Wait Time",
+    "waitTimeDefault": "Contact service provider for wait time",
     "eligibility": "Eligibility",
     "location": "Location",
     "contact": "Contact",
@@ -36,16 +41,29 @@
     "address": "Address",
     "visitWebpage": "Visit Webpage",
     "callProvider": "Call Provider",
+    "callNow": "Call Now: {{phone}}",
     "noWebpage": "No webpage available",
     "externalLink": "External link opens in a new tab",
     "save": "Save",
     "saved": "Saved",
     "steps": "steps",
     "clickDetails": "Click for full details",
-    "loading": "Loading service details..."
+    "loading": "Loading service details...",
+    "notFound": "Service not found",
+    "loadFailed": "Failed to load service",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "findMeeting": "Find a Meeting"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "clearAll": "Clear all",
+    "list": "List",
+    "map": "Map",
+    "shortlist": "Shortlist",
+    "refine": "Refine"
   },
   "myResources": {
     "title": "My Resources",
@@ -202,6 +220,48 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "hero": {
+    "allOfAlberta": "All of Alberta",
+    "selectLocation": "Select Location",
+    "needHelpNow": "I need help right now",
+    "locating": "Locating...",
+    "nearMe": "Near me",
+    "notSureSearch": "Not sure what to search for? Let us guide you →",
+    "browseByCategory": "Not sure where to start? Browse by category:"
+  },
+  "filters": {
+    "title": "Filters",
+    "subtitle": "Narrow down results to find what you need",
+    "applied": "{{count}} applied",
+    "gender": "Gender restriction",
+    "ageGroup": "Age group",
+    "availability": "Availability & program type",
+    "is24_7": "24/7 available",
+    "faithBased": "Faith-based",
+    "twelveStep": "12-step program",
+    "serviceFormat": "Service format",
+    "languages": "Languages supported",
+    "browseCategory": "Browse by category",
+    "filterByType": "Filter by service type",
+    "applyFilters": "Apply filters",
+    "selected": "{{count}} selected",
+    "all": "All",
+    "womenOnly": "Women-only",
+    "menOnly": "Men-only",
+    "allAges": "All ages",
+    "youth": "Youth",
+    "adult": "Adult",
+    "senior": "Senior",
+    "inPerson": "In-person",
+    "online": "Online",
+    "both": "Both"
+  },
+  "location": {
+    "denied": "Location access denied. You can use the location dropdown instead.",
+    "unavailable": "Couldn't determine your location. Try using the location dropdown.",
+    "timeout": "Location request timed out. Try using the location dropdown.",
+    "error": "Location unavailable"
   },
   "quickExit": "Quick Exit",
   "categories": {

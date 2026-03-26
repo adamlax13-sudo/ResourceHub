@@ -17,7 +17,11 @@
   "search": {
     "summary": "ملخص",
     "noResults": "لم يتم العثور على خدمات تطابق معاييرك. جرب مصطلح بحث مختلف.",
-    "error": "تعذر إكمال البحث"
+    "error": "تعذر إكمال البحث",
+    "searching": "جاري البحث عن الموارد...",
+    "errorGeneric": "حدث خطأ في البحث. يرجى المحاولة مرة أخرى.",
+    "showingResults": "عرض النتائج لـ \"{{query}}\"",
+    "nearLocation": "خدمات بالقرب من {{location}}"
   },
   "service": {
     "accessProcess": "عملية الوصول",
@@ -37,7 +41,14 @@
     "noWebpage": "لا يوجد موقع إلكتروني",
     "externalLink": "الرابط الخارجي يفتح في علامة تبويب جديدة",
     "save": "حفظ",
-    "saved": "محفوظ"
+    "saved": "محفوظ",
+    "waitTimeDefault": "اتصل بمزود الخدمة لمعرفة وقت الانتظار",
+    "callNow": "اتصل الآن: {{phone}}",
+    "notFound": "لم يتم العثور على الخدمة",
+    "loadFailed": "فشل تحميل الخدمة",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "findMeeting": "البحث عن اجتماع"
   },
   "myResources": {
     "title": "مواردي",
@@ -174,6 +185,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "apply": "تطبيق",
+    "clearAll": "مسح الكل",
+    "list": "قائمة",
+    "map": "خريطة",
+    "shortlist": "المفضلة",
+    "refine": "تحسين"
+  },
+  "hero": {
+    "allOfAlberta": "كل Alberta",
+    "selectLocation": "اختر الموقع",
+    "needHelpNow": "أحتاج مساعدة الآن",
+    "locating": "جاري تحديد الموقع...",
+    "nearMe": "بالقرب مني",
+    "notSureSearch": "لست متأكداً ماذا تبحث عنه؟ دعنا نرشدك →",
+    "browseByCategory": "لست متأكداً من أين تبدأ؟ تصفح حسب الفئة:"
+  },
+  "filters": {
+    "title": "عوامل التصفية",
+    "subtitle": "تضييق النتائج للعثور على ما تحتاجه",
+    "applied": "{{count}} مطبقة",
+    "gender": "تقييد الجنس",
+    "ageGroup": "الفئة العمرية",
+    "availability": "التوفر ونوع البرنامج",
+    "is24_7": "متاح على مدار الساعة",
+    "faithBased": "قائم على الإيمان",
+    "twelveStep": "برنامج الخطوات الاثنتي عشرة",
+    "serviceFormat": "شكل الخدمة",
+    "languages": "اللغات المدعومة",
+    "browseCategory": "تصفح حسب الفئة",
+    "filterByType": "تصفية حسب نوع الخدمة",
+    "applyFilters": "تطبيق عوامل التصفية",
+    "selected": "{{count}} محددة",
+    "all": "الكل",
+    "womenOnly": "نساء فقط",
+    "menOnly": "رجال فقط",
+    "allAges": "جميع الأعمار",
+    "youth": "شباب",
+    "adult": "بالغون",
+    "senior": "كبار السن",
+    "inPerson": "حضوري",
+    "online": "عبر الإنترنت",
+    "both": "كلاهما"
+  },
+  "location": {
+    "denied": "تم رفض الوصول إلى الموقع. يمكنك استخدام القائمة المنسدلة للموقع بدلاً من ذلك.",
+    "unavailable": "تعذر تحديد موقعك. حاول استخدام القائمة المنسدلة للموقع.",
+    "timeout": "انتهت مهلة طلب الموقع. حاول استخدام القائمة المنسدلة للموقع.",
+    "error": "الموقع غير متاح"
   },
   "quickExit": "خروج سريع",
   "categories": {

@@ -252,11 +252,11 @@ export default function Home() {
       (err) => {
         setIsLocating(false);
         const messages: Record<number, string> = {
-          1: 'Location access denied. You can use the location dropdown instead.',
-          2: "Couldn't determine your location. Try using the location dropdown.",
-          3: 'Location request timed out. Try using the location dropdown.',
+          1: t('location.denied'),
+          2: t('location.unavailable'),
+          3: t('location.timeout'),
         };
-        toast({ title: 'Location unavailable', description: messages[err.code] || messages[2], variant: 'destructive' });
+        toast({ title: t('location.error'), description: messages[err.code] || messages[2], variant: 'destructive' });
       },
       { enableHighAccuracy: true, timeout: 30000, maximumAge: 300000 },
     );
@@ -402,7 +402,7 @@ export default function Home() {
                 <Info className="w-8 h-8 text-destructive" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{t('search.error')}</h3>
-              <p className="text-muted-foreground">Something went wrong with the search. Please try again.</p>
+              <p className="text-muted-foreground">{t('search.errorGeneric')}</p>
             </motion.div>
           )}
 
@@ -446,7 +446,7 @@ export default function Home() {
                     }`}
                   >
                     <LayoutList className="w-4 h-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">List</span>
+                    <span className="hidden sm:inline">{t('common.list')}</span>
                   </button>
                   <button
                     type="button"
@@ -461,7 +461,7 @@ export default function Home() {
                     }`}
                   >
                     <MapIcon className="w-4 h-4" aria-hidden="true" />
-                    <span className="hidden sm:inline">Map</span>
+                    <span className="hidden sm:inline">{t('common.map')}</span>
                   </button>
                 </div>
 
@@ -476,7 +476,7 @@ export default function Home() {
                     className={`w-4 h-4 ${favoriteCount > 0 ? 'text-red-500 fill-current' : 'text-muted-foreground'}`}
                     aria-hidden="true"
                   />
-                  <span className="hidden sm:inline">Shortlist</span>
+                  <span className="hidden sm:inline">{t('common.shortlist')}</span>
                   {favoriteCount > 0 && (
                     <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold">
                       {favoriteCount}
@@ -492,7 +492,7 @@ export default function Home() {
                   aria-controls="refine-panel"
                 >
                   <SlidersHorizontal className="w-4 h-4" />
-                  <span className="hidden sm:inline">Refine</span>
+                  <span className="hidden sm:inline">{t('common.refine')}</span>
                   {activeFilterCount > 0 && (
                     <span className="ml-0.5 sm:ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold">
                       {activeFilterCount}

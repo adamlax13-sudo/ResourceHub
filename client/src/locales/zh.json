@@ -17,7 +17,11 @@
   "search": {
     "summary": "摘要",
     "noResults": "未找到符合您条件的服务。请尝试其他搜索词。",
-    "error": "无法完成搜索"
+    "error": "无法完成搜索",
+    "searching": "正在搜索资源...",
+    "errorGeneric": "搜索出现问题。请重试。",
+    "showingResults": "显示\"{{query}}\"的结果",
+    "nearLocation": "{{location}}附近的服务"
   },
   "service": {
     "accessProcess": "访问流程",
@@ -38,7 +42,14 @@
     "noWebpage": "无网页信息",
     "externalLink": "外部链接将在新标签页中打开",
     "save": "保存",
-    "saved": "已保存"
+    "saved": "已保存",
+    "waitTimeDefault": "请联系服务提供者了解等待时间",
+    "callNow": "立即拨打：{{phone}}",
+    "notFound": "未找到服务",
+    "loadFailed": "加载服务失败",
+    "showMore": "显示更多",
+    "showLess": "显示更少",
+    "findMeeting": "查找聚会"
   },
   "myResources": {
     "title": "我的资源",
@@ -175,6 +186,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "关闭",
+    "cancel": "取消",
+    "apply": "应用",
+    "clearAll": "清除全部",
+    "list": "列表",
+    "map": "地图",
+    "shortlist": "收藏夹",
+    "refine": "筛选"
+  },
+  "hero": {
+    "allOfAlberta": "全Alberta",
+    "selectLocation": "选择位置",
+    "needHelpNow": "我现在需要帮助",
+    "locating": "定位中...",
+    "nearMe": "附近",
+    "notSureSearch": "不确定要搜索什么？让我们引导您 →",
+    "browseByCategory": "不确定从哪里开始？按类别浏览："
+  },
+  "filters": {
+    "title": "筛选条件",
+    "subtitle": "缩小结果范围以找到您需要的内容",
+    "applied": "已应用{{count}}项",
+    "gender": "性别限制",
+    "ageGroup": "年龄组",
+    "availability": "可用性和项目类型",
+    "is24_7": "全天候服务",
+    "faithBased": "信仰导向",
+    "twelveStep": "十二步计划",
+    "serviceFormat": "服务形式",
+    "languages": "支持的语言",
+    "browseCategory": "按类别浏览",
+    "filterByType": "按服务类型筛选",
+    "applyFilters": "应用筛选",
+    "selected": "已选{{count}}项",
+    "all": "全部",
+    "womenOnly": "仅限女性",
+    "menOnly": "仅限男性",
+    "allAges": "所有年龄",
+    "youth": "青少年",
+    "adult": "成人",
+    "senior": "老年人",
+    "inPerson": "面对面",
+    "online": "在线",
+    "both": "两者兼有"
+  },
+  "location": {
+    "denied": "位置访问被拒绝。您可以使用位置下拉菜单。",
+    "unavailable": "无法确定您的位置。请尝试使用位置下拉菜单。",
+    "timeout": "位置请求超时。请尝试使用位置下拉菜单。",
+    "error": "位置不可用"
   },
   "quickExit": "快速退出",
   "categories": {

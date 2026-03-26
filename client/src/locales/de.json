@@ -17,7 +17,11 @@
   "search": {
     "summary": "Zusammenfassung",
     "noResults": "Keine Dienste gefunden, die Ihren Kriterien entsprechen. Versuchen Sie einen anderen Suchbegriff.",
-    "error": "Suche konnte nicht abgeschlossen werden"
+    "error": "Suche konnte nicht abgeschlossen werden",
+    "searching": "Suche nach Ressourcen...",
+    "errorGeneric": "Bei der Suche ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "showingResults": "Ergebnisse für \"{{query}}\"",
+    "nearLocation": "Dienste in der Nähe von {{location}}"
   },
   "service": {
     "accessProcess": "Zugangsverfahren",
@@ -38,7 +42,14 @@
     "noWebpage": "Keine Webseite verfügbar",
     "externalLink": "Externer Link öffnet sich in neuem Tab",
     "save": "Speichern",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "waitTimeDefault": "Kontaktieren Sie den Dienstanbieter für die Wartezeit",
+    "callNow": "Jetzt anrufen: {{phone}}",
+    "notFound": "Dienst nicht gefunden",
+    "loadFailed": "Dienst konnte nicht geladen werden",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "findMeeting": "Ein Treffen finden"
   },
   "myResources": {
     "title": "Meine Ressourcen",
@@ -175,6 +186,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden",
+    "clearAll": "Alle löschen",
+    "list": "Liste",
+    "map": "Karte",
+    "shortlist": "Merkliste",
+    "refine": "Verfeinern"
+  },
+  "hero": {
+    "allOfAlberta": "Ganz Alberta",
+    "selectLocation": "Standort auswählen",
+    "needHelpNow": "Ich brauche jetzt Hilfe",
+    "locating": "Standort wird ermittelt...",
+    "nearMe": "In meiner Nähe",
+    "notSureSearch": "Nicht sicher, wonach Sie suchen sollen? Lassen Sie sich von uns leiten →",
+    "browseByCategory": "Nicht sicher, wo Sie anfangen sollen? Nach Kategorie durchsuchen:"
+  },
+  "filters": {
+    "title": "Filter",
+    "subtitle": "Ergebnisse eingrenzen, um zu finden, was Sie brauchen",
+    "applied": "{{count}} angewendet",
+    "gender": "Geschlechtsbeschränkung",
+    "ageGroup": "Altersgruppe",
+    "availability": "Verfügbarkeit und Programmtyp",
+    "is24_7": "Rund um die Uhr verfügbar",
+    "faithBased": "Glaubensbasiert",
+    "twelveStep": "12-Schritte-Programm",
+    "serviceFormat": "Dienstformat",
+    "languages": "Unterstützte Sprachen",
+    "browseCategory": "Nach Kategorie durchsuchen",
+    "filterByType": "Nach Diensttyp filtern",
+    "applyFilters": "Filter anwenden",
+    "selected": "{{count}} ausgewählt",
+    "all": "Alle",
+    "womenOnly": "Nur für Frauen",
+    "menOnly": "Nur für Männer",
+    "allAges": "Alle Altersgruppen",
+    "youth": "Jugendliche",
+    "adult": "Erwachsene",
+    "senior": "Senioren",
+    "inPerson": "Vor Ort",
+    "online": "Online",
+    "both": "Beides"
+  },
+  "location": {
+    "denied": "Standortzugriff verweigert. Sie können stattdessen das Standort-Dropdown verwenden.",
+    "unavailable": "Ihr Standort konnte nicht ermittelt werden. Versuchen Sie das Standort-Dropdown.",
+    "timeout": "Standortanfrage hat das Zeitlimit überschritten. Versuchen Sie das Standort-Dropdown.",
+    "error": "Standort nicht verfügbar"
   },
   "quickExit": "Schnell verlassen",
   "categories": {

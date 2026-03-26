@@ -17,7 +17,11 @@
   "search": {
     "summary": "요약",
     "noResults": "조건에 맞는 서비스를 찾을 수 없습니다. 다른 검색어를 시도해 보세요.",
-    "error": "검색을 완료할 수 없습니다"
+    "error": "검색을 완료할 수 없습니다",
+    "searching": "리소스 검색 중...",
+    "errorGeneric": "검색 중 문제가 발생했습니다. 다시 시도해 주세요.",
+    "showingResults": "\"{{query}}\"에 대한 결과",
+    "nearLocation": "{{location}} 근처 서비스"
   },
   "service": {
     "accessProcess": "접근 절차",
@@ -38,7 +42,14 @@
     "noWebpage": "웹페이지 정보 없음",
     "externalLink": "외부 링크가 새 탭에서 열립니다",
     "save": "저장",
-    "saved": "저장됨"
+    "saved": "저장됨",
+    "waitTimeDefault": "대기 시간은 서비스 제공자에게 문의하세요",
+    "callNow": "지금 전화: {{phone}}",
+    "notFound": "서비스를 찾을 수 없습니다",
+    "loadFailed": "서비스를 로드하지 못했습니다",
+    "showMore": "더 보기",
+    "showLess": "접기",
+    "findMeeting": "모임 찾기"
   },
   "myResources": {
     "title": "내 리소스",
@@ -175,6 +186,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "닫기",
+    "cancel": "취소",
+    "apply": "적용",
+    "clearAll": "모두 지우기",
+    "list": "목록",
+    "map": "지도",
+    "shortlist": "즐겨찾기",
+    "refine": "세분화"
+  },
+  "hero": {
+    "allOfAlberta": "Alberta 전체",
+    "selectLocation": "위치 선택",
+    "needHelpNow": "지금 도움이 필요합니다",
+    "locating": "위치 확인 중...",
+    "nearMe": "내 근처",
+    "notSureSearch": "무엇을 검색할지 모르시겠어요? 안내해 드릴게요 →",
+    "browseByCategory": "어디서 시작할지 모르시겠어요? 카테고리별로 탐색하세요:"
+  },
+  "filters": {
+    "title": "필터",
+    "subtitle": "필요한 것을 찾기 위해 결과를 좁혀보세요",
+    "applied": "{{count}}개 적용됨",
+    "gender": "성별 제한",
+    "ageGroup": "연령대",
+    "availability": "이용 가능 여부 및 프로그램 유형",
+    "is24_7": "24시간 이용 가능",
+    "faithBased": "신앙 기반",
+    "twelveStep": "12단계 프로그램",
+    "serviceFormat": "서비스 형식",
+    "languages": "지원 언어",
+    "browseCategory": "카테고리별 탐색",
+    "filterByType": "서비스 유형별 필터",
+    "applyFilters": "필터 적용",
+    "selected": "{{count}}개 선택됨",
+    "all": "전체",
+    "womenOnly": "여성 전용",
+    "menOnly": "남성 전용",
+    "allAges": "모든 연령",
+    "youth": "청소년",
+    "adult": "성인",
+    "senior": "노인",
+    "inPerson": "대면",
+    "online": "온라인",
+    "both": "둘 다"
+  },
+  "location": {
+    "denied": "위치 접근이 거부되었습니다. 위치 드롭다운을 대신 사용할 수 있습니다.",
+    "unavailable": "위치를 확인할 수 없습니다. 위치 드롭다운을 사용해 보세요.",
+    "timeout": "위치 요청 시간이 초과되었습니다. 위치 드롭다운을 사용해 보세요.",
+    "error": "위치를 사용할 수 없습니다"
   },
   "quickExit": "빠른 나가기",
   "categories": {

@@ -2,6 +2,7 @@ import { Users, Calendar, Clock, Monitor, Globe, LayoutGrid, ChevronDown, X, Shi
 import type { LucideIcon } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import type { SearchFilters } from "@shared/routes";
 
 interface RefinePanelProps {
@@ -78,6 +79,7 @@ export function RefinePanel({
   onFiltersChange,
   onClear,
 }: RefinePanelProps) {
+  const { t } = useTranslation();
   const panelRef = useRef<HTMLDivElement>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
@@ -128,22 +130,22 @@ export function RefinePanel({
   const activeCount = countActiveFilters(filters);
 
   const genderOptions: { value: GenderRestriction; label: string }[] = [
-    { value: "all", label: "All" },
-    { value: "women_only", label: "Women-only" },
-    { value: "men_only", label: "Men-only" },
+    { value: "all", label: t('filters.all') },
+    { value: "women_only", label: t('filters.womenOnly') },
+    { value: "men_only", label: t('filters.menOnly') },
   ];
 
   const ageOptions: { value: AgeGroup; label: string }[] = [
-    { value: "all_ages", label: "All ages" },
-    { value: "youth", label: "Youth" },
-    { value: "adult", label: "Adult" },
-    { value: "senior", label: "Senior" },
+    { value: "all_ages", label: t('filters.allAges') },
+    { value: "youth", label: t('filters.youth') },
+    { value: "adult", label: t('filters.adult') },
+    { value: "senior", label: t('filters.senior') },
   ];
 
   const serviceFormatOptions: { value: string; label: string }[] = [
-    { value: "in_person", label: "In-person" },
-    { value: "online", label: "Online" },
-    { value: "in_person_and_online", label: "Both" },
+    { value: "in_person", label: t('filters.inPerson') },
+    { value: "online", label: t('filters.online') },
+    { value: "in_person_and_online", label: t('filters.both') },
   ];
 
   const hasCategories = (filters.categories ?? []).length > 0;
@@ -188,14 +190,14 @@ export function RefinePanel({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('filters.title')}</h2>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  Narrow down results to find what you need
+                  {t('filters.subtitle')}
                 </p>
               </div>
               {activeCount > 0 && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                  {activeCount} applied
+                  {t('filters.applied', { count: activeCount })}
                 </span>
               )}
             </div>
@@ -209,7 +211,7 @@ export function RefinePanel({
               }`}
               disabled={activeCount === 0}
             >
-              Clear all
+              {t('common.clearAll')}
             </button>
           </div>
         </div>
@@ -227,7 +229,7 @@ export function RefinePanel({
                   <Users className="w-4 h-4" />
                 </div>
                 <h3 id="filter-gender-heading" className="text-sm font-semibold text-gray-800">
-                  Gender restriction
+                  {t('filters.gender')}
                 </h3>
                 {hasGender && (
                   <button
@@ -277,7 +279,7 @@ export function RefinePanel({
                   <Calendar className="w-4 h-4" />
                 </div>
                 <h3 id="filter-age-heading" className="text-sm font-semibold text-gray-800">
-                  Age group
+                  {t('filters.ageGroup')}
                 </h3>
                 {hasAge && (
                   <button
@@ -327,15 +329,15 @@ export function RefinePanel({
                   <Clock className="w-4 h-4" />
                 </div>
                 <h3 id="filter-toggles-heading" className="text-sm font-semibold text-gray-800">
-                  Availability & program type
+                  {t('filters.availability')}
                 </h3>
               </div>
               <div className="space-y-3 pl-[42px]">
                 {(
                   [
-                    { key: "is24_7", label: "24/7 available" },
-                    { key: "isFaithBased", label: "Faith-based" },
-                    { key: "is12Step", label: "12-step program" },
+                    { key: "is24_7", label: t('filters.is24_7') },
+                    { key: "isFaithBased", label: t('filters.faithBased') },
+                    { key: "is12Step", label: t('filters.twelveStep') },
                   ] as { key: "is24_7" | "isFaithBased" | "is12Step"; label: string }[]
                 ).map(({ key, label }) => (
                   <div
@@ -368,7 +370,7 @@ export function RefinePanel({
                   <Monitor className="w-4 h-4" />
                 </div>
                 <h3 id="filter-format-heading" className="text-sm font-semibold text-gray-800">
-                  Service format
+                  {t('filters.serviceFormat')}
                 </h3>
                 {hasFormat && (
                   <button
@@ -418,7 +420,7 @@ export function RefinePanel({
                   <Globe className="w-4 h-4" />
                 </div>
                 <h3 id="filter-lang-heading" className="text-sm font-semibold text-gray-800">
-                  Languages supported
+                  {t('filters.languages')}
                 </h3>
                 {hasLanguages && (
                   <button
@@ -470,15 +472,15 @@ export function RefinePanel({
               </div>
               <div>
                 <h3 id="filter-category-heading" className="text-sm font-semibold text-gray-800">
-                  Browse by category
+                  {t('filters.browseCategory')}
                 </h3>
                 {!categoriesOpen && !hasCategories && (
-                  <p className="text-xs text-gray-400 mt-0.5">Filter by service type</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('filters.filterByType')}</p>
                 )}
               </div>
               {!categoriesOpen && hasCategories && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                  {filters.categories!.length} selected
+                  {t('filters.selected', { count: filters.categories!.length })}
                 </span>
               )}
               {hasCategories && (
@@ -538,14 +540,14 @@ export function RefinePanel({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm transition-all"
           >
-            Apply filters
+            {t('filters.applyFilters')}
           </button>
         </div>
       </div>

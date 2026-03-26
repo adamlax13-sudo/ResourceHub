@@ -17,7 +17,11 @@
   "search": {
     "summary": "Resumo",
     "noResults": "Nenhum serviço encontrado com seus critérios. Tente um termo de busca diferente.",
-    "error": "Não foi possível completar a busca"
+    "error": "Não foi possível completar a busca",
+    "searching": "Buscando recursos...",
+    "errorGeneric": "Algo deu errado com a busca. Por favor, tente novamente.",
+    "showingResults": "Mostrando resultados para \"{{query}}\"",
+    "nearLocation": "Serviços perto de {{location}}"
   },
   "service": {
     "accessProcess": "Processo de Acesso",
@@ -38,7 +42,14 @@
     "noWebpage": "Nenhuma página web disponível",
     "externalLink": "Link externo abre em nova aba",
     "save": "Salvar",
-    "saved": "Salvo"
+    "saved": "Salvo",
+    "waitTimeDefault": "Entre em contato com o provedor de serviços para saber o tempo de espera",
+    "callNow": "Ligar agora: {{phone}}",
+    "notFound": "Serviço não encontrado",
+    "loadFailed": "Falha ao carregar o serviço",
+    "showMore": "Mostrar mais",
+    "showLess": "Mostrar menos",
+    "findMeeting": "Encontrar uma reunião"
   },
   "myResources": {
     "title": "Meus Recursos",
@@ -175,6 +186,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "apply": "Aplicar",
+    "clearAll": "Limpar tudo",
+    "list": "Lista",
+    "map": "Mapa",
+    "shortlist": "Favoritos",
+    "refine": "Refinar"
+  },
+  "hero": {
+    "allOfAlberta": "Todo Alberta",
+    "selectLocation": "Selecionar localização",
+    "needHelpNow": "Preciso de ajuda agora",
+    "locating": "Localizando...",
+    "nearMe": "Perto de mim",
+    "notSureSearch": "Não sabe o que procurar? Deixe-nos guiá-lo →",
+    "browseByCategory": "Não sabe por onde começar? Navegue por categoria:"
+  },
+  "filters": {
+    "title": "Filtros",
+    "subtitle": "Refine os resultados para encontrar o que precisa",
+    "applied": "{{count}} aplicados",
+    "gender": "Restrição de gênero",
+    "ageGroup": "Faixa etária",
+    "availability": "Disponibilidade e tipo de programa",
+    "is24_7": "Disponível 24/7",
+    "faithBased": "Baseado em fé",
+    "twelveStep": "Programa de 12 passos",
+    "serviceFormat": "Formato de serviço",
+    "languages": "Idiomas suportados",
+    "browseCategory": "Navegar por categoria",
+    "filterByType": "Filtrar por tipo de serviço",
+    "applyFilters": "Aplicar filtros",
+    "selected": "{{count}} selecionados",
+    "all": "Todos",
+    "womenOnly": "Somente mulheres",
+    "menOnly": "Somente homens",
+    "allAges": "Todas as idades",
+    "youth": "Jovens",
+    "adult": "Adultos",
+    "senior": "Idosos",
+    "inPerson": "Presencial",
+    "online": "Online",
+    "both": "Ambos"
+  },
+  "location": {
+    "denied": "Acesso à localização negado. Você pode usar o menu suspenso de localização.",
+    "unavailable": "Não foi possível determinar sua localização. Tente usar o menu suspenso de localização.",
+    "timeout": "A solicitação de localização expirou. Tente usar o menu suspenso de localização.",
+    "error": "Localização indisponível"
   },
   "quickExit": "Saída rápida",
   "categories": {

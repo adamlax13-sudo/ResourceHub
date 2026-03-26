@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 /** Truncated description with show more/less toggle on mobile */
 function ServiceDescription({ description }: { description?: string | null }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -43,7 +44,7 @@ function ServiceDescription({ description }: { description?: string | null }) {
           }}
           className="text-primary text-sm font-medium mt-1 hover:underline"
         >
-          {expanded ? "Show less" : "Show more"}
+          {expanded ? t('service.showLess') : t('service.showMore')}
         </button>
       )}
     </div>
@@ -191,7 +192,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
           </div>
           <div className="flex items-start text-sm text-slate-600">
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
-            <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || "Contact service provider for wait time"}</span>
+            <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || t('service.waitTimeDefault')}</span>
           </div>
           {/* Show phone prominently for crisis lines — users in distress need the number immediately */}
           {service.phone && service.category?.toLowerCase().includes('crisis') && (
@@ -202,7 +203,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
               aria-label={`Call ${service.name} at ${service.phone}`}
             >
               <Phone className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-              <span>Call Now: {service.phone}</span>
+              <span>{t('service.callNow', { phone: service.phone })}</span>
             </a>
           )}
           {/* Direct link to AA meeting finder for Alcoholics Anonymous listings */}
@@ -218,7 +219,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
                 aria-label={`Find an AA meeting near you`}
               >
                 <ExternalLink className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                <span>Find a Meeting</span>
+                <span>{t('service.findMeeting')}</span>
               </a>
             ) : null;
           })()}

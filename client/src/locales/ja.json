@@ -17,7 +17,11 @@
   "search": {
     "summary": "概要",
     "noResults": "条件に一致するサービスが見つかりませんでした。別の検索語をお試しください。",
-    "error": "検索を完了できませんでした"
+    "error": "検索を完了できませんでした",
+    "searching": "リソースを検索中...",
+    "errorGeneric": "検索中にエラーが発生しました。もう一度お試しください。",
+    "showingResults": "\"{{query}}\"の検索結果",
+    "nearLocation": "{{location}}付近のサービス"
   },
   "service": {
     "accessProcess": "アクセス手順",
@@ -38,7 +42,14 @@
     "noWebpage": "ウェブページ情報なし",
     "externalLink": "外部リンクは新しいタブで開きます",
     "save": "保存",
-    "saved": "保存済み"
+    "saved": "保存済み",
+    "waitTimeDefault": "待ち時間についてはサービス提供者にお問い合わせください",
+    "callNow": "今すぐ電話：{{phone}}",
+    "notFound": "サービスが見つかりません",
+    "loadFailed": "サービスの読み込みに失敗しました",
+    "showMore": "もっと見る",
+    "showLess": "閉じる",
+    "findMeeting": "ミーティングを探す"
   },
   "myResources": {
     "title": "マイリソース",
@@ -175,6 +186,58 @@
     "close": "Close",
     "reportIssue": "Report an issue",
     "headerButton": "Feedback"
+  },
+  "common": {
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "apply": "適用",
+    "clearAll": "すべてクリア",
+    "list": "リスト",
+    "map": "地図",
+    "shortlist": "お気に入り",
+    "refine": "絞り込み"
+  },
+  "hero": {
+    "allOfAlberta": "Alberta全域",
+    "selectLocation": "場所を選択",
+    "needHelpNow": "今すぐ助けが必要です",
+    "locating": "位置を特定中...",
+    "nearMe": "近くの",
+    "notSureSearch": "何を検索すればいいかわからない？ご案内します →",
+    "browseByCategory": "どこから始めればいいかわからない？カテゴリーで探す："
+  },
+  "filters": {
+    "title": "フィルター",
+    "subtitle": "結果を絞り込んで必要なものを見つけましょう",
+    "applied": "{{count}}件適用中",
+    "gender": "性別制限",
+    "ageGroup": "年齢層",
+    "availability": "利用可能状況とプログラムの種類",
+    "is24_7": "24時間年中無休",
+    "faithBased": "信仰ベース",
+    "twelveStep": "12ステッププログラム",
+    "serviceFormat": "サービス形式",
+    "languages": "対応言語",
+    "browseCategory": "カテゴリーで探す",
+    "filterByType": "サービスの種類でフィルター",
+    "applyFilters": "フィルターを適用",
+    "selected": "{{count}}件選択中",
+    "all": "すべて",
+    "womenOnly": "女性のみ",
+    "menOnly": "男性のみ",
+    "allAges": "全年齢",
+    "youth": "青少年",
+    "adult": "成人",
+    "senior": "高齢者",
+    "inPerson": "対面",
+    "online": "オンライン",
+    "both": "両方"
+  },
+  "location": {
+    "denied": "位置情報へのアクセスが拒否されました。代わりに場所のドロップダウンをご利用ください。",
+    "unavailable": "位置を特定できませんでした。場所のドロップダウンをお試しください。",
+    "timeout": "位置情報のリクエストがタイムアウトしました。場所のドロップダウンをお試しください。",
+    "error": "位置情報が利用できません"
   },
   "quickExit": "緊急退出",
   "categories": {
