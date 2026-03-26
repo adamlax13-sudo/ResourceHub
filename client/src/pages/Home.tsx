@@ -13,6 +13,7 @@ import { CategoryTiles } from "@/components/CategoryTiles";
 import { IntakeWizard } from "@/components/IntakeWizard";
 import { RefinePanel } from "@/components/RefinePanel";
 import { MyShortlist } from "@/components/MyShortlist";
+import { STATIC_CRISIS_LINES } from "@/data/crisis-lines";
 import { QuickExitButton } from "@/components/QuickExitButton";
 import { useFavoritesContext } from "@/hooks/use-favorites";
 import type { SearchFilters } from "@shared/routes";
@@ -284,9 +285,10 @@ export default function Home() {
   }, [setLocations, searchState.query, searchState.filters, handleSearchWithFilters]);
 
   const handleEmergencySearch = useCallback(() => {
-    const locationParam = searchState.locations.length > 0 ? searchState.locations[0] : undefined;
-    search({ query: "crisis support emergency help right now", location: locationParam, emergency: true });
-  }, [search, searchState.locations]);
+    // Instant — no API call. Crisis lines are static and hardcoded for speed.
+    setSearchResults("crisis support emergency help right now", STATIC_CRISIS_LINES);
+    updateSearchUrl("crisis support emergency help right now", searchState.locations[0]);
+  }, [setSearchResults, searchState.locations]);
 
   const handleCategorySelect = useCallback((query: string) => {
     handleSearch(query, searchState.locations);
