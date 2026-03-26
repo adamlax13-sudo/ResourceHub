@@ -20,6 +20,7 @@ export interface AnalyticsWidget {
 export const ANALYTICS_WIDGETS: AnalyticsWidget[] = [
   { id: 'overview', label: 'Summary Stats', description: 'Total clicks, queries, and engagement metrics', defaultVisible: true, size: 'large', sizeLocked: true, defaultOrder: 0 },
   { id: 'daily-trend', label: 'Daily Trend', description: 'Click and query volume over time', defaultVisible: true, size: 'large', defaultOrder: 1 },
+  { id: 'unique-visitors', label: 'Unique Visitors', description: 'Daily unique visitors and search volume', defaultVisible: true, size: 'large', defaultOrder: 2 },
   { id: 'categories', label: 'Category Distribution', description: 'Which service categories get clicked most', defaultVisible: true, size: 'medium', defaultOrder: 2 },
   { id: 'peak-hours', label: 'Peak Hours', description: 'When users search by hour of day', defaultVisible: true, size: 'medium', defaultOrder: 3 },
   { id: 'top-queries', label: 'Top Search Queries', description: 'Most popular search queries with click rates', defaultVisible: true, size: 'medium', defaultOrder: 4 },

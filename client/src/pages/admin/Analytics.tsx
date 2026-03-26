@@ -49,8 +49,10 @@ interface OverviewData {
 
 interface TrendEntry {
   date: string;
+  searches: number;
   clicks: number;
   uniqueQueries: number;
+  visitors: number;
 }
 
 interface CategoryEntry {
@@ -238,6 +240,91 @@ function DailyTrendWidget({ trends, loading, compact }: { trends: TrendEntry[]; 
                 fill="none"
                 strokeDasharray="4 4"
                 name="Unique Queries"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function UniqueVisitorsWidget({ trends, loading, compact }: { trends: TrendEntry[]; loading: boolean; compact?: boolean }) {
+  const { effectiveTheme } = useTheme();
+  const chartColors = getChartColors();
+  const tooltipStyle = useTooltipStyle();
+
+  const chartData = trends.map((t) => ({
+    ...t,
+    label: new Date(t.date + "T00:00:00").toLocaleDateString("en-CA", {
+      month: "short",
+      day: "numeric",
+    }),
+  }));
+
+  const totalVisitors = trends.reduce((sum, t) => sum + t.visitors, 0);
+  const totalSearches = trends.reduce((sum, t) => sum + t.searches, 0);
+  const chartHeight = compact ? 200 : 280;
+
+  return (
+    <Card className="bg-card border-border shadow-sm rounded-xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-medium text-foreground">
+          Unique Visitors
+          <InfoTip text="Approximate unique visitors per day based on distinct user-agents. Also shows total searches (including those without clicks)." />
+        </CardTitle>
+        {!loading && trends.length > 0 && (
+          <div className="flex gap-4 text-xs text-muted-foreground mt-1">
+            <span>{totalVisitors} visitors</span>
+            <span>{totalSearches} searches</span>
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <Spinner />
+        ) : chartData.length === 0 ? (
+          <EmptyState message="No visitor data for this period." />
+        ) : (
+          <ResponsiveContainer key={effectiveTheme} width="100%" height={chartHeight}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={chartColors.secondary} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={chartColors.secondary} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: chartColors.axis, fontSize: 11 }}
+                tickLine={false}
+                axisLine={{ stroke: chartColors.grid }}
+              />
+              <YAxis
+                tick={{ fill: chartColors.axis, fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+                allowDecimals={false}
+              />
+              <Tooltip {...tooltipStyle} />
+              <Area
+                type="monotone"
+                dataKey="visitors"
+                stroke={chartColors.secondary}
+                strokeWidth={2}
+                fill="url(#visitorsGradient)"
+                name="Visitors"
+              />
+              <Area
+                type="monotone"
+                dataKey="searches"
+                stroke={chartColors.primary}
+                strokeWidth={1.5}
+                fill="none"
+                strokeDasharray="4 4"
+                name="Searches"
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -970,6 +1057,8 @@ function AnalyticsWidgetGrid({
         return <OverviewWidget overview={overviewData} loading={overviewLoading} />;
       case 'daily-trend':
         return <DailyTrendWidget trends={trendsData} loading={trendsLoading} compact={compact} />;
+      case 'unique-visitors':
+        return <UniqueVisitorsWidget trends={trendsData} loading={trendsLoading} compact={compact} />;
       case 'categories':
         return <CategoriesWidget categories={categoriesData} loading={categoriesLoading} compact={compact} />;
       case 'peak-hours':

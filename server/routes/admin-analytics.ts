@@ -128,8 +128,10 @@ export function registerAdminAnalyticsRoutes(app: Express): void {
     const results = await db.execute(sql`
       SELECT
         DATE(created_at AT TIME ZONE 'America/Edmonton')::text AS date,
-        COUNT(*)::int AS clicks,
-        COUNT(DISTINCT normalized_query)::int AS "uniqueQueries"
+        COUNT(*)::int AS searches,
+        COUNT(*) FILTER (WHERE clicked_service_id IS NOT NULL)::int AS clicks,
+        COUNT(DISTINCT normalized_query)::int AS "uniqueQueries",
+        COUNT(DISTINCT COALESCE(LEFT(user_agent, 100), 'unknown'))::int AS visitors
       FROM search_analytics
       WHERE created_at >= ${cutoff}
       GROUP BY DATE(created_at AT TIME ZONE 'America/Edmonton')
