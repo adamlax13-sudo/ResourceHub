@@ -190,7 +190,8 @@ export default function Home() {
     }
   }, [data, setSearchResults]);
 
-  const displayServices = data?.services || (searchState.hasSearched ? searchState.services : null);
+  // Show fresh data if available, fall back to cached results (keeps old results visible during re-fetch)
+  const displayServices = data?.services || (searchState.services.length > 0 ? searchState.services : (searchState.hasSearched ? [] : null));
 
   // Shared helper: build filter + coordinate params for search API calls
   const buildSearchParams = useCallback((filters: SearchFilters, coords?: { lat: number; lng: number } | null) => {

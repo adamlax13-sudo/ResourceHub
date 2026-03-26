@@ -20,24 +20,35 @@ const LANG_NAMES: Record<string, string> = {
   ja: 'Japanese', ko: 'Korean',
 };
 
-// Rate limiter
-const RATE_LIMIT_MS = LIBRETRANSLATE_URL ? 1200 : 200; // Tighter for LibreTranslate
-let lastRequestTime = 0;
+// ============= Concurrency-safe rate limiter =============
+// Uses an async queue so concurrent requests are serialized properly.
 
-async function rateLimitWait(): Promise<void> {
-  const now = Date.now();
-  const elapsed = now - lastRequestTime;
-  if (elapsed < RATE_LIMIT_MS) {
-    await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_MS - elapsed));
-  }
-  lastRequestTime = Date.now();
+const RATE_LIMIT_MS = LIBRETRANSLATE_URL ? 1200 : 200;
+let lastRequestTime = 0;
+let queueTail: Promise<void> = Promise.resolve();
+
+function rateLimitWait(): Promise<void> {
+  // Chain onto the queue tail so concurrent callers wait in sequence
+  queueTail = queueTail.then(async () => {
+    const now = Date.now();
+    const elapsed = now - lastRequestTime;
+    if (elapsed < RATE_LIMIT_MS) {
+      await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_MS - elapsed));
+    }
+    lastRequestTime = Date.now();
+  });
+  return queueTail;
 }
 
 // ============= OpenAI Translation =============
 
+// Delimiter unlikely to appear in service data (avoids prompt injection via [N] patterns)
+const DELIM_PREFIX = '<<<';
+const DELIM_SUFFIX = '>>>';
+
 async function translateWithOpenAI(texts: string[], target: string): Promise<string[]> {
   const targetName = LANG_NAMES[target] || target;
-  const numbered = texts.map((t, i) => `[${i}] ${t}`).join('\n');
+  const numbered = texts.map((t, i) => `${DELIM_PREFIX}${i}${DELIM_SUFFIX} ${t}`).join('\n');
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -48,10 +59,11 @@ async function translateWithOpenAI(texts: string[], target: string): Promise<str
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       temperature: 0.1,
+      max_tokens: 4096,
       messages: [
         {
           role: 'system',
-          content: `You are a translator for a social services directory in Alberta, Canada. Translate each numbered line from English to ${targetName}. Keep proper nouns (organization names, place names like "Calgary", "Edmonton") in their original form. Return ONLY the translations in the same numbered format [0], [1], etc. with no extra text.`,
+          content: `You are a translator for a social services directory in Alberta, Canada. Translate each numbered line from English to ${targetName}. Keep proper nouns (organization names, place names like "Calgary", "Edmonton") in their original form. Each line starts with <<<N>>> where N is the line number. Return ONLY the translations in the same <<<N>>> format with no extra text.`,
         },
         { role: 'user', content: numbered },
       ],
@@ -69,11 +81,11 @@ async function translateWithOpenAI(texts: string[], target: string): Promise<str
 
   const content = data.choices[0]?.message?.content || '';
 
-  // Parse numbered responses back into array
+  // Parse <<<N>>> responses back into array
   const result = [...texts]; // fallback to originals
   const lines = content.split('\n');
   for (const line of lines) {
-    const match = line.match(/^\[(\d+)\]\s*(.+)/);
+    const match = line.match(/^<<<(\d+)>>>\s*(.+)/);
     if (match) {
       const idx = parseInt(match[1], 10);
       if (idx >= 0 && idx < texts.length) {

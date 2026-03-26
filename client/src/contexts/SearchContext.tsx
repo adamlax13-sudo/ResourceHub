@@ -159,14 +159,25 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     }));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Invalidate cached search results when language changes so re-fetch gets translated data
+  // Re-fetch search results when language changes so service data is translated.
+  // Keeps existing results visible (avoids flash of empty state) until new ones arrive.
   useEffect(() => {
     const handleLanguageChange = () => {
       setSearchState(prev => {
-        if (!prev.hasSearched) return prev;
-        // Clear services so Home.tsx triggers a re-search with the new language
-        return { ...prev, services: [], hasSearched: false };
+        if (!prev.hasSearched || !prev.query) return prev;
+        // Keep services visible while re-fetch is in progress;
+        // set hasSearched=false so Home.tsx triggers a new search with the updated lang
+        return { ...prev, hasSearched: false };
       });
+      // Clear sessionStorage search cache so the new language doesn't hit stale English results
+      try {
+        const keys: string[] = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          if (k?.startsWith('rh_search_')) keys.push(k);
+        }
+        keys.forEach(k => sessionStorage.removeItem(k));
+      } catch { /* ignore */ }
     };
     i18n.on('languageChanged', handleLanguageChange);
     return () => { i18n.off('languageChanged', handleLanguageChange); };
