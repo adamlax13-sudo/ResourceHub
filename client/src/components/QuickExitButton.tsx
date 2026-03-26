@@ -23,9 +23,14 @@ export function QuickExitButton({ className = '', floating = false }: QuickExitB
       // Storage access may be blocked in some contexts
     }
 
-    // Note: history.pushState cannot replace entries with cross-origin URLs
-    // due to browser security restrictions, so we skip history flooding.
-    window.location.replace('https://www.google.com');
+    // Flood same-origin history entries so the back button cannot return here.
+    // pushState only works with same-origin URLs, so we push our own URL
+    // repeatedly — each press of "Back" will just reload the safe destination.
+    const safeUrl = 'https://www.google.com';
+    for (let i = 0; i < 20; i++) {
+      history.pushState(null, '', window.location.href);
+    }
+    window.location.replace(safeUrl);
   };
 
   if (floating) {
