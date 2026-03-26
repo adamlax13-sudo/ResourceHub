@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { api, type SearchResponse } from "@shared/routes";
 import { z } from "zod";
+import i18n from "@/lib/i18n";
 
 type SearchInput = z.infer<typeof api.search.query.input>;
 
@@ -22,6 +23,9 @@ function getCacheKey(data: SearchInput): string {
   if (data.is12Step) parts.push('12step');
   if (data.serviceFormat) parts.push(data.serviceFormat);
   if (data.languagesSupported?.length) parts.push(data.languagesSupported.sort().join(','));
+  // Include language in cache key so switching languages gets its own cache slot
+  const lang = i18n.language || 'en';
+  if (lang !== 'en') parts.push(`lang:${lang}`);
   return CACHE_KEY_PREFIX + parts.join('|');
 }
 
@@ -62,10 +66,14 @@ export function useSearch() {
       const cached = getCachedResult(cacheKey);
       if (cached) return cached;
 
+      // Include language for server-side translation of service data
+      const lang = i18n.language || 'en';
+      const requestData = lang !== 'en' ? { ...data, lang } : data;
+
       const res = await fetch(api.search.query.path, {
         method: api.search.query.method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(requestData),
         signal: abortRef.current.signal,
       });
 

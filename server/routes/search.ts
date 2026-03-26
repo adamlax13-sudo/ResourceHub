@@ -8,6 +8,7 @@ import { api, serviceSummarySchema } from "@shared/routes";
 import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
 import { asyncHandler, createErrorResponse } from "../helpers/errors";
+import { getOrTranslateService, getTranslationsBatch, type TranslatedFields } from "../translation";
 
 export function registerSearchRoutes(app: Express): void {
   // ============= SEARCH ENDPOINT =============
@@ -48,6 +49,23 @@ export function registerSearchRoutes(app: Express): void {
 
       // Strip internal fields (rrfScore, matchType, filter flags) from response
       const strippedServices = result.services.map((s) => serviceSummarySchema.parse(s));
+
+      // Apply translations if a non-English language is requested
+      const lang = input.lang;
+      if (lang && lang !== 'en') {
+        const serviceIds = strippedServices.map(s => s.id);
+        const translations = await getTranslationsBatch(serviceIds, lang);
+
+        for (const svc of strippedServices) {
+          const t = translations.get(svc.id);
+          if (t) {
+            if (t.name) svc.name = t.name;
+            if (t.description) svc.description = t.description;
+            if (t.waitTimes) svc.waitTimes = t.waitTimes;
+          }
+        }
+      }
+
       res.json({ ...result, services: strippedServices });
   }));
 
@@ -66,6 +84,33 @@ export function registerSearchRoutes(app: Express): void {
 
       if (!serviceDetails) {
         return res.status(404).json(createErrorResponse("Service not found"));
+      }
+
+      // Apply translation if ?lang= is specified and not English
+      const lang = typeof req.query.lang === 'string' ? req.query.lang : undefined;
+      if (lang && lang !== 'en') {
+        const sourceFields = {
+          name: serviceDetails.name,
+          description: serviceDetails.description || '',
+          eligibility: serviceDetails.eligibility || '',
+          waitTimes: serviceDetails.waitTimes || '',
+          hoursOfOperation: serviceDetails.hoursOfOperation || '',
+          address: serviceDetails.address || '',
+          processSteps: serviceDetails.process || [],
+          requiredDocs: serviceDetails.requiredDocs || [],
+        };
+
+        const translated = await getOrTranslateService(id, lang, sourceFields);
+        if (translated) {
+          if (translated.name) serviceDetails.name = translated.name;
+          if (translated.description) serviceDetails.description = translated.description;
+          if (translated.eligibility) serviceDetails.eligibility = translated.eligibility;
+          if (translated.waitTimes) serviceDetails.waitTimes = translated.waitTimes;
+          if (translated.hoursOfOperation) serviceDetails.hoursOfOperation = translated.hoursOfOperation;
+          if (translated.address) serviceDetails.address = translated.address;
+          if (translated.processSteps) serviceDetails.process = translated.processSteps;
+          if (translated.requiredDocs) serviceDetails.requiredDocs = translated.requiredDocs;
+        }
       }
 
       res.json(serviceDetails);

@@ -83,6 +83,10 @@ class StorageFacade extends DatabaseStorage {
       invalidateConfidenceCache: () => this._search.invalidateConfidenceCache(),
       refreshSearchInfrastructure: (id, sid, changed) =>
         this._refreshSearchInfrastructure(id, sid, changed),
+      invalidateTranslations: async (serviceId) => {
+        const { invalidateTranslations } = await import('../translation/index');
+        await invalidateTranslations(serviceId);
+      },
     };
   }
 

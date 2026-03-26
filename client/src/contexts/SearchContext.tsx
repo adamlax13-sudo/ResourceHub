@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { ServiceSummary, SearchFilters } from "@shared/routes";
 import { CATEGORY_GROUPS } from "../lib/category-groups";
+import i18n from "@/lib/i18n";
 
 interface UserCoords {
   lat: number;
@@ -157,6 +158,19 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       hasSearched: false,  // Home.tsx will trigger a fresh search from URL params
     }));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Invalidate cached search results when language changes so re-fetch gets translated data
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setSearchState(prev => {
+        if (!prev.hasSearched) return prev;
+        // Clear services so Home.tsx triggers a re-search with the new language
+        return { ...prev, services: [], hasSearched: false };
+      });
+    };
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => { i18n.off('languageChanged', handleLanguageChange); };
+  }, []);
 
   const setSearchResults = useCallback((query: string, services: ServiceSummary[], locations?: string[]) => {
     setSearchState(prev => ({

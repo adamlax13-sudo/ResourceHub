@@ -233,3 +233,25 @@ export const queryServiceAffinities = pgTable("query_service_affinities", {
 
 export type QueryServiceAffinity = typeof queryServiceAffinities.$inferSelect;
 
+// Service translations — cached translations of service text fields per language
+export const serviceTranslations = pgTable("service_translations", {
+  id: serial("id").primaryKey(),
+  serviceId: varchar("service_id", { length: 255 }).notNull(),
+  language: varchar("language", { length: 10 }).notNull(),
+  name: varchar("name", { length: 500 }),
+  description: text("description"),
+  eligibility: text("eligibility"),
+  waitTimes: varchar("wait_times", { length: 255 }),
+  hoursOfOperation: varchar("hours_of_operation", { length: 500 }),
+  address: text("address"),
+  processSteps: jsonb("process_steps"), // string[]
+  requiredDocs: jsonb("required_docs"), // string[]
+  sourceHash: varchar("source_hash", { length: 64 }).notNull(), // SHA-256 of English source fields
+  translatedAt: timestamp("translated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.serviceId, table.language),
+]);
+
+export type ServiceTranslation = typeof serviceTranslations.$inferSelect;
+export type InsertServiceTranslation = typeof serviceTranslations.$inferInsert;
+

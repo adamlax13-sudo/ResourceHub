@@ -125,7 +125,7 @@ function ServiceModalSkeleton() {
 // ============= COMPONENT =============
 
 export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, onToggleFavorite, openFeedback }: ServiceModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,7 +161,8 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
     setIsLoading(true);
     setError(null);
 
-    fetch(`/api/services/${encodeURIComponent(serviceId)}`, { signal: controller.signal })
+    const langParam = i18n.language && i18n.language !== 'en' ? `?lang=${encodeURIComponent(i18n.language)}` : '';
+    fetch(`/api/services/${encodeURIComponent(serviceId)}${langParam}`, { signal: controller.signal })
       .then(res => {
         if (!res.ok) {
           throw new Error(res.status === 404 ? 'Service not found' : 'Failed to load service');
@@ -185,7 +186,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
       });
 
     return () => { aborted = true; controller.abort(); };
-  }, [serviceId, isOpen]);
+  }, [serviceId, isOpen, i18n.language]);
 
   // Clear service data when modal closes
   useEffect(() => {
@@ -265,7 +266,7 @@ export function ServiceModal({ serviceId, isOpen, onClose, isFavorite = false, o
           <div className="bg-card px-4 py-3 md:px-8 md:py-6 border-b border-border flex-shrink-0 relative">
             <div className="flex flex-col gap-2 pr-16 md:pr-20">
               <Badge className="w-fit max-w-[80%] md:max-w-none bg-primary/10 text-primary hover:bg-primary/20 pointer-events-none whitespace-normal text-left">
-                {service.category}
+                {t(`categories.${service.category}`, service.category)}
               </Badge>
               <DialogTitle className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground break-words">
                 {service.name}

@@ -93,6 +93,8 @@ export const api = {
         userLng: z.number().min(-180).max(180).optional(),
         maxDistanceKm: z.number().min(1).max(500).optional(),
         sortByDistance: z.boolean().optional(),
+        // Translation language (2-letter ISO code, e.g. 'fr', 'es')
+        lang: z.string().max(5).optional(),
         // Explicit filters (applied as hard constraints in the search pipeline)
         ...searchFiltersSchema.shape,
       }).refine(

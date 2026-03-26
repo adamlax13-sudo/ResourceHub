@@ -6,6 +6,7 @@ import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { formatDistance } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /** Truncated description with show more/less toggle on mobile */
 function ServiceDescription({ description }: { description?: string | null }) {
@@ -97,6 +98,7 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service, onClick, index, isFavorite = false, onToggleFavorite }: ServiceCardProps) {
   const { searchState } = useSearchContext();
+  const { t } = useTranslation();
 
   const [vote, setVote] = useState<VoteValue | null>(() => {
     const stored = readStoredVotes();
@@ -166,7 +168,7 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
 
         <div className="flex justify-between items-start mb-4 min-w-0">
           <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1 text-xs font-semibold uppercase tracking-wider whitespace-normal text-left max-w-full">
-            {service.category}
+            {t(`categories.${service.category}`, service.category)}
           </Badge>
         </div>
 

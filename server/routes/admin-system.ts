@@ -179,6 +179,44 @@ export function registerAdminSystemRoutes(app: Express): void {
     res.json({ success: true, deleted: deletedCount, cutoffDate: cutoff.toISOString() });
   }));
 
+  // ============= TRANSLATION MANAGEMENT =============
+
+  // Get translation coverage stats per language
+  app.get("/api/admin/translations/stats", adminReadLimiter, adminAuth, asyncHandler(async (_req, res) => {
+    const { getTranslationStats } = await import('../translation/index');
+    const stats = await getTranslationStats();
+    res.json({ success: true, stats });
+  }));
+
+  // Warm French translations (or any language via ?lang=xx)
+  app.post("/api/admin/translations/warm", adminWriteLimiter, adminAuth, asyncHandler(async (req, res) => {
+    const schema = z.object({ lang: z.string().max(5).default('fr') });
+    const parsed = schema.safeParse(req.body);
+    const lang = parsed.success ? parsed.data.lang : 'fr';
+
+    // Run in background — respond immediately
+    const { warmTranslations } = await import('../translation/batch');
+    res.json({ success: true, message: `Started warming ${lang} translations in background` });
+
+    warmTranslations(lang, (done, total) => {
+      if (done % 50 === 0 || done === total) {
+        console.log(`[Translation] Warming ${lang}: ${done}/${total}`);
+      }
+    }).then(result => {
+      console.log(`[Translation] Warming ${lang} complete:`, result);
+    }).catch(err => {
+      console.error(`[Translation] Warming ${lang} failed:`, err);
+    });
+  }));
+
+  // Clear cached translations for a specific service
+  app.delete("/api/admin/translations/:serviceId", adminWriteLimiter, adminAuth, asyncHandler(async (req, res) => {
+    const serviceId = req.params.serviceId;
+    const { invalidateTranslations } = await import('../translation/index');
+    await invalidateTranslations(serviceId);
+    res.json({ success: true, message: `Translations cleared for ${serviceId}` });
+  }));
+
   // ============= SEARCH QUALITY DASHBOARD =============
   app.get("/api/admin/search-quality", adminReadLimiter, adminAuth, asyncHandler(async (_req, res) => {
     const { cacheStats } = await import('../search/index');

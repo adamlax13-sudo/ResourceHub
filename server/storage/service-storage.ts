@@ -16,6 +16,7 @@ import { eq, or, ilike, and, desc, asc, inArray, sql, isNull, isNotNull, type SQ
 export interface ServiceSideEffects {
   invalidateConfidenceCache: () => void;
   refreshSearchInfrastructure: (id: number, serviceId: string, contentChanged: boolean) => Promise<void>;
+  invalidateTranslations?: (serviceId: string) => Promise<void>;
 }
 
 export class ServiceStorage {
@@ -206,6 +207,13 @@ export class ServiceStorage {
       if (activationChanged || contentChanged) {
         // Cross-domain side effect: refresh search infrastructure
         effects.refreshSearchInfrastructure(updated.id, updated.serviceId, contentChanged).catch(() => {});
+      }
+
+      // Cross-domain side effect: invalidate cached translations when translatable fields change
+      const translatableFields = new Set(['name', 'description', 'eligibility', 'waitTimes', 'hoursOfOperation', 'address', 'processSteps', 'requiredDocs']);
+      const translationDirty = Object.keys(changedFields).some(k => translatableFields.has(k));
+      if (translationDirty && effects.invalidateTranslations) {
+        effects.invalidateTranslations(updated.serviceId).catch(() => {});
       }
     }
 
