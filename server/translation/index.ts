@@ -13,7 +13,7 @@ import { createHash } from 'crypto';
 import { eq, and, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { serviceTranslations } from '@shared/schema';
-import { translateText, translateBatch } from './libretranslate';
+import { translateBatch } from './libretranslate';
 
 export interface TranslatedFields {
   name?: string | null;
@@ -118,6 +118,11 @@ export async function getOrTranslateService(
 /**
  * Batch-fetch cached translations for multiple services (used by search results).
  * Returns a map of serviceId → TranslatedFields. Missing entries = not cached.
+ *
+ * Note: Does NOT validate sourceHash — relies on cache invalidation in
+ * service-storage.ts deleting stale rows when English content changes.
+ * Only card-visible fields (name, description, waitTimes) are used from
+ * the batch result in the search endpoint for performance.
  */
 export async function getTranslationsBatch(
   serviceIds: string[],

@@ -213,7 +213,9 @@ export class ServiceStorage {
       const translatableFields = new Set(['name', 'description', 'eligibility', 'waitTimes', 'hoursOfOperation', 'address', 'processSteps', 'requiredDocs']);
       const translationDirty = Object.keys(changedFields).some(k => translatableFields.has(k));
       if (translationDirty && effects.invalidateTranslations) {
-        effects.invalidateTranslations(updated.serviceId).catch(() => {});
+        effects.invalidateTranslations(updated.serviceId).catch(err => {
+          console.error(`[ServiceStorage] Failed to invalidate translations for ${updated.serviceId}:`, err);
+        });
       }
     }
 

@@ -8,7 +8,9 @@ import { api, serviceSummarySchema } from "@shared/routes";
 import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
 import { asyncHandler, createErrorResponse } from "../helpers/errors";
-import { getOrTranslateService, getTranslationsBatch, type TranslatedFields } from "../translation";
+import { getOrTranslateService, getTranslationsBatch } from "../translation";
+
+const SUPPORTED_LANGS = new Set(['en', 'fr', 'es', 'zh', 'ar', 'hi', 'pt', 'de', 'ja', 'ko']);
 
 export function registerSearchRoutes(app: Express): void {
   // ============= SEARCH ENDPOINT =============
@@ -51,7 +53,7 @@ export function registerSearchRoutes(app: Express): void {
       const strippedServices = result.services.map((s) => serviceSummarySchema.parse(s));
 
       // Apply translations if a non-English language is requested
-      const lang = input.lang;
+      const lang = input.lang && SUPPORTED_LANGS.has(input.lang) ? input.lang : undefined;
       if (lang && lang !== 'en') {
         const serviceIds = strippedServices.map(s => s.id);
         const translations = await getTranslationsBatch(serviceIds, lang);
@@ -86,8 +88,9 @@ export function registerSearchRoutes(app: Express): void {
         return res.status(404).json(createErrorResponse("Service not found"));
       }
 
-      // Apply translation if ?lang= is specified and not English
-      const lang = typeof req.query.lang === 'string' ? req.query.lang : undefined;
+      // Apply translation if ?lang= is a valid supported language
+      const rawLang = typeof req.query.lang === 'string' ? req.query.lang : undefined;
+      const lang = rawLang && SUPPORTED_LANGS.has(rawLang) ? rawLang : undefined;
       if (lang && lang !== 'en') {
         const sourceFields = {
           name: serviceDetails.name,
