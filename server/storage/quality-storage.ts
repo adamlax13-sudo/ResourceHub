@@ -93,40 +93,35 @@ export class QualityStorage {
       ? `AND ${extraConditions.join(' AND ')}`
       : '';
 
-    // A service is flagged if:
-    //   1. Missing any of the 14 required fields, OR
-    //   2. Missing ALL contact (no phone AND no email)
+    // A service is flagged if it's missing core fields that affect usability.
+    // Optional fields (wait_times, required_docs, address) are trackable via
+    // field filters but don't inflate the main issue count — many services
+    // legitimately lack these (no docs required, virtual/province-wide, etc.)
     const baseWhere = `is_active = true
         AND (
-          -- Required field: name/title
+          -- Core: name/title
           (name IS NULL OR name = '')
-          -- Required field: description
+          -- Core: description
           OR (description IS NULL OR description = '')
-          -- Required field: eligibility
+          -- Core: eligibility
           OR (eligibility IS NULL OR eligibility = '')
-          -- Required field: process steps
+          -- Core: process steps
           OR (process_steps IS NULL OR process_steps::text = '[]' OR process_steps::text = 'null')
-          -- Required field: wait times
-          OR (wait_times IS NULL OR wait_times = '')
-          -- Required field: required documents
-          OR (required_docs IS NULL OR required_docs::text = '[]' OR required_docs::text = 'null')
-          -- Required field: hours of operation
+          -- Core: hours of operation
           OR (hours_of_operation IS NULL OR hours_of_operation = '')
-          -- Required field: service format
+          -- Core: service format
           OR (service_format IS NULL OR service_format = '')
-          -- Required field: tags
+          -- Core: tags
           OR (tags IS NULL OR tags::text = '[]' OR tags::text = 'null')
-          -- Required field: address
-          OR (address IS NULL OR address = '')
-          -- Required field: languages
+          -- Core: languages
           OR (languages_supported IS NULL OR languages_supported::text = '[]' OR languages_supported::text = 'null')
-          -- Required field: website
+          -- Core: website
           OR (website_url IS NULL OR website_url = '')
-          -- Required field: fresh embedding (must exist AND be up-to-date)
+          -- Infrastructure: fresh embedding (must exist AND be up-to-date)
           OR embedding IS NULL OR (embedding_updated_at IS NOT NULL AND last_updated > embedding_updated_at)
-          -- Required field: fresh geotagging (must exist AND be up-to-date)
+          -- Infrastructure: fresh geotagging (must exist AND be up-to-date)
           OR latitude IS NULL OR (geocoded_at IS NOT NULL AND last_updated > geocoded_at)
-          -- Missing ALL contact details (no phone AND no email)
+          -- Critical: missing ALL contact details (no phone AND no email)
           OR ((phone IS NULL OR phone = '') AND (email IS NULL OR email = ''))
         )`;
 

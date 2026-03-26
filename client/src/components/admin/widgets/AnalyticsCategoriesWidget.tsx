@@ -54,7 +54,7 @@ export function AnalyticsCategoriesWidget({ compact }: { compact?: boolean }) {
               return (
                 <div key={cat.category} className="group">
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className={cn("text-xs font-medium truncate max-w-[200px]", textColor)}>
+                    <span className="text-xs font-medium truncate max-w-[200px] text-foreground">
                       {cat.category}
                     </span>
                     <span className="text-xs text-muted-foreground ml-2 tabular-nums">

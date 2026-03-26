@@ -61,11 +61,11 @@ app.use(helmet({
     : {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'", "'sha256-89M0NrPPkqSqhCiULjcep6eafhzUKPIkDn/yEiWOafg='"],
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           imgSrc: ["'self'", "data:", "blob:", "https://api.mapbox.com"],
           connectSrc: ["'self'", "https://api.mapbox.com", "https://events.mapbox.com"],
-          fontSrc: ["'self'"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
           workerSrc: ["'self'", "blob:"],
           childSrc: ["blob:"],
           objectSrc: ["'none'"],
