@@ -536,6 +536,7 @@ function DevicesWidget({ days, compact }: { days: number; compact?: boolean }) {
       return res.json();
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
   });
 
   const devices = data?.devices ?? [];
@@ -608,6 +609,7 @@ function NoClicksWidget({ days, compact }: { days: number; compact?: boolean }) 
       return res.json();
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
   });
 
   const noClicks = data?.noClicks ?? [];
@@ -682,6 +684,7 @@ function SessionsWidget({ days, compact }: { days: number; compact?: boolean }) 
       return res.json();
     },
     staleTime: 60_000,
+    refetchInterval: 60_000,
   });
 
   const sessions = data?.sessions ?? [];
@@ -1126,7 +1129,9 @@ export default function Analytics() {
     handleLayoutChange(getDefaultAnalyticsLayout());
   }, [handleLayoutChange]);
 
-  // Fetch all core data independently
+  // Fetch all core data independently — refetch every 60s so live usage appears
+  const analyticsQueryOpts = { staleTime: 60_000, refetchInterval: 60_000 } as const;
+
   const { data: overviewData, isPending: overviewLoading } = useQuery<{
     success: boolean;
     overview: OverviewData;
@@ -1136,7 +1141,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/overview?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: trendsData, isPending: trendsLoading } = useQuery<{
@@ -1148,7 +1153,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/trends?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: categoriesData, isPending: categoriesLoading } = useQuery<{
@@ -1160,7 +1165,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/categories?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: hoursData, isPending: hoursLoading } = useQuery<{
@@ -1172,7 +1177,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/hours?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: positionsData, isPending: positionsLoading } = useQuery<{
@@ -1184,7 +1189,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/positions?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: searchData, isPending: searchLoading } = useQuery<{
@@ -1196,7 +1201,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/searches?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const { data: serviceData, isPending: serviceLoading } = useQuery<{
@@ -1208,7 +1213,7 @@ export default function Analytics() {
       const res = await apiRequest("GET", `/api/admin/analytics/services?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
+    ...analyticsQueryOpts,
   });
 
   const exportCSV = useCallback(() => {

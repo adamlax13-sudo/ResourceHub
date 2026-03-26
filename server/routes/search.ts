@@ -9,6 +9,8 @@ import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
 import { asyncHandler, createErrorResponse } from "../helpers/errors";
 import { getOrTranslateService, getTranslationsBatch } from "../translation";
+import { storage } from "../storage";
+import { normalizeForCache } from "../helpers/keywords";
 
 const SUPPORTED_LANGS = new Set(['en', 'fr', 'es', 'zh', 'ar', 'hi', 'pt', 'de', 'ja', 'ko']);
 
@@ -67,6 +69,26 @@ export function registerSearchRoutes(app: Express): void {
           }
         }
       }
+
+      // Track search (fire-and-forget — don't block response)
+      const userAgentHeader = req.headers['user-agent'];
+      const userAgent = (Array.isArray(userAgentHeader) ? userAgentHeader[0] : userAgentHeader)?.slice(0, 500);
+      const sessionIdHeader = req.headers['x-session-id'];
+      const sessionIdRaw = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
+      const SESSION_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const sessionId = sessionIdRaw && SESSION_UUID_RE.test(sessionIdRaw) ? sessionIdRaw.slice(0, 36) : undefined;
+
+      storage.trackSearchClick({
+        query: input.query,
+        normalizedQuery: normalizeForCache(input.query),
+        resultCount: strippedServices.length,
+        clickedServiceId: undefined,
+        clickPosition: undefined,
+        sessionId,
+        userAgent,
+      }).catch(err => {
+        console.error('Failed to track search:', err);
+      });
 
       res.json({ ...result, services: strippedServices });
   }));
