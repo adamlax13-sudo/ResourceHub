@@ -149,6 +149,40 @@ export class AnalyticsStorage {
     }
   }
 
+  /** Update the most recent quality metric for a session (used by click tracking) */
+  async updateSearchQualityBySession(sessionId: string, data: {
+    firstClickPosition?: number;
+    clickCount?: number;
+  }): Promise<void> {
+    try {
+      // Find most recent metric for this session
+      const result = await db.execute(sql`
+        SELECT id, click_count FROM search_quality_metrics
+        WHERE session_id = ${sessionId}
+        ORDER BY created_at DESC LIMIT 1
+      `);
+      const row = result.rows[0] as any;
+      if (!row) return;
+
+      const updates: SQL[] = [];
+      if (data.firstClickPosition !== undefined && !row.first_click_position) {
+        updates.push(sql`first_click_position = ${data.firstClickPosition}`);
+      }
+      const newCount = (Number(row.click_count) || 0) + 1;
+      updates.push(sql`click_count = ${newCount}`);
+
+      if (updates.length > 0) {
+        await db.execute(sql`
+          UPDATE search_quality_metrics
+          SET ${sql.join(updates, sql`, `)}
+          WHERE id = ${row.id}
+        `);
+      }
+    } catch {
+      // Non-critical — don't let quality tracking break click tracking
+    }
+  }
+
   async getSearchQualityReport(days: number = 7): Promise<{
     totalSearches: number;
     avgFirstClickPosition: number;

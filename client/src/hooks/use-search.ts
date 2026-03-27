@@ -10,6 +10,9 @@ interface ExtendedSearchResponse extends SearchResponse {
   query: string;
 }
 
+// Stable session ID per browser tab — used for search quality tracking
+export const SESSION_ID = crypto.randomUUID();
+
 // SessionStorage cache for recent search results (survives navigation, clears on tab close)
 const CACHE_KEY_PREFIX = 'rh_search_';
 const MAX_CACHED = 20;
@@ -72,7 +75,7 @@ export function useSearch() {
 
       const res = await fetch(api.search.query.path, {
         method: api.search.query.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-Session-Id": SESSION_ID },
         body: JSON.stringify(requestData),
         signal: abortRef.current.signal,
       });

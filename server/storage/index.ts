@@ -263,6 +263,7 @@ class StorageFacade extends DatabaseStorage {
   override recordSearchQuality = this._analytics.recordSearchQuality.bind(this._analytics);
   override updateSearchQuality = this._analytics.updateSearchQuality.bind(this._analytics);
   override getSearchQualityReport = this._analytics.getSearchQualityReport.bind(this._analytics);
+  override updateSearchQualityBySession = this._analytics.updateSearchQualityBySession.bind(this._analytics);
 
   // === Quality domain delegation ===
 

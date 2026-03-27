@@ -1,7 +1,7 @@
 import { useState, useRef, lazy, Suspense, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Hero } from "@/components/Hero";
-import { useSearch } from "@/hooks/use-search";
+import { useSearch, SESSION_ID } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -172,7 +172,7 @@ export default function Home() {
     if (!query) return;
     fetch("/api/track-click", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Session-Id": SESSION_ID },
       body: JSON.stringify({ serviceId, query, position: position + 1 }),
     }).catch(err => console.warn('[Analytics] Click tracking failed:', err));
   }, []);

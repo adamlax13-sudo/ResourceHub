@@ -46,6 +46,13 @@ export function registerAnalyticsRoutes(app: Express): void {
         console.error('Failed to track click:', err);
       });
 
+      // Update search quality metrics with click data (fire-and-forget)
+      if (sessionId && data.position) {
+        storage.updateSearchQualityBySession(sessionId, {
+          firstClickPosition: data.position,
+        }).catch(() => {});
+      }
+
       res.json({ success: true });
     } catch (err) {
       console.error("Click tracking error:", err);

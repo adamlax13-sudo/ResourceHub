@@ -118,6 +118,16 @@ export function registerSearchRoutes(app: Express): void {
         console.error('Failed to track search:', err);
       });
 
+      // Record search quality metric (fire-and-forget)
+      if (sessionId) {
+        storage.recordSearchQuality({
+          sessionId,
+          query: input.query,
+          queryNormalized: normalizeForCache(input.query),
+          resultCount: strippedServices.length,
+        }).catch(() => {});
+      }
+
       res.json({ ...result, services: strippedServices, ...(translationMissing ? { translationMissing: true } : {}) });
   }));
 

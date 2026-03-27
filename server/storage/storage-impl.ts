@@ -1291,6 +1291,14 @@ export class DatabaseStorage implements IStorage {
   /**
    * Update search quality metrics (e.g., when user clicks)
    */
+  async updateSearchQualityBySession(sessionId: string, data: {
+    firstClickPosition?: number;
+    clickCount?: number;
+  }): Promise<void> {
+    // Delegate to AnalyticsStorage via facade override
+    console.warn('[DatabaseStorage] updateSearchQualityBySession called on base class');
+  }
+
   async updateSearchQuality(id: number, data: {
     firstClickPosition?: number;
     clickCount?: number;
