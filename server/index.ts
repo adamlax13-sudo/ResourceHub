@@ -14,7 +14,7 @@ const _currentDir: string = typeof __dirname !== 'undefined' ? __dirname : impor
 import { registerHealthRoutes } from "./routes/health";
 import { apiLimiter } from "./middleware/rateLimiter";
 import { pool } from "./db";
-import { startCacheWarmerSchedule } from "./search/cache-warmer";
+import { startCacheWarmerSchedule, stopCacheWarmerSchedule } from "./search/cache-warmer";
 
 // ============= STARTUP ENV VALIDATION =============
 const RECOMMENDED_ENV_VARS = ['ADMIN_API_KEY', 'AI_INTEGRATIONS_OPENAI_API_KEY', 'MAPBOX_PUBLIC_TOKEN', 'MAPBOX_SECRET_TOKEN'];
@@ -140,6 +140,9 @@ async function gracefulShutdown(signal: string) {
   isShuttingDown = true;
 
   console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+  // Stop background tasks
+  stopCacheWarmerSchedule();
 
   // Stop accepting new connections
   httpServer.close(async (err) => {

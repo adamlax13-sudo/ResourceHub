@@ -94,7 +94,8 @@ See `.env.example` for required variables. Key ones:
 - `DATABASE_URL` — PostgreSQL connection string
 - `AI_INTEGRATIONS_OPENAI_API_KEY` — OpenAI API key
 - `ANTHROPIC_API_KEY` — Claude API key (optional, better extraction)
-- `ADMIN_API_KEY` — protects admin endpoints
+- `ADMIN_API_KEY` — protects admin endpoints (used as login credential)
+- `ADMIN_SESSION_SECRET` — signs admin session cookies (HMAC-SHA256). Separate from API key for security isolation. Generate with `openssl rand -hex 32`.
 - `MAPBOX_PUBLIC_TOKEN` — client-side map rendering (URL-restrict in Mapbox dashboard)
 - `MAPBOX_SECRET_TOKEN` — server-side geocoding only (never exposed to client)
 

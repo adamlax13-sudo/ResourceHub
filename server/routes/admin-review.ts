@@ -26,17 +26,23 @@ const updateChangeRequestSchema = z.object({
   reviewNotes: z.string().max(1000).optional(),
 });
 
+const listQuerySchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected']).optional(),
+  source: z.string().max(50).optional(),
+  changeType: z.string().max(50).optional(),
+  batchId: z.string().max(200).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+}).partial();
+
 export function registerAdminReviewRoutes(app: Express): void {
   // ============= LIST CHANGE REQUESTS =============
   app.get("/api/admin/review", adminReadLimiter, adminAuth, asyncHandler(async (req: Request, res: Response) => {
-    const params = {
-      status: req.query.status as string | undefined,
-      source: req.query.source as string | undefined,
-      changeType: req.query.changeType as string | undefined,
-      batchId: req.query.batchId as string | undefined,
-      page: req.query.page ? Number(req.query.page) : undefined,
-      limit: req.query.limit ? Number(req.query.limit) : undefined,
-    };
+    const parsed = listQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json(createErrorResponse('Invalid query parameters'));
+    }
+    const params = parsed.data;
 
     const result = await storage.getChangeRequests(params);
 

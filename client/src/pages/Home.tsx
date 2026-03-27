@@ -174,7 +174,7 @@ export default function Home() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ serviceId, query, position: position + 1 }),
-    }).catch(() => {}); // silent — never block UI
+    }).catch(err => console.warn('[Analytics] Click tracking failed:', err));
   }, []);
 
   useEffect(() => {

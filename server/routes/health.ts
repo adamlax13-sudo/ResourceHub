@@ -45,9 +45,12 @@ export function registerHealthRoutes(router: Router): void {
     try {
       const dbStart = Date.now();
       const client = await pool.connect();
-      await client.query('SELECT 1');
-      client.release();
-      health.checks.database.latencyMs = Date.now() - dbStart;
+      try {
+        await client.query('SELECT 1');
+        health.checks.database.latencyMs = Date.now() - dbStart;
+      } finally {
+        client.release();
+      }
     } catch (err) {
       health.status = 'unhealthy';
       health.checks.database.status = 'error';
@@ -97,8 +100,11 @@ export function registerHealthRoutes(router: Router): void {
   router.get("/api/health/ready", async (_req: Request, res: Response) => {
     try {
       const client = await pool.connect();
-      await client.query('SELECT 1');
-      client.release();
+      try {
+        await client.query('SELECT 1');
+      } finally {
+        client.release();
+      }
       res.json({ status: 'ready', timestamp: new Date().toISOString() });
     } catch (err) {
       console.error('[Health] Readiness check failed:', err);

@@ -131,6 +131,7 @@ export class ServiceStorage {
 
     const contentFields = new Set(['name', 'description', 'eligibility', 'processSteps', 'hoursOfOperation', 'phone', 'email', 'websiteUrl', 'address']);
     const editedContentFields = Object.keys(changedFields).filter(k => contentFields.has(k));
+    let aiClearClauses: string | null = null;
 
     if (editedContentFields.length > 0) {
       const merged = { ...current, ...changes };
@@ -167,52 +168,60 @@ export class ServiceStorage {
         const allowedCols = new Set(['ai_description', 'ai_eligibility', 'ai_process_steps', 'ai_wait_times']);
         const safeCols = aiClears.filter(c => allowedCols.has(c));
         if (safeCols.length > 0) {
-          const setClauses = safeCols.map(f =>
+          aiClearClauses = safeCols.map(f =>
             notNullCols.has(f)
               ? (f === 'ai_process_steps' ? `${f} = '[]'::json` : `${f} = ''`)
               : `${f} = NULL`
           ).join(', ');
-          await db.execute(sql`UPDATE ai_service_enrichments SET ${sql.raw(setClauses)} WHERE service_id = ${current.serviceId}`);
         }
       }
     }
 
-    const [updated] = await db.update(services)
-      .set({ ...changes, lastUpdated: now })
-      .where(eq(services.id, id))
-      .returning();
+    // Atomic: update service + insert history + clear AI enrichments in one transaction
+    const updated = await db.transaction(async (tx) => {
+      if (aiClearClauses) {
+        await tx.execute(sql`UPDATE ai_service_enrichments SET ${sql.raw(aiClearClauses)} WHERE service_id = ${current.serviceId}`);
+      }
 
+      const [upd] = await tx.update(services)
+        .set({ ...changes, lastUpdated: now })
+        .where(eq(services.id, id))
+        .returning();
+
+      if (Object.keys(changedFields).length > 0) {
+        await tx.insert(serviceHistory).values({
+          serviceId: current.serviceId,
+          name: upd.name,
+          category: upd.category,
+          description: upd.description,
+          location: upd.location,
+          contact: upd.contact,
+          eligibility: upd.eligibility,
+          processSteps: upd.processSteps,
+          waitTimes: upd.waitTimes,
+          requiredDocs: upd.requiredDocs,
+          hoursOfOperation: upd.hoursOfOperation,
+          languagesSupported: upd.languagesSupported,
+          serviceFormat: upd.serviceFormat,
+          websiteUrl: upd.websiteUrl,
+          changedFields: reason ? { ...changedFields, _reason: reason } : changedFields,
+          changeType: 'updated',
+          confidenceScore: upd.confidenceScore,
+        });
+      }
+
+      return upd;
+    });
+
+    // Side effects fire AFTER transaction commits
     if (Object.keys(changedFields).length > 0) {
-      await db.insert(serviceHistory).values({
-        serviceId: current.serviceId,
-        name: updated.name,
-        category: updated.category,
-        description: updated.description,
-        location: updated.location,
-        contact: updated.contact,
-        eligibility: updated.eligibility,
-        processSteps: updated.processSteps,
-        waitTimes: updated.waitTimes,
-        requiredDocs: updated.requiredDocs,
-        hoursOfOperation: updated.hoursOfOperation,
-        languagesSupported: updated.languagesSupported,
-        serviceFormat: updated.serviceFormat,
-        websiteUrl: updated.websiteUrl,
-        changedFields: reason ? { ...changedFields, _reason: reason } : changedFields,
-        changeType: 'updated',
-        confidenceScore: updated.confidenceScore,
-      });
-
       const activationChanged = 'isActive' in changedFields;
       const contentChanged = editedContentFields.length > 0;
       if (activationChanged || contentChanged) {
-        // Cross-domain side effect: refresh search infrastructure
         effects.refreshSearchInfrastructure(updated.id, updated.serviceId, contentChanged).catch(() => {});
-        // Cross-domain side effect: clear cached search results so users see fresh data
         effects.invalidateSearchCache?.();
       }
 
-      // Cross-domain side effect: invalidate cached translations when translatable fields change
       const translatableFields = new Set(['name', 'description', 'eligibility', 'waitTimes', 'hoursOfOperation', 'address', 'processSteps', 'requiredDocs']);
       const translationDirty = Object.keys(changedFields).some(k => translatableFields.has(k));
       if (translationDirty && effects.invalidateTranslations) {
