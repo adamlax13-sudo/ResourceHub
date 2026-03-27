@@ -622,8 +622,8 @@ function DevicesWidget({ days, compact }: { days: number; compact?: boolean }) {
       const res = await apiRequest("GET", `/api/admin/analytics/devices?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 300_000,
+    refetchInterval: 300_000,
   });
 
   const devices = data?.devices ?? [];
@@ -695,8 +695,8 @@ function NoClicksWidget({ days, compact }: { days: number; compact?: boolean }) 
       const res = await apiRequest("GET", `/api/admin/analytics/no-clicks?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 300_000,
+    refetchInterval: 300_000,
   });
 
   const noClicks = data?.noClicks ?? [];
@@ -770,8 +770,8 @@ function SessionsWidget({ days, compact }: { days: number; compact?: boolean }) 
       const res = await apiRequest("GET", `/api/admin/analytics/sessions?days=${days}`);
       return res.json();
     },
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 300_000,
+    refetchInterval: 300_000,
   });
 
   const sessions = data?.sessions ?? [];
@@ -1218,8 +1218,8 @@ export default function Analytics() {
     handleLayoutChange(getDefaultAnalyticsLayout());
   }, [handleLayoutChange]);
 
-  // Fetch all core data independently — refetch every 60s so live usage appears
-  const analyticsQueryOpts = { staleTime: 60_000, refetchInterval: 60_000 } as const;
+  // Fetch all core data independently — refetch every 5 minutes (was 60s, reduced to cut server load)
+  const analyticsQueryOpts = { staleTime: 300_000, refetchInterval: 300_000 } as const;
 
   const { data: overviewData, isPending: overviewLoading } = useQuery<{
     success: boolean;

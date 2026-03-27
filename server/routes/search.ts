@@ -73,17 +73,28 @@ export function registerSearchRoutes(app: Express): void {
 
       // Apply translations if a non-English language is requested
       const lang = input.lang && SUPPORTED_LANGS.has(input.lang) ? input.lang : undefined;
+      let translationMissing = false;
       if (lang && lang !== 'en') {
-        const serviceIds = strippedServices.map(s => s.id);
-        const translations = await getTranslationsBatch(serviceIds, lang);
+        try {
+          const serviceIds = strippedServices.map(s => s.id);
+          const translations = await getTranslationsBatch(serviceIds, lang);
 
-        for (const svc of strippedServices) {
-          const t = translations.get(svc.id);
-          if (t) {
-            if (t.name) svc.name = t.name;
-            if (t.description) svc.description = t.description;
-            if (t.waitTimes) svc.waitTimes = t.waitTimes;
+          let translated = 0;
+          for (const svc of strippedServices) {
+            const t = translations.get(svc.id);
+            if (t) {
+              if (t.name) svc.name = t.name;
+              if (t.description) svc.description = t.description;
+              if (t.waitTimes) svc.waitTimes = t.waitTimes;
+              translated++;
+            }
           }
+          // Flag if most services couldn't be translated
+          if (strippedServices.length > 0 && translated < strippedServices.length / 2) {
+            translationMissing = true;
+          }
+        } catch {
+          translationMissing = true;
         }
       }
 
@@ -107,7 +118,7 @@ export function registerSearchRoutes(app: Express): void {
         console.error('Failed to track search:', err);
       });
 
-      res.json({ ...result, services: strippedServices });
+      res.json({ ...result, services: strippedServices, ...(translationMissing ? { translationMissing: true } : {}) });
   }));
 
   // ============= SERVICE DETAIL ENDPOINT =============

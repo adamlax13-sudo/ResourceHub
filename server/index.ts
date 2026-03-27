@@ -204,8 +204,45 @@ process.on('unhandledRejection', (reason, promise) => {
     // Production: serve pre-built static files
     const clientBuildPath = path.join(_currentDir, "../dist/public");
     app.use(express.static(clientBuildPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(clientBuildPath, "index.html"));
+
+    // Dynamic OG meta tags for social sharing: when crawlers visit /?service=ID,
+    // inject service-specific title/description so shared links generate rich previews.
+    const fs = await import('fs');
+    const indexHtml = fs.readFileSync(path.join(clientBuildPath, "index.html"), 'utf-8');
+    const { db: ogDb } = await import('./db');
+    const { services: ogServices } = await import('@shared/schema');
+    const { eq: ogEq } = await import('drizzle-orm');
+
+    app.get("*", async (req, res) => {
+      const serviceId = req.query.service as string | undefined;
+      if (serviceId && /^[a-zA-Z0-9_-]+$/.test(serviceId)) {
+        try {
+          const [svc] = await ogDb.select({
+            name: ogServices.name,
+            description: ogServices.description,
+            category: ogServices.category,
+            location: ogServices.location,
+          }).from(ogServices).where(ogEq(ogServices.serviceId, serviceId)).limit(1);
+
+          if (svc) {
+            const title = `${svc.name} — Alberta Resource Hub`;
+            const desc = (svc.description || '').slice(0, 200);
+            const url = `https://albertaresourcehub.ca/?service=${encodeURIComponent(serviceId)}`;
+            const escaped = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+            const html = indexHtml
+              .replace('<title>Alberta Resource Hub</title>', `<title>${escaped(title)}</title>`)
+              .replace('content="Alberta Resource Hub — Find Social Services Near You"', `content="${escaped(title)}"`)
+              .replace(/content="Search Alberta's directory of recovery.*?"/g, `content="${escaped(desc)}"`)
+              .replace('content="https://albertaresourcehub.ca/"', `content="${escaped(url)}"`);
+
+            return res.send(html);
+          }
+        } catch {
+          // Fall through to default HTML on any error
+        }
+      }
+      res.send(indexHtml);
     });
   }
 

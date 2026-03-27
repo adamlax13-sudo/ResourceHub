@@ -188,7 +188,11 @@ export default function Home() {
       const current = searchStateRef.current;
       updateSearchUrl(data.query, current.locations[0], current.filters);
     }
-  }, [data, setSearchResults]);
+    // Notify user if translation was unavailable for their language
+    if ((data as any)?.translationMissing) {
+      toast({ title: t('search.translationUnavailable'), variant: 'destructive' });
+    }
+  }, [data, setSearchResults, toast, t]);
 
   // Show fresh data if available, fall back to cached results (keeps old results visible during re-fetch)
   const displayServices = data?.services || (searchState.services.length > 0 ? searchState.services : (searchState.hasSearched ? [] : null));

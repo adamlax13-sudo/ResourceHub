@@ -19,6 +19,7 @@
     "summary": "Summary",
     "noResults": "No services found",
     "noResultsHint": "Try a broader search term, remove location filters, or browse by category below.",
+    "translationUnavailable": "Translation unavailable — showing results in English.",
     "error": "Unable to complete search",
     "searching": "Searching for resources...",
     "errorGeneric": "Something went wrong with the search. Please try again.",
