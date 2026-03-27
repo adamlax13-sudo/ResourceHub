@@ -82,7 +82,7 @@ export function registerAdminAnalyticsRoutes(app: Express): void {
         COUNT(DISTINCT clicked_service_id) FILTER (WHERE clicked_service_id IS NOT NULL)::int AS "uniqueServicesClicked",
         ROUND(AVG(click_position) FILTER (WHERE click_position IS NOT NULL)::numeric, 1)::float AS "avgClickPosition",
         ROUND(AVG(result_count)::numeric, 1)::float AS "avgResultCount",
-        COUNT(DISTINCT CONCAT(DATE(created_at AT TIME ZONE 'America/Edmonton'), '|', COALESCE(LEFT(user_agent, 100), 'unknown')))::int AS "approximateVisitors"
+        COUNT(DISTINCT CONCAT(DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Edmonton'), '|', COALESCE(LEFT(user_agent, 100), 'unknown')))::int AS "approximateVisitors"
       FROM search_analytics
       WHERE created_at >= ${cutoff}
     `);
@@ -127,14 +127,14 @@ export function registerAdminAnalyticsRoutes(app: Express): void {
 
     const results = await db.execute(sql`
       SELECT
-        DATE(created_at AT TIME ZONE 'America/Edmonton')::text AS date,
+        DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Edmonton')::text AS date,
         COUNT(*)::int AS searches,
         COUNT(*) FILTER (WHERE clicked_service_id IS NOT NULL)::int AS clicks,
         COUNT(DISTINCT normalized_query)::int AS "uniqueQueries",
         COUNT(DISTINCT COALESCE(LEFT(user_agent, 100), 'unknown'))::int AS visitors
       FROM search_analytics
       WHERE created_at >= ${cutoff}
-      GROUP BY DATE(created_at AT TIME ZONE 'America/Edmonton')
+      GROUP BY DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Edmonton')
       ORDER BY date
     `);
 
@@ -149,7 +149,7 @@ export function registerAdminAnalyticsRoutes(app: Express): void {
 
     const results = await db.execute(sql`
       SELECT
-        EXTRACT(HOUR FROM created_at AT TIME ZONE 'America/Edmonton')::int AS hour,
+        EXTRACT(HOUR FROM created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Edmonton')::int AS hour,
         COUNT(*)::int AS clicks
       FROM search_analytics
       WHERE created_at >= ${cutoff}
