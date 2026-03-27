@@ -24,6 +24,8 @@ export const serviceSummarySchema = z.object({
   longitude: z.number().nullable().optional(),
   // Distance from user's location in km (null if no coords on service or no user location)
   distanceKm: z.number().nullable().optional(),
+  // When this service was last verified/checked (ISO string for freshness display)
+  lastChecked: z.string().nullable().optional(),
   // Debug mode only - shows scoring breakdown
   scoreExplanation: z.array(scoreExplanationSchema).optional(),
 });

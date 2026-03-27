@@ -17,6 +17,7 @@ export interface ServiceSideEffects {
   invalidateConfidenceCache: () => void;
   refreshSearchInfrastructure: (id: number, serviceId: string, contentChanged: boolean) => Promise<void>;
   invalidateTranslations?: (serviceId: string) => Promise<void>;
+  invalidateSearchCache?: () => void;
 }
 
 export class ServiceStorage {
@@ -207,6 +208,8 @@ export class ServiceStorage {
       if (activationChanged || contentChanged) {
         // Cross-domain side effect: refresh search infrastructure
         effects.refreshSearchInfrastructure(updated.id, updated.serviceId, contentChanged).catch(() => {});
+        // Cross-domain side effect: clear cached search results so users see fresh data
+        effects.invalidateSearchCache?.();
       }
 
       // Cross-domain side effect: invalidate cached translations when translatable fields change
@@ -253,6 +256,7 @@ export class ServiceStorage {
     });
 
     effects.refreshSearchInfrastructure(updated.id, updated.serviceId, false).catch(() => {});
+    effects.invalidateSearchCache?.();
     return updated;
   }
 
@@ -287,6 +291,7 @@ export class ServiceStorage {
     });
 
     effects.refreshSearchInfrastructure(updated.id, updated.serviceId, false).catch(() => {});
+    effects.invalidateSearchCache?.();
     return updated;
   }
 

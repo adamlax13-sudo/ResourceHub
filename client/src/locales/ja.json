@@ -16,7 +16,8 @@
   },
   "search": {
     "summary": "概要",
-    "noResults": "条件に一致するサービスが見つかりませんでした。別の検索語をお試しください。",
+    "noResults": "サービスが見つかりませんでした",
+    "noResultsHint": "より広い検索語を試すか、場所フィルターを削除するか、下のカテゴリーから閲覧してください。",
     "error": "検索を完了できませんでした",
     "searching": "リソースを検索中...",
     "errorGeneric": "検索中にエラーが発生しました。もう一度お試しください。",
@@ -49,7 +50,12 @@
     "loadFailed": "サービスの読み込みに失敗しました",
     "showMore": "もっと見る",
     "showLess": "閉じる",
-    "findMeeting": "ミーティングを探す"
+    "findMeeting": "ミーティングを探す",
+    "text988": "988にテキストを送信 — 電話よりテキストが好みの場合",
+    "freshnessThisMonth": "今月確認済み",
+    "freshnessRecent": "最近確認済み",
+    "freshness3Months": "3ヶ月以上前に確認",
+    "freshnessOld": "最近確認されていません"
   },
   "myResources": {
     "title": "マイリソース",

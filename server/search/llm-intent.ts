@@ -19,6 +19,13 @@ import { CRISIS_FORWARD_DESCRIPTOR, CRISIS_TRAILING_DESCRIPTOR, FIRST_PERSON_DIS
 
 const LLM_TIMEOUT_MS = 5000;
 
+// Telemetry counters for monitoring LLM reliability
+let llmFallbackCount = 0;
+let llmTimeoutCount = 0;
+export function getLLMTelemetry() {
+  return { fallbacks: llmFallbackCount, timeouts: llmTimeoutCount };
+}
+
 /** Combined LLM response: intents + structured attributes */
 interface LLMUnderstanding {
   intents: ScoredIntent[];
@@ -269,8 +276,11 @@ export async function enhanceIntentWithLLM(analysis: QueryAnalysis): Promise<Que
 
     return applyLLMUnderstanding(analysis, understanding);
   } catch (err) {
+    const isTimeout = err instanceof Error && err.name === 'AbortError';
     const msg = err instanceof Error ? err.message : String(err);
-    console.log(`[LLMIntent] Fallback to regex: ${msg}`);
+    llmFallbackCount++;
+    if (isTimeout) llmTimeoutCount++;
+    console.log(`[LLMIntent] Fallback to regex (${isTimeout ? 'TIMEOUT' : 'ERROR'}): ${msg} [fallbacks: ${llmFallbackCount}, timeouts: ${llmTimeoutCount}]`);
     return analysis;
   }
 }

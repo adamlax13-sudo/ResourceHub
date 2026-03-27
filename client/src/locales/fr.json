@@ -16,7 +16,8 @@
   },
   "search": {
     "summary": "Résumé",
-    "noResults": "Aucun service trouvé correspondant à vos critères. Essayez un autre terme de recherche.",
+    "noResults": "Aucun service trouvé",
+    "noResultsHint": "Essayez un terme de recherche plus large, supprimez les filtres de lieu, ou parcourez par catégorie ci-dessous.",
     "error": "Impossible de terminer la recherche",
     "searching": "Recherche de ressources...",
     "errorGeneric": "Un problème est survenu lors de la recherche. Veuillez réessayer.",
@@ -48,7 +49,12 @@
     "loadFailed": "Échec du chargement du service",
     "showMore": "Afficher plus",
     "showLess": "Afficher moins",
-    "findMeeting": "Trouver une réunion"
+    "findMeeting": "Trouver une réunion",
+    "text988": "Textez 988 — si vous préférez texter plutôt qu'appeler",
+    "freshnessThisMonth": "Vérifié ce mois-ci",
+    "freshnessRecent": "Vérifié récemment",
+    "freshness3Months": "Vérifié il y a plus de 3 mois",
+    "freshnessOld": "Non vérifié récemment"
   },
   "myResources": {
     "title": "Mes Ressources",

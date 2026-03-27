@@ -5,7 +5,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon } from "lucide-react";
+import { Info, SlidersHorizontal, X, Heart, LayoutList, Map as MapIcon, Search as SearchIcon } from "lucide-react";
 import ucalgaryLogo from "@/assets/ucalgary-gear-logo.png";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { useSearchContext, updateSearchUrl } from "@/contexts/SearchContext";
@@ -338,6 +338,7 @@ export default function Home() {
     <div className="min-h-screen bg-background font-sans overflow-x-hidden">
       {/* Floating quick exit — always visible, tracks mouse on desktop */}
       <QuickExitButton floating />
+      <main id="main-content">
       <Hero
         onSearch={handleSearch}
         isLoading={isPending}
@@ -546,8 +547,24 @@ export default function Home() {
               </div>
 
               {displayServices.length === 0 && (
-                <div className="text-center py-20 text-muted-foreground">
-                  {t('search.noResults')}
+                <div className="bg-card p-8 rounded-3xl shadow-xl text-center max-w-2xl mx-auto border border-border">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <SearchIcon className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{t('search.noResults')}</h3>
+                  <p className="text-muted-foreground mb-6">{t('search.noResultsHint')}</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {['Crisis Support', 'Mental Health', 'Housing', 'Food Banks & Meals', 'Employment Services'].map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => handleSearch(cat, searchState.locations)}
+                        className="px-3 py-1.5 rounded-full border border-border bg-muted/50 text-sm font-medium text-foreground hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -594,6 +611,7 @@ export default function Home() {
         }}
       />
 
+      </main>
       {/* Footer */}
       <footer className="bg-card py-12 border-t border-border mt-2">
         <div className="container mx-auto px-4 text-center">

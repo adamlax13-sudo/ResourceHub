@@ -16,7 +16,8 @@
   },
   "search": {
     "summary": "摘要",
-    "noResults": "未找到符合您条件的服务。请尝试其他搜索词。",
+    "noResults": "未找到服务",
+    "noResultsHint": "尝试更广泛的搜索词、移除位置过滤器，或按以下类别浏览。",
     "error": "无法完成搜索",
     "searching": "正在搜索资源...",
     "errorGeneric": "搜索出现问题。请重试。",
@@ -49,7 +50,12 @@
     "loadFailed": "加载服务失败",
     "showMore": "显示更多",
     "showLess": "显示更少",
-    "findMeeting": "查找聚会"
+    "findMeeting": "查找聚会",
+    "text988": "发短信至988 — 如果您更喜欢发短信而不是打电话",
+    "freshnessThisMonth": "本月已验证",
+    "freshnessRecent": "近期已验证",
+    "freshness3Months": "3个月前验证",
+    "freshnessOld": "未近期验证"
   },
   "myResources": {
     "title": "我的资源",

@@ -5,12 +5,29 @@
 import type { Express, Request, Response } from "express";
 import { z } from "zod";
 import { api, serviceSummarySchema } from "@shared/routes";
+import { createHash, timingSafeEqual } from "crypto";
 import { strictLimiter } from "../middleware/rateLimiter";
 import { search, getServiceDetails } from "../search";
 import { asyncHandler, createErrorResponse } from "../helpers/errors";
 import { getOrTranslateService, getTranslationsBatch } from "../translation";
 import { storage } from "../storage";
 import { normalizeForCache } from "../helpers/keywords";
+import { verifyToken } from "./admin-auth";
+
+/** Check if a request has valid admin auth (non-blocking, no 401) */
+function isAdminRequest(req: Request): boolean {
+  const adminApiKey = process.env.ADMIN_API_KEY;
+  if (!adminApiKey) return false;
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice(7);
+    const hashA = createHash('sha256').update(token).digest();
+    const hashB = createHash('sha256').update(adminApiKey).digest();
+    return timingSafeEqual(hashA, hashB);
+  }
+  const cookieValue = (req as any).cookies?.admin_session as string | undefined;
+  return !!(cookieValue && verifyToken(cookieValue));
+}
 
 const SUPPORTED_LANGS = new Set(['en', 'fr', 'es', 'zh', 'ar', 'hi', 'pt', 'de', 'ja', 'ko']);
 
@@ -42,7 +59,7 @@ export function registerSearchRoutes(app: Express): void {
         location: input.location,
         page: input.page ?? 1,
         pageSize: input.pageSize ?? 30,
-        debug: process.env.ENABLE_DEBUG_SEARCH === 'true',
+        debug: process.env.ENABLE_DEBUG_SEARCH === 'true' && isAdminRequest(req),
         emergency: input.emergency,
         filters: hasFilters ? activeFilters : undefined,
         userLat: input.userLat,

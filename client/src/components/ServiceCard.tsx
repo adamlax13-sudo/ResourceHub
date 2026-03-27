@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart, ExternalLink } from "lucide-react";
+import { MapPin, Clock, Phone, ThumbsUp, ThumbsDown, Heart, ExternalLink, ShieldCheck, MessageSquare } from "lucide-react";
 import { type ServiceSummary } from "@shared/routes";
 import { type FavoriteCandidate } from "@/hooks/use-favorites";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +49,18 @@ function ServiceDescription({ description }: { description?: string | null }) {
       )}
     </div>
   );
+}
+
+/** Returns an i18n key for freshness from a lastChecked ISO string */
+function freshnessKey(lastChecked?: string | null): { key: string; fresh: boolean } | null {
+  if (!lastChecked) return null;
+  const checked = new Date(lastChecked);
+  if (Number.isNaN(checked.getTime())) return null;
+  const days = Math.floor((Date.now() - checked.getTime()) / (1000 * 60 * 60 * 24));
+  if (days <= 30) return { key: 'service.freshnessThisMonth', fresh: true };
+  if (days <= 90) return { key: 'service.freshnessRecent', fresh: true };
+  if (days <= 180) return { key: 'service.freshness3Months', fresh: false };
+  return { key: 'service.freshnessOld', fresh: false };
 }
 
 /** Maps AA service names to their regional meeting-finder URL */
@@ -194,17 +206,39 @@ export function ServiceCard({ service, onClick, index, isFavorite = false, onTog
             <Clock className="w-4 h-4 mr-2 mt-0.5 text-primary/60 flex-shrink-0" aria-hidden="true" />
             <span className="break-words"><span className="sr-only">Wait time: </span>{service.waitTimes || t('service.waitTimeDefault')}</span>
           </div>
+          {(() => {
+            const freshness = freshnessKey(service.lastChecked);
+            return freshness ? (
+              <div className={`flex items-start text-xs ${freshness.fresh ? 'text-green-600' : 'text-amber-600'}`}>
+                <ShieldCheck className="w-3.5 h-3.5 mr-2 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                <span>{t(freshness.key)}</span>
+              </div>
+            ) : null;
+          })()}
           {/* Show phone prominently for crisis lines — users in distress need the number immediately */}
           {service.phone && service.category?.toLowerCase().includes('crisis') && (
-            <a
-              href={`tel:${service.phone.replace(/[^0-9+]/g, '')}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 px-3 py-2 mt-1 rounded-lg bg-red-50 border border-red-200 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors"
-              aria-label={`Call ${service.name} at ${service.phone}`}
-            >
-              <Phone className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-              <span>{t('service.callNow', { phone: service.phone })}</span>
-            </a>
+            <div className="flex flex-col gap-1.5 mt-1">
+              <a
+                href={`tel:${service.phone.replace(/[^0-9+]/g, '')}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-red-700 font-semibold text-sm hover:bg-red-100 transition-colors"
+                aria-label={`Call ${service.name} at ${service.phone}`}
+              >
+                <Phone className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                <span>{t('service.callNow', { phone: service.phone })}</span>
+              </a>
+              {service.phone.replace(/[^0-9]/g, '').endsWith('988') && (
+                <a
+                  href="sms:988"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
+                  aria-label="Text 988 for crisis support"
+                >
+                  <MessageSquare className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                  <span>{t('service.text988')}</span>
+                </a>
+              )}
+            </div>
           )}
           {/* Direct link to AA meeting finder for Alcoholics Anonymous listings */}
           {(() => {

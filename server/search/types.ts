@@ -206,6 +206,8 @@ export interface LiteService {
   // Coordinates for distance computation (from materialized view)
   latitude?: number | null;
   longitude?: number | null;
+  // Data freshness — when this service was last verified
+  lastChecked?: string | null;
 }
 
 /** Full service detail format for expanded view */

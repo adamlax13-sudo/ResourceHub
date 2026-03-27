@@ -16,7 +16,8 @@
   },
   "search": {
     "summary": "Zusammenfassung",
-    "noResults": "Keine Dienste gefunden, die Ihren Kriterien entsprechen. Versuchen Sie einen anderen Suchbegriff.",
+    "noResults": "Keine Dienste gefunden",
+    "noResultsHint": "Versuchen Sie einen breiteren Suchbegriff, entfernen Sie Standortfilter, oder durchsuchen Sie nach Kategorie unten.",
     "error": "Suche konnte nicht abgeschlossen werden",
     "searching": "Suche nach Ressourcen...",
     "errorGeneric": "Bei der Suche ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
@@ -49,7 +50,12 @@
     "loadFailed": "Dienst konnte nicht geladen werden",
     "showMore": "Mehr anzeigen",
     "showLess": "Weniger anzeigen",
-    "findMeeting": "Ein Treffen finden"
+    "findMeeting": "Ein Treffen finden",
+    "text988": "SMS an 988 — wenn Sie lieber schreiben als anrufen",
+    "freshnessThisMonth": "Diesen Monat überprüft",
+    "freshnessRecent": "Kürzlich überprüft",
+    "freshness3Months": "Vor über 3 Monaten überprüft",
+    "freshnessOld": "Nicht kürzlich überprüft"
   },
   "myResources": {
     "title": "Meine Ressourcen",

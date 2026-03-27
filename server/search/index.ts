@@ -7,7 +7,7 @@
 
 // Cache version - increment this to invalidate all cached search results
 // when making changes that affect search behavior
-const CACHE_VERSION = 'v167';
+const CACHE_VERSION = 'v168';
 
 import { SEARCH_CONFIG } from './config';
 import type {
@@ -562,12 +562,15 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
       services = applyFilterMatchBoosts(services, cachedFilters);
     }
 
-    // Fetch confidence scores + coordinates in parallel (independent DB queries)
+    // Fetch confidence scores + coordinates/freshness in parallel (2 DB queries instead of 3)
     const serviceIds = services.map(s => s.id);
-    const [cachedConfScores, cachedCoords] = await Promise.all([
+    const [cachedConfScores, cachedCoordsAndFreshness] = await Promise.all([
       storage.getConfidenceScores(serviceIds),
-      storage.getServiceCoordinates(serviceIds),
+      storage.getServiceCoordsAndFreshness(serviceIds),
     ]);
+    const cachedCoords = cachedCoordsAndFreshness.coords;
+    // Attach freshness timestamps to services
+    services = services.map(s => ({ ...s, lastChecked: cachedCoordsAndFreshness.freshness.get(s.id) ?? null }));
 
     // Data quality boost applies regardless of filters
     const beforeQualityCached = DEBUG_SEARCH ? [...services] : services;
@@ -715,12 +718,15 @@ export async function search(input: SearchInput): Promise<SearchResponse> {
     }
   }
 
-  // Fetch confidence scores + coordinates in parallel (independent DB queries)
+  // Fetch confidence scores + coordinates/freshness in parallel (2 DB queries instead of 3)
   const freshServiceIds = result.services.map(s => s.id);
-  const [freshConfScores, freshCoords] = await Promise.all([
+  const [freshConfScores, freshCoordsAndFreshness] = await Promise.all([
     storage.getConfidenceScores(freshServiceIds),
-    storage.getServiceCoordinates(freshServiceIds),
+    storage.getServiceCoordsAndFreshness(freshServiceIds),
   ]);
+  const freshCoords = freshCoordsAndFreshness.coords;
+  // Attach freshness timestamps to services
+  result.services = result.services.map(s => ({ ...s, lastChecked: freshCoordsAndFreshness.freshness.get(s.id) ?? null }));
 
   // Data quality boost applies regardless of filters
   const beforeQuality = DEBUG_SEARCH ? [...result.services] : result.services;

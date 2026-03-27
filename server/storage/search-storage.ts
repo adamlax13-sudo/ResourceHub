@@ -11,6 +11,7 @@ import {
   type Search, type Service, type AiServiceEnrichment,
 } from "@shared/schema";
 import { eq, inArray, isNotNull, sql } from "drizzle-orm";
+import { LRUCache } from "lru-cache";
 
 import type { SemanticSearchResult, FastSearchResult, EnrichmentData } from './storage-impl';
 
@@ -20,13 +21,13 @@ const CONFIDENCE_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 const ALIAS_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 export class SearchStorage {
-  // Confidence score cache
-  private _confidenceCache: Map<string, number> | null = null;
+  // Confidence score cache (bounded LRU — defensive against DB growth on long-running instances)
+  private _confidenceCache: LRUCache<string, number> | null = null;
   private _confidenceCacheTime = 0;
-  private _confidenceCachePromise: Promise<Map<string, number>> | null = null;
+  private _confidenceCachePromise: Promise<LRUCache<string, number>> | null = null;
 
-  // Alias lookup cache
-  private _aliasLookupCache: Map<string, string> | null = null;
+  // Alias lookup cache (bounded LRU)
+  private _aliasLookupCache: LRUCache<string, string> | null = null;
   private _aliasLookupCacheTime = 0;
 
   // ============= SEARCH CACHE =============
@@ -358,7 +359,7 @@ export class SearchStorage {
               })
               .from(services)
               .where(isNotNull(services.confidenceScore));
-            const map = new Map<string, number>();
+            const map = new LRUCache<string, number>({ max: 5000 });
             for (const row of result) {
               if (row.confidenceScore !== null) {
                 map.set(row.serviceId, row.confidenceScore);
@@ -412,6 +413,43 @@ export class SearchStorage {
     return map;
   }
 
+  // ============= SERVICE COORDINATES + FRESHNESS (combined query) =============
+
+  /** Batch-fetch coordinates AND lastChecked in a single DB query to avoid extra round-trip */
+  async getServiceCoordsAndFreshness(serviceIds: string[]): Promise<{
+    coords: Map<string, { lat: number; lng: number }>;
+    freshness: Map<string, string>;
+  }> {
+    if (serviceIds.length === 0) return { coords: new Map(), freshness: new Map() };
+
+    const result = await db
+      .select({
+        serviceId: services.serviceId,
+        latitude: services.latitude,
+        longitude: services.longitude,
+        lastChecked: services.lastChecked,
+      })
+      .from(services)
+      .where(inArray(services.serviceId, serviceIds));
+
+    const coords = new Map<string, { lat: number; lng: number }>();
+    const freshness = new Map<string, string>();
+    for (const row of result) {
+      if (row.latitude != null && row.longitude != null) {
+        coords.set(row.serviceId, { lat: row.latitude, lng: row.longitude });
+      }
+      if (row.lastChecked) {
+        freshness.set(row.serviceId, row.lastChecked.toISOString());
+      }
+    }
+    return { coords, freshness };
+  }
+
+  async getServiceLastChecked(serviceIds: string[]): Promise<Map<string, string>> {
+    const { freshness } = await this.getServiceCoordsAndFreshness(serviceIds);
+    return freshness;
+  }
+
   // ============= SERVICE ALIASES =============
 
   async getAliasesForServices(): Promise<Map<string, string[]>> {
@@ -437,16 +475,17 @@ export class SearchStorage {
   async getAliasLookup(): Promise<Map<string, string>> {
     const now = Date.now();
     if (this._aliasLookupCache && (now - this._aliasLookupCacheTime) < ALIAS_CACHE_TTL) {
-      return this._aliasLookupCache;
+      // Convert LRU entries to plain Map for interface compatibility
+      return new Map(this._aliasLookupCache.entries());
     }
     const aliases = await db.select().from(serviceAliases);
-    const map = new Map<string, string>();
+    const lru = new LRUCache<string, string>({ max: 5000 });
     for (const alias of aliases) {
-      map.set(alias.alias.toLowerCase(), alias.serviceId);
+      lru.set(alias.alias.toLowerCase(), alias.serviceId);
     }
-    this._aliasLookupCache = map;
+    this._aliasLookupCache = lru;
     this._aliasLookupCacheTime = Date.now();
-    return map;
+    return new Map(lru.entries());
   }
 
   // ============= SEARCH INFRASTRUCTURE =============

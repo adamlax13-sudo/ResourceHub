@@ -17,7 +17,8 @@
   },
   "search": {
     "summary": "Summary",
-    "noResults": "No services found matching your criteria. Try a different search term.",
+    "noResults": "No services found",
+    "noResultsHint": "Try a broader search term, remove location filters, or browse by category below.",
     "error": "Unable to complete search",
     "searching": "Searching for resources...",
     "errorGeneric": "Something went wrong with the search. Please try again.",
@@ -53,7 +54,12 @@
     "loadFailed": "Failed to load service",
     "showMore": "Show more",
     "showLess": "Show less",
-    "findMeeting": "Find a Meeting"
+    "findMeeting": "Find a Meeting",
+    "text988": "Text 988 — if you prefer texting to calling",
+    "freshnessThisMonth": "Verified this month",
+    "freshnessRecent": "Verified recently",
+    "freshness3Months": "Verified 3+ months ago",
+    "freshnessOld": "Not recently verified"
   },
   "common": {
     "close": "Close",

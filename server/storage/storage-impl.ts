@@ -149,6 +149,15 @@ export interface IStorage {
   // Batch coordinate lookup for distance calculations
   getServiceCoordinates(serviceIds: string[]): Promise<Map<string, { lat: number; lng: number }>>;
 
+  // Batch freshness lookup for lastChecked timestamps
+  getServiceLastChecked(serviceIds: string[]): Promise<Map<string, string>>;
+
+  // Combined coordinates + freshness in single query
+  getServiceCoordsAndFreshness(serviceIds: string[]): Promise<{
+    coords: Map<string, { lat: number; lng: number }>;
+    freshness: Map<string, string>;
+  }>;
+
   // Popular queries for autocomplete suggestions
   getPopularQueries(limit: number, days: number): Promise<string[]>;
 
@@ -995,6 +1004,40 @@ export class DatabaseStorage implements IStorage {
       }
     }
     return map;
+  }
+
+  async getServiceLastChecked(serviceIds: string[]): Promise<Map<string, string>> {
+    const { freshness } = await this.getServiceCoordsAndFreshness(serviceIds);
+    return freshness;
+  }
+
+  async getServiceCoordsAndFreshness(serviceIds: string[]): Promise<{
+    coords: Map<string, { lat: number; lng: number }>;
+    freshness: Map<string, string>;
+  }> {
+    if (serviceIds.length === 0) return { coords: new Map(), freshness: new Map() };
+
+    const result = await db
+      .select({
+        serviceId: services.serviceId,
+        latitude: services.latitude,
+        longitude: services.longitude,
+        lastChecked: services.lastChecked,
+      })
+      .from(services)
+      .where(inArray(services.serviceId, serviceIds));
+
+    const coords = new Map<string, { lat: number; lng: number }>();
+    const freshness = new Map<string, string>();
+    for (const row of result) {
+      if (row.latitude != null && row.longitude != null) {
+        coords.set(row.serviceId, { lat: row.latitude, lng: row.longitude });
+      }
+      if (row.lastChecked) {
+        freshness.set(row.serviceId, row.lastChecked.toISOString());
+      }
+    }
+    return { coords, freshness };
   }
 
   /**

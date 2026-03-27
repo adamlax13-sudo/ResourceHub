@@ -16,7 +16,8 @@
   },
   "search": {
     "summary": "요약",
-    "noResults": "조건에 맞는 서비스를 찾을 수 없습니다. 다른 검색어를 시도해 보세요.",
+    "noResults": "서비스를 찾을 수 없습니다",
+    "noResultsHint": "더 넓은 검색어를 시도하거나, 위치 필터를 제거하거나, 아래 카테고리별로 검색하세요.",
     "error": "검색을 완료할 수 없습니다",
     "searching": "리소스 검색 중...",
     "errorGeneric": "검색 중 문제가 발생했습니다. 다시 시도해 주세요.",
@@ -49,7 +50,12 @@
     "loadFailed": "서비스를 로드하지 못했습니다",
     "showMore": "더 보기",
     "showLess": "접기",
-    "findMeeting": "모임 찾기"
+    "findMeeting": "모임 찾기",
+    "text988": "988에 문자 보내기 — 전화보다 문자를 선호하시면",
+    "freshnessThisMonth": "이번 달 확인됨",
+    "freshnessRecent": "최근 확인됨",
+    "freshness3Months": "3개월 이상 전 확인",
+    "freshnessOld": "최근 확인되지 않음"
   },
   "myResources": {
     "title": "내 리소스",

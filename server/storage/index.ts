@@ -77,6 +77,16 @@ class StorageFacade extends DatabaseStorage {
   private _quality = new QualityStorage();
   private _dashboard = new DashboardStorage();
 
+  /** Debounced search cache clear — coalesces rapid mutations (e.g. bulk updates) into one DB call */
+  private _searchCacheClearTimer: ReturnType<typeof setTimeout> | null = null;
+  private _debouncedClearSearchCache(): void {
+    if (this._searchCacheClearTimer) return; // already scheduled
+    this._searchCacheClearTimer = setTimeout(() => {
+      this._searchCacheClearTimer = null;
+      this._search.clearSearchCache();
+    }, 100);
+  }
+
   /** Side-effect callbacks passed to ServiceStorage for cross-domain wiring */
   private get _serviceEffects(): ServiceSideEffects {
     return {
@@ -87,6 +97,7 @@ class StorageFacade extends DatabaseStorage {
         const { invalidateTranslations } = await import('../translation/index');
         await invalidateTranslations(serviceId);
       },
+      invalidateSearchCache: () => this._debouncedClearSearchCache(),
     };
   }
 
@@ -101,6 +112,8 @@ class StorageFacade extends DatabaseStorage {
   override getConfidenceScores = this._search.getConfidenceScores.bind(this._search);
   override invalidateConfidenceCache = this._search.invalidateConfidenceCache.bind(this._search);
   override getServiceCoordinates = this._search.getServiceCoordinates.bind(this._search);
+  override getServiceLastChecked = this._search.getServiceLastChecked.bind(this._search);
+  override getServiceCoordsAndFreshness = this._search.getServiceCoordsAndFreshness.bind(this._search);
   override getAliasesForServices = this._search.getAliasesForServices.bind(this._search);
   override findServiceByAlias = this._search.findServiceByAlias.bind(this._search);
   override getAliasLookup = this._search.getAliasLookup.bind(this._search);
