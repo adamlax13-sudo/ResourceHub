@@ -143,7 +143,13 @@ class AB211DirectSource(Source):
         """Normalize a raw listing into a RawService."""
         address = listing.get("address", "")
         city = "Alberta"
-        for test_city in ["Calgary", "Edmonton", "Lethbridge", "Red Deer", "Medicine Hat", "Grande Prairie", "Fort McMurray"]:
+        for test_city in [
+            "Calgary", "Edmonton", "Lethbridge", "Red Deer", "Medicine Hat",
+            "Grande Prairie", "Fort McMurray", "Banff", "Canmore", "Jasper",
+            "Drumheller", "Wetaskiwin", "Peace River", "Slave Lake",
+            "Cold Lake", "Lloydminster", "Airdrie", "Sherwood Park",
+            "St. Albert", "Spruce Grove", "Leduc", "Camrose", "Brooks",
+        ]:
             if test_city.lower() in address.lower():
                 city = test_city
                 break

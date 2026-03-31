@@ -24,12 +24,15 @@ TIMEOUT_SECONDS = 15
 ALBERTA_CITIES = [
     "calgary", "edmonton", "lethbridge", "red-deer",
     "medicine-hat", "grande-prairie", "fort-mcmurray",
+    "banff", "drumheller", "wetaskiwin", "slave-lake",
 ]
 
 CITY_DISPLAY = {
     "calgary": "Calgary", "edmonton": "Edmonton", "lethbridge": "Lethbridge",
     "red-deer": "Red Deer", "medicine-hat": "Medicine Hat",
     "grande-prairie": "Grande Prairie", "fort-mcmurray": "Fort McMurray",
+    "banff": "Banff", "drumheller": "Drumheller",
+    "wetaskiwin": "Wetaskiwin", "slave-lake": "Slave Lake",
 }
 
 

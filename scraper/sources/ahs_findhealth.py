@@ -261,7 +261,14 @@ class AHSFindHealthSource(Source):
             "calgary": "Calgary", "edmonton": "Edmonton",
             "lethbridge": "Lethbridge", "red deer": "Red Deer",
             "medicine hat": "Medicine Hat", "grande prairie": "Grande Prairie",
-            "fort mcmurray": "Fort McMurray",
+            "fort mcmurray": "Fort McMurray", "banff": "Banff",
+            "canmore": "Canmore", "jasper": "Jasper",
+            "drumheller": "Drumheller", "wetaskiwin": "Wetaskiwin",
+            "peace river": "Peace River", "slave lake": "Slave Lake",
+            "cold lake": "Cold Lake", "lloydminster": "Lloydminster",
+            "airdrie": "Airdrie", "sherwood park": "Sherwood Park",
+            "st. albert": "St. Albert", "spruce grove": "Spruce Grove",
+            "leduc": "Leduc", "camrose": "Camrose", "brooks": "Brooks",
         }
         for key, name in cities.items():
             if key in lower:
